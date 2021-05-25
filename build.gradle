@@ -1,0 +1,37 @@
+apply from: 'dependency.gradle'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+
+repositories {
+    maven { url = "http://maven.aliyun.com/nexus/content/repositories/jcenter" }
+    maven { url = "http://maven.aliyun.com/nexus/content/groups/public/" }
+    mavenCentral()
+    mavenLocal()
+}
+
+version = '1.0-SNAPSHOT'
+group = 'com.chm.converter'
+
+dependencies {
+    compile(libs.hutool_core)
+    compile(libs.juniversalchardet)
+    compileOnly(libs.fastjson)
+    compileOnly(libs.jackson_core)
+    compileOnly(libs.jackson_databind)
+    compileOnly(libs.jackson_annotations)
+    compileOnly(libs.gson)
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+subprojects {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+}
