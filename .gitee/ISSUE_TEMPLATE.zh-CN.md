@@ -1,6 +1,6 @@
 ### 当前使用Forest版本以及所使用的后端及版本
 Forest: version
-Backend: (okhttp/httpclient)/version
+Backend: (okhttp或httpclient)/version
 
 
 ### 该问题是如何引起的？
