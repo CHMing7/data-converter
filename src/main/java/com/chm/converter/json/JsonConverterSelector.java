@@ -13,6 +13,8 @@
  */
 package com.chm.converter.json;
 
+import cn.hutool.core.map.MapUtil;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,9 +35,8 @@ public class JsonConverterSelector implements Serializable {
 
   private static final Map<Class<? extends JsonConverter>, JsonConverter> JSON_CONVERTER_MAP = new HashMap<>();
 
-  private static JsonConverterSelector instance;
-
-  private JsonConverter cachedJsonConverter;
+  private JsonConverterSelector() {
+  }
 
   static {
     try {
@@ -53,14 +54,6 @@ public class JsonConverterSelector implements Serializable {
       JSON_CONVERTER_MAP.put(GsonConverter.class, new GsonConverter());
     } catch (Throwable ignored) {
     }
-  }
-
-  public static JsonConverterSelector getInstance() {
-    if (instance != null) {
-      return instance;
-    }
-    instance = new JsonConverterSelector();
-    return instance;
   }
 
   /**
@@ -96,16 +89,8 @@ public class JsonConverterSelector implements Serializable {
    *
    * @return Forest的JSON转换器，{@link JsonConverter}接口实例
    */
-  public JsonConverter select() {
-    if (cachedJsonConverter != null) {
-      return cachedJsonConverter;
-    }
-    if (JSON_CONVERTER_MAP != null && !JSON_CONVERTER_MAP.isEmpty()) {
-      cachedJsonConverter = JSON_CONVERTER_MAP.values().stream().findFirst().get();
-      return cachedJsonConverter;
-    }
-
-    return cachedJsonConverter;
+  public static JsonConverter select() {
+    return MapUtil.isNotEmpty(JSON_CONVERTER_MAP) ? JSON_CONVERTER_MAP.values().stream().findFirst().orElse(null) : null;
   }
 
   /**
@@ -115,7 +100,10 @@ public class JsonConverterSelector implements Serializable {
    * @return Forest的JSON转换器，{@link JsonConverter}接口实例
    */
   public JsonConverter select(Class<? extends JsonConverter> className) {
-    cachedJsonConverter = JSON_CONVERTER_MAP.get(className);
-    return cachedJsonConverter;
+    return JSON_CONVERTER_MAP.get(className);
+  }
+
+  public static void put(Class<? extends JsonConverter> className, JsonConverter jsonConverter) {
+    JSON_CONVERTER_MAP.put(className, jsonConverter);
   }
 }

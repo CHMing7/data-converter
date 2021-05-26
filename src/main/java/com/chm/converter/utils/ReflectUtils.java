@@ -39,13 +39,6 @@ public final class ReflectUtils {
   private static JsonConverter FORM_MAP_CONVERTER;
 
   /**
-   * JSON转换选择器
-   *
-   * @since 1.5.1-BETA4
-   */
-  private static final JsonConverterSelector JSON_CONVERTER_SELECTOR = new JsonConverterSelector();
-
-  /**
    * 被排除调注解方法名集合
    */
   private static final Set<String> EXCLUDED_ANNTOTATION_METHOD_NAMES = new HashSet<>();
@@ -248,7 +241,7 @@ public final class ReflectUtils {
       return ((JsonConverter) DataType.getConverterMap().get(DataType.JSON)).convertObjectToMap(srcObj);
     } catch (Exception e) {
       if (FORM_MAP_CONVERTER == null) {
-        FORM_MAP_CONVERTER = JSON_CONVERTER_SELECTOR.select();
+        FORM_MAP_CONVERTER = JsonConverterSelector.select();
       }
       return FORM_MAP_CONVERTER.convertObjectToMap(srcObj);
     }

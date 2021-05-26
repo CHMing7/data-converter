@@ -85,7 +85,7 @@ public class DataType {
     CONVERTER_MAP.put(DataType.BINARY, new DefaultBinaryConverter());
     CONVERTER_MAP.put(DataType.TEXT, new DefaultTextConverter());
     CONVERTER_MAP.put(DataType.XML, new JaxbConverter());
-    CONVERTER_MAP.put(DataType.JSON, new JsonConverterSelector().select());
+    CONVERTER_MAP.put(DataType.JSON, JsonConverterSelector.select());
   }
 
   /**
