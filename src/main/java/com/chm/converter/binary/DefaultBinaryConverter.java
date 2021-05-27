@@ -1,21 +1,7 @@
-/*
- * Copyright (C) 2011-2021 ShenZhen iBOXCHAIN Information Technology Co.,Ltd.
- *
- * All right reserved.
- *
- * This software is the confidential and proprietary
- * information of iBOXCHAIN Company of China.
- * ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only
- * in accordance with the terms of the contract agreement
- * you entered into with iBOXCHAIN inc.
- *
- */
 package com.chm.converter.binary;
 
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import com.chm.converter.Converter;
 import com.chm.converter.exceptions.ConvertException;
@@ -37,75 +23,75 @@ import java.lang.reflect.Type;
  **/
 public class DefaultBinaryConverter implements Converter<Object> {
 
-  @Override
-  public <T> T convertToJavaObject(Object source, Class<T> targetType) {
-    if (source instanceof InputStream) {
-      InputStream in = (InputStream) source;
-      if (InputStream.class.isAssignableFrom(targetType)) {
-        return (T) source;
-      }
-      if (byte[].class.isAssignableFrom(targetType)) {
-        return (T) inputStreamToByteArray(in);
-      }
-      if (String.class.isAssignableFrom(targetType)) {
-        byte[] tmp = inputStreamToByteArray(in);
-        String result = null;
-        String encode = ByteEncodeUtils.getCharsetName(tmp);
-        if (encode.toUpperCase().startsWith("GB")) {
-          encode = "GBK";
+    @Override
+    public <T> T convertToJavaObject(Object source, Class<T> targetType) {
+        if (source instanceof InputStream) {
+            InputStream in = (InputStream) source;
+            if (InputStream.class.isAssignableFrom(targetType)) {
+                return (T) source;
+            }
+            if (byte[].class.isAssignableFrom(targetType)) {
+                return (T) inputStreamToByteArray(in);
+            }
+            if (String.class.isAssignableFrom(targetType)) {
+                byte[] tmp = inputStreamToByteArray(in);
+                String result = null;
+                String encode = ByteEncodeUtils.getCharsetName(tmp);
+                if (encode.toUpperCase().startsWith("GB")) {
+                    encode = "GBK";
+                }
+                result = StrUtil.str(tmp, encode);
+                return (T) result;
+            }
+        } else if (source instanceof File) {
+            File file = (File) source;
+            if (File.class.isAssignableFrom(targetType)) {
+                return (T) file;
+            }
+            if (InputStream.class.isAssignableFrom(targetType)) {
+                return (T) FileUtil.getInputStream(file);
+            }
+            if (byte[].class.isAssignableFrom(targetType)) {
+                return (T) FileUtil.readBytes(file);
+            }
+            if (String.class.isAssignableFrom(targetType)) {
+                return (T) FileUtil.readString(file, (String) null);
+            }
         }
-        result = StrUtil.str(tmp, encode);
-        return (T) result;
-      }
-    } else if (source instanceof File) {
-      File file = (File) source;
-      if (File.class.isAssignableFrom(targetType)) {
-        return (T) file;
-      }
-      if (InputStream.class.isAssignableFrom(targetType)) {
-        return (T) FileUtil.getInputStream(file);
-      }
-      if (byte[].class.isAssignableFrom(targetType)) {
-        return (T) FileUtil.readBytes(file);
-      }
-      if (String.class.isAssignableFrom(targetType)) {
-        return (T) FileUtil.readString(file, (String) null);
-      }
+        return convertToJavaObjectEx(source, targetType);
     }
-    return convertToJavaObjectEx(source, targetType);
-  }
 
 
-  protected <T> T convertToJavaObjectEx(Object source, Class<T> targetType) {
-    return null;
-  }
-
-
-  private byte[] inputStreamToByteArray(InputStream in) {
-    byte[] tmp = new byte[4096];
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    try {
-      int len;
-      while((len = in.read(tmp)) != -1) {
-        out.write(tmp, 0, len);
-      }
-      out.flush();
-      return out.toByteArray();
-    } catch (IOException e) {
-      throw new ConvertException("binary", e);
-    } finally {
-      try {
-        in.close();
-      } catch (IOException e) {
-        throw new ConvertException("binary", e);
-      }
+    protected <T> T convertToJavaObjectEx(Object source, Class<T> targetType) {
+        return null;
     }
-  }
 
-  @Override
-  public <T> T convertToJavaObject(Object source, Type targetType) {
-    Class<?> clazz = ReflectUtils.getClassByType(targetType);
-    return (T) convertToJavaObject(source, clazz);
-  }
+
+    private byte[] inputStreamToByteArray(InputStream in) {
+        byte[] tmp = new byte[4096];
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            int len;
+            while ((len = in.read(tmp)) != -1) {
+                out.write(tmp, 0, len);
+            }
+            out.flush();
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new ConvertException("binary", e);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                throw new ConvertException("binary", e);
+            }
+        }
+    }
+
+    @Override
+    public <T> T convertToJavaObject(Object source, Type targetType) {
+        Class<?> clazz = ReflectUtils.getClassByType(targetType);
+        return (T) convertToJavaObject(source, clazz);
+    }
 
 }

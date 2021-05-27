@@ -1,16 +1,3 @@
-/*
- * Copyright (C) 2011-2021 ShenZhen iBOXCHAIN Information Technology Co.,Ltd.
- *
- * All right reserved.
- *
- * This software is the confidential and proprietary
- * information of iBOXCHAIN Company of China.
- * ("Confidential Information"). You shall not disclose
- * such Confidential Information and shall use it only
- * in accordance with the terms of the contract agreement
- * you entered into with iBOXCHAIN inc.
- *
- */
 package com.chm.converter.utils;
 
 import org.mozilla.universalchardet.UniversalDetector;
@@ -34,7 +21,7 @@ public final class ByteEncodeUtils {
      * @return 编码名称
      */
     public static String getCharsetName(byte[] bytes) {
-      return getCharsetName(bytes, DEFAULT_ENCODING);
+        return getCharsetName(bytes, DEFAULT_ENCODING);
     }
 
     /**
@@ -45,14 +32,14 @@ public final class ByteEncodeUtils {
      * @return 编码名称
      */
     public static String getCharsetName(byte[] bytes, String defaultCharsetName) {
-      UniversalDetector detector = new UniversalDetector(null);
-      detector.handleData(bytes, 0, bytes.length);
-      detector.dataEnd();
-      String encoding = detector.getDetectedCharset();
-      detector.reset();
-      if (encoding == null) {
-        return defaultCharsetName;
-      }
-      return encoding;
+        UniversalDetector detector = new UniversalDetector(null);
+        detector.handleData(bytes, 0, bytes.length);
+        detector.dataEnd();
+        String encoding = detector.getDetectedCharset();
+        detector.reset();
+        if (encoding == null) {
+            return defaultCharsetName;
+        }
+        return encoding;
     }
 }
