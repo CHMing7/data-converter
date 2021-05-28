@@ -32,7 +32,7 @@ public class JsonConverterSelector implements Serializable {
         } catch (Throwable ignored) {
         }
         try {
-            checkJacsonClass();
+            checkJacksonClass();
             JSON_CONVERTER_MAP.put(JacksonConverter.class, new JacksonConverter());
         } catch (Throwable ignored) {
         }
@@ -53,11 +53,11 @@ public class JsonConverterSelector implements Serializable {
     }
 
     /**
-     * 检测Jaskon相关类型
+     * 检测Jackson相关类型
      *
-     * @return Jaskon相关类型
+     * @return Jackson相关类型
      */
-    public static Class<?> checkJacsonClass() throws Throwable {
+    public static Class<?> checkJacksonClass() throws Throwable {
         return Class.forName(JACKSON_NAME);
     }
 
