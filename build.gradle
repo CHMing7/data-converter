@@ -4,11 +4,26 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 
-repositories {
-    maven { url = "http://maven.aliyun.com/nexus/content/repositories/jcenter" }
-    maven { url = "http://maven.aliyun.com/nexus/content/groups/public/" }
-    mavenCentral()
-    mavenLocal()
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+
+    repositories {
+        maven { url = "http://maven.aliyun.com/nexus/content/repositories/jcenter" }
+        maven { url = "http://maven.aliyun.com/nexus/content/groups/public/" }
+        mavenCentral()
+        mavenLocal()
+    }
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            // Show that tests are run in the command-line output
+            events 'started', 'passed'
+        }
+    }
+
 }
 
 version = '1.0-SNAPSHOT'
@@ -17,6 +32,8 @@ group = 'com.chm.converter'
 dependencies {
     compile(libs.hutool_core)
     compile(libs.juniversalchardet)
+    compile(libs.reflections)
+    compile(libs.xk_time)
     compileOnly(libs.fastjson)
     compileOnly(libs.jackson_core)
     compileOnly(libs.jackson_databind)
@@ -26,6 +43,19 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testCompile 'junit:junit:4.13.1'
+
+    testCompile(libs.hutool_log)
+
+    testCompile(libs.fastjson)
+
+    testCompile(libs.jackson_core)
+    testCompile(libs.jackson_databind)
+    testCompile(libs.jackson_annotations)
+    testCompile(libs.jackson_datatype)
+
+    testCompile(libs.gson)
+    testCompile(libs.gson_java8)
 }
 
 subprojects {
@@ -35,3 +65,4 @@ subprojects {
         options.encoding = 'UTF-8'
     }
 }
+
