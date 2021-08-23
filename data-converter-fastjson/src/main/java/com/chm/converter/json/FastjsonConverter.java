@@ -3,7 +3,6 @@ package com.chm.converter.json;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.*;
 import com.alibaba.fastjson.annotation.JSONCreator;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -37,9 +36,9 @@ import java.util.Map;
 public class FastjsonConverter implements JsonConverter {
 
     public static final List<Class<? extends Annotation>> FASTJSON_ANNOTATION_LIST = ListUtil.of(JSONCreator.class,
-                    JSONField.class,
-                    JSONPOJOBuilder.class,
-                    JSONType.class);
+            JSONField.class,
+            JSONPOJOBuilder.class,
+            JSONType.class);
 
     public static final String FAST_JSON_NAME = "com.alibaba.fastjson.JSON";
 
@@ -52,9 +51,11 @@ public class FastjsonConverter implements JsonConverter {
 
     private SerializerFeature[] serializerFeatureArray;
 
-    protected static SerializeConfig serializeConfig = new FastjsonSerializeConfig();
+    protected SerializeConfig serializeConfig = new FastjsonSerializeConfig();
 
-    protected static ParserConfig parserConfig = new FastjsonParserConfig();
+    protected ParserConfig parserConfig = new FastjsonParserConfig();
+
+    protected static ParserConfig staticParserConfig = new FastjsonParserConfig();
 
     /**
      * 日期格式
@@ -141,13 +142,13 @@ public class FastjsonConverter implements JsonConverter {
     private String parseToString(Object obj) {
         if (CollectionUtil.isEmpty(serializerFeatureList)) {
             if (dateFormat != null) {
-                return JSON.toJSONString(obj, serializeConfig, SerializerFeature.WriteDateUseDateFormat);
+                return JSON.toJSONString(obj, serializeConfig, null, this.dateFormat, JSON.DEFAULT_GENERATE_FEATURE, SerializerFeature.WriteDateUseDateFormat);
             }
             return JSON.toJSONString(obj, serializeConfig);
         }
 
         if (dateFormat != null) {
-            return JSON.toJSONString(obj, serializeConfig, ArrayUtil.insert(serializerFeatureArray, 0, SerializerFeature.WriteDateUseDateFormat));
+            return JSON.toJSONString(obj, serializeConfig, null, this.dateFormat, JSON.DEFAULT_GENERATE_FEATURE, ArrayUtil.insert(serializerFeatureArray, 0, SerializerFeature.WriteDateUseDateFormat));
         }
         return JSON.toJSONString(obj, serializeConfig, serializerFeatureArray);
     }
@@ -165,7 +166,7 @@ public class FastjsonConverter implements JsonConverter {
     }
 
     private static Object toJSON(Object javaObject) {
-        return toJSON(javaObject, parserConfig);
+        return toJSON(javaObject, staticParserConfig);
     }
 
     private static Object toJSON(Object javaObject, ParserConfig mapping) {
@@ -283,9 +284,6 @@ public class FastjsonConverter implements JsonConverter {
     @Override
     public void setDateFormat(String format) {
         this.dateFormat = format;
-        if (StrUtil.isNotBlank(format)) {
-            JSON.DEFFAULT_DATE_FORMAT = format;
-        }
     }
 
     @Override
@@ -308,7 +306,7 @@ public class FastjsonConverter implements JsonConverter {
     }
 
     public static boolean checkExistFastjsonAnnotation(Class<?> cls) {
-        return FASTJSON_ANNOTATION_LIST.stream().anyMatch(annotationCls-> cls.getAnnotation(annotationCls) != null
+        return FASTJSON_ANNOTATION_LIST.stream().anyMatch(annotationCls -> cls.getAnnotation(annotationCls) != null
                 || CollectionUtil.isNotEmpty(MethodUtil.getMethodsListWithAnnotation(cls, annotationCls, true, true))
                 || CollectionUtil.isNotEmpty(FieldUtil.getFieldsListWithAnnotation(cls, annotationCls, true, true)));
     }

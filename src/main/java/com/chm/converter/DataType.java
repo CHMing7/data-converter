@@ -2,11 +2,6 @@ package com.chm.converter;
 
 
 import cn.hutool.core.util.StrUtil;
-import com.chm.converter.auto.DefaultAutoConverter;
-import com.chm.converter.binary.DefaultBinaryConverter;
-import com.chm.converter.json.JsonConverterSelector;
-import com.chm.converter.text.DefaultTextConverter;
-import com.chm.converter.xml.JaxbConverter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,13 +62,13 @@ public class DataType {
         return CONVERTER_MAP;
     }
 
-    static {
+   /* static {
         CONVERTER_MAP.put(DataType.AUTO, new DefaultAutoConverter());
         CONVERTER_MAP.put(DataType.BINARY, new DefaultBinaryConverter());
         CONVERTER_MAP.put(DataType.TEXT, new DefaultTextConverter());
         CONVERTER_MAP.put(DataType.XML, new JaxbConverter());
         CONVERTER_MAP.put(DataType.JSON, JsonConverterSelector.select());
-    }
+    }*/
 
     /**
      * 数据类型名称

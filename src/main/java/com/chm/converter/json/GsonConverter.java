@@ -1,8 +1,11 @@
 package com.chm.converter.json;
 
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
-import com.chm.converter.Converter;
 import com.chm.converter.exceptions.ConvertException;
+import com.chm.converter.json.gson.GsonDefaultDateTypeAdapterFactory;
+import com.chm.converter.json.gson.GsonJava8TimeTypeAdapterFactory;
+import com.chm.converter.json.gson.GsonTypeAdapterFactory;
 import com.google.gson.*;
 
 import java.lang.reflect.ParameterizedType;
@@ -24,15 +27,17 @@ public class GsonConverter implements JsonConverter {
      */
     private String dateFormat;
 
+    private final List<TypeAdapterFactory> factories = ListUtil.toLinkedList(new GsonTypeAdapterFactory(),
+            new GsonJava8TimeTypeAdapterFactory(), new GsonDefaultDateTypeAdapterFactory());
+
     @Override
     public String getDateFormat() {
         return dateFormat;
     }
 
     @Override
-    public Converter setDateFormat(String dateFormat) {
+    public void setDateFormat(String dateFormat) {
         this.dateFormat = dateFormat;
-        return this;
     }
 
     @Override
@@ -152,13 +157,18 @@ public class GsonConverter implements JsonConverter {
         return list;
     }
 
+    public void addTypeAdapterFactory(TypeAdapterFactory typeAdapterFactory) {
+        this.factories.add(typeAdapterFactory);
+    }
+
     /**
      * 创建GSON对象
      *
      * @return New instance of {@code com.google.gson.Gson}
      */
-    private Gson createGson() {
+    protected Gson createGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
+        this.factories.forEach(gsonBuilder::registerTypeAdapterFactory);
         if (StrUtil.isNotBlank(dateFormat)) {
             gsonBuilder.setDateFormat(dateFormat);
         }

@@ -34,6 +34,11 @@ import java.util.stream.Collectors;
  **/
 public class FastjsonParserConfig extends ParserConfig {
 
+    /**
+     * 日期格式
+     */
+    private String dateFormat;
+
     public FastjsonParserConfig() {
         super();
         // Java8 Time Deserializer
@@ -137,4 +142,14 @@ public class FastjsonParserConfig extends ParserConfig {
             return nameChars;
         }
     }
+
+    public void setDateFormat(String format) {
+        this.dateFormat = format;
+
+    }
+
+    public String getDateFormat() {
+        return this.dateFormat;
+    }
+    
 }

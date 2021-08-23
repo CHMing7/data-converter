@@ -1,18 +1,16 @@
 package com.chm.converter.json.fastjson.serializer;
 
-import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
-import com.alibaba.fastjson.JSON;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.serializer.*;
-import com.chm.converter.core.ClassInfoStorage;
-import com.chm.converter.core.FieldInfo;
-import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.json.FastjsonConverter;
+import com.chm.converter.ClassInfoStorage;
+import com.chm.converter.FieldInfo;
+import com.chm.converter.JavaBeanInfo;
 import com.chm.converter.json.fastjson.FastjsonDefaultDateCodec;
 import com.chm.converter.json.fastjson.FastjsonJdk8DateCodec;
 
@@ -21,8 +19,6 @@ import java.time.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @author caihongming
@@ -62,11 +58,6 @@ public class FastjsonSerializeConfig extends SerializeConfig {
         if (objectWriter instanceof FastjsonJavaBeanSerializer) {
             return objectWriter;
         }
-        // 校验制定类或其父类集中是否存在Fastjson框架注解
-        if (FastjsonConverter.checkExistFastjsonAnnotation(clazz)) {
-            return objectWriter;
-        }
-
         if (objectWriter instanceof JavaBeanSerializer) {
             JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz);
             if (CollectionUtil.isNotEmpty(javaBeanInfo.getSortedFieldList())) {
@@ -74,53 +65,47 @@ public class FastjsonSerializeConfig extends SerializeConfig {
                 return objectWriter;
             }
         }
-
         return objectWriter;
     }
 
-    private class FastjsonJavaBeanSerializer extends JavaBeanSerializer {
+    private static class FastjsonJavaBeanSerializer extends JavaBeanSerializer {
 
         public FastjsonJavaBeanSerializer(Class<?> beanType) {
             super(beanType);
-            JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(beanType);
-            List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
-            if (CollectionUtil.isEmpty(sortedFieldList)) {
+            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldInfoMap(beanType);
+            if (MapUtil.isEmpty(fieldInfoMap)) {
                 return;
             }
-            // 过滤不需要序列化的属性
+            // 对属性进行排序
             List<FieldSerializer> sortedGetterList = ListUtil.toList(this.sortedGetters);
-            Map<String, FieldSerializer> fieldSerializerMap = CollStreamUtil.toMap(sortedGetterList,
-                    fieldSerializer -> fieldSerializer.fieldInfo.name, Function.identity());
 
-            sortedGetterList = sortedFieldList.stream().filter(FieldInfo::isSerialize).map(fieldInfo -> {
-                // 使用自定义属性序列化类
-                FieldSerializer fieldSerializer = fieldSerializerMap.get(fieldInfo.getFieldName());
-                ObjectSerializer objectSerializer = getFieldSerializer(fieldInfo);
-                return new FastjsonFieldSerializer(beanType, fieldSerializer.fieldInfo, objectSerializer);
-            }).collect(Collectors.toList());
-
+            sortedGetterList = CollectionUtil.sort(sortedGetterList, (o1, o2) -> {
+                String name1 = (String) ReflectUtil.getFieldValue(o1.fieldInfo, "name");
+                String name2 = (String) ReflectUtil.getFieldValue(o2.fieldInfo, "name");
+                FieldInfo fieldInfo1 = fieldInfoMap.get(name1);
+                FieldInfo fieldInfo2 = fieldInfoMap.get(name2);
+                if (fieldInfo1 != null && fieldInfo2 != null) {
+                    return fieldInfo1.compareTo(fieldInfo2);
+                }
+                return o1.compareTo(o2);
+            });
             FieldSerializer[] sortedGetters = ArrayUtil.toArray(sortedGetterList, FieldSerializer.class);
             // 使用反射重新赋值
             ReflectUtil.setFieldValue(this, "sortedGetters", sortedGetters);
 
+            for (FieldSerializer sortedGetter : this.sortedGetters) {
+                String name = (String) ReflectUtil.getFieldValue(sortedGetter.fieldInfo, "name");
+                FieldInfo fieldInfo = fieldInfoMap.get(name);
+                if (StrUtil.isNotBlank(fieldInfo.getFormat())) {
+                    // 由于属性定义问题，使用反射注入format属性
+                    ReflectUtil.setFieldValue(sortedGetter, "format", fieldInfo.getFormat());
+                    ReflectUtil.setFieldValue(ReflectUtil.getFieldValue(sortedGetter, "fieldContext"), "format", fieldInfo.getFormat());
+                }
+            }
             this.addFilter(NAME_FILTER);
             this.addFilter(PROPERTY_FILTER);
         }
 
-        private ObjectSerializer getFieldSerializer(FieldInfo fieldInfo) {
-            ObjectSerializer objectSerializer = FastjsonSerializeConfig.this.getObjectWriter(fieldInfo.getFieldClass());
-
-            if (objectSerializer instanceof FastjsonJdk8DateCodec) {
-                String format = fieldInfo.getFormat();
-                objectSerializer = ((FastjsonJdk8DateCodec<?>) objectSerializer).withDatePattern(format);
-            }
-            if (objectSerializer instanceof FastjsonDefaultDateCodec) {
-                String format = fieldInfo.getFormat();
-                objectSerializer = ((FastjsonDefaultDateCodec<?>) objectSerializer).withDatePattern(format);
-            }
-
-            return objectSerializer;
-        }
     }
 
     /**
@@ -146,6 +131,19 @@ public class FastjsonSerializeConfig extends SerializeConfig {
             Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldInfoMap(ClassUtil.getClass(object));
             FieldInfo fieldInfo = fieldInfoMap.get(name);
             return fieldInfo.isSerialize();
+        }
+    }
+
+    /**
+     * 时间序列化处理
+     */
+    private static class DateTimeValueFilter implements ValueFilter {
+
+        @Override
+        public Object process(Object object, String name, Object value) {
+            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldInfoMap(ClassUtil.getClass(object));
+            FieldInfo fieldInfo = fieldInfoMap.get(name);
+            return fieldInfo != null && fieldInfo.getName() != null ? fieldInfo.getName() : name;
         }
     }
 

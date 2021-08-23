@@ -29,7 +29,7 @@ public interface JsonConverter extends Converter<String>, Encoder {
      * @param format 日期格式化模板字符
      * @return {@link Converter}接口实例
      */
-    Converter setDateFormat(String format);
+    void setDateFormat(String format);
 
     /**
      * 获取日期格式

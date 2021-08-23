@@ -1,11 +1,14 @@
 package com.chm.converter.json;
 
 import cn.hutool.core.util.StrUtil;
-import com.chm.converter.Converter;
 import com.chm.converter.exceptions.ConvertException;
+import com.chm.converter.json.jackson.JacksonModule;
+import com.chm.converter.json.jackson.deserializer.JacksonBeanDeserializerModifier;
+import com.chm.converter.json.jackson.serializer.JacksonBeanSerializerModifier;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -31,6 +34,10 @@ public class JacksonConverter implements JsonConverter {
     protected ObjectMapper mapper = new ObjectMapper();
 
     {
+        SimpleModule module = new JacksonModule();
+        module.setSerializerModifier(new JacksonBeanSerializerModifier());
+        module.setDeserializerModifier(new JacksonBeanDeserializerModifier());
+        mapper.registerModule(module);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
     }
@@ -50,13 +57,12 @@ public class JacksonConverter implements JsonConverter {
     }
 
     @Override
-    public Converter setDateFormat(String dateFormat) {
+    public void setDateFormat(String dateFormat) {
         this.dateFormat = dateFormat;
         if (StrUtil.isNotBlank(dateFormat)) {
             DateFormat format = new SimpleDateFormat(dateFormat);
             mapper.setDateFormat(format);
         }
-        return this;
     }
 
     @Override

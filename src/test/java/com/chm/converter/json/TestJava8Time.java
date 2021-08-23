@@ -2,6 +2,7 @@ package com.chm.converter.json;
 
 import cn.hutool.log.StaticLog;
 import com.chm.converter.annotation.FieldProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,13 +20,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class TestJava8Time {
 
-    JsonConverter fastjsonConverter;
+    JacksonConverter jacksonConverter;
+
+    GsonConverter gsonConverter;
+
+    FastjsonConverter fastjsonConverter;
 
     Java8Time java8Time;
 
     @Before
     public void before() {
-        fastjsonConverter = JsonConverterSelector.select(FastjsonConverter.class);
+        jacksonConverter = (JacksonConverter) JsonConverterSelector.select(JacksonConverter.class);
+        gsonConverter = (GsonConverter) JsonConverterSelector.select(GsonConverter.class);
+        fastjsonConverter = (FastjsonConverter) JsonConverterSelector.select(FastjsonConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -41,6 +48,52 @@ public class TestJava8Time {
         java8Time.setDate(new Date());
         java8Time.setSqlDate(new java.sql.Date(new Date().getTime()));
         java8Time.setTimestamp(new Timestamp(new Date().getTime()));
+    }
+
+    @Test
+    public void testJackson() {
+        //jacksonConverter.getMapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        //jacksonConverter.getMapper().configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false);
+        jacksonConverter.getMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        String encodeToString = jacksonConverter.encodeToString(java8Time);
+        StaticLog.info(encodeToString);
+        StaticLog.info(jacksonConverter.encodeToString(LocalDateTime.now()));
+        StaticLog.info(fastjsonConverter.encodeToString(MonthDay.now()));
+        StaticLog.info(fastjsonConverter.encodeToString((MonthDay)null));
+        Java8Time java8Time = jacksonConverter.convertToJavaObject(encodeToString, Java8Time.class);
+        assertEquals(java8Time, this.java8Time);
+    }
+
+    @Test
+    public void testJacksonCacheSerializer() {
+        Java8Time1 java8Time1 = new Java8Time1();
+        java8Time1.setInstant1(Instant.now());
+        java8Time1.setInstant2(Instant.now());
+        StaticLog.info(jacksonConverter.encodeToString(java8Time1));
+        StaticLog.info(jacksonConverter.encodeToString(java8Time1));
+        StaticLog.info(jacksonConverter.encodeToString(java8Time1));
+        jacksonConverter.encodeToString(java8Time1);
+    }
+
+    @Test
+    public void testGson() {
+        String encodeToString = gsonConverter.encodeToString(java8Time);
+        StaticLog.info(encodeToString);
+        StaticLog.info(gsonConverter.encodeToString(LocalDateTime.now()));
+        StaticLog.info(fastjsonConverter.encodeToString(MonthDay.now()));
+        StaticLog.info(fastjsonConverter.encodeToString((MonthDay)null));
+        Java8Time java8Time = gsonConverter.convertToJavaObject(encodeToString, Java8Time.class);
+        assertEquals(java8Time, this.java8Time);
+    }
+
+    @Test
+    public void testGsonCacheTypeAdapter() {
+        Java8Time1 java8Time1 = new Java8Time1();
+        java8Time1.setInstant1(Instant.now());
+        java8Time1.setInstant2(Instant.now());
+        StaticLog.info(gsonConverter.encodeToString(java8Time1));
+        StaticLog.info(gsonConverter.encodeToString(java8Time1));
+        gsonConverter.encodeToString(java8Time1);
     }
 
 
@@ -61,6 +114,7 @@ public class TestJava8Time {
         Java8Time1 java8Time1 = new Java8Time1();
         java8Time1.setInstant1(Instant.now());
         java8Time1.setInstant2(Instant.now());
+        StaticLog.info(fastjsonConverter.encodeToString(java8Time1));
         StaticLog.info(fastjsonConverter.encodeToString(java8Time1));
         fastjsonConverter.encodeToString(java8Time1);
     }
@@ -101,19 +155,19 @@ public class TestJava8Time {
         //@FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
         private LocalDateTime localDateTime;
 
-        @FieldProperty(format = "HH:mm:ss.SSS")
+        //@FieldProperty(format = "HH:mm:ss.SSS")
         private LocalTime localTime;
 
         //@FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSSZZZZZ")
         private OffsetDateTime offsetDateTime;
 
-        @FieldProperty(format = "HH:mm:ss.SSSZZZZZ")
+        //@FieldProperty(format = "HH:mm:ss.SSSZZZZZ")
         private OffsetTime offsetTime;
 
         //@FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSSZZZZZ'['VV']'")
         private ZonedDateTime zonedDateTime;
 
-        @FieldProperty(format = "MM-dd")
+        //@FieldProperty(format = "MM-dd")
         private MonthDay monthDay;
 
         //@FieldProperty(format = "yyyy-MM")
@@ -122,7 +176,7 @@ public class TestJava8Time {
         //@FieldProperty(format = "yyyy")
         private Year year;
 
-        @FieldProperty(format = "ZZZZZ")
+        //@FieldProperty(format = "ZZZZZ")
         private ZoneOffset zoneOffset;
 
         @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")

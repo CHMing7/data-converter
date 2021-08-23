@@ -24,11 +24,9 @@ import java.util.Date;
  **/
 public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
 
-    private DateFormat dateFormat;
-
     private final Class<T> dateType;
 
-    private static final String DEFAULT_DATE_PATTERN_STR = "yyyy-MM-dd HH:mm:ss.SSSS";
+    private static final String DEFAULT_DATE_PATTERN_STR = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * List of 1 or more different date formats used for de-serialization attempts.
@@ -40,38 +38,11 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
         this.dateType = verifyDateType(dateType);
     }
 
-    public FastjsonDefaultDateCodec(Class<T> dateType, String datePattern) {
-        this.dateType = verifyDateType(dateType);
-        if (StrUtil.isNotBlank(datePattern)) {
-            this.dateFormat = new SimpleDateFormat(datePattern);
-        } else {
-            this.dateFormat = null;
-        }
-    }
-
-    public FastjsonDefaultDateCodec(Class<T> dateType, DateFormat dateFormat) {
-        this.dateType = verifyDateType(dateType);
-        this.dateFormat = dateFormat;
-    }
-
     private Class<T> verifyDateType(Class<T> dateType) {
         if (dateType != Date.class && dateType != java.sql.Date.class && dateType != Timestamp.class) {
             throw new IllegalArgumentException("Date type must be one of " + Date.class + ", " + Timestamp.class + ", or " + java.sql.Date.class + " but was " + dateType);
         }
         return dateType;
-    }
-
-
-    public FastjsonDefaultDateCodec<T> withDatePattern(String datePattern) {
-        return new FastjsonDefaultDateCodec<>(this.dateType, datePattern);
-    }
-
-    public FastjsonDefaultDateCodec<T> withDateFormat(DateFormat dateFormat) {
-        return new FastjsonDefaultDateCodec<>(this.dateType, dateFormat);
-    }
-
-    public FastjsonDefaultDateCodec<T> withDateType(Class<T> dateType) {
-        return new FastjsonDefaultDateCodec<>(dateType, this.dateFormat);
     }
 
     @Override
@@ -83,7 +54,21 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
             return;
         }
 
-        DateFormat format = getDateFormat(serializer, null);
+        DateFormat format = serializer.getDateFormat();
+
+        if (format == null) {
+            // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
+            String dateFormatPattern = serializer.getFastJsonConfigDateFormatPattern();
+            if (dateFormatPattern == null) {
+                dateFormatPattern = JSON.DEFFAULT_DATE_FORMAT;
+            }
+            if (StrUtil.isNotBlank(dateFormatPattern)) {
+                format = new SimpleDateFormat(dateFormatPattern);
+            }
+        }
+        if (format == null) {
+            format = DEFAULT_DATE_FORMAT;
+        }
         String text = DateUtil.format((Date) object, format);
         out.writeString(text);
     }
@@ -101,10 +86,13 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
             if (StrUtil.isBlank(str)) {
                 return null;
             }
+            DateFormat dateFormat = parser.getDateFormat();
 
-            DateFormat format = getDateFormat(null, parser);
+            if (dateFormat == null) {
+                dateFormat = DEFAULT_DATE_FORMAT;
+            }
+            Date date = DateUtil.parse(str, dateFormat);
 
-            Date date = DateUtil.parse(str, format);
             if (dateType == Date.class) {
                 return (T) date;
             } else if (dateType == Timestamp.class) {
@@ -136,6 +124,9 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
             if (dateFormat == null) {
                 // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
                 String dateFormatPattern = parser.getDateFomartPattern();
+                if (dateFormatPattern == null) {
+                    dateFormatPattern = JSON.DEFFAULT_DATE_FORMAT;
+                }
                 if (StrUtil.isNotBlank(dateFormatPattern)) {
                     dateFormat = new SimpleDateFormat(dateFormatPattern);
                 }
@@ -155,38 +146,5 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
             }
         }
         return super.deserialze(parser, clazz, fieldName, format, features);
-    }
-
-    private DateFormat getDateFormat(JSONSerializer serializer, DefaultJSONParser parser) {
-        DateFormat format = this.dateFormat;
-
-        if (serializer != null) {
-            if (format == null) {
-                format = serializer.getDateFormat();
-            }
-
-            if (format == null) {
-                // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
-                String dateFormatPattern = serializer.getFastJsonConfigDateFormatPattern();
-                if (StrUtil.isNotBlank(dateFormatPattern)) {
-                    format = new SimpleDateFormat(dateFormatPattern);
-                }
-            }
-        }
-
-        if (parser != null) {
-            if (format == null) {
-                // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
-                String dateFormatPattern = parser.getDateFomartPattern();
-                if (StrUtil.isNotBlank(dateFormatPattern) && !StrUtil.equals(dateFormatPattern, JSON.DEFFAULT_DATE_FORMAT)) {
-                    format = new SimpleDateFormat(dateFormatPattern);
-                }
-            }
-        }
-
-        if (format == null) {
-            format = DEFAULT_DATE_FORMAT;
-        }
-        return format;
     }
 }

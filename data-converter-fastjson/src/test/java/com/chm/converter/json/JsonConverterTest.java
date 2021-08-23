@@ -2,13 +2,10 @@ package com.chm.converter.json;
 
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 
@@ -41,13 +38,5 @@ public class JsonConverterTest {
         Map<String, User> newUserMap = jsonConverter.convertToJavaObject(encodeToString, typeRef0.getType());
 
         assertEquals(userMap, newUserMap);
-    }
-
-    @Test
-    public void main() {
-        String dateStr = "2019-12-12 12:12:12";
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        System.out.println(dateTimeFormatter.parse(dateStr, YearMonth::from));
-        System.out.println(LocalDateTime.parse(dateStr, dateTimeFormatter));
     }
 }

@@ -3,11 +3,13 @@ package com.chm.converter.json;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.*;
 import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.util.FieldInfo;
 import com.alibaba.fastjson.util.TypeUtils;
-import com.chm.converter.Converter;
 import com.chm.converter.exceptions.ConvertException;
+import com.chm.converter.json.fastjson.deserializer.FastjsonParserConfig;
+import com.chm.converter.json.fastjson.serializer.FastjsonSerializeConfig;
 
 import java.lang.reflect.*;
 import java.util.Collection;
@@ -30,6 +32,10 @@ public class FastjsonConverter implements JsonConverter {
     private String serializerFeatureName = "DisableCircularReferenceDetect";
 
     private SerializerFeature serializerFeature;
+
+    protected static SerializeConfig serializeConfig = new FastjsonSerializeConfig();
+
+    protected static ParserConfig parserConfig = new FastjsonParserConfig();
 
     /**
      * 日期格式
@@ -102,7 +108,7 @@ public class FastjsonConverter implements JsonConverter {
     @Override
     public <T> T convertToJavaObject(String source, Class<T> targetType) {
         try {
-            return JSON.parseObject(source, targetType);
+            return JSON.parseObject(source, targetType, parserConfig);
         } catch (Throwable th) {
             throw new ConvertException("json", th);
         }
@@ -111,7 +117,7 @@ public class FastjsonConverter implements JsonConverter {
     @Override
     public <T> T convertToJavaObject(String source, Type targetType) {
         try {
-            return JSON.parseObject(source, targetType);
+            return JSON.parseObject(source, targetType, parserConfig);
         } catch (Throwable th) {
             throw new ConvertException("json", th);
         }
@@ -120,7 +126,7 @@ public class FastjsonConverter implements JsonConverter {
 
     public <T> T convertToJavaObject(String source, TypeReference<T> typeReference) {
         try {
-            return JSON.parseObject(source, typeReference);
+            return JSON.parseObject(source, typeReference.getType(), parserConfig);
         } catch (Throwable th) {
             throw new ConvertException("json", th);
         }
@@ -131,15 +137,14 @@ public class FastjsonConverter implements JsonConverter {
     private String parseToString(Object obj) {
         if (serializerFeature == null) {
             if (dateFormat != null) {
-                return JSON.toJSONString(obj, SerializerFeature.WriteDateUseDateFormat);
+                return JSON.toJSONString(obj, serializeConfig, SerializerFeature.WriteDateUseDateFormat);
             }
-            return JSON.toJSONString(obj);
+            return JSON.toJSONString(obj, serializeConfig);
         }
         if (dateFormat != null) {
-            return JSON.toJSONString(obj, SerializerFeature.WriteDateUseDateFormat, serializerFeature);
+            return JSON.toJSONString(obj, serializeConfig, SerializerFeature.WriteDateUseDateFormat, serializerFeature);
         }
-        return JSON.toJSONString(obj, serializerFeature);
-
+        return JSON.toJSONString(obj, serializeConfig, serializerFeature);
     }
 
     @Override
@@ -154,12 +159,11 @@ public class FastjsonConverter implements JsonConverter {
         }
     }
 
-    private static final Object toJSON(Object javaObject) {
-        ParserConfig parserConfig = ParserConfig.getGlobalInstance();
+    private static Object toJSON(Object javaObject) {
         return toJSON(javaObject, parserConfig);
     }
 
-    private static final Object toJSON(Object javaObject, ParserConfig mapping) {
+    private static Object toJSON(Object javaObject, ParserConfig mapping) {
         if (javaObject == null) {
             return null;
         }
@@ -236,9 +240,7 @@ public class FastjsonConverter implements JsonConverter {
             }
 
             return json;
-        } catch (IllegalAccessException e) {
-            throw new JSONException("toJSON error", e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new JSONException("toJSON error", e);
         }
     }
@@ -274,12 +276,11 @@ public class FastjsonConverter implements JsonConverter {
     }
 
     @Override
-    public Converter setDateFormat(String format) {
+    public void setDateFormat(String format) {
         this.dateFormat = format;
         if (StrUtil.isNotBlank(format)) {
             JSON.DEFFAULT_DATE_FORMAT = format;
         }
-        return this;
     }
 
     @Override

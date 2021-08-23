@@ -86,7 +86,7 @@ public class JsonConverterSelector implements Serializable {
      *
      * @return Forest的JSON转换器，{@link JsonConverter}接口实例
      */
-    public JsonConverter select(Class<? extends JsonConverter> className) {
+    public static JsonConverter select(Class<? extends JsonConverter> className) {
         return JSON_CONVERTER_MAP.get(className);
     }
 
