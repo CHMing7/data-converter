@@ -27,7 +27,6 @@ import static java.time.temporal.ChronoField.YEAR;
  **/
 public interface TimeConstant {
 
-
     /**
      * 支持的java8时间类型集合
      */

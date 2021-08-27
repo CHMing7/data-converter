@@ -36,7 +36,7 @@ public class TestJava8Time {
         java8Time.setZonedDateTime(ZonedDateTime.now());
         java8Time.setMonthDay(MonthDay.now());
         java8Time.setYearMonth(YearMonth.now());
-        // java8Time.setYear(Year.now());
+        java8Time.setYear(Year.now());
         java8Time.setZoneOffset(ZoneOffset.MIN);
         java8Time.setDate(new Date());
         java8Time.setSqlDate(new java.sql.Date(new Date().getTime()));
@@ -46,8 +46,8 @@ public class TestJava8Time {
 
     @Test
     public void testFastjson() {
-        fastjsonConverter.setDateFormat("yyyy-MM");
-        String encodeToString = fastjsonConverter.encodeToString(java8Time);
+        // fastjsonConverter.setDateFormat("yyyy-MM");
+        String encodeToString = fastjsonConverter.encodeToString(this.java8Time);
         StaticLog.info(encodeToString);
         StaticLog.info(fastjsonConverter.encodeToString(LocalDateTime.now()));
         StaticLog.info(fastjsonConverter.encodeToString(MonthDay.now()));
@@ -92,7 +92,7 @@ public class TestJava8Time {
 
     public static class Java8Time {
 
-        @FieldProperty(name = "instant1", ordinal = 1)
+        //@FieldProperty(name = "instant1", ordinal = 1)
         private Instant instant;
 
         //@FieldProperty(format = "yyyy-MM-dd")
@@ -101,19 +101,19 @@ public class TestJava8Time {
         //@FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
         private LocalDateTime localDateTime;
 
-        @FieldProperty(format = "HH:mm:ss.SSS")
+        //@FieldProperty(format = "HH:mm:ss.SSS")
         private LocalTime localTime;
 
         //@FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSSZZZZZ")
         private OffsetDateTime offsetDateTime;
 
-        @FieldProperty(format = "HH:mm:ss.SSSZZZZZ")
+        //@FieldProperty(format = "HH:mm:ss.SSSZZZZZ")
         private OffsetTime offsetTime;
 
         //@FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSSZZZZZ'['VV']'")
         private ZonedDateTime zonedDateTime;
 
-        @FieldProperty(format = "MM-dd")
+        //@FieldProperty(format = "MM-dd")
         private MonthDay monthDay;
 
         //@FieldProperty(format = "yyyy-MM")
@@ -122,10 +122,10 @@ public class TestJava8Time {
         //@FieldProperty(format = "yyyy")
         private Year year;
 
-        @FieldProperty(format = "ZZZZZ")
+        //@FieldProperty(format = "ZZZZZ")
         private ZoneOffset zoneOffset;
 
-        @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
+       // @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
         private Date date;
 
         //@FieldProperty(format = "yyyy-MM-dd HH:mm:ss")

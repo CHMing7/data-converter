@@ -5,14 +5,13 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.*;
 import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.json.FastjsonConverter;
+import com.chm.converter.json.JsonConverter;
 import com.chm.converter.json.fastjson.FastjsonDefaultDateCodec;
 import com.chm.converter.json.fastjson.FastjsonJdk8DateCodec;
 
@@ -35,25 +34,25 @@ public class FastjsonSerializeConfig extends SerializeConfig {
 
     private static final PropertyFilter PROPERTY_FILTER = new FastjsonPropertyFilter();
 
-    public FastjsonSerializeConfig() {
+    public FastjsonSerializeConfig(JsonConverter fastjsonConverter) {
         super();
         // Java8 Time Serializer
-        put(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class));
-        put(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class));
-        put(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class));
-        put(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class));
-        put(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class));
-        put(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class));
-        put(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class));
-        put(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class));
-        put(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class));
-        put(Year.class, new FastjsonJdk8DateCodec<>(Year.class));
-        put(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class));
+        put(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, fastjsonConverter));
+        put(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, fastjsonConverter));
+        put(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class, fastjsonConverter));
+        put(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class, fastjsonConverter));
+        put(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class, fastjsonConverter));
+        put(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class, fastjsonConverter));
+        put(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class, fastjsonConverter));
+        put(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class, fastjsonConverter));
+        put(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class, fastjsonConverter));
+        put(Year.class, new FastjsonJdk8DateCodec<>(Year.class, fastjsonConverter));
+        put(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class, fastjsonConverter));
 
         // Default Date Serializer
-        put(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class));
-        put(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class));
-        put(Date.class, new FastjsonDefaultDateCodec<>(Date.class));
+        put(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class, fastjsonConverter));
+        put(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class, fastjsonConverter));
+        put(Date.class, new FastjsonDefaultDateCodec<>(Date.class, fastjsonConverter));
     }
 
     @Override

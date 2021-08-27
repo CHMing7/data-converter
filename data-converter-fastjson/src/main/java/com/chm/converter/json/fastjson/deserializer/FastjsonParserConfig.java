@@ -4,9 +4,7 @@ import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.parser.deserializer.FieldDeserializer;
 import com.alibaba.fastjson.parser.deserializer.JavaBeanDeserializer;
@@ -15,6 +13,7 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.json.FastjsonConverter;
+import com.chm.converter.json.JsonConverter;
 import com.chm.converter.json.fastjson.FastjsonDefaultDateCodec;
 import com.chm.converter.json.fastjson.FastjsonJdk8DateCodec;
 
@@ -34,30 +33,25 @@ import java.util.stream.Collectors;
  **/
 public class FastjsonParserConfig extends ParserConfig {
 
-    /**
-     * 日期格式
-     */
-    private String dateFormat;
-
-    public FastjsonParserConfig() {
+    public FastjsonParserConfig(JsonConverter fastjsonConverter) {
         super();
         // Java8 Time Deserializer
-        putDeserializer(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class));
-        putDeserializer(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class));
-        putDeserializer(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class));
-        putDeserializer(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class));
-        putDeserializer(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class));
-        putDeserializer(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class));
-        putDeserializer(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class));
-        putDeserializer(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class));
-        putDeserializer(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class));
-        putDeserializer(Year.class, new FastjsonJdk8DateCodec<>(Year.class));
-        putDeserializer(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class));
+        putDeserializer(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, fastjsonConverter));
+        putDeserializer(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, fastjsonConverter));
+        putDeserializer(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class, fastjsonConverter));
+        putDeserializer(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class, fastjsonConverter));
+        putDeserializer(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class, fastjsonConverter));
+        putDeserializer(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class, fastjsonConverter));
+        putDeserializer(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class, fastjsonConverter));
+        putDeserializer(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class, fastjsonConverter));
+        putDeserializer(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class, fastjsonConverter));
+        putDeserializer(Year.class, new FastjsonJdk8DateCodec<>(Year.class, fastjsonConverter));
+        putDeserializer(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class, fastjsonConverter));
 
         // Default Date Deserializer
-        putDeserializer(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class));
-        putDeserializer(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class));
-        putDeserializer(Date.class, new FastjsonDefaultDateCodec<>(Date.class));
+        putDeserializer(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class, fastjsonConverter));
+        putDeserializer(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class, fastjsonConverter));
+        putDeserializer(Date.class, new FastjsonDefaultDateCodec<>(Date.class, fastjsonConverter));
     }
 
     @Override
@@ -120,13 +114,11 @@ public class FastjsonParserConfig extends ParserConfig {
 
             if (objectDeserializer instanceof FastjsonJdk8DateCodec) {
                 String format = fieldInfo.getFormat();
-                String gsonFormat = JSON.DEFFAULT_DATE_FORMAT;
-                objectDeserializer = ((FastjsonJdk8DateCodec<?>) objectDeserializer).withDatePattern(ObjectUtil.defaultIfBlank(format, gsonFormat));
+                objectDeserializer = ((FastjsonJdk8DateCodec<?>) objectDeserializer).withDatePattern(format);
             }
             if (objectDeserializer instanceof FastjsonDefaultDateCodec) {
                 String format = fieldInfo.getFormat();
-                String gsonFormat = JSON.DEFFAULT_DATE_FORMAT;
-                objectDeserializer = ((FastjsonDefaultDateCodec<?>) objectDeserializer).withDatePattern(ObjectUtil.defaultIfBlank(format, gsonFormat));
+                objectDeserializer = ((FastjsonDefaultDateCodec<?>) objectDeserializer).withDatePattern(format);
             }
 
             return objectDeserializer;
@@ -143,13 +135,4 @@ public class FastjsonParserConfig extends ParserConfig {
         }
     }
 
-    public void setDateFormat(String format) {
-        this.dateFormat = format;
-
-    }
-
-    public String getDateFormat() {
-        return this.dateFormat;
-    }
-    
 }

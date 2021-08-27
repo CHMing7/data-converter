@@ -21,10 +21,11 @@ import com.chm.converter.utils.MethodUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.*;
 
 /**
  * 使用Fastjson实现的消息转换实现类
@@ -51,16 +52,25 @@ public class FastjsonConverter implements JsonConverter {
 
     private SerializerFeature[] serializerFeatureArray;
 
-    protected SerializeConfig serializeConfig = new FastjsonSerializeConfig();
+    protected SerializeConfig serializeConfig = new FastjsonSerializeConfig(this);
 
-    protected ParserConfig parserConfig = new FastjsonParserConfig();
+    protected ParserConfig parserConfig = new FastjsonParserConfig(this);
 
-    protected static ParserConfig staticParserConfig = new FastjsonParserConfig();
+    protected static ParserConfig staticParserConfig = new FastjsonParserConfig(null);
 
     /**
      * 日期格式
      */
-    private String dateFormat;
+    private String dateFormatPattern;
+
+    /**
+     * 日期格式化类
+     */
+    private DateTimeFormatter dateTimeFormatter;
+
+    public TimeZone timeZone = TimeZone.getDefault();
+
+    public Locale locale = Locale.getDefault();
 
     private static Field nameField;
 
@@ -138,17 +148,16 @@ public class FastjsonConverter implements JsonConverter {
 
     }
 
-
     private String parseToString(Object obj) {
         if (CollectionUtil.isEmpty(serializerFeatureList)) {
-            if (dateFormat != null) {
-                return JSON.toJSONString(obj, serializeConfig, null, this.dateFormat, JSON.DEFAULT_GENERATE_FEATURE, SerializerFeature.WriteDateUseDateFormat);
+            if (dateFormatPattern != null) {
+                return JSON.toJSONString(obj, serializeConfig, null, this.dateFormatPattern, JSON.DEFAULT_GENERATE_FEATURE, SerializerFeature.WriteDateUseDateFormat);
             }
             return JSON.toJSONString(obj, serializeConfig);
         }
 
-        if (dateFormat != null) {
-            return JSON.toJSONString(obj, serializeConfig, null, this.dateFormat, JSON.DEFAULT_GENERATE_FEATURE, ArrayUtil.insert(serializerFeatureArray, 0, SerializerFeature.WriteDateUseDateFormat));
+        if (dateFormatPattern != null) {
+            return JSON.toJSONString(obj, serializeConfig, null, this.dateFormatPattern, JSON.DEFAULT_GENERATE_FEATURE, ArrayUtil.insert(serializerFeatureArray, 0, SerializerFeature.WriteDateUseDateFormat));
         }
         return JSON.toJSONString(obj, serializeConfig, serializerFeatureArray);
     }
@@ -283,12 +292,46 @@ public class FastjsonConverter implements JsonConverter {
 
     @Override
     public void setDateFormat(String format) {
-        this.dateFormat = format;
+        this.dateFormatPattern = format;
+        this.dateTimeFormatter = null;
     }
 
     @Override
-    public String getDateFormat() {
-        return this.dateFormat;
+    public void setDateFormat(DateTimeFormatter dateTimeFormatter) {
+        this.dateFormatPattern = null;
+        this.dateTimeFormatter = dateTimeFormatter;
+    }
+
+    @Override
+    public DateTimeFormatter getDateFormat() {
+        if (dateTimeFormatter == null && dateFormatPattern != null) {
+            dateTimeFormatter = this.generateDateFormat(dateFormatPattern);
+        }
+        return dateTimeFormatter;
+    }
+
+    private DateTimeFormatter generateDateFormat(String dateFormatPattern) {
+        DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
+                .appendPattern(dateFormatPattern).toFormatter(locale);
+        dateTimeFormatter.withZone(timeZone.toZoneId());
+
+        return dateTimeFormatter;
+    }
+
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     public Map<String, Object> defaultJsonMap(Object obj) {

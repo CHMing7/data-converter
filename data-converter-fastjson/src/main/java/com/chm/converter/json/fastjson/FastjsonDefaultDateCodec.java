@@ -1,21 +1,23 @@
 package com.chm.converter.json.fastjson;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.JSONLexer;
 import com.alibaba.fastjson.parser.JSONToken;
 import com.alibaba.fastjson.serializer.DateCodec;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
+import com.chm.converter.json.JsonConverter;
+import com.chm.converter.utils.DateUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author caihongming
@@ -24,9 +26,11 @@ import java.util.Date;
  **/
 public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
 
-    private DateFormat dateFormat;
+    private final JsonConverter fastjsonConverter;
 
     private final Class<T> dateType;
+
+    private final DateTimeFormatter dateFormat;
 
     private static final String DEFAULT_DATE_PATTERN_STR = "yyyy-MM-dd HH:mm:ss.SSSS";
 
@@ -34,22 +38,37 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
      * List of 1 or more different date formats used for de-serialization attempts.
      * The first of them is used for serialization as well.
      */
-    private final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_PATTERN_STR);
+    private final DateTimeFormatter DEFAULT_DATE_FORMAT = new DateTimeFormatterBuilder()
+            .appendPattern(DEFAULT_DATE_PATTERN_STR).toFormatter(Locale.getDefault()).withZone(ZoneId.systemDefault());
 
     public FastjsonDefaultDateCodec(Class<T> dateType) {
-        this.dateType = verifyDateType(dateType);
+        this(dateType, (String) null, null);
     }
 
     public FastjsonDefaultDateCodec(Class<T> dateType, String datePattern) {
+        this(dateType, datePattern, null);
+    }
+
+    public FastjsonDefaultDateCodec(Class<T> dateType, DateTimeFormatter dateFormat) {
+        this(dateType, dateFormat, null);
+    }
+
+    public FastjsonDefaultDateCodec(Class<T> dateType, JsonConverter fastjsonConverter) {
+        this(dateType, (String) null, fastjsonConverter);
+    }
+
+    public FastjsonDefaultDateCodec(Class<T> dateType, String datePattern, JsonConverter fastjsonConverter) {
+        this.fastjsonConverter = fastjsonConverter;
         this.dateType = verifyDateType(dateType);
         if (StrUtil.isNotBlank(datePattern)) {
-            this.dateFormat = new SimpleDateFormat(datePattern);
+            this.dateFormat = DateTimeFormatter.ofPattern(datePattern);
         } else {
             this.dateFormat = null;
         }
     }
 
-    public FastjsonDefaultDateCodec(Class<T> dateType, DateFormat dateFormat) {
+    public FastjsonDefaultDateCodec(Class<T> dateType, DateTimeFormatter dateFormat, JsonConverter fastjsonConverter) {
+        this.fastjsonConverter = fastjsonConverter;
         this.dateType = verifyDateType(dateType);
         this.dateFormat = dateFormat;
     }
@@ -61,17 +80,16 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
         return dateType;
     }
 
-
     public FastjsonDefaultDateCodec<T> withDatePattern(String datePattern) {
-        return new FastjsonDefaultDateCodec<>(this.dateType, datePattern);
+        return new FastjsonDefaultDateCodec<>(this.dateType, datePattern, this.fastjsonConverter);
     }
 
-    public FastjsonDefaultDateCodec<T> withDateFormat(DateFormat dateFormat) {
-        return new FastjsonDefaultDateCodec<>(this.dateType, dateFormat);
+    public FastjsonDefaultDateCodec<T> withDateFormat(DateTimeFormatter dateFormat) {
+        return new FastjsonDefaultDateCodec<>(this.dateType, dateFormat, this.fastjsonConverter);
     }
 
     public FastjsonDefaultDateCodec<T> withDateType(Class<T> dateType) {
-        return new FastjsonDefaultDateCodec<>(dateType, this.dateFormat);
+        return new FastjsonDefaultDateCodec<>(dateType, this.dateFormat, this.fastjsonConverter);
     }
 
     @Override
@@ -83,7 +101,7 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
             return;
         }
 
-        DateFormat format = getDateFormat(serializer, null);
+        DateTimeFormatter format = getDateFormat(serializer, null);
         String text = DateUtil.format((Date) object, format);
         out.writeString(text);
     }
@@ -102,9 +120,9 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
                 return null;
             }
 
-            DateFormat format = getDateFormat(null, parser);
+            DateTimeFormatter format = getDateFormat(null, parser);
 
-            Date date = DateUtil.parse(str, format);
+            Date date = DateUtil.parseToDate(str, format);
             if (dateType == Date.class) {
                 return (T) date;
             } else if (dateType == Timestamp.class) {
@@ -129,22 +147,16 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
             if (StrUtil.isBlank(str)) {
                 return null;
             }
-            DateFormat dateFormat = null;
+            DateTimeFormatter dateFormat = null;
             if (format != null) {
-                dateFormat = new SimpleDateFormat(format);
-            }
-            if (dateFormat == null) {
-                // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
-                String dateFormatPattern = parser.getDateFomartPattern();
-                if (StrUtil.isNotBlank(dateFormatPattern)) {
-                    dateFormat = new SimpleDateFormat(dateFormatPattern);
-                }
+                dateFormat = DateTimeFormatter.ofPattern(format);
             }
 
             if (dateFormat == null) {
-                dateFormat = DEFAULT_DATE_FORMAT;
+                dateFormat = getDateFormat(null, parser);
             }
-            Date date = DateUtil.parse(str, dateFormat);
+
+            Date date = DateUtil.parseToDate(str, dateFormat);
 
             if (dateType == Date.class) {
                 return (T) date;
@@ -157,30 +169,29 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
         return super.deserialze(parser, clazz, fieldName, format, features);
     }
 
-    private DateFormat getDateFormat(JSONSerializer serializer, DefaultJSONParser parser) {
-        DateFormat format = this.dateFormat;
+    private DateTimeFormatter getDateFormat(JSONSerializer serializer, DefaultJSONParser parser) {
+        DateTimeFormatter format = this.dateFormat;
 
-        if (serializer != null) {
-            if (format == null) {
-                format = serializer.getDateFormat();
-            }
+        if (fastjsonConverter != null && format == null) {
+            format = fastjsonConverter.getDateFormat();
+        } else {
+            String dateFormatPattern = null;
+            if (serializer != null) {
+                dateFormatPattern = serializer.getDateFormatPattern();
 
-            if (format == null) {
-                // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
-                String dateFormatPattern = serializer.getFastJsonConfigDateFormatPattern();
-                if (StrUtil.isNotBlank(dateFormatPattern)) {
-                    format = new SimpleDateFormat(dateFormatPattern);
+                if (StrUtil.isBlank(dateFormatPattern)) {
+                    dateFormatPattern = serializer.getFastJsonConfigDateFormatPattern();
                 }
             }
-        }
 
-        if (parser != null) {
-            if (format == null) {
-                // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
-                String dateFormatPattern = parser.getDateFomartPattern();
-                if (StrUtil.isNotBlank(dateFormatPattern) && !StrUtil.equals(dateFormatPattern, JSON.DEFFAULT_DATE_FORMAT)) {
-                    format = new SimpleDateFormat(dateFormatPattern);
+            if (parser != null) {
+                if (StrUtil.isBlank(dateFormatPattern)) {
+                    dateFormatPattern = parser.getDateFomartPattern();
                 }
+            }
+
+            if (StrUtil.isNotBlank(dateFormatPattern)) {
+                format = DateTimeFormatter.ofPattern(dateFormatPattern);
             }
         }
 

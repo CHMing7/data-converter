@@ -1,9 +1,9 @@
 package com.chm.converter.json;
 
-
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.Encoder;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 /**
@@ -27,16 +27,24 @@ public interface JsonConverter extends Converter<String>, Encoder {
      * 设置日期格式
      *
      * @param format 日期格式化模板字符
-     * @return {@link Converter}接口实例
+     * @return
      */
     void setDateFormat(String format);
+
+    /**
+     * 设置日期格式
+     *
+     * @param dateFormat 日期格式化模板字符
+     * @return
+     */
+    void setDateFormat(DateTimeFormatter dateFormat);
 
     /**
      * 获取日期格式
      *
      * @return 日期格式化模板字符
      */
-    String getDateFormat();
+    DateTimeFormatter getDateFormat();
 
     /**
      * 载入json数据转换接口

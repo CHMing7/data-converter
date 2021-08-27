@@ -1,5 +1,6 @@
 dependencies {
     compileOnly(libs.fastjson)
+    compile(libs.xk_time)
 
     compile project(':data-converter-json')
 

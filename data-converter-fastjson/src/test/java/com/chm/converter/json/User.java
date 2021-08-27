@@ -19,7 +19,6 @@ public class User {
      * 用户名
      */
     @FieldProperty(name = "userName1", ordinal = 1)
-    @JSONField(name = "userName2", ordinal = 1)
     public String userName;
 
     /**
