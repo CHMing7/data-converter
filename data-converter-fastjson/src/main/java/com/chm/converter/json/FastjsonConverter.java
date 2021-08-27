@@ -13,16 +13,13 @@ import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.util.FieldInfo;
 import com.alibaba.fastjson.util.TypeUtils;
+import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.exception.ConvertException;
 import com.chm.converter.json.fastjson.deserializer.FastjsonParserConfig;
 import com.chm.converter.json.fastjson.serializer.FastjsonSerializeConfig;
-import com.chm.converter.utils.FieldUtil;
-import com.chm.converter.utils.MethodUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
@@ -89,20 +86,11 @@ public class FastjsonConverter implements JsonConverter {
     }
 
     /**
-     * 检测FastJSON相关类型
-     *
-     * @return FastJSON相关类型
-     */
-    public static Class<?> checkFastJSONClass() throws Throwable {
-        return Class.forName(FAST_JSON_NAME);
-    }
-
-    /**
      * 获取FastJson的序列化特性对象
      *
      * @return FastJson的序列化特性对象，{@link SerializerFeature}枚举实例
      */
-    public List<SerializerFeature> getSerializerFeature() {
+    public List<SerializerFeature> getSerializerFeatureList() {
         return serializerFeatureList;
     }
 
@@ -116,8 +104,11 @@ public class FastjsonConverter implements JsonConverter {
      * @param serializerFeature FastJson的序列化特性对象，{@link SerializerFeature}枚举实例
      */
     public void addSerializerFeature(SerializerFeature serializerFeature) {
-        this.serializerFeatureList = ListUtil.list(true, serializerFeature);
-        this.serializerFeatureArray = ArrayUtil.toArray(serializerFeatureList, SerializerFeature.class);
+        if(serializerFeatureList == null){
+            this.serializerFeatureList = ListUtil.list(true);
+        }
+        this.serializerFeatureList.add(serializerFeature);
+        this.serializerFeatureArray = ArrayUtil.toArray(this.serializerFeatureList, SerializerFeature.class);
     }
 
     @Override
@@ -339,19 +330,26 @@ public class FastjsonConverter implements JsonConverter {
         return (Map<String, Object>) jsonObj;
     }
 
+    /**
+     * 检测FastJSON相关类型
+     *
+     * @return FastJSON相关类型
+     */
+    public static Class<?> checkFastjsonClass() throws Throwable {
+        return Class.forName(FAST_JSON_NAME);
+    }
+
     @Override
     public void loadJsonConverter() {
         try {
-            checkFastJSONClass();
+            checkFastjsonClass();
             JsonConverterSelector.put(FastjsonConverter.class, new FastjsonConverter());
         } catch (Throwable ignored) {
         }
     }
 
     public static boolean checkExistFastjsonAnnotation(Class<?> cls) {
-        return FASTJSON_ANNOTATION_LIST.stream().anyMatch(annotationCls -> cls.getAnnotation(annotationCls) != null
-                || CollectionUtil.isNotEmpty(MethodUtil.getMethodsListWithAnnotation(cls, annotationCls, true, true))
-                || CollectionUtil.isNotEmpty(FieldUtil.getFieldsListWithAnnotation(cls, annotationCls, true, true)));
+        return JavaBeanInfo.checkExistAnnotation(cls, FASTJSON_ANNOTATION_LIST);
     }
 }
 

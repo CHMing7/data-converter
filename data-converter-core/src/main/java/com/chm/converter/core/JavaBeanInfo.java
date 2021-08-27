@@ -7,12 +7,14 @@ import cn.hutool.core.util.StrUtil;
 import com.chm.converter.annotation.FieldProperty;
 import com.chm.converter.utils.TypeUtil;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -30,14 +32,17 @@ public class JavaBeanInfo {
 
     private final List<FieldInfo> sortedFieldList;
 
-    private final Map<String, FieldInfo> fieldInfoMap;
+    private final Map<String, FieldInfo> nameFieldInfoMap;
+
+    private final Map<String, FieldInfo> fieldNameFieldInfoMap;
 
     public JavaBeanInfo(Class<?> clazz, List<FieldInfo> fieldList) {
         this.clazz = clazz;
         this.fieldList = fieldList;
         this.sortedFieldList = ListUtil.toList(fieldList);
         CollectionUtil.sort(sortedFieldList, FieldInfo::compareTo);
-        this.fieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getFieldName, fieldInfo -> fieldInfo);
+        this.nameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getName, fieldInfo -> fieldInfo);
+        this.fieldNameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getFieldName, fieldInfo -> fieldInfo);
     }
 
     public Class<?> getClazz() {
@@ -52,8 +57,37 @@ public class JavaBeanInfo {
         return sortedFieldList;
     }
 
-    public Map<String, FieldInfo> getFieldInfoMap() {
-        return fieldInfoMap;
+    public Map<String, FieldInfo> getNameFieldInfoMap() {
+        return nameFieldInfoMap;
+    }
+
+    public Map<String, FieldInfo> getFieldNameFieldInfoMap() {
+        return fieldNameFieldInfoMap;
+    }
+
+    /**
+     * 检车类中是否包含annotationList中任意一个注解
+     *
+     * @param cls
+     * @param annotationList
+     * @return
+     */
+    public static boolean checkExistAnnotation(Class<?> cls, List<Class<? extends Annotation>> annotationList) {
+        JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cls);
+        List<FieldInfo> fieldList = javaBeanInfo.getFieldList();
+        for (FieldInfo fieldInfo : fieldList) {
+            Field field = fieldInfo.getField();
+            Method method = fieldInfo.getMethod();
+            for (Class<? extends Annotation> annotation : annotationList) {
+                if (field != null && field.getAnnotation(annotation) != null) {
+                    return true;
+                }
+                if (method != null && method.getAnnotation(annotation) != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean add(List<FieldInfo> fieldList, FieldInfo field) {

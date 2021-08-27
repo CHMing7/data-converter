@@ -15,6 +15,9 @@ import java.lang.reflect.*;
  **/
 public class FieldInfo implements Comparable<FieldInfo> {
 
+    /**
+     * 序列化对应属性名
+     */
     public final String name;
 
     public final Method method;
@@ -26,6 +29,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
     public final Field field;
 
     private int ordinal = 0;
+
     public final Class<?> fieldClass;
 
     public final Type fieldType;
@@ -274,6 +278,14 @@ public class FieldInfo implements Comparable<FieldInfo> {
 
     public String getFieldName() {
         return this.method != null ? getGeneralField(this.method.getName()) : this.field.getName();
+    }
+
+    public Method getMethod() {
+        return method;
+    }
+
+    public Field getField() {
+        return field;
     }
 
     public Member getMember() {

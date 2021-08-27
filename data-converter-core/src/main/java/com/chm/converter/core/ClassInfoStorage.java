@@ -13,7 +13,9 @@ public interface ClassInfoStorage {
 
     Map<Class<?>, JavaBeanInfo> BEAN_INFO_MAP = MapUtil.newConcurrentHashMap();
 
-    Map<Class<?>, Map<String, FieldInfo>> FIELD_INFO_MAP = MapUtil.newConcurrentHashMap();
+    Map<Class<?>, Map<String, FieldInfo>> NAME_FIELD_INFO_MAP = MapUtil.newConcurrentHashMap();
+
+    Map<Class<?>, Map<String, FieldInfo>> FIELD_NAME_FIELD_INFO_MAP = MapUtil.newConcurrentHashMap();
 
     ClassInfoStorage INSTANCE = new ClassInfoStorage() {
     };
@@ -26,7 +28,8 @@ public interface ClassInfoStorage {
     default void initClassInfo(Class<?> clazz) {
         JavaBeanInfo javaBeanInfo = JavaBeanInfo.build(clazz);
         BEAN_INFO_MAP.put(clazz, javaBeanInfo);
-        FIELD_INFO_MAP.put(clazz, javaBeanInfo.getFieldInfoMap());
+        NAME_FIELD_INFO_MAP.put(clazz, javaBeanInfo.getNameFieldInfoMap());
+        FIELD_NAME_FIELD_INFO_MAP.put(clazz, javaBeanInfo.getFieldNameFieldInfoMap());
     }
 
     /**
@@ -49,11 +52,11 @@ public interface ClassInfoStorage {
      * @param clazz
      * @return
      */
-    default Map<String, FieldInfo> getFieldInfoMap(Class<?> clazz) {
-        if (!FIELD_INFO_MAP.containsKey(clazz)) {
+    default Map<String, FieldInfo> getNameFieldInfoMap(Class<?> clazz) {
+        if (!NAME_FIELD_INFO_MAP.containsKey(clazz)) {
             initClassInfo(clazz);
         }
-        return FIELD_INFO_MAP.get(clazz);
+        return NAME_FIELD_INFO_MAP.get(clazz);
     }
 }
 

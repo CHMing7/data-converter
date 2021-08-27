@@ -129,7 +129,7 @@ public class FastjsonSerializeConfig extends SerializeConfig {
 
         @Override
         public String process(Object object, String name, Object value) {
-            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldInfoMap(ClassUtil.getClass(object));
+            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getNameFieldInfoMap(ClassUtil.getClass(object));
             FieldInfo fieldInfo = fieldInfoMap.get(name);
             return fieldInfo != null && fieldInfo.getName() != null ? fieldInfo.getName() : name;
         }
@@ -142,7 +142,7 @@ public class FastjsonSerializeConfig extends SerializeConfig {
 
         @Override
         public boolean apply(Object object, String name, Object value) {
-            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldInfoMap(ClassUtil.getClass(object));
+            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getNameFieldInfoMap(ClassUtil.getClass(object));
             FieldInfo fieldInfo = fieldInfoMap.get(name);
             return fieldInfo.isSerialize();
         }

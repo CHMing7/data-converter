@@ -101,7 +101,7 @@ public class FastjsonParserConfig extends ParserConfig {
                 ReflectUtil.setFieldValue(fieldDeserializer.fieldInfo, "name", fieldInfo.getName());
                 ReflectUtil.setFieldValue(fieldDeserializer.fieldInfo, "name_chars", genFieldNameChars(fieldInfo.getName()));
                 ReflectUtil.setFieldValue(fieldDeserializer.fieldInfo, "format", fieldInfo.getFormat());
-                return new FastjsonFieldDeserializer(config, fieldInfo.fieldClass, fieldDeserializer.fieldInfo, fieldInfo, objectDeserializer);
+                return new FastjsonFieldDeserializer(config, fieldInfo.getFieldClass(), fieldDeserializer.fieldInfo, fieldInfo, objectDeserializer);
             }).collect(Collectors.toList());
 
             FieldDeserializer[] sortedFieldDeserializers = ArrayUtil.toArray(sortedFieldDeserializerList, FieldDeserializer.class);
