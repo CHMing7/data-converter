@@ -1,6 +1,5 @@
 package com.chm.converter.json;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.JavaBeanInfo;
@@ -8,8 +7,6 @@ import com.chm.converter.exception.ConvertException;
 import com.chm.converter.json.gson.GsonDefaultDateTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonJava8TimeTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonTypeAdapterFactory;
-import com.chm.converter.utils.FieldUtil;
-import com.chm.converter.utils.MethodUtil;
 import com.google.gson.*;
 import com.google.gson.annotations.*;
 
@@ -17,8 +14,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
 /**
@@ -37,24 +32,9 @@ public class GsonConverter implements JsonConverter {
             Until.class);
 
     private final List<TypeAdapterFactory> factories = ListUtil.toLinkedList(new GsonTypeAdapterFactory(),
-            new GsonJava8TimeTypeAdapterFactory(), new GsonDefaultDateTypeAdapterFactory());
+            new GsonJava8TimeTypeAdapterFactory(this), new GsonDefaultDateTypeAdapterFactory(this));
 
     public static final String GSON_NAME = "com.google.gson.JsonParser";
-
-    /**
-     * 日期格式
-     */
-    private String dateFormatPattern;
-
-    /**
-     * 日期格式化类
-     */
-    private DateTimeFormatter dateTimeFormatter;
-
-    public TimeZone timeZone = TimeZone.getDefault();
-
-    public Locale locale = Locale.getDefault();
-
 
     @Override
     public <T> T convertToJavaObject(String source, Class<T> targetType) {
@@ -185,9 +165,6 @@ public class GsonConverter implements JsonConverter {
     protected Gson createGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         this.factories.forEach(gsonBuilder::registerTypeAdapterFactory);
-        if (StrUtil.isNotBlank(dateFormatPattern)) {
-            gsonBuilder.setDateFormat(dateFormatPattern);
-        }
         return gsonBuilder.create();
     }
 
@@ -208,50 +185,6 @@ public class GsonConverter implements JsonConverter {
         Gson gson = createGson();
         JsonElement jsonElement = gson.toJsonTree(obj);
         return toMap(jsonElement.getAsJsonObject(), true);
-    }
-
-    @Override
-    public void setDateFormat(String format) {
-        this.dateFormatPattern = format;
-        this.dateTimeFormatter = null;
-    }
-
-    @Override
-    public void setDateFormat(DateTimeFormatter dateTimeFormatter) {
-        this.dateFormatPattern = null;
-        this.dateTimeFormatter = dateTimeFormatter;
-    }
-
-    @Override
-    public DateTimeFormatter getDateFormat() {
-        if (dateTimeFormatter == null && dateFormatPattern != null) {
-            dateTimeFormatter = this.generateDateFormat(dateFormatPattern);
-        }
-        return dateTimeFormatter;
-    }
-
-    private DateTimeFormatter generateDateFormat(String dateFormatPattern) {
-        DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
-                .appendPattern(dateFormatPattern).toFormatter(locale);
-        dateTimeFormatter.withZone(timeZone.toZoneId());
-
-        return dateTimeFormatter;
-    }
-
-    public TimeZone getTimeZone() {
-        return timeZone;
-    }
-
-    public void setTimeZone(TimeZone timeZone) {
-        this.timeZone = timeZone;
-    }
-
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public void setLocale(Locale locale) {
-        this.locale = locale;
     }
 
     public String convertToJson(Object obj, Type type) {

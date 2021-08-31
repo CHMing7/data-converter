@@ -1,6 +1,7 @@
 package com.chm.converter.json.gson;
 
 import cn.hutool.core.util.StrUtil;
+import com.chm.converter.json.JsonConverter;
 import com.chm.converter.utils.DateUtil;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -21,7 +22,9 @@ public class GsonDefaultDateTypeAdapter<T extends Date> extends TypeAdapter<T> {
 
     private final Class<T> dateType;
 
-    private final DateTimeFormatter dateFormat;
+    private final DateTimeFormatter dateFormatter;
+
+    private final JsonConverter jsonConverter;
 
     private static final String DEFAULT_DATE_PATTERN_STR = "yyyy-MM-dd HH:mm:ss.SSSS";
 
@@ -29,25 +32,38 @@ public class GsonDefaultDateTypeAdapter<T extends Date> extends TypeAdapter<T> {
      * List of 1 or more different date formats used for de-serialization attempts.
      * The first of them is used for serialization as well.
      */
-    private final DateTimeFormatter DEFAULT_DATE_FORMAT = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN_STR);
+    private static final DateTimeFormatter DEFAULT_DATE_FORMAT = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN_STR);
 
     public GsonDefaultDateTypeAdapter(Class<T> dateType) {
-        this.dateType = verifyDateType(dateType);
-        this.dateFormat = null;
+        this(dateType, (DateTimeFormatter) null, null);
     }
 
     public GsonDefaultDateTypeAdapter(Class<T> dateType, String datePattern) {
-        this.dateType = verifyDateType(dateType);
-        if (StrUtil.isNotBlank(datePattern)) {
-            this.dateFormat = DateTimeFormatter.ofPattern(datePattern);
-        } else {
-            this.dateFormat = null;
-        }
+        this(dateType, datePattern, null);
     }
 
-    public GsonDefaultDateTypeAdapter(Class<T> dateType, DateTimeFormatter dateFormat) {
+    public GsonDefaultDateTypeAdapter(Class<T> dateType, DateTimeFormatter dateFormatter) {
+        this(dateType, dateFormatter, null);
+    }
+
+    public GsonDefaultDateTypeAdapter(Class<T> dateType, JsonConverter jsonConverter) {
+        this(dateType, (DateTimeFormatter) null, jsonConverter);
+    }
+
+    public GsonDefaultDateTypeAdapter(Class<T> dateType, String datePattern, JsonConverter jsonConverter) {
         this.dateType = verifyDateType(dateType);
-        this.dateFormat = dateFormat;
+        if (StrUtil.isNotBlank(datePattern)) {
+            this.dateFormatter = DateTimeFormatter.ofPattern(datePattern);
+        } else {
+            this.dateFormatter = null;
+        }
+        this.jsonConverter = jsonConverter;
+    }
+
+    public GsonDefaultDateTypeAdapter(Class<T> dateType, DateTimeFormatter dateFormatter, JsonConverter jsonConverter) {
+        this.dateType = verifyDateType(dateType);
+        this.dateFormatter = dateFormatter;
+        this.jsonConverter = jsonConverter;
     }
 
     private Class<T> verifyDateType(Class<T> dateType) {
@@ -57,16 +73,16 @@ public class GsonDefaultDateTypeAdapter<T extends Date> extends TypeAdapter<T> {
         return dateType;
     }
 
-    public GsonDefaultDateTypeAdapter<T> withDatePattern(String datePattern) {
-        return new GsonDefaultDateTypeAdapter<>(this.dateType, datePattern);
-    }
-
-    public GsonDefaultDateTypeAdapter<T> withDateFormat(DateTimeFormatter dateFormat) {
-        return new GsonDefaultDateTypeAdapter<>(this.dateType, dateFormat);
-    }
-
     public GsonDefaultDateTypeAdapter<T> withDateType(Class<T> dateType) {
-        return new GsonDefaultDateTypeAdapter<>(dateType, this.dateFormat);
+        return new GsonDefaultDateTypeAdapter<>(dateType, this.dateFormatter, this.jsonConverter);
+    }
+
+    public GsonDefaultDateTypeAdapter<T> withDatePattern(String datePattern) {
+        return new GsonDefaultDateTypeAdapter<>(this.dateType, datePattern, this.jsonConverter);
+    }
+
+    public GsonDefaultDateTypeAdapter<T> withDateFormatter(DateTimeFormatter dateFormat) {
+        return new GsonDefaultDateTypeAdapter<>(this.dateType, dateFormat, this.jsonConverter);
     }
 
     @Override
@@ -76,10 +92,14 @@ public class GsonDefaultDateTypeAdapter<T extends Date> extends TypeAdapter<T> {
             return;
         }
         String dateFormatAsString;
-        if (this.dateFormat != null) {
-            dateFormatAsString = DateUtil.format(value, this.dateFormat);
+        DateTimeFormatter dateFormatter = this.dateFormatter;
+        if (dateFormatter == null && this.jsonConverter != null) {
+            dateFormatter = this.jsonConverter.getDateFormat();
+        }
+        if (dateFormatter != null) {
+            dateFormatAsString = DateUtil.format(value, dateFormatter);
         } else {
-            dateFormatAsString = DateUtil.format(value, this.DEFAULT_DATE_FORMAT);
+            dateFormatAsString = DateUtil.format(value, GsonDefaultDateTypeAdapter.DEFAULT_DATE_FORMAT);
         }
         out.value(dateFormatAsString);
     }
@@ -109,10 +129,16 @@ public class GsonDefaultDateTypeAdapter<T extends Date> extends TypeAdapter<T> {
         if (s == null) {
             return null;
         }
-        if (this.dateFormat != null) {
-            return DateUtil.parseToDate(s, this.dateFormat);
+
+        DateTimeFormatter dateFormatter = this.dateFormatter;
+
+        if (dateFormatter == null && this.jsonConverter != null) {
+            dateFormatter = this.jsonConverter.getDateFormat();
+        }
+        if (dateFormatter != null) {
+            return DateUtil.parseToDate(s, dateFormatter);
         } else {
-            return DateUtil.parseToDate(s, this.DEFAULT_DATE_FORMAT);
+            return DateUtil.parseToDate(s, GsonDefaultDateTypeAdapter.DEFAULT_DATE_FORMAT);
         }
     }
 }

@@ -30,4 +30,12 @@ public interface Converter<S> {
      * @return 转换后的目标类型对象
      */
     <T> T convertToJavaObject(S source, Type targetType);
+
+    /**
+     * 将java对象转化成字符串
+     *
+     * @param obj
+     * @return
+     */
+    S encodeToString(Object obj);
 }

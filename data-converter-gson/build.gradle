@@ -1,6 +1,5 @@
 dependencies {
     compileOnly(libs.gson)
-    compile(libs.xk_time)
 
     compile project(':data-converter-json')
 

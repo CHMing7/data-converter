@@ -2,7 +2,8 @@ package com.chm.converter.json;
 
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
-import com.alibaba.fastjson.JSON;
+import com.chm.converter.JacksonConverter;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -20,31 +21,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class JsonConverterTest {
 
     @Test
-    public void testFastjson() {
+    public void testJackson() {
         Map<String, User> userMap = MapUtil.newHashMap(true);
         User user = new User();
         user.setUserName("user");
         user.setPassword("password");
         user.setDate(new Date());
         user.setLocalDateTime(LocalDateTime.now());
-        // user.setYearMonth(YearMonth.now());
+        user.setYearMonth(YearMonth.now());
         userMap.put("user", user);
 
-        FastjsonConverter jsonConverter = (FastjsonConverter) JsonConverterSelector.select(FastjsonConverter.class);
-        // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
-        String encodeToString = jsonConverter.encodeToString(userMap);
 
+        JacksonConverter jsonConverter = (JacksonConverter) JsonConverterSelector.select(JacksonConverter.class);
+        // jsonConverter.getMapper().registerModule(new JavaTimeModule());
+        jsonConverter.setDateFormat("yyyy-MM-dd HH:mm");
+        String encodeToString = jsonConverter.encodeToString(userMap);
+        // assertEquals(encodeToString, "{\"user\":{\"userName1\":\"user\",\"password2\":\"password\"}}");
         TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {
         };
-
         Map<String, User> newUserMap = jsonConverter.convertToJavaObject(encodeToString, typeRef0.getType());
 
         assertEquals(userMap, newUserMap);
-
-        String newEncodeToString = JSON.toJSONString(userMap);
-
-        Map<String, User> newUserMap1 = JSON.parseObject(newEncodeToString, typeRef0.getType());
-
-        assertEquals(userMap, newUserMap1);
     }
 }

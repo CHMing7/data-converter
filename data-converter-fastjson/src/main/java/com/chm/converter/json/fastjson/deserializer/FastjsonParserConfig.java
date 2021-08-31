@@ -33,25 +33,25 @@ import java.util.stream.Collectors;
  **/
 public class FastjsonParserConfig extends ParserConfig {
 
-    public FastjsonParserConfig(JsonConverter fastjsonConverter) {
+    public FastjsonParserConfig(JsonConverter jsonConverter) {
         super();
         // Java8 Time Deserializer
-        putDeserializer(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, fastjsonConverter));
-        putDeserializer(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, fastjsonConverter));
-        putDeserializer(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class, fastjsonConverter));
-        putDeserializer(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class, fastjsonConverter));
-        putDeserializer(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class, fastjsonConverter));
-        putDeserializer(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class, fastjsonConverter));
-        putDeserializer(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class, fastjsonConverter));
-        putDeserializer(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class, fastjsonConverter));
-        putDeserializer(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class, fastjsonConverter));
-        putDeserializer(Year.class, new FastjsonJdk8DateCodec<>(Year.class, fastjsonConverter));
-        putDeserializer(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class, fastjsonConverter));
+        putDeserializer(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, jsonConverter));
+        putDeserializer(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, jsonConverter));
+        putDeserializer(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class, jsonConverter));
+        putDeserializer(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class, jsonConverter));
+        putDeserializer(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class, jsonConverter));
+        putDeserializer(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class, jsonConverter));
+        putDeserializer(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class, jsonConverter));
+        putDeserializer(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class, jsonConverter));
+        putDeserializer(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class, jsonConverter));
+        putDeserializer(Year.class, new FastjsonJdk8DateCodec<>(Year.class, jsonConverter));
+        putDeserializer(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class, jsonConverter));
 
         // Default Date Deserializer
-        putDeserializer(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class, fastjsonConverter));
-        putDeserializer(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class, fastjsonConverter));
-        putDeserializer(Date.class, new FastjsonDefaultDateCodec<>(Date.class, fastjsonConverter));
+        putDeserializer(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class, jsonConverter));
+        putDeserializer(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class, jsonConverter));
+        putDeserializer(Date.class, new FastjsonDefaultDateCodec<>(Date.class, jsonConverter));
     }
 
     @Override
@@ -101,7 +101,7 @@ public class FastjsonParserConfig extends ParserConfig {
                 ReflectUtil.setFieldValue(fieldDeserializer.fieldInfo, "name", fieldInfo.getName());
                 ReflectUtil.setFieldValue(fieldDeserializer.fieldInfo, "name_chars", genFieldNameChars(fieldInfo.getName()));
                 ReflectUtil.setFieldValue(fieldDeserializer.fieldInfo, "format", fieldInfo.getFormat());
-                return new FastjsonFieldDeserializer(config, fieldInfo.getFieldClass(), fieldDeserializer.fieldInfo, fieldInfo, objectDeserializer);
+                return new FastjsonFieldDeserializer(config, fieldInfo.getFieldClass(), fieldDeserializer.fieldInfo, objectDeserializer);
             }).collect(Collectors.toList());
 
             FieldDeserializer[] sortedFieldDeserializers = ArrayUtil.toArray(sortedFieldDeserializerList, FieldDeserializer.class);

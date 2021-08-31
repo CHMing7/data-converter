@@ -34,25 +34,25 @@ public class FastjsonSerializeConfig extends SerializeConfig {
 
     private static final PropertyFilter PROPERTY_FILTER = new FastjsonPropertyFilter();
 
-    public FastjsonSerializeConfig(JsonConverter fastjsonConverter) {
+    public FastjsonSerializeConfig(JsonConverter jsonConverter) {
         super();
         // Java8 Time Serializer
-        put(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, fastjsonConverter));
-        put(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, fastjsonConverter));
-        put(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class, fastjsonConverter));
-        put(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class, fastjsonConverter));
-        put(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class, fastjsonConverter));
-        put(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class, fastjsonConverter));
-        put(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class, fastjsonConverter));
-        put(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class, fastjsonConverter));
-        put(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class, fastjsonConverter));
-        put(Year.class, new FastjsonJdk8DateCodec<>(Year.class, fastjsonConverter));
-        put(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class, fastjsonConverter));
+        put(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, jsonConverter));
+        put(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, jsonConverter));
+        put(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class, jsonConverter));
+        put(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class, jsonConverter));
+        put(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class, jsonConverter));
+        put(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class, jsonConverter));
+        put(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class, jsonConverter));
+        put(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class, jsonConverter));
+        put(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class, jsonConverter));
+        put(Year.class, new FastjsonJdk8DateCodec<>(Year.class, jsonConverter));
+        put(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class, jsonConverter));
 
         // Default Date Serializer
-        put(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class, fastjsonConverter));
-        put(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class, fastjsonConverter));
-        put(Date.class, new FastjsonDefaultDateCodec<>(Date.class, fastjsonConverter));
+        put(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class, jsonConverter));
+        put(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class, jsonConverter));
+        put(Date.class, new FastjsonDefaultDateCodec<>(Date.class, jsonConverter));
     }
 
     @Override
@@ -129,7 +129,7 @@ public class FastjsonSerializeConfig extends SerializeConfig {
 
         @Override
         public String process(Object object, String name, Object value) {
-            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getNameFieldInfoMap(ClassUtil.getClass(object));
+            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(ClassUtil.getClass(object));
             FieldInfo fieldInfo = fieldInfoMap.get(name);
             return fieldInfo != null && fieldInfo.getName() != null ? fieldInfo.getName() : name;
         }
@@ -142,7 +142,7 @@ public class FastjsonSerializeConfig extends SerializeConfig {
 
         @Override
         public boolean apply(Object object, String name, Object value) {
-            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getNameFieldInfoMap(ClassUtil.getClass(object));
+            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(ClassUtil.getClass(object));
             FieldInfo fieldInfo = fieldInfoMap.get(name);
             return fieldInfo.isSerialize();
         }

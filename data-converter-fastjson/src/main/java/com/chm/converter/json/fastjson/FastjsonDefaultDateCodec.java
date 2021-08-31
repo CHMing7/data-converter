@@ -26,11 +26,11 @@ import java.util.Locale;
  **/
 public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
 
-    private final JsonConverter fastjsonConverter;
-
     private final Class<T> dateType;
 
-    private final DateTimeFormatter dateFormat;
+    private final DateTimeFormatter dateFormatter;
+
+    private final JsonConverter jsonConverter;
 
     private static final String DEFAULT_DATE_PATTERN_STR = "yyyy-MM-dd HH:mm:ss.SSSS";
 
@@ -38,39 +38,39 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
      * List of 1 or more different date formats used for de-serialization attempts.
      * The first of them is used for serialization as well.
      */
-    private final DateTimeFormatter DEFAULT_DATE_FORMAT = new DateTimeFormatterBuilder()
+    private final static DateTimeFormatter DEFAULT_DATE_FORMAT = new DateTimeFormatterBuilder()
             .appendPattern(DEFAULT_DATE_PATTERN_STR).toFormatter(Locale.getDefault()).withZone(ZoneId.systemDefault());
 
     public FastjsonDefaultDateCodec(Class<T> dateType) {
-        this(dateType, (String) null, null);
+        this(dateType, (DateTimeFormatter) null, null);
     }
 
     public FastjsonDefaultDateCodec(Class<T> dateType, String datePattern) {
         this(dateType, datePattern, null);
     }
 
-    public FastjsonDefaultDateCodec(Class<T> dateType, DateTimeFormatter dateFormat) {
-        this(dateType, dateFormat, null);
+    public FastjsonDefaultDateCodec(Class<T> dateType, DateTimeFormatter dateFormatter) {
+        this(dateType, dateFormatter, null);
     }
 
-    public FastjsonDefaultDateCodec(Class<T> dateType, JsonConverter fastjsonConverter) {
-        this(dateType, (String) null, fastjsonConverter);
+    public FastjsonDefaultDateCodec(Class<T> dateType, JsonConverter jsonConverter) {
+        this(dateType, (DateTimeFormatter) null, jsonConverter);
     }
 
-    public FastjsonDefaultDateCodec(Class<T> dateType, String datePattern, JsonConverter fastjsonConverter) {
-        this.fastjsonConverter = fastjsonConverter;
+    public FastjsonDefaultDateCodec(Class<T> dateType, String datePattern, JsonConverter jsonConverter) {
+        this.jsonConverter = jsonConverter;
         this.dateType = verifyDateType(dateType);
         if (StrUtil.isNotBlank(datePattern)) {
-            this.dateFormat = DateTimeFormatter.ofPattern(datePattern);
+            this.dateFormatter = DateTimeFormatter.ofPattern(datePattern);
         } else {
-            this.dateFormat = null;
+            this.dateFormatter = null;
         }
     }
 
-    public FastjsonDefaultDateCodec(Class<T> dateType, DateTimeFormatter dateFormat, JsonConverter fastjsonConverter) {
-        this.fastjsonConverter = fastjsonConverter;
+    public FastjsonDefaultDateCodec(Class<T> dateType, DateTimeFormatter dateFormat, JsonConverter jsonConverter) {
         this.dateType = verifyDateType(dateType);
-        this.dateFormat = dateFormat;
+        this.dateFormatter = dateFormat;
+        this.jsonConverter = jsonConverter;
     }
 
     private Class<T> verifyDateType(Class<T> dateType) {
@@ -80,16 +80,16 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
         return dateType;
     }
 
+    public FastjsonDefaultDateCodec<T> withDateType(Class<T> dateType) {
+        return new FastjsonDefaultDateCodec<>(dateType, this.dateFormatter, this.jsonConverter);
+    }
+
     public FastjsonDefaultDateCodec<T> withDatePattern(String datePattern) {
-        return new FastjsonDefaultDateCodec<>(this.dateType, datePattern, this.fastjsonConverter);
+        return new FastjsonDefaultDateCodec<>(this.dateType, datePattern, this.jsonConverter);
     }
 
     public FastjsonDefaultDateCodec<T> withDateFormat(DateTimeFormatter dateFormat) {
-        return new FastjsonDefaultDateCodec<>(this.dateType, dateFormat, this.fastjsonConverter);
-    }
-
-    public FastjsonDefaultDateCodec<T> withDateType(Class<T> dateType) {
-        return new FastjsonDefaultDateCodec<>(dateType, this.dateFormat, this.fastjsonConverter);
+        return new FastjsonDefaultDateCodec<>(this.dateType, dateFormat, this.jsonConverter);
     }
 
     @Override
@@ -147,8 +147,8 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
             if (StrUtil.isBlank(str)) {
                 return null;
             }
-            DateTimeFormatter dateFormat = null;
-            if (format != null) {
+            DateTimeFormatter dateFormat = this.dateFormatter;
+            if (dateFormat == null && format != null) {
                 dateFormat = DateTimeFormatter.ofPattern(format);
             }
 
@@ -170,11 +170,11 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
     }
 
     private DateTimeFormatter getDateFormat(JSONSerializer serializer, DefaultJSONParser parser) {
-        DateTimeFormatter format = this.dateFormat;
+        DateTimeFormatter formatter = this.dateFormatter;
 
-        if (fastjsonConverter != null && format == null) {
-            format = fastjsonConverter.getDateFormat();
-        } else {
+        if (jsonConverter != null && formatter == null) {
+            formatter = jsonConverter.getDateFormat();
+        } else if (formatter == null) {
             String dateFormatPattern = null;
             if (serializer != null) {
                 dateFormatPattern = serializer.getDateFormatPattern();
@@ -191,13 +191,13 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
             }
 
             if (StrUtil.isNotBlank(dateFormatPattern)) {
-                format = DateTimeFormatter.ofPattern(dateFormatPattern);
+                formatter = DateTimeFormatter.ofPattern(dateFormatPattern);
             }
         }
 
-        if (format == null) {
-            format = DEFAULT_DATE_FORMAT;
+        if (formatter == null) {
+            formatter = DEFAULT_DATE_FORMAT;
         }
-        return format;
+        return formatter;
     }
 }

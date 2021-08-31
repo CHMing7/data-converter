@@ -45,7 +45,6 @@ public interface ClassInfoStorage {
         return BEAN_INFO_MAP.get(clazz);
     }
 
-
     /**
      * 获取field信息
      *
@@ -57,6 +56,20 @@ public interface ClassInfoStorage {
             initClassInfo(clazz);
         }
         return NAME_FIELD_INFO_MAP.get(clazz);
+    }
+
+
+    /**
+     * 获取field信息
+     *
+     * @param clazz
+     * @return
+     */
+    default Map<String, FieldInfo> getFieldNameFieldInfoMap(Class<?> clazz) {
+        if (!FIELD_NAME_FIELD_INFO_MAP.containsKey(clazz)) {
+            initClassInfo(clazz);
+        }
+        return FIELD_NAME_FIELD_INFO_MAP.get(clazz);
     }
 }
 

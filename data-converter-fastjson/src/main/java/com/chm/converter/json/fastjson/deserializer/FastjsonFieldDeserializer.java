@@ -12,7 +12,7 @@ import com.alibaba.fastjson.util.FieldInfo;
  **/
 public class FastjsonFieldDeserializer extends DefaultFieldDeserializer {
 
-    public FastjsonFieldDeserializer(ParserConfig config, Class<?> clazz, FieldInfo fieldInfo, com.chm.converter.core.FieldInfo coreFieldInfo, ObjectDeserializer fieldValueDeserilizer) {
+    public FastjsonFieldDeserializer(ParserConfig config, Class<?> clazz, FieldInfo fieldInfo, ObjectDeserializer fieldValueDeserilizer) {
         super(config, clazz, fieldInfo);
         this.fieldValueDeserilizer = fieldValueDeserilizer;
     }

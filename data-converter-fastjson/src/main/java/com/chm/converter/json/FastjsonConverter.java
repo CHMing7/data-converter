@@ -21,8 +21,10 @@ import com.chm.converter.json.fastjson.serializer.FastjsonSerializeConfig;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 使用Fastjson实现的消息转换实现类
@@ -64,10 +66,6 @@ public class FastjsonConverter implements JsonConverter {
      * 日期格式化类
      */
     private DateTimeFormatter dateTimeFormatter;
-
-    public TimeZone timeZone = TimeZone.getDefault();
-
-    public Locale locale = Locale.getDefault();
 
     private static Field nameField;
 
@@ -279,50 +277,6 @@ public class FastjsonConverter implements JsonConverter {
         } catch (IllegalAccessException | InvocationTargetException e) {
             return defaultJsonMap(obj);
         }
-    }
-
-    @Override
-    public void setDateFormat(String format) {
-        this.dateFormatPattern = format;
-        this.dateTimeFormatter = null;
-    }
-
-    @Override
-    public void setDateFormat(DateTimeFormatter dateTimeFormatter) {
-        this.dateFormatPattern = null;
-        this.dateTimeFormatter = dateTimeFormatter;
-    }
-
-    @Override
-    public DateTimeFormatter getDateFormat() {
-        if (dateTimeFormatter == null && dateFormatPattern != null) {
-            dateTimeFormatter = this.generateDateFormat(dateFormatPattern);
-        }
-        return dateTimeFormatter;
-    }
-
-    private DateTimeFormatter generateDateFormat(String dateFormatPattern) {
-        DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
-                .appendPattern(dateFormatPattern).toFormatter(locale);
-        dateTimeFormatter.withZone(timeZone.toZoneId());
-
-        return dateTimeFormatter;
-    }
-
-    public TimeZone getTimeZone() {
-        return timeZone;
-    }
-
-    public void setTimeZone(TimeZone timeZone) {
-        this.timeZone = timeZone;
-    }
-
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public void setLocale(Locale locale) {
-        this.locale = locale;
     }
 
     public Map<String, Object> defaultJsonMap(Object obj) {

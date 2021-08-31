@@ -16,10 +16,10 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQuery;
+import java.util.TimeZone;
 
 /**
  * @author caihongming
@@ -28,18 +28,18 @@ import java.time.temporal.TemporalQuery;
  **/
 public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateCodec {
 
-    private final JsonConverter fastjsonConverter;
-
     private final Class<T> clazz;
 
     private final DateTimeFormatter dateFormatter;
+
+    private final JsonConverter jsonConverter;
 
     private final DateTimeFormatter defaultDateTimeFormatter;
 
     private final TemporalQuery<T> temporalQuery;
 
     public FastjsonJdk8DateCodec(Class<T> clazz) {
-        this(clazz, (String) null, null);
+        this(clazz, (DateTimeFormatter) null, null);
     }
 
     public FastjsonJdk8DateCodec(Class<T> clazz, String datePattern) {
@@ -50,47 +50,49 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
         this(clazz, dateFormatter, null);
     }
 
-    public FastjsonJdk8DateCodec(Class<T> clazz, JsonConverter fastjsonConverter) {
-        this(clazz, (String) null, fastjsonConverter);
+    public FastjsonJdk8DateCodec(Class<T> clazz, JsonConverter jsonConverter) {
+        this(clazz, (DateTimeFormatter) null, jsonConverter);
     }
 
-    public FastjsonJdk8DateCodec(Class<T> clazz, String datePattern, JsonConverter fastjsonConverter) {
-        this.fastjsonConverter = fastjsonConverter;
+    public FastjsonJdk8DateCodec(Class<T> clazz, String datePattern, JsonConverter jsonConverter) {
         this.clazz = clazz;
         if (StrUtil.isNotBlank(datePattern)) {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
             if (clazz == Instant.class && dateFormatter.getZone() == null) {
-                dateFormatter = dateFormatter.withZone(ZoneId.systemDefault());
+                TimeZone timeZone = jsonConverter != null ? jsonConverter.getTimeZone() : TimeZone.getDefault();
+                dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
             }
             this.dateFormatter = dateFormatter;
         } else {
             this.dateFormatter = null;
         }
+        this.jsonConverter = jsonConverter;
         this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
         this.temporalQuery = (TemporalQuery<T>) TimeConstant.CLASS_TEMPORAL_QUERY_MAP.get(clazz);
     }
 
-    public FastjsonJdk8DateCodec(Class<T> clazz, DateTimeFormatter dateFormatter, JsonConverter fastjsonConverter) {
-        this.fastjsonConverter = fastjsonConverter;
+    public FastjsonJdk8DateCodec(Class<T> clazz, DateTimeFormatter dateFormatter, JsonConverter jsonConverter) {
         this.clazz = clazz;
         if (dateFormatter != null && clazz == Instant.class && dateFormatter.getZone() == null) {
-            dateFormatter = dateFormatter.withZone(ZoneId.systemDefault());
+            TimeZone timeZone = jsonConverter != null ? jsonConverter.getTimeZone() : TimeZone.getDefault();
+            dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
         }
         this.dateFormatter = dateFormatter;
+        this.jsonConverter = jsonConverter;
         this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
         this.temporalQuery = (TemporalQuery<T>) TimeConstant.CLASS_TEMPORAL_QUERY_MAP.get(clazz);
-    }
-
-    public FastjsonJdk8DateCodec<T> withDatePattern(String datePattern) {
-        return new FastjsonJdk8DateCodec<>(this.clazz, datePattern, this.fastjsonConverter);
-    }
-
-    public FastjsonJdk8DateCodec<T> withDateFormatter(DateTimeFormatter dateFormatter) {
-        return new FastjsonJdk8DateCodec<>(this.clazz, dateFormatter, this.fastjsonConverter);
     }
 
     public FastjsonJdk8DateCodec<T> withClass(Class<T> clazz) {
-        return new FastjsonJdk8DateCodec<>(clazz, this.dateFormatter, this.fastjsonConverter);
+        return new FastjsonJdk8DateCodec<>(clazz, this.dateFormatter, this.jsonConverter);
+    }
+
+    public FastjsonJdk8DateCodec<T> withDatePattern(String datePattern) {
+        return new FastjsonJdk8DateCodec<>(this.clazz, datePattern, this.jsonConverter);
+    }
+
+    public FastjsonJdk8DateCodec<T> withDateFormatter(DateTimeFormatter dateFormatter) {
+        return new FastjsonJdk8DateCodec<>(this.clazz, dateFormatter, this.jsonConverter);
     }
 
     @Override
@@ -106,28 +108,32 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
             if (StrUtil.isBlank(str)) {
                 return null;
             }
-            DateTimeFormatter dtf = null;
-            if (format != null) {
+            DateTimeFormatter dtf = this.dateFormatter;
+            if (dtf == null && format != null) {
                 dtf = DateTimeFormatter.ofPattern(format);
             }
 
-            if (fastjsonConverter != null && dtf == null) {
-                dtf = fastjsonConverter.getDateFormat();
-            } else {
-                if (dtf == null) {
-                    // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
-                    String dateFormatPattern = parser.getDateFomartPattern();
-                    if (StrUtil.isNotBlank(dateFormatPattern)) {
-                        dtf = DateTimeFormatter.ofPattern(dateFormatPattern);
+            if (this.jsonConverter != null && dtf == null) {
+                dtf = this.jsonConverter.getDateFormat();
+            } else if (dtf == null) {
+                // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
+                DateFormat dateFormat = parser.getDateFormat();
+                String dateFormatPattern = parser.getDateFomartPattern();
+                if (StrUtil.isNotBlank(dateFormatPattern)) {
+                    dtf = DateTimeFormatter.ofPattern(dateFormatPattern);
+                    if (clazz == Instant.class && dtf.getZone() == null) {
+                        // Instant类需设置时区
+                        dtf = dtf.withZone(dateFormat.getTimeZone().toZoneId());
                     }
                 }
             }
 
-            if (clazz == Instant.class && dtf != null && dtf.getZone() == null) {
-                dtf = dtf.withZone(ZoneId.systemDefault());
-            }
-
             if (dtf != null) {
+                if (clazz == Instant.class && dtf.getZone() == null) {
+                    // Instant类需设置时区
+                    TimeZone timeZone = this.jsonConverter != null ? this.jsonConverter.getTimeZone() : TimeZone.getDefault();
+                    dtf = dtf.withZone(timeZone.toZoneId());
+                }
                 return (T) dtf.parse(str, temporalQuery);
             } else {
                 return (T) defaultDateTimeFormatter.parse(str, temporalQuery);
@@ -154,8 +160,8 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
         }
 
         DateTimeFormatter dtf = this.dateFormatter;
-        if (fastjsonConverter != null && dtf == null) {
-            dtf = fastjsonConverter.getDateFormat();
+        if (jsonConverter != null && dtf == null) {
+            dtf = jsonConverter.getDateFormat();
         } else if (dtf == null) {
             DateFormat dateFormat = serializer.getDateFormat();
             String dateFormatPattern = serializer.getDateFormatPattern();
@@ -169,6 +175,11 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
 
         String str;
         if (dtf != null) {
+            if (object instanceof Instant && dtf.getZone() == null) {
+                // Instant类需设置时区
+                TimeZone timeZone = this.jsonConverter != null ? this.jsonConverter.getTimeZone() : TimeZone.getDefault();
+                dtf = dtf.withZone(timeZone.toZoneId());
+            }
             str = DateUtil.format((TemporalAccessor) object, dtf);
         } else {
             str = DateUtil.format((TemporalAccessor) object, defaultDateTimeFormatter);
