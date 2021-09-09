@@ -1,7 +1,7 @@
 package com.chm.converter.json;
 
 import cn.hutool.core.collection.ListUtil;
-import cn.hutool.core.util.StrUtil;
+import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.exception.ConvertException;
 import com.chm.converter.json.gson.GsonDefaultDateTypeAdapterFactory;
@@ -31,7 +31,7 @@ public class GsonConverter implements JsonConverter {
             Since.class,
             Until.class);
 
-    private final List<TypeAdapterFactory> factories = ListUtil.toLinkedList(new GsonTypeAdapterFactory(),
+    private final List<TypeAdapterFactory> factories = ListUtil.toLinkedList(new GsonTypeAdapterFactory(GsonConverter::checkExistGsonAnnotation),
             new GsonJava8TimeTypeAdapterFactory(this), new GsonDefaultDateTypeAdapterFactory(this));
 
     public static final String GSON_NAME = "com.google.gson.JsonParser";
@@ -202,14 +202,15 @@ public class GsonConverter implements JsonConverter {
     }
 
     @Override
-    public void loadJsonConverter() {
+    public boolean loadConverter() {
         try {
             checkGsonClass();
-            JsonConverterSelector.put(GsonConverter.class, new GsonConverter());
+            ConverterSelector.put(GsonConverter.class, new GsonConverter());
         } catch (Throwable ignored) {
+            return false;
         }
+        return true;
     }
-
 
     public static boolean checkExistGsonAnnotation(Class<?> cls) {
         return JavaBeanInfo.checkExistAnnotation(cls, GSON_ANNOTATION_LIST);

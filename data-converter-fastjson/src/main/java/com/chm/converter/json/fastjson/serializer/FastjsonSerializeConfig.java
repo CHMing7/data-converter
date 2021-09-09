@@ -7,11 +7,7 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.serializer.*;
-import com.chm.converter.core.ClassInfoStorage;
-import com.chm.converter.core.FieldInfo;
-import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.json.FastjsonConverter;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.core.*;
 import com.chm.converter.json.fastjson.FastjsonDefaultDateCodec;
 import com.chm.converter.json.fastjson.FastjsonJdk8DateCodec;
 
@@ -30,29 +26,32 @@ import java.util.stream.Collectors;
  **/
 public class FastjsonSerializeConfig extends SerializeConfig {
 
+    private final UseOriginalJudge useOriginalJudge;
+
     private static final NameFilter NAME_FILTER = new FastjsonNameFilter();
 
     private static final PropertyFilter PROPERTY_FILTER = new FastjsonPropertyFilter();
 
-    public FastjsonSerializeConfig(JsonConverter jsonConverter) {
+    public FastjsonSerializeConfig(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
         super();
+        this.useOriginalJudge = useOriginalJudge;
         // Java8 Time Serializer
-        put(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, jsonConverter));
-        put(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, jsonConverter));
-        put(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class, jsonConverter));
-        put(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class, jsonConverter));
-        put(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class, jsonConverter));
-        put(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class, jsonConverter));
-        put(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class, jsonConverter));
-        put(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class, jsonConverter));
-        put(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class, jsonConverter));
-        put(Year.class, new FastjsonJdk8DateCodec<>(Year.class, jsonConverter));
-        put(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class, jsonConverter));
+        put(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, converter));
+        put(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, converter));
+        put(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class, converter));
+        put(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class, converter));
+        put(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class, converter));
+        put(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class, converter));
+        put(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class, converter));
+        put(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class, converter));
+        put(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class, converter));
+        put(Year.class, new FastjsonJdk8DateCodec<>(Year.class, converter));
+        put(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class, converter));
 
         // Default Date Serializer
-        put(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class, jsonConverter));
-        put(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class, jsonConverter));
-        put(Date.class, new FastjsonDefaultDateCodec<>(Date.class, jsonConverter));
+        put(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class, converter));
+        put(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class, converter));
+        put(Date.class, new FastjsonDefaultDateCodec<>(Date.class, converter));
     }
 
     @Override
@@ -62,7 +61,7 @@ public class FastjsonSerializeConfig extends SerializeConfig {
             return objectWriter;
         }
         // 校验制定类或其父类集中是否存在Fastjson框架注解
-        if (FastjsonConverter.checkExistFastjsonAnnotation(clazz)) {
+        if (useOriginalJudge.useOriginalImpl(clazz)) {
             return objectWriter;
         }
 

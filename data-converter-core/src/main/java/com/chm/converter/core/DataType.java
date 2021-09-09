@@ -54,9 +54,9 @@ public class DataType {
     /**
      * 全局数据转换器表
      */
-    private final static Map<DataType, Converter> CONVERTER_MAP = new HashMap<>();
+    private final static Map<DataType, Converter<?>> CONVERTER_MAP = new HashMap<>();
 
-    public static Map<DataType, Converter> getConverterMap() {
+    public static Map<DataType, Converter<?>> getConverterMap() {
         return CONVERTER_MAP;
     }
 
@@ -69,8 +69,7 @@ public class DataType {
      * 创建新的数据类型
      *
      * @param name Data type name
-     * @return New instance of {@code com.dtflys.forest.utils.ForestDataType}
-     * @since 1.5.0-BETA4
+     * @return
      */
     public static DataType createDataType(String name) {
         if (StrUtil.isEmpty(name)) {
@@ -87,8 +86,8 @@ public class DataType {
 
     /**
      * 数据类型构造函数
-     * <p>该构造函数为私有方法，外部代码不能直接通过new ForestDataType(name)进行创建数据类型对象</p>
-     * <p>需要通过静态方法ForestDataType.createDataType或ForestDataType.findOrCreateDataType进行创建</p>
+     * <p>该构造函数为私有方法，外部代码不能直接通过new DataType(name)进行创建数据类型对象</p>
+     * <p>需要通过静态方法DataType.createDataType或DataType.findOrCreateDataType进行创建</p>
      *
      * @param name Date type name
      * @since 1.5.0-BETA4
@@ -110,8 +109,7 @@ public class DataType {
      * Find data type object by data type name
      *
      * @param name Data type name
-     * @return Instance of {@code com.dtflys.forest.utils.ForestDataType}
-     * @since 1.5.0-BETA4
+     * @return
      */
     public static DataType findByName(String name) {
         return DATA_TYPES.get(name.toLowerCase());
@@ -121,8 +119,7 @@ public class DataType {
      * Find or create a data type
      *
      * @param name Data type name
-     * @return Instance of {@code com.dtflys.forest.utils.ForestDataType}
-     * @since 1.5.0-BETA4
+     * @return
      */
     public static DataType findOrCreateDataType(String name) {
         if (StrUtil.isEmpty(name)) {

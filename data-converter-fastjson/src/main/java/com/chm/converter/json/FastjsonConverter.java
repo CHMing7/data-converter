@@ -13,6 +13,7 @@ import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.util.FieldInfo;
 import com.alibaba.fastjson.util.TypeUtils;
+import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.exception.ConvertException;
 import com.chm.converter.json.fastjson.deserializer.FastjsonParserConfig;
@@ -20,7 +21,6 @@ import com.chm.converter.json.fastjson.serializer.FastjsonSerializeConfig;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,21 +51,11 @@ public class FastjsonConverter implements JsonConverter {
 
     private SerializerFeature[] serializerFeatureArray;
 
-    protected SerializeConfig serializeConfig = new FastjsonSerializeConfig(this);
+    protected SerializeConfig serializeConfig = new FastjsonSerializeConfig(this, FastjsonConverter::checkExistFastjsonAnnotation);
 
-    protected ParserConfig parserConfig = new FastjsonParserConfig(this);
+    protected ParserConfig parserConfig = new FastjsonParserConfig(this, FastjsonConverter::checkExistFastjsonAnnotation);
 
-    protected static ParserConfig staticParserConfig = new FastjsonParserConfig(null);
-
-    /**
-     * 日期格式
-     */
-    private String dateFormatPattern;
-
-    /**
-     * 日期格式化类
-     */
-    private DateTimeFormatter dateTimeFormatter;
+    protected static ParserConfig staticParserConfig = new FastjsonParserConfig(null, FastjsonConverter::checkExistFastjsonAnnotation);
 
     private static Field nameField;
 
@@ -139,14 +129,7 @@ public class FastjsonConverter implements JsonConverter {
 
     private String parseToString(Object obj) {
         if (CollectionUtil.isEmpty(serializerFeatureList)) {
-            if (dateFormatPattern != null) {
-                return JSON.toJSONString(obj, serializeConfig, null, this.dateFormatPattern, JSON.DEFAULT_GENERATE_FEATURE, SerializerFeature.WriteDateUseDateFormat);
-            }
             return JSON.toJSONString(obj, serializeConfig);
-        }
-
-        if (dateFormatPattern != null) {
-            return JSON.toJSONString(obj, serializeConfig, null, this.dateFormatPattern, JSON.DEFAULT_GENERATE_FEATURE, ArrayUtil.insert(serializerFeatureArray, 0, SerializerFeature.WriteDateUseDateFormat));
         }
         return JSON.toJSONString(obj, serializeConfig, serializerFeatureArray);
     }
@@ -294,12 +277,14 @@ public class FastjsonConverter implements JsonConverter {
     }
 
     @Override
-    public void loadJsonConverter() {
+    public boolean loadConverter() {
         try {
             checkFastjsonClass();
-            JsonConverterSelector.put(FastjsonConverter.class, new FastjsonConverter());
+            ConverterSelector.put(FastjsonConverter.class, new FastjsonConverter());
         } catch (Throwable ignored) {
+            return false;
         }
+        return true;
     }
 
     public static boolean checkExistFastjsonAnnotation(Class<?> cls) {

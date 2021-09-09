@@ -1,13 +1,17 @@
 package com.chm.converter.json;
 
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSON;
+import com.chm.converter.core.ConverterSelector;
+import com.chm.converter.core.DataType;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +34,7 @@ public class JsonConverterTest {
         // user.setYearMonth(YearMonth.now());
         userMap.put("user", user);
 
-        FastjsonConverter jsonConverter = (FastjsonConverter) JsonConverterSelector.select(FastjsonConverter.class);
+        FastjsonConverter jsonConverter = (FastjsonConverter) ConverterSelector.select(DataType.JSON, FastjsonConverter.class);
         // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
         String encodeToString = jsonConverter.encodeToString(userMap);
 
@@ -47,4 +51,5 @@ public class JsonConverterTest {
 
         assertEquals(userMap, newUserMap1);
     }
+
 }

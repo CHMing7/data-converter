@@ -2,6 +2,8 @@ package com.chm.converter.json;
 
 import cn.hutool.log.StaticLog;
 import com.chm.converter.annotation.FieldProperty;
+import com.chm.converter.core.ConverterSelector;
+import com.chm.converter.core.DataType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +27,7 @@ public class TestJava8Time {
 
     @Before
     public void before() {
-        fastjsonConverter = JsonConverterSelector.select(FastjsonConverter.class);
+        fastjsonConverter = (JsonConverter) ConverterSelector.select(DataType.JSON, FastjsonConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());

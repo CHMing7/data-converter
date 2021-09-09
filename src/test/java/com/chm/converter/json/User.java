@@ -2,6 +2,7 @@ package com.chm.converter.json;
 
 import com.chm.converter.annotation.FieldProperty;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
@@ -13,6 +14,7 @@ import java.util.Objects;
  * @version v1.0
  * @since 2021-06-03
  **/
+@XmlRootElement
 public class User {
 
     /**

@@ -1,7 +1,7 @@
 package com.chm.converter.json.gson;
 
 import com.chm.converter.constant.TimeConstant;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.core.Converter;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
@@ -17,10 +17,10 @@ import java.util.Optional;
  **/
 public class GsonDefaultDateTypeAdapterFactory implements TypeAdapterFactory {
 
-    private final JsonConverter jsonConverter;
+    private final Converter<?> converter;
 
-    public GsonDefaultDateTypeAdapterFactory(JsonConverter jsonConverter) {
-        this.jsonConverter = jsonConverter;
+    public GsonDefaultDateTypeAdapterFactory(Converter<?> converter) {
+        this.converter = converter;
     }
 
     @Override
@@ -28,6 +28,6 @@ public class GsonDefaultDateTypeAdapterFactory implements TypeAdapterFactory {
         Class<T> cls = (Class<T>) typeToken.getRawType();
         Optional<Class<? extends Date>> first = TimeConstant.DEFAULT_DATE_SET.stream()
                 .filter(dateClass -> dateClass.isAssignableFrom(cls)).findFirst();
-        return first.map(clazz -> (TypeAdapter<T>) new GsonDefaultDateTypeAdapter(clazz, jsonConverter)).orElse(null);
+        return first.map(clazz -> (TypeAdapter<T>) new GsonDefaultDateTypeAdapter(clazz, converter)).orElse(null);
     }
 }

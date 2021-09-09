@@ -7,6 +7,8 @@ import com.chm.converter.annotation.FieldProperty;
 import com.chm.converter.utils.TypeUtil;
 
 import java.lang.reflect.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author caihongming
@@ -53,6 +55,11 @@ public class FieldInfo implements Comparable<FieldInfo> {
      * 是否反序列化
      */
     private final boolean deserialize;
+
+    /**
+     * 扩展属性
+     */
+    private final Map<String, Object> expandProperty;
 
     public FieldInfo(String name, Method method, Field field, int ordinal) {
         if (field != null) {
@@ -145,6 +152,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
         this.format = format;
         this.serialize = serialize;
         this.deserialize = deserialize;
+        this.expandProperty = new ConcurrentHashMap<>();
     }
 
 
@@ -310,6 +318,22 @@ public class FieldInfo implements Comparable<FieldInfo> {
 
     public FieldProperty getAnnotation() {
         return this.fieldAnnotation != null ? this.fieldAnnotation : this.methodAnnotation;
+    }
+
+    public Map<String, Object> getExpandProperty() {
+        return expandProperty;
+    }
+
+    public Object getExpandProperty(String key) {
+        return expandProperty.get(key);
+    }
+
+    public Object getExpandProperty(String key, Object defaultVal) {
+        return expandProperty.getOrDefault(key, defaultVal);
+    }
+
+    public void putExpandProperty(String key, Object value) {
+        expandProperty.put(key, value);
     }
 
     @Override

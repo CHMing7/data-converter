@@ -8,6 +8,7 @@ ext {
             gson_java8       : '1.1.0',
             reflections      : '0.9.12',
             xk_time          : '3.1.0',
+            jdom             : '1.1',
     ]
 
     libs = [
@@ -20,9 +21,11 @@ ext {
             jackson_databind   : "com.fasterxml.jackson.core:jackson-databind:$versions.jackson",
             jackson_annotations: "com.fasterxml.jackson.core:jackson-annotations:$versions.jackson",
             jackson_datatype   : "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$versions.jackson",
+            jackson_xml        : "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$versions.jackson",
             gson               : "com.google.code.gson:gson:$versions.gson",
             gson_java8         : "net.dongliu:gson-java8-datatype:$versions.gson_java8",
             xk_time            : "com.github.xkzhangsan:xk-time:$versions.xk_time",
+            jdom               : "org.jdom:jdom:$versions.jdom",
     ]
 
 }

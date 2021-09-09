@@ -61,7 +61,7 @@ public class DateUtil {
      */
     public static Date parseToDate(String text, DateTimeFormatter formatter) {
         Objects.requireNonNull(formatter, "formatter");
-        Date date = null;
+        Date date;
         try {
             date = toDate(toLocalDateTime(formatter.parse(text)));
         } catch (DateTimeException e) {

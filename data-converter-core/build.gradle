@@ -1,3 +1,4 @@
 dependencies {
     compile(libs.hutool_core)
+    compile(libs.reflections)
 }

@@ -5,6 +5,9 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import com.chm.converter.annotation.FieldProperty;
+import com.chm.converter.creator.ConstructorFactory;
+import com.chm.converter.creator.ObjectConstructor;
+import com.chm.converter.reflect.TypeToken;
 import com.chm.converter.utils.TypeUtil;
 
 import java.lang.annotation.Annotation;
@@ -14,7 +17,7 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -28,6 +31,11 @@ public class JavaBeanInfo {
 
     private final Class<?> clazz;
 
+    /**
+     * 构造方法对象
+     */
+    private final ObjectConstructor<?> objectConstructor;
+
     private final List<FieldInfo> fieldList;
 
     private final List<FieldInfo> sortedFieldList;
@@ -36,17 +44,28 @@ public class JavaBeanInfo {
 
     private final Map<String, FieldInfo> fieldNameFieldInfoMap;
 
+    /**
+     * 扩展属性
+     */
+    private final Map<String, Object> expandProperty;
+
     public JavaBeanInfo(Class<?> clazz, List<FieldInfo> fieldList) {
         this.clazz = clazz;
+        this.objectConstructor = ConstructorFactory.INSTANCE.get(TypeToken.get(clazz));
         this.fieldList = fieldList;
         this.sortedFieldList = ListUtil.toList(fieldList);
         CollectionUtil.sort(sortedFieldList, FieldInfo::compareTo);
         this.nameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getName, fieldInfo -> fieldInfo);
         this.fieldNameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getFieldName, fieldInfo -> fieldInfo);
+        this.expandProperty = new ConcurrentHashMap<>();
     }
 
     public Class<?> getClazz() {
         return clazz;
+    }
+
+    public ObjectConstructor<?> getObjectConstructor() {
+        return objectConstructor;
     }
 
     public List<FieldInfo> getFieldList() {
@@ -63,6 +82,22 @@ public class JavaBeanInfo {
 
     public Map<String, FieldInfo> getFieldNameFieldInfoMap() {
         return fieldNameFieldInfoMap;
+    }
+
+    public Map<String, Object> getExpandProperty() {
+        return expandProperty;
+    }
+
+    public Object getExpandProperty(String key) {
+        return expandProperty.get(key);
+    }
+
+    public Object getExpandProperty(String key, Object defaultVal) {
+        return expandProperty.getOrDefault(key, defaultVal);
+    }
+
+    public void putExpandProperty(String key, Object value) {
+        expandProperty.put(key, value);
     }
 
     /**

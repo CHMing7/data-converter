@@ -2,8 +2,7 @@ package com.chm.converter.jackson.deserializer;
 
 import cn.hutool.core.util.StrUtil;
 import com.chm.converter.constant.TimeConstant;
-import com.chm.converter.jackson.JacksonModule;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.core.Converter;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -31,7 +30,7 @@ public class JacksonJava8TimeDeserializer<T extends TemporalAccessor> extends Js
      */
     private final DateTimeFormatter dateFormatter;
 
-    private final JsonConverter jsonConverter;
+    private final Converter<?> converter;
 
     private final DateTimeFormatter defaultDateTimeFormatter;
 
@@ -49,49 +48,49 @@ public class JacksonJava8TimeDeserializer<T extends TemporalAccessor> extends Js
         this(clazz, dateFormatter, null);
     }
 
-    public JacksonJava8TimeDeserializer(Class<T> clazz, JsonConverter jsonConverter) {
-        this(clazz, (DateTimeFormatter) null, jsonConverter);
+    public JacksonJava8TimeDeserializer(Class<T> clazz, Converter<?> converter) {
+        this(clazz, (DateTimeFormatter) null, converter);
     }
 
-    public JacksonJava8TimeDeserializer(Class<T> clazz, String datePattern, JsonConverter jsonConverter) {
+    public JacksonJava8TimeDeserializer(Class<T> clazz, String datePattern, Converter<?> converter) {
         this.clazz = clazz;
         if (StrUtil.isNotBlank(datePattern)) {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
             if (clazz == Instant.class && dateFormatter.getZone() == null) {
-                TimeZone timeZone = jsonConverter != null ? jsonConverter.getTimeZone() : TimeZone.getDefault();
+                TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
                 dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
             }
             this.dateFormatter = dateFormatter;
         } else {
             this.dateFormatter = null;
         }
-        this.jsonConverter = jsonConverter;
+        this.converter = converter;
         this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
         this.temporalQuery = (TemporalQuery<T>) TimeConstant.CLASS_TEMPORAL_QUERY_MAP.get(clazz);
     }
 
-    public JacksonJava8TimeDeserializer(Class<T> clazz, DateTimeFormatter dateFormatter, JsonConverter jsonConverter) {
+    public JacksonJava8TimeDeserializer(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
         this.clazz = clazz;
         if (dateFormatter != null && clazz == Instant.class && dateFormatter.getZone() == null) {
-            TimeZone timeZone = jsonConverter != null ? jsonConverter.getTimeZone() : TimeZone.getDefault();
+            TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
             dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
         }
         this.dateFormatter = dateFormatter;
-        this.jsonConverter = jsonConverter;
+        this.converter = converter;
         this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
         this.temporalQuery = (TemporalQuery<T>) TimeConstant.CLASS_TEMPORAL_QUERY_MAP.get(clazz);
     }
 
     public JacksonJava8TimeDeserializer<T> withClass(Class<T> clazz) {
-        return new JacksonJava8TimeDeserializer<>(clazz, this.dateFormatter, this.jsonConverter);
+        return new JacksonJava8TimeDeserializer<>(clazz, this.dateFormatter, this.converter);
     }
 
     public JacksonJava8TimeDeserializer<T> withDatePattern(String datePattern) {
-        return new JacksonJava8TimeDeserializer<>(this.clazz, datePattern, this.jsonConverter);
+        return new JacksonJava8TimeDeserializer<>(this.clazz, datePattern, this.converter);
     }
 
     public JacksonJava8TimeDeserializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
-        return new JacksonJava8TimeDeserializer<>(this.clazz, dateFormatter, this.jsonConverter);
+        return new JacksonJava8TimeDeserializer<>(this.clazz, dateFormatter, this.converter);
     }
 
     @Override
@@ -103,14 +102,17 @@ public class JacksonJava8TimeDeserializer<T extends TemporalAccessor> extends Js
         if (StrUtil.isBlank(str)) {
             return null;
         }
-        DateTimeFormatter dateFormatter = JacksonModule.getDateFormatter(this.dateFormatter, jsonConverter, ctxt);
 
-        if (dateFormatter != null) {
+        DateTimeFormatter dtf = this.dateFormatter;
+        if (converter != null && dtf == null) {
+            dtf = converter.getDateFormat();
+        }
+        if (dtf != null) {
             // Instant类需设置时区
-            if (clazz == Instant.class && dateFormatter.getZone() == null) {
-                dateFormatter = dateFormatter.withZone(ctxt.getTimeZone().toZoneId());
+            if (clazz == Instant.class && dtf.getZone() == null) {
+                dtf = dtf.withZone(ctxt.getTimeZone().toZoneId());
             }
-            return dateFormatter.parse(str, temporalQuery);
+            return dtf.parse(str, temporalQuery);
         } else {
             return defaultDateTimeFormatter.parse(str, temporalQuery);
         }

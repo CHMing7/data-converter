@@ -9,7 +9,7 @@ import com.alibaba.fastjson.serializer.BeanContext;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.chm.converter.constant.TimeConstant;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.core.Converter;
 import com.chm.converter.utils.DateUtil;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
 
     private final DateTimeFormatter dateFormatter;
 
-    private final JsonConverter jsonConverter;
+    private final Converter<?> converter;
 
     private final DateTimeFormatter defaultDateTimeFormatter;
 
@@ -50,49 +50,49 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
         this(clazz, dateFormatter, null);
     }
 
-    public FastjsonJdk8DateCodec(Class<T> clazz, JsonConverter jsonConverter) {
-        this(clazz, (DateTimeFormatter) null, jsonConverter);
+    public FastjsonJdk8DateCodec(Class<T> clazz, Converter<?> converter) {
+        this(clazz, (DateTimeFormatter) null, converter);
     }
 
-    public FastjsonJdk8DateCodec(Class<T> clazz, String datePattern, JsonConverter jsonConverter) {
+    public FastjsonJdk8DateCodec(Class<T> clazz, String datePattern, Converter<?> converter) {
         this.clazz = clazz;
         if (StrUtil.isNotBlank(datePattern)) {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
             if (clazz == Instant.class && dateFormatter.getZone() == null) {
-                TimeZone timeZone = jsonConverter != null ? jsonConverter.getTimeZone() : TimeZone.getDefault();
+                TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
                 dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
             }
             this.dateFormatter = dateFormatter;
         } else {
             this.dateFormatter = null;
         }
-        this.jsonConverter = jsonConverter;
+        this.converter = converter;
         this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
         this.temporalQuery = (TemporalQuery<T>) TimeConstant.CLASS_TEMPORAL_QUERY_MAP.get(clazz);
     }
 
-    public FastjsonJdk8DateCodec(Class<T> clazz, DateTimeFormatter dateFormatter, JsonConverter jsonConverter) {
+    public FastjsonJdk8DateCodec(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
         this.clazz = clazz;
         if (dateFormatter != null && clazz == Instant.class && dateFormatter.getZone() == null) {
-            TimeZone timeZone = jsonConverter != null ? jsonConverter.getTimeZone() : TimeZone.getDefault();
+            TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
             dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
         }
         this.dateFormatter = dateFormatter;
-        this.jsonConverter = jsonConverter;
+        this.converter = converter;
         this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
         this.temporalQuery = (TemporalQuery<T>) TimeConstant.CLASS_TEMPORAL_QUERY_MAP.get(clazz);
     }
 
     public FastjsonJdk8DateCodec<T> withClass(Class<T> clazz) {
-        return new FastjsonJdk8DateCodec<>(clazz, this.dateFormatter, this.jsonConverter);
+        return new FastjsonJdk8DateCodec<>(clazz, this.dateFormatter, this.converter);
     }
 
     public FastjsonJdk8DateCodec<T> withDatePattern(String datePattern) {
-        return new FastjsonJdk8DateCodec<>(this.clazz, datePattern, this.jsonConverter);
+        return new FastjsonJdk8DateCodec<>(this.clazz, datePattern, this.converter);
     }
 
     public FastjsonJdk8DateCodec<T> withDateFormatter(DateTimeFormatter dateFormatter) {
-        return new FastjsonJdk8DateCodec<>(this.clazz, dateFormatter, this.jsonConverter);
+        return new FastjsonJdk8DateCodec<>(this.clazz, dateFormatter, this.converter);
     }
 
     @Override
@@ -113,8 +113,8 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
                 dtf = DateTimeFormatter.ofPattern(format);
             }
 
-            if (this.jsonConverter != null && dtf == null) {
-                dtf = this.jsonConverter.getDateFormat();
+            if (this.converter != null && dtf == null) {
+                dtf = this.converter.getDateFormat();
             } else if (dtf == null) {
                 // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
                 DateFormat dateFormat = parser.getDateFormat();
@@ -131,7 +131,7 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
             if (dtf != null) {
                 if (clazz == Instant.class && dtf.getZone() == null) {
                     // Instant类需设置时区
-                    TimeZone timeZone = this.jsonConverter != null ? this.jsonConverter.getTimeZone() : TimeZone.getDefault();
+                    TimeZone timeZone = this.converter != null ? this.converter.getTimeZone() : TimeZone.getDefault();
                     dtf = dtf.withZone(timeZone.toZoneId());
                 }
                 return (T) dtf.parse(str, temporalQuery);
@@ -160,8 +160,8 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
         }
 
         DateTimeFormatter dtf = this.dateFormatter;
-        if (jsonConverter != null && dtf == null) {
-            dtf = jsonConverter.getDateFormat();
+        if (converter != null && dtf == null) {
+            dtf = converter.getDateFormat();
         } else if (dtf == null) {
             DateFormat dateFormat = serializer.getDateFormat();
             String dateFormatPattern = serializer.getDateFormatPattern();
@@ -177,7 +177,7 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
         if (dtf != null) {
             if (object instanceof Instant && dtf.getZone() == null) {
                 // Instant类需设置时区
-                TimeZone timeZone = this.jsonConverter != null ? this.jsonConverter.getTimeZone() : TimeZone.getDefault();
+                TimeZone timeZone = this.converter != null ? this.converter.getTimeZone() : TimeZone.getDefault();
                 dtf = dtf.withZone(timeZone.toZoneId());
             }
             str = DateUtil.format((TemporalAccessor) object, dtf);

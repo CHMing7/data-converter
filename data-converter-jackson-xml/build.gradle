@@ -1,0 +1,12 @@
+dependencies {
+    compileOnly(libs.jackson_xml)
+    compile project(':data-converter-xml')
+    compile project(':data-converter-jackson')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testCompile 'junit:junit:4.13.1'
+    testCompile(libs.hutool_log)
+    testCompile(libs.jackson_xml)
+}

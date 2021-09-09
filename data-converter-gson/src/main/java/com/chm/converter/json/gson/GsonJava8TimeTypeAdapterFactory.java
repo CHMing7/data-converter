@@ -1,7 +1,7 @@
 package com.chm.converter.json.gson;
 
 import com.chm.converter.constant.TimeConstant;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.core.Converter;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
@@ -17,10 +17,10 @@ import java.util.Optional;
  **/
 public class GsonJava8TimeTypeAdapterFactory implements TypeAdapterFactory {
 
-    private final JsonConverter jsonConverter;
+    private final Converter<?> converter;
 
-    public GsonJava8TimeTypeAdapterFactory(JsonConverter jsonConverter) {
-        this.jsonConverter = jsonConverter;
+    public GsonJava8TimeTypeAdapterFactory(Converter<?> converter) {
+        this.converter = converter;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class GsonJava8TimeTypeAdapterFactory implements TypeAdapterFactory {
         Class<T> cls = (Class<T>) typeToken.getRawType();
         Optional<Class<? extends TemporalAccessor>> first = TimeConstant.TEMPORAL_ACCESSOR_SET.stream()
                 .filter(temporalAccessorClass -> temporalAccessorClass.isAssignableFrom(cls)).findFirst();
-        return first.map(clazz -> (TypeAdapter<T>) new GsonJava8TimeAdapter<>(clazz, jsonConverter)).orElse(null);
+        return first.map(clazz -> (TypeAdapter<T>) new GsonJava8TimeAdapter<>(clazz, converter)).orElse(null);
     }
 
 }

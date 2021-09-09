@@ -9,11 +9,7 @@ import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.parser.deserializer.FieldDeserializer;
 import com.alibaba.fastjson.parser.deserializer.JavaBeanDeserializer;
 import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
-import com.chm.converter.core.ClassInfoStorage;
-import com.chm.converter.core.FieldInfo;
-import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.json.FastjsonConverter;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.core.*;
 import com.chm.converter.json.fastjson.FastjsonDefaultDateCodec;
 import com.chm.converter.json.fastjson.FastjsonJdk8DateCodec;
 
@@ -33,25 +29,28 @@ import java.util.stream.Collectors;
  **/
 public class FastjsonParserConfig extends ParserConfig {
 
-    public FastjsonParserConfig(JsonConverter jsonConverter) {
+    private final UseOriginalJudge useOriginalJudge;
+
+    public FastjsonParserConfig(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
         super();
+        this.useOriginalJudge = useOriginalJudge;
         // Java8 Time Deserializer
-        putDeserializer(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, jsonConverter));
-        putDeserializer(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, jsonConverter));
-        putDeserializer(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class, jsonConverter));
-        putDeserializer(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class, jsonConverter));
-        putDeserializer(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class, jsonConverter));
-        putDeserializer(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class, jsonConverter));
-        putDeserializer(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class, jsonConverter));
-        putDeserializer(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class, jsonConverter));
-        putDeserializer(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class, jsonConverter));
-        putDeserializer(Year.class, new FastjsonJdk8DateCodec<>(Year.class, jsonConverter));
-        putDeserializer(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class, jsonConverter));
+        putDeserializer(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, converter));
+        putDeserializer(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, converter));
+        putDeserializer(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class, converter));
+        putDeserializer(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class, converter));
+        putDeserializer(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class, converter));
+        putDeserializer(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class, converter));
+        putDeserializer(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class, converter));
+        putDeserializer(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class, converter));
+        putDeserializer(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class, converter));
+        putDeserializer(Year.class, new FastjsonJdk8DateCodec<>(Year.class, converter));
+        putDeserializer(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class, converter));
 
         // Default Date Deserializer
-        putDeserializer(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class, jsonConverter));
-        putDeserializer(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class, jsonConverter));
-        putDeserializer(Date.class, new FastjsonDefaultDateCodec<>(Date.class, jsonConverter));
+        putDeserializer(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class, converter));
+        putDeserializer(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class, converter));
+        putDeserializer(Date.class, new FastjsonDefaultDateCodec<>(Date.class, converter));
     }
 
     @Override
@@ -63,7 +62,7 @@ public class FastjsonParserConfig extends ParserConfig {
         if (type instanceof Class<?>) {
             Class<?> clazz = (Class<?>) type;
             // 校验制定类或其父类集中是否存在Fastjson框架注解
-            if (FastjsonConverter.checkExistFastjsonAnnotation(clazz)) {
+            if (useOriginalJudge.useOriginalImpl(clazz)) {
                 return deserializer;
             }
 

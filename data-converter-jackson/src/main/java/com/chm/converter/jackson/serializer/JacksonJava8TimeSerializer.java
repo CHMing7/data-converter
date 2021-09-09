@@ -2,8 +2,7 @@ package com.chm.converter.jackson.serializer;
 
 import cn.hutool.core.util.StrUtil;
 import com.chm.converter.constant.TimeConstant;
-import com.chm.converter.jackson.JacksonModule;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.core.Converter;
 import com.chm.converter.utils.DateUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -29,7 +28,7 @@ public class JacksonJava8TimeSerializer<T extends TemporalAccessor> extends Json
      */
     private final DateTimeFormatter dateFormatter;
 
-    private final JsonConverter jsonConverter;
+    private final Converter<?> converter;
 
     private final DateTimeFormatter defaultDateTimeFormatter;
 
@@ -45,61 +44,64 @@ public class JacksonJava8TimeSerializer<T extends TemporalAccessor> extends Json
         this(clazz, dateFormatter, null);
     }
 
-    public JacksonJava8TimeSerializer(Class<T> clazz, JsonConverter jsonConverter) {
-        this(clazz, (DateTimeFormatter) null, jsonConverter);
+    public JacksonJava8TimeSerializer(Class<T> clazz, Converter<?> converter) {
+        this(clazz, (DateTimeFormatter) null, converter);
     }
 
-    public JacksonJava8TimeSerializer(Class<T> clazz, String datePattern, JsonConverter jsonConverter) {
+    public JacksonJava8TimeSerializer(Class<T> clazz, String datePattern, Converter<?> converter) {
         this.clazz = clazz;
         if (StrUtil.isNotBlank(datePattern)) {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
             if (clazz == Instant.class && dateFormatter.getZone() == null) {
-                TimeZone timeZone = jsonConverter != null ? jsonConverter.getTimeZone() : TimeZone.getDefault();
+                TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
                 dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
             }
             this.dateFormatter = dateFormatter;
         } else {
             this.dateFormatter = null;
         }
-        this.jsonConverter = jsonConverter;
+        this.converter = converter;
         this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
     }
 
-    public JacksonJava8TimeSerializer(Class<T> clazz, DateTimeFormatter dateFormatter, JsonConverter jsonConverter) {
+    public JacksonJava8TimeSerializer(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
         this.clazz = clazz;
         if (dateFormatter != null && clazz == Instant.class && dateFormatter.getZone() == null) {
-            TimeZone timeZone = jsonConverter != null ? jsonConverter.getTimeZone() : TimeZone.getDefault();
+            TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
             dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
         }
         this.dateFormatter = dateFormatter;
-        this.jsonConverter = jsonConverter;
+        this.converter = converter;
         this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
     }
 
     public JacksonJava8TimeSerializer<T> withClass(Class<T> clazz) {
-        return new JacksonJava8TimeSerializer<>(clazz, this.dateFormatter, this.jsonConverter);
+        return new JacksonJava8TimeSerializer<>(clazz, this.dateFormatter, this.converter);
     }
 
     public JacksonJava8TimeSerializer<T> withDatePattern(String datePattern) {
-        return new JacksonJava8TimeSerializer<>(this.clazz, datePattern, this.jsonConverter);
+        return new JacksonJava8TimeSerializer<>(this.clazz, datePattern, this.converter);
     }
 
     public JacksonJava8TimeSerializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
-        return new JacksonJava8TimeSerializer<>(this.clazz, dateFormatter, this.jsonConverter);
+        return new JacksonJava8TimeSerializer<>(this.clazz, dateFormatter, this.converter);
     }
 
     @Override
     public void serialize(T value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         String str;
-        DateTimeFormatter dateFormatter = JacksonModule.getDateFormatter(this.dateFormatter, jsonConverter, serializers);
+        DateTimeFormatter dtf = this.dateFormatter;
+        if (converter != null && dtf == null) {
+            dtf = converter.getDateFormat();
+        }
 
-        if (dateFormatter != null) {
+        if (dtf != null) {
             // Instant类需设置时区
-            if (value instanceof Instant && dateFormatter.getZone() == null) {
-                TimeZone timeZone = this.jsonConverter != null ? this.jsonConverter.getTimeZone() : serializers.getTimeZone();
-                dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
+            if (value instanceof Instant && dtf.getZone() == null) {
+                TimeZone timeZone = this.converter != null ? this.converter.getTimeZone() : serializers.getTimeZone();
+                dtf = dtf.withZone(timeZone.toZoneId());
             }
-            str = DateUtil.format(value, dateFormatter);
+            str = DateUtil.format(value, dtf);
         } else {
             str = DateUtil.format(value, defaultDateTimeFormatter);
         }

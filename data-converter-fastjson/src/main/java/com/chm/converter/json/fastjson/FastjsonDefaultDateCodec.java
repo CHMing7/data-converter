@@ -7,17 +7,14 @@ import com.alibaba.fastjson.parser.JSONToken;
 import com.alibaba.fastjson.serializer.DateCodec;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.core.Converter;
 import com.chm.converter.utils.DateUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * @author caihongming
@@ -30,16 +27,15 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
 
     private final DateTimeFormatter dateFormatter;
 
-    private final JsonConverter jsonConverter;
+    private final Converter<?> converter;
 
-    private static final String DEFAULT_DATE_PATTERN_STR = "yyyy-MM-dd HH:mm:ss.SSSS";
+    private final static String DEFAULT_DATE_PATTERN_STR = "yyyy-MM-dd HH:mm:ss.SSSS";
 
     /**
      * List of 1 or more different date formats used for de-serialization attempts.
      * The first of them is used for serialization as well.
      */
-    private final static DateTimeFormatter DEFAULT_DATE_FORMAT = new DateTimeFormatterBuilder()
-            .appendPattern(DEFAULT_DATE_PATTERN_STR).toFormatter(Locale.getDefault()).withZone(ZoneId.systemDefault());
+    private final static DateTimeFormatter DEFAULT_DATE_FORMAT = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN_STR);
 
     public FastjsonDefaultDateCodec(Class<T> dateType) {
         this(dateType, (DateTimeFormatter) null, null);
@@ -53,12 +49,12 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
         this(dateType, dateFormatter, null);
     }
 
-    public FastjsonDefaultDateCodec(Class<T> dateType, JsonConverter jsonConverter) {
-        this(dateType, (DateTimeFormatter) null, jsonConverter);
+    public FastjsonDefaultDateCodec(Class<T> dateType, Converter<?> converter) {
+        this(dateType, (DateTimeFormatter) null, converter);
     }
 
-    public FastjsonDefaultDateCodec(Class<T> dateType, String datePattern, JsonConverter jsonConverter) {
-        this.jsonConverter = jsonConverter;
+    public FastjsonDefaultDateCodec(Class<T> dateType, String datePattern, Converter<?> converter) {
+        this.converter = converter;
         this.dateType = verifyDateType(dateType);
         if (StrUtil.isNotBlank(datePattern)) {
             this.dateFormatter = DateTimeFormatter.ofPattern(datePattern);
@@ -67,10 +63,10 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
         }
     }
 
-    public FastjsonDefaultDateCodec(Class<T> dateType, DateTimeFormatter dateFormat, JsonConverter jsonConverter) {
+    public FastjsonDefaultDateCodec(Class<T> dateType, DateTimeFormatter dateFormat, Converter<?> converter) {
         this.dateType = verifyDateType(dateType);
         this.dateFormatter = dateFormat;
-        this.jsonConverter = jsonConverter;
+        this.converter = converter;
     }
 
     private Class<T> verifyDateType(Class<T> dateType) {
@@ -81,15 +77,15 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
     }
 
     public FastjsonDefaultDateCodec<T> withDateType(Class<T> dateType) {
-        return new FastjsonDefaultDateCodec<>(dateType, this.dateFormatter, this.jsonConverter);
+        return new FastjsonDefaultDateCodec<>(dateType, this.dateFormatter, this.converter);
     }
 
     public FastjsonDefaultDateCodec<T> withDatePattern(String datePattern) {
-        return new FastjsonDefaultDateCodec<>(this.dateType, datePattern, this.jsonConverter);
+        return new FastjsonDefaultDateCodec<>(this.dateType, datePattern, this.converter);
     }
 
     public FastjsonDefaultDateCodec<T> withDateFormat(DateTimeFormatter dateFormat) {
-        return new FastjsonDefaultDateCodec<>(this.dateType, dateFormat, this.jsonConverter);
+        return new FastjsonDefaultDateCodec<>(this.dateType, dateFormat, this.converter);
     }
 
     @Override
@@ -172,8 +168,8 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
     private DateTimeFormatter getDateFormat(JSONSerializer serializer, DefaultJSONParser parser) {
         DateTimeFormatter formatter = this.dateFormatter;
 
-        if (jsonConverter != null && formatter == null) {
-            formatter = jsonConverter.getDateFormat();
+        if (converter != null && formatter == null) {
+            formatter = converter.getDateFormat();
         } else if (formatter == null) {
             String dateFormatPattern = null;
             if (serializer != null) {

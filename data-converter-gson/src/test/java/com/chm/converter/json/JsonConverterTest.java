@@ -2,6 +2,8 @@ package com.chm.converter.json;
 
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
+import com.chm.converter.core.ConverterSelector;
+import com.chm.converter.core.DataType;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 
@@ -20,16 +22,16 @@ public class JsonConverterTest {
 
     @Test
     public void testGson() {
-        Map<String, User> userMap = MapUtil.newHashMap(true);
+        Map<User, User> userMap = MapUtil.newHashMap(true);
         User user = new User();
         user.setUserName("user");
         user.setPassword("password");
         user.setDate(new Date());
         user.setLocalDateTime(LocalDateTime.now());
        // user.setYearMonth(YearMonth.now());
-        userMap.put("user", user);
+        userMap.put(user, user);
 
-        GsonConverter gsonConverter = (GsonConverter) JsonConverterSelector.select(GsonConverter.class);
+        GsonConverter gsonConverter = (GsonConverter) ConverterSelector.select(DataType.JSON, GsonConverter.class);
 
         String encodeToString = gsonConverter.encodeToString(userMap);
 

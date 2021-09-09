@@ -8,7 +8,7 @@ import cn.hutool.core.util.ReflectUtil;
 import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.json.GsonConverter;
+import com.chm.converter.core.UseOriginalJudge;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
@@ -35,6 +35,12 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
 
     private final ConstructorConstructor constructorConstructor = new ConstructorConstructor(MapUtil.empty());
 
+    private final UseOriginalJudge useOriginalJudge;
+
+    public GsonTypeAdapterFactory(UseOriginalJudge useOriginalJudge) {
+        this.useOriginalJudge = useOriginalJudge;
+    }
+
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
         final TypeAdapter<T> delegateAdapter = gson.getDelegateAdapter(this, type);
@@ -43,7 +49,7 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
             return null;
         }
         // 校验制定类或其父类集中是否存在Gson框架注解
-        if (GsonConverter.checkExistGsonAnnotation(type.getRawType())) {
+        if (useOriginalJudge.useOriginalImpl(type.getRawType())) {
             return delegateAdapter;
         }
         return new TypeAdapter<T>() {

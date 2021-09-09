@@ -1,6 +1,6 @@
 package com.chm.converter.core;
 
-import cn.hutool.core.map.MapUtil;
+import com.chm.converter.utils.MapUtil;
 
 import java.util.Map;
 
@@ -17,8 +17,7 @@ public interface ClassInfoStorage {
 
     Map<Class<?>, Map<String, FieldInfo>> FIELD_NAME_FIELD_INFO_MAP = MapUtil.newConcurrentHashMap();
 
-    ClassInfoStorage INSTANCE = new ClassInfoStorage() {
-    };
+    ClassInfoStorage INSTANCE = BEAN_INFO_MAP::containsKey;
 
     /**
      * 初始化class信息
@@ -39,11 +38,19 @@ public interface ClassInfoStorage {
      * @return
      */
     default JavaBeanInfo getJavaBeanInfo(Class<?> clazz) {
-        if (!BEAN_INFO_MAP.containsKey(clazz)) {
+        if (!BEAN_INFO_MAP.containsKey(clazz) || !isInit(clazz)) {
             initClassInfo(clazz);
         }
         return BEAN_INFO_MAP.get(clazz);
     }
+
+    /**
+     * 是否初始化过javaBeanInfo
+     *
+     * @param clazz
+     * @return
+     */
+    boolean isInit(Class<?> clazz);
 
     /**
      * 获取field信息
@@ -52,7 +59,7 @@ public interface ClassInfoStorage {
      * @return
      */
     default Map<String, FieldInfo> getNameFieldInfoMap(Class<?> clazz) {
-        if (!NAME_FIELD_INFO_MAP.containsKey(clazz)) {
+        if (!NAME_FIELD_INFO_MAP.containsKey(clazz) || !isInit(clazz)) {
             initClassInfo(clazz);
         }
         return NAME_FIELD_INFO_MAP.get(clazz);
@@ -66,7 +73,7 @@ public interface ClassInfoStorage {
      * @return
      */
     default Map<String, FieldInfo> getFieldNameFieldInfoMap(Class<?> clazz) {
-        if (!FIELD_NAME_FIELD_INFO_MAP.containsKey(clazz)) {
+        if (!FIELD_NAME_FIELD_INFO_MAP.containsKey(clazz) || !isInit(clazz)) {
             initClassInfo(clazz);
         }
         return FIELD_NAME_FIELD_INFO_MAP.get(clazz);

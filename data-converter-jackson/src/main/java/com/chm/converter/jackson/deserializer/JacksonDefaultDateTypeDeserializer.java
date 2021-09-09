@@ -1,8 +1,7 @@
 package com.chm.converter.jackson.deserializer;
 
 import cn.hutool.core.util.StrUtil;
-import com.chm.converter.jackson.JacksonModule;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.core.Converter;
 import com.chm.converter.utils.DateUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,7 +26,7 @@ public class JacksonDefaultDateTypeDeserializer<T extends Date> extends JsonDese
 
     private final DateTimeFormatter dateFormatter;
 
-    private final JsonConverter jsonConverter;
+    private final Converter<?> converter;
 
     private static final String DEFAULT_DATE_PATTERN_STR = "yyyy-MM-dd HH:mm:ss.SSSS";
 
@@ -35,7 +34,7 @@ public class JacksonDefaultDateTypeDeserializer<T extends Date> extends JsonDese
      * List of 1 or more different date formats used for de-serialization attempts.
      * The first of them is used for serialization as well.
      */
-    private final DateTimeFormatter DEFAULT_DATE_FORMAT = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN_STR);
+    private static final DateTimeFormatter DEFAULT_DATE_FORMAT = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN_STR);
 
     public JacksonDefaultDateTypeDeserializer(Class<T> dateType) {
         this(dateType, (DateTimeFormatter) null, null);
@@ -49,36 +48,36 @@ public class JacksonDefaultDateTypeDeserializer<T extends Date> extends JsonDese
         this(dateType, dateFormatter, null);
     }
 
-    public JacksonDefaultDateTypeDeserializer(Class<T> dateType, JsonConverter jsonConverter) {
-        this(dateType, (DateTimeFormatter) null, jsonConverter);
+    public JacksonDefaultDateTypeDeserializer(Class<T> dateType, Converter<?> converter) {
+        this(dateType, (DateTimeFormatter) null, converter);
     }
 
-    public JacksonDefaultDateTypeDeserializer(Class<T> dateType, String datePattern, JsonConverter jsonConverter) {
+    public JacksonDefaultDateTypeDeserializer(Class<T> dateType, String datePattern, Converter<?> converter) {
         this.dateType = verifyDateType(dateType);
         if (StrUtil.isNotBlank(datePattern)) {
             this.dateFormatter = DateTimeFormatter.ofPattern(datePattern);
         } else {
             this.dateFormatter = null;
         }
-        this.jsonConverter = jsonConverter;
+        this.converter = converter;
     }
 
-    public JacksonDefaultDateTypeDeserializer(Class<T> dateType, DateTimeFormatter dateFormatter, JsonConverter jsonConverter) {
+    public JacksonDefaultDateTypeDeserializer(Class<T> dateType, DateTimeFormatter dateFormatter, Converter<?> converter) {
         this.dateType = verifyDateType(dateType);
         this.dateFormatter = dateFormatter;
-        this.jsonConverter = jsonConverter;
+        this.converter = converter;
     }
 
     public JacksonDefaultDateTypeDeserializer<T> withClass(Class<T> clazz) {
-        return new JacksonDefaultDateTypeDeserializer<>(clazz, this.dateFormatter, this.jsonConverter);
+        return new JacksonDefaultDateTypeDeserializer<>(clazz, this.dateFormatter, this.converter);
     }
 
     public JacksonDefaultDateTypeDeserializer<T> withDatePattern(String datePattern) {
-        return new JacksonDefaultDateTypeDeserializer<>(this.dateType, datePattern, this.jsonConverter);
+        return new JacksonDefaultDateTypeDeserializer<>(this.dateType, datePattern, this.converter);
     }
 
     public JacksonDefaultDateTypeDeserializer<T> withDateFormat(DateTimeFormatter dateFormatter) {
-        return new JacksonDefaultDateTypeDeserializer<>(this.dateType, dateFormatter, this.jsonConverter);
+        return new JacksonDefaultDateTypeDeserializer<>(this.dateType, dateFormatter, this.converter);
     }
 
     private Class<T> verifyDateType(Class<T> dateType) {
@@ -112,7 +111,7 @@ public class JacksonDefaultDateTypeDeserializer<T extends Date> extends JsonDese
             date = new Date(numberValue.longValue());
         } else {
             String str = p.getText();
-            date = deserializeToDate(str, ctxt);
+            date = deserializeToDate(str);
         }
 
         if (dateType == Date.class) {
@@ -128,16 +127,19 @@ public class JacksonDefaultDateTypeDeserializer<T extends Date> extends JsonDese
 
     }
 
-    private Date deserializeToDate(String s, DeserializationContext ctxt) {
+    private Date deserializeToDate(String s) {
         if (s == null) {
             return null;
         }
-        DateTimeFormatter dateFormatter = JacksonModule.getDateFormatter(this.dateFormatter, jsonConverter, ctxt);
+        DateTimeFormatter dtf = this.dateFormatter;
+        if (converter != null && dtf == null) {
+            dtf = converter.getDateFormat();
+        }
 
-        if (this.dateFormatter != null) {
-            return DateUtil.parseToDate(s, dateFormatter);
+        if (dtf != null) {
+            return DateUtil.parseToDate(s, dtf);
         } else {
-            return DateUtil.parseToDate(s, this.DEFAULT_DATE_FORMAT);
+            return DateUtil.parseToDate(s, DEFAULT_DATE_FORMAT);
         }
     }
 }

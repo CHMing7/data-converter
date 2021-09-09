@@ -3,7 +3,6 @@ package com.chm.converter.json.jackson;
 import com.chm.converter.json.jackson.deserializer.JacksonDefaultDateTypeDeserializer;
 import com.chm.converter.json.jackson.deserializer.JacksonJava8TimeDeserializer;
 import com.chm.converter.json.jackson.serializer.JacksonDefaultDateTypeSerializer;
-import com.chm.converter.json.jackson.serializer.JacksonJava8TimeSerializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.sql.Timestamp;
