@@ -1,13 +1,11 @@
 package com.chm.converter.xml;
 
 import cn.hutool.core.collection.ListUtil;
-import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
-import com.chm.converter.reflect.TypeToken;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.chm.converter.core.reflect.TypeToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,7 +1,7 @@
 package com.chm.converter.xml;
 
 import cn.hutool.log.StaticLog;
-import com.chm.converter.annotation.FieldProperty;
+import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import com.fasterxml.jackson.annotation.JsonInclude;

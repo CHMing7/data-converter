@@ -1,6 +1,6 @@
 package com.chm.converter.json.gson;
 
-import com.chm.converter.constant.TimeConstant;
+import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.Converter;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;

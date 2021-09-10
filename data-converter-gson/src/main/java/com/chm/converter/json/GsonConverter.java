@@ -3,7 +3,7 @@ package com.chm.converter.json;
 import cn.hutool.core.collection.ListUtil;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.exception.ConvertException;
+import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.json.gson.GsonDefaultDateTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonJava8TimeTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonTypeAdapterFactory;

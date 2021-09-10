@@ -1,6 +1,6 @@
 package com.chm.converter.core;
 
-import com.chm.converter.utils.MapUtil;
+import com.chm.converter.core.utils.MapUtil;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
@@ -45,7 +45,7 @@ public class ConverterSelector implements Serializable {
      *
      * @return 数据转换器，{@link Converter}接口实例
      */
-    public static Converter<?> select(DataType dataType) {
+    public static Converter select(DataType dataType) {
         Map<Class<? extends Converter<?>>, Converter<?>> classConverterMap = CONVERTER_MAP.get(dataType);
         return MapUtil.isNotEmpty(classConverterMap) ? classConverterMap.values().stream().findFirst().orElse(null) : null;
     }
@@ -56,10 +56,10 @@ public class ConverterSelector implements Serializable {
      *
      * @return 数据转换器，{@link Converter}接口实例
      */
-    public static Converter<?> select(Class<? extends Converter<?>> className) {
+    public static Converter select(Class<? extends Converter<?>> className) {
         Collection<Map<Class<? extends Converter<?>>, Converter<?>>> values = CONVERTER_MAP.values();
         for (Map<Class<? extends Converter<?>>, Converter<?>> value : values) {
-            Converter<?> converter = MapUtil.isNotEmpty(value) ? value.get(className) : null;
+            Converter converter = MapUtil.isNotEmpty(value) ? value.get(className) : null;
             if (converter != null) {
                 return converter;
             }

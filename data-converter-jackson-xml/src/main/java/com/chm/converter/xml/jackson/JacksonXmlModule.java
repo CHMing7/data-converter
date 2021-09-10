@@ -5,6 +5,8 @@ import com.chm.converter.jackson.deserializer.JacksonDefaultDateTypeDeserializer
 import com.chm.converter.jackson.deserializer.JacksonJava8TimeDeserializer;
 import com.chm.converter.jackson.serializer.JacksonDefaultDateTypeSerializer;
 import com.chm.converter.jackson.serializer.JacksonJava8TimeSerializer;
+import com.chm.converter.xml.JacksonXmlConverter;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser;
@@ -120,6 +122,17 @@ public class JacksonXmlModule extends com.fasterxml.jackson.dataformat.xml.Jacks
                 context.setMixInAnnotations(entry.getKey(), entry.getValue());
             }
         }
+    }
+
+    /*
+    /**********************************************************************
+    /* Internal methods
+    /**********************************************************************
+     */
+
+    @Override
+    protected AnnotationIntrospector _constructIntrospector() {
+        return new JacksonXmlAnnotationIntrospector(_cfgDefaultUseWrapper, JacksonXmlConverter::checkExistJacksonXmlAnnotation);
     }
 
 }

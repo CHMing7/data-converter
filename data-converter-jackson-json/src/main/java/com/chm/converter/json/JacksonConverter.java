@@ -3,7 +3,7 @@ package com.chm.converter.json;
 import cn.hutool.core.collection.ListUtil;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.exception.ConvertException;
+import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.json.jackson.JacksonModule;
 import com.chm.converter.json.jackson.deserializer.JacksonBeanDeserializerModifier;
 import com.chm.converter.json.jackson.serializer.JacksonBeanSerializerModifier;

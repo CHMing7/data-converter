@@ -2,7 +2,7 @@ package com.chm.converter.jackson.serializer;
 
 import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.Converter;
-import com.chm.converter.utils.DateUtil;
+import com.chm.converter.core.utils.DateUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializationFeature;

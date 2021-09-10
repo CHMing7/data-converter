@@ -15,7 +15,7 @@ import com.alibaba.fastjson.util.FieldInfo;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.exception.ConvertException;
+import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.json.fastjson.deserializer.FastjsonParserConfig;
 import com.chm.converter.json.fastjson.serializer.FastjsonSerializeConfig;
 

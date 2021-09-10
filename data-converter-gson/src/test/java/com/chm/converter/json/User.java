@@ -1,6 +1,6 @@
 package com.chm.converter.json;
 
-import com.chm.converter.annotation.FieldProperty;
+import com.chm.converter.core.annotation.FieldProperty;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.LocalDateTime;

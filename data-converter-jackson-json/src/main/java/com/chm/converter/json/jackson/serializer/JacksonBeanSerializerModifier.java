@@ -1,6 +1,6 @@
 package com.chm.converter.json.jackson.serializer;
 
-import com.chm.converter.constant.TimeConstant;
+import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.*;
 import com.chm.converter.jackson.PropertyNameTransformer;
 import com.chm.converter.jackson.serializer.JacksonDefaultDateTypeSerializer;

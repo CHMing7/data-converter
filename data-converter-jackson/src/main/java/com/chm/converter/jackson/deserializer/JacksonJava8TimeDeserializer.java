@@ -1,7 +1,7 @@
 package com.chm.converter.jackson.deserializer;
 
 import cn.hutool.core.util.StrUtil;
-import com.chm.converter.constant.TimeConstant;
+import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.Converter;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

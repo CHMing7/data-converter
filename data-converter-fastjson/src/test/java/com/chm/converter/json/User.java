@@ -1,7 +1,6 @@
 package com.chm.converter.json;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.chm.converter.annotation.FieldProperty;
+import com.chm.converter.core.annotation.FieldProperty;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;

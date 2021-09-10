@@ -3,8 +3,8 @@ package com.chm.converter.core;
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.chm.converter.annotation.FieldProperty;
-import com.chm.converter.utils.TypeUtil;
+import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.utils.TypeUtil;
 
 import java.lang.reflect.*;
 import java.util.Map;

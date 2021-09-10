@@ -2,7 +2,7 @@ package com.chm.converter.jackson;
 
 import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.FieldInfo;
-import com.chm.converter.utils.MapUtil;
+import com.chm.converter.core.utils.MapUtil;
 import com.fasterxml.jackson.databind.util.NameTransformer;
 
 import java.util.Map;

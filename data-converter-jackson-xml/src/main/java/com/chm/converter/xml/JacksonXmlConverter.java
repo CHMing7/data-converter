@@ -3,11 +3,12 @@ package com.chm.converter.xml;
 import cn.hutool.core.collection.ListUtil;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.exception.ConvertException;
+import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.xml.jackson.JacksonXmlModule;
 import com.chm.converter.xml.jackson.deserializer.JacksonXmlBeanDeserializerModifier;
 import com.chm.converter.xml.jackson.serializer.JacksonXmlBeanSerializerModifier;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +31,8 @@ import java.util.Map;
 public class JacksonXmlConverter implements XmlConverter {
 
     public static final List<Class<? extends Annotation>> JACKSON_XML_ANNOTATION_LIST = ListUtil.of(JacksonXmlCData.class,
-            JacksonXmlElementWrapper.class, JacksonXmlProperty.class, JacksonXmlRootElement.class, JacksonXmlText.class);
+            JacksonXmlElementWrapper.class, JacksonXmlProperty.class, JacksonXmlRootElement.class, JacksonXmlText.class,
+            JsonProperty.class);
 
     public static final String JACKSON_XML_NAME = "com.fasterxml.jackson.dataformat.xml.XmlMapper";
 

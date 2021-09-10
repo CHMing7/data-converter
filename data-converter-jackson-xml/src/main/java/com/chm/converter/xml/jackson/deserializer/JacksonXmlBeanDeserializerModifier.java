@@ -1,7 +1,7 @@
 package com.chm.converter.xml.jackson.deserializer;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.chm.converter.constant.TimeConstant;
+import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.*;
 import com.chm.converter.jackson.deserializer.JacksonDefaultDateTypeDeserializer;
 import com.chm.converter.jackson.deserializer.JacksonJava8TimeDeserializer;

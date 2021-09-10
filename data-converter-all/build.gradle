@@ -1,0 +1,23 @@
+dependencies {
+    // 引用除了本模块与根模块之外的所有模块
+    rootProject.allprojects.stream().filter({
+        it != rootProject && it != project
+    }).forEach({
+        compile it
+    })
+}
+
+
+shadowJar {
+    baseName = "data-converter-all"
+    version = rootProject.version
+    //classifier是生成jar包的后缀
+    classifier = null
+
+    dependencies {
+        // 只打包本项目的模块
+        include(dependency {
+            it.moduleGroup == 'com.chm.converter'
+        })
+    }
+}

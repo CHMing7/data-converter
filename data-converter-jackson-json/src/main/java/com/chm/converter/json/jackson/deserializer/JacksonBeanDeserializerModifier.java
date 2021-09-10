@@ -1,7 +1,7 @@
 package com.chm.converter.json.jackson.deserializer;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.chm.converter.constant.TimeConstant;
+import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;

@@ -8,7 +8,7 @@ import com.alibaba.fastjson.serializer.DateCodec;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.chm.converter.core.Converter;
-import com.chm.converter.utils.DateUtil;
+import com.chm.converter.core.utils.DateUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

@@ -1,8 +1,8 @@
 package com.chm.converter.xml;
 
-import com.chm.converter.annotation.FieldProperty;
+import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.xml.annotation.XmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
+import com.chm.converter.xml.annotation.XmlRootElement;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -14,6 +14,7 @@ import java.util.Objects;
  * @version v1.0
  * @since 2021-06-03
  **/
+@XmlRootElement(name = "testUser")
 public class User {
 
     public User() {
