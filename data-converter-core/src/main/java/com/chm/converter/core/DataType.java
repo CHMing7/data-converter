@@ -1,7 +1,7 @@
 package com.chm.converter.core;
 
-import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.exception.ConvertException;
+import com.chm.converter.core.utils.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +52,11 @@ public class DataType {
     public final static DataType BINARY = DataType.createDataType("binary");
 
     /**
+     * 数据类型： protobuf类型
+     */
+    public final static DataType PROTOBUF = DataType.createDataType("protobuf");
+
+    /**
      * 全局数据转换器表
      */
     private final static Map<DataType, Converter<?>> CONVERTER_MAP = new HashMap<>();
@@ -72,7 +77,7 @@ public class DataType {
      * @return
      */
     public static DataType createDataType(String name) {
-        if (StrUtil.isEmpty(name)) {
+        if (StringUtil.isEmpty(name)) {
             throw new ConvertException("Data type name cannot be empty!");
         }
         name = name.toLowerCase();
@@ -122,7 +127,7 @@ public class DataType {
      * @return
      */
     public static DataType findOrCreateDataType(String name) {
-        if (StrUtil.isEmpty(name)) {
+        if (StringUtil.isEmpty(name)) {
             return null;
         }
         name = name.toLowerCase();

@@ -24,13 +24,13 @@ public class DefaultTextConverter implements TextConverter {
     }
 
     @Override
-    public String encodeToString(Object obj) {
+    public String encode(Object obj) {
         return null != obj ? obj.toString() : null;
     }
 
     @Override
     public boolean loadConverter() {
-        ConverterSelector.put(DefaultTextConverter.class, new DefaultTextConverter());
+        ConverterSelector.put(DefaultTextConverter.class, this);
         return true;
     }
 }

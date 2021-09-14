@@ -3,19 +3,19 @@ plugins {
 }
 
 apply from: 'dependency.gradle'
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
 
 
-allprojects {
+version = '1.0.0'
+group = 'com.chm.converter'
+
+subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
     apply plugin: 'com.github.johnrengelman.shadow'
 
-    version = '1.0.0'
-    group = 'com.chm.converter'
+    version = rootProject.version
+    group = rootProject.group
 
     repositories {
         maven { url = "http://maven.aliyun.com/nexus/content/repositories/jcenter" }

@@ -98,7 +98,7 @@ public class JacksonConverter implements JsonConverter {
     }
 
     @Override
-    public String encodeToString(Object obj) {
+    public String encode(Object obj) {
         try {
             return mapper.writeValueAsString(obj);
         } catch (Throwable e) {
@@ -132,7 +132,7 @@ public class JacksonConverter implements JsonConverter {
     public boolean loadConverter() {
         try {
             checkJacksonClass();
-            ConverterSelector.put(JacksonConverter.class, new JacksonConverter());
+            ConverterSelector.put(JacksonConverter.class, this);
         } catch (Throwable ignored) {
             return false;
         }

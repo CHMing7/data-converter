@@ -1,8 +1,8 @@
 package com.chm.converter.jackson.serializer;
 
-import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.utils.DateUtil;
+import com.chm.converter.core.utils.StringUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -44,7 +44,7 @@ public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerial
     }
 
     public JacksonDefaultDateTypeSerializer(String datePattern, Converter<?> converter) {
-        if (StrUtil.isNotBlank(datePattern)) {
+        if (StringUtil.isNotBlank(datePattern)) {
             this.dateFormatter = DateTimeFormatter.ofPattern(datePattern);
         } else {
             this.dateFormatter = null;

@@ -96,7 +96,7 @@ public class JacksonXmlConverter implements XmlConverter {
     }
 
     @Override
-    public String encodeToString(Object obj) {
+    public String encode(Object obj) {
         try {
             return mapper.writeValueAsString(obj);
         } catch (Throwable e) {
@@ -129,7 +129,7 @@ public class JacksonXmlConverter implements XmlConverter {
     public boolean loadConverter() {
         try {
             checkJacksonXmlClass();
-            ConverterSelector.put(JacksonXmlConverter.class, new JacksonXmlConverter());
+            ConverterSelector.put(JacksonXmlConverter.class, this);
         } catch (Throwable ignored) {
             return false;
         }

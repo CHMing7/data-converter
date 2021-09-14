@@ -1,6 +1,5 @@
 package com.chm.converter.json.fastjson;
 
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.JSONLexer;
 import com.alibaba.fastjson.parser.JSONToken;
@@ -11,6 +10,7 @@ import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.utils.DateUtil;
+import com.chm.converter.core.utils.StringUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -56,7 +56,7 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
 
     public FastjsonJdk8DateCodec(Class<T> clazz, String datePattern, Converter<?> converter) {
         this.clazz = clazz;
-        if (StrUtil.isNotBlank(datePattern)) {
+        if (StringUtil.isNotBlank(datePattern)) {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
             if (clazz == Instant.class && dateFormatter.getZone() == null) {
                 TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
@@ -105,7 +105,7 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
         if (lexer.token() == JSONToken.LITERAL_STRING) {
             String str = lexer.stringVal();
             lexer.nextToken();
-            if (StrUtil.isBlank(str)) {
+            if (StringUtil.isBlank(str)) {
                 return null;
             }
             DateTimeFormatter dtf = this.dateFormatter;
@@ -119,7 +119,7 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
                 // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
                 DateFormat dateFormat = parser.getDateFormat();
                 String dateFormatPattern = parser.getDateFomartPattern();
-                if (StrUtil.isNotBlank(dateFormatPattern)) {
+                if (StringUtil.isNotBlank(dateFormatPattern)) {
                     dtf = DateTimeFormatter.ofPattern(dateFormatPattern);
                     if (clazz == Instant.class && dtf.getZone() == null) {
                         // Instant类需设置时区
@@ -165,7 +165,7 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
         } else if (dtf == null) {
             DateFormat dateFormat = serializer.getDateFormat();
             String dateFormatPattern = serializer.getDateFormatPattern();
-            if (StrUtil.isNotBlank(dateFormatPattern) && dateFormat != null) {
+            if (StringUtil.isNotBlank(dateFormatPattern) && dateFormat != null) {
                 dtf = DateTimeFormatter.ofPattern(dateFormatPattern);
                 if (object instanceof Instant && dtf.getZone() == null) {
                     dtf = dtf.withZone(dateFormat.getTimeZone().toZoneId());

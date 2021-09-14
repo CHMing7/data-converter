@@ -1,9 +1,10 @@
-package com.chm.converter.json;
+package com.chm.converter.protobuf;
 
 import cn.hutool.log.StaticLog;
-import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
+import com.chm.converter.core.annotation.FieldProperty;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class TestJava8Time {
 
-    JsonConverter fastjsonConverter;
+    Converter protobufConverter;
 
     Java8Time java8Time;
 
     @Before
     public void before() {
-        fastjsonConverter = (JsonConverter) ConverterSelector.select(DataType.JSON, FastjsonConverter.class);
+        protobufConverter =  ConverterSelector.select(DataType.PROTOBUF, DefaultProtobufConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -45,26 +46,26 @@ public class TestJava8Time {
         java8Time.setTimestamp(new Timestamp(new Date().getTime()));
     }
 
-
     @Test
-    public void testFastjson() {
-        // fastjsonConverter.setDateFormat("yyyy-MM");
-        String encodeToString = fastjsonConverter.encode(this.java8Time);
-        StaticLog.info(encodeToString);
-        StaticLog.info(fastjsonConverter.encode(LocalDateTime.now()));
-        StaticLog.info(fastjsonConverter.encode(MonthDay.now()));
-        Java8Time java8Time = fastjsonConverter.convertToJavaObject(encodeToString, Java8Time.class);
-        StaticLog.info("{}",fastjsonConverter.convertToJavaObject(fastjsonConverter.encode(new Date()), Date.class));
+    public void testProtobuf() {
+        Object encode = protobufConverter.encode(java8Time);
+        StaticLog.info(String.valueOf(encode));
+        StaticLog.info(String.valueOf(protobufConverter.encode(LocalDateTime.now())));
+        StaticLog.info(String.valueOf(protobufConverter.encode(MonthDay.now())));
+        StaticLog.info(String.valueOf(protobufConverter.encode((MonthDay)null)));
+        Java8Time java8Time = (Java8Time) protobufConverter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }
 
     @Test
-    public void tesFastjsonCacheObjectWriter() {
+    public void testJacksonCacheSerializer() {
         Java8Time1 java8Time1 = new Java8Time1();
         java8Time1.setInstant1(Instant.now());
         java8Time1.setInstant2(Instant.now());
-        StaticLog.info(fastjsonConverter.encode(java8Time1));
-        fastjsonConverter.encode(java8Time1);
+        StaticLog.info(String.valueOf(protobufConverter.encode(java8Time1)));
+        StaticLog.info(String.valueOf(protobufConverter.encode(java8Time1)));
+        StaticLog.info(String.valueOf(protobufConverter.encode(java8Time1)));
+        protobufConverter.encode(java8Time1);
     }
 
     public static class Java8Time1 {
@@ -94,7 +95,7 @@ public class TestJava8Time {
 
     public static class Java8Time {
 
-        //@FieldProperty(name = "instant1", ordinal = 1)
+        @FieldProperty(name = "instant1", ordinal = 1)
         private Instant instant;
 
         //@FieldProperty(format = "yyyy-MM-dd")
@@ -127,7 +128,7 @@ public class TestJava8Time {
         //@FieldProperty(format = "ZZZZZ")
         private ZoneOffset zoneOffset;
 
-       // @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
+        @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
         private Date date;
 
         //@FieldProperty(format = "yyyy-MM-dd HH:mm:ss")

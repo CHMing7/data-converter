@@ -46,12 +46,12 @@ public interface Converter<S> {
     <T> T convertToJavaObject(S source, Type targetType);
 
     /**
-     * 将java对象转化成字符串
+     * 将java对象进行编码
      *
      * @param obj
      * @return
      */
-    S encodeToString(Object obj);
+    S encode(Object obj);
 
     /**
      * 获取当前数据转换器转换类型

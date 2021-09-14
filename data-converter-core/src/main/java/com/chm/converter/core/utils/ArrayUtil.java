@@ -2,7 +2,6 @@ package com.chm.converter.core.utils;
 
 import cn.hutool.core.lang.Matcher;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -252,7 +251,7 @@ public class ArrayUtil extends PrimitiveArrayUtil {
     public static int indexOfIgnoreCase(CharSequence[] array, CharSequence value) {
         if (null != array) {
             for (int i = 0; i < array.length; i++) {
-                if (StrUtil.equalsIgnoreCase(array[i], value)) {
+                if (StringUtil.equalsIgnoreCase(array[i], value)) {
                     return i;
                 }
             }

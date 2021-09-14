@@ -132,13 +132,13 @@ public class DefaultAutoConverter implements AutoConverter {
     }
 
     @Override
-    public Object encodeToString(Object obj) {
+    public Object encode(Object obj) {
         return null;
     }
 
     @Override
     public boolean loadConverter() {
-        ConverterSelector.put(DefaultAutoConverter.class, new DefaultAutoConverter());
+        ConverterSelector.put(DefaultAutoConverter.class, this);
         return true;
     }
 

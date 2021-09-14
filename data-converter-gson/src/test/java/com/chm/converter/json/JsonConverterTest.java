@@ -33,7 +33,7 @@ public class JsonConverterTest {
 
         GsonConverter gsonConverter = (GsonConverter) ConverterSelector.select(DataType.JSON, GsonConverter.class);
 
-        String encodeToString = gsonConverter.encodeToString(userMap);
+        String encodeToString = gsonConverter.encode(userMap);
 
         TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {
         };

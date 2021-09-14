@@ -92,7 +92,7 @@ public class FastjsonConverter implements JsonConverter {
      * @param serializerFeature FastJson的序列化特性对象，{@link SerializerFeature}枚举实例
      */
     public void addSerializerFeature(SerializerFeature serializerFeature) {
-        if(serializerFeatureList == null){
+        if (serializerFeatureList == null) {
             this.serializerFeatureList = ListUtil.list(true);
         }
         this.serializerFeatureList.add(serializerFeature);
@@ -135,7 +135,7 @@ public class FastjsonConverter implements JsonConverter {
     }
 
     @Override
-    public String encodeToString(Object obj) {
+    public String encode(Object obj) {
         if (obj instanceof CharSequence) {
             obj.toString();
         }
@@ -280,7 +280,7 @@ public class FastjsonConverter implements JsonConverter {
     public boolean loadConverter() {
         try {
             checkFastjsonClass();
-            ConverterSelector.put(FastjsonConverter.class, new FastjsonConverter());
+            ConverterSelector.put(FastjsonConverter.class, this);
         } catch (Throwable ignored) {
             return false;
         }

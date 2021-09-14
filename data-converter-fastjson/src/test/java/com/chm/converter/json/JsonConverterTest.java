@@ -1,6 +1,5 @@
 package com.chm.converter.json;
 
-import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSON;
@@ -9,9 +8,7 @@ import com.chm.converter.core.DataType;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,7 +33,7 @@ public class JsonConverterTest {
 
         FastjsonConverter jsonConverter = (FastjsonConverter) ConverterSelector.select(DataType.JSON, FastjsonConverter.class);
         // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
-        String encodeToString = jsonConverter.encodeToString(userMap);
+        String encodeToString = jsonConverter.encode(userMap);
 
         TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {
         };

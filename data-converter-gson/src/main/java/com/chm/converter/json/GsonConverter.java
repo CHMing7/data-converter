@@ -169,7 +169,7 @@ public class GsonConverter implements JsonConverter {
     }
 
     @Override
-    public String encodeToString(Object obj) {
+    public String encode(Object obj) {
         Gson gson = createGson();
         return gson.toJson(obj);
     }
@@ -205,7 +205,7 @@ public class GsonConverter implements JsonConverter {
     public boolean loadConverter() {
         try {
             checkGsonClass();
-            ConverterSelector.put(GsonConverter.class, new GsonConverter());
+            ConverterSelector.put(GsonConverter.class, this);
         } catch (Throwable ignored) {
             return false;
         }

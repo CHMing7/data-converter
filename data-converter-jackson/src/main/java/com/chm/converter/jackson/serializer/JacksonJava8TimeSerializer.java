@@ -1,9 +1,9 @@
 package com.chm.converter.jackson.serializer;
 
-import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.utils.DateUtil;
+import com.chm.converter.core.utils.StringUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -50,7 +50,7 @@ public class JacksonJava8TimeSerializer<T extends TemporalAccessor> extends Json
 
     public JacksonJava8TimeSerializer(Class<T> clazz, String datePattern, Converter<?> converter) {
         this.clazz = clazz;
-        if (StrUtil.isNotBlank(datePattern)) {
+        if (StringUtil.isNotBlank(datePattern)) {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
             if (clazz == Instant.class && dateFormatter.getZone() == null) {
                 TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();

@@ -2,8 +2,8 @@ package com.chm.converter.core;
 
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.core.utils.TypeUtil;
 
 import java.lang.reflect.*;
@@ -171,12 +171,12 @@ public class FieldInfo implements Comparable<FieldInfo> {
      */
     public static String getGeneralField(CharSequence getOrSetMethodName) {
         // 将下划线式命名改成驼峰式
-        getOrSetMethodName = StrUtil.toCamelCase(getOrSetMethodName);
+        getOrSetMethodName = StringUtil.toCamelCase(getOrSetMethodName);
         final String getOrSetMethodNameStr = getOrSetMethodName.toString();
         if (getOrSetMethodNameStr.startsWith("get") || getOrSetMethodNameStr.startsWith("set")) {
-            return StrUtil.removePreAndLowerFirst(getOrSetMethodName, 3);
+            return StringUtil.removePreAndLowerFirst(getOrSetMethodName, 3);
         } else if (getOrSetMethodNameStr.startsWith("is")) {
-            return StrUtil.removePreAndLowerFirst(getOrSetMethodName, 2);
+            return StringUtil.removePreAndLowerFirst(getOrSetMethodName, 2);
         }
 
         return null;
@@ -203,8 +203,8 @@ public class FieldInfo implements Comparable<FieldInfo> {
      */
     private boolean isMatchGetter(String methodName, String fieldName, boolean isBooleanField) {
         // 将下划线式命名改成驼峰式
-        methodName = StrUtil.toCamelCase(methodName);
-        final String handledFieldName = StrUtil.upperFirst(fieldName);
+        methodName = StringUtil.toCamelCase(methodName);
+        final String handledFieldName = StringUtil.upperFirst(fieldName);
 
         if (!methodName.startsWith("get") && !methodName.startsWith("is")) {
             // 非标准Getter方法
@@ -256,8 +256,8 @@ public class FieldInfo implements Comparable<FieldInfo> {
      */
     private boolean isMatchSetter(String methodName, String fieldName, boolean isBooleanField) {
         // 将下划线式命名改成驼峰式
-        methodName = StrUtil.toCamelCase(methodName);
-        final String handledFieldName = StrUtil.upperFirst(fieldName);
+        methodName = StringUtil.toCamelCase(methodName);
+        final String handledFieldName = StringUtil.upperFirst(fieldName);
 
         // 非标准Setter方法跳过
         if (!methodName.startsWith("set")) {
@@ -268,7 +268,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
         if (isBooleanField && fieldName.startsWith("is")) {
             // 字段是is开头
             // isName -》 setName
-            if (methodName.equals("set" + StrUtil.removePrefix(fieldName, "is"))
+            if (methodName.equals("set" + StringUtil.removePrefix(fieldName, "is"))
                     // isName -》 setIsName
                     || methodName.equals("set" + handledFieldName)
             ) {

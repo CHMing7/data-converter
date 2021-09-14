@@ -1,9 +1,9 @@
 package com.chm.converter.json.gson;
 
-import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.utils.DateUtil;
+import com.chm.converter.core.utils.StringUtil;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -54,7 +54,7 @@ public class GsonJava8TimeAdapter<T extends TemporalAccessor> extends TypeAdapte
 
     public GsonJava8TimeAdapter(Class<T> clazz, String datePattern, Converter<?> converter) {
         this.clazz = clazz;
-        if (StrUtil.isNotBlank(datePattern)) {
+        if (StringUtil.isNotBlank(datePattern)) {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
             if (clazz == Instant.class && dateFormatter.getZone() == null) {
                 TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
@@ -129,7 +129,7 @@ public class GsonJava8TimeAdapter<T extends TemporalAccessor> extends TypeAdapte
     }
 
     private TemporalAccessor deserializeToTemporalAccessor(String str) {
-        if (StrUtil.isBlank(str)) {
+        if (StringUtil.isBlank(str)) {
             return null;
         }
         DateTimeFormatter dtf = this.dateFormatter;

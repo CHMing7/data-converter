@@ -48,11 +48,11 @@ public class TestJava8Time {
 
     @Test
     public void testGson() {
-        String encodeToString = gsonConverter.encodeToString(java8Time);
+        String encodeToString = gsonConverter.encode(java8Time);
         StaticLog.info(encodeToString);
-        StaticLog.info(gsonConverter.encodeToString(LocalDateTime.now()));
-        StaticLog.info(gsonConverter.encodeToString(MonthDay.now()));
-        StaticLog.info(gsonConverter.encodeToString((MonthDay)null));
+        StaticLog.info(gsonConverter.encode(LocalDateTime.now()));
+        StaticLog.info(gsonConverter.encode(MonthDay.now()));
+        StaticLog.info(gsonConverter.encode((MonthDay)null));
         Java8Time java8Time = gsonConverter.convertToJavaObject(encodeToString, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }
@@ -62,9 +62,9 @@ public class TestJava8Time {
         Java8Time1 java8Time1 = new Java8Time1();
         java8Time1.setInstant1(Instant.now());
         java8Time1.setInstant2(Instant.now());
-        StaticLog.info(gsonConverter.encodeToString(java8Time1));
-        StaticLog.info(gsonConverter.encodeToString(java8Time1));
-        gsonConverter.encodeToString(java8Time1);
+        StaticLog.info(gsonConverter.encode(java8Time1));
+        StaticLog.info(gsonConverter.encode(java8Time1));
+        gsonConverter.encode(java8Time1);
     }
 
     public static class Java8Time1 {

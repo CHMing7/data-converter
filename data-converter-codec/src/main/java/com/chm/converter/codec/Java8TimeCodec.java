@@ -1,9 +1,9 @@
 package com.chm.converter.codec;
 
-import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.utils.DateUtil;
+import com.chm.converter.core.utils.StringUtil;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -50,7 +50,7 @@ public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, Stri
     public Java8TimeCodec(Class<T> clazz, String datePattern, Converter<?> converter) {
         Objects.requireNonNull(clazz, "clazz must not be null");
         this.clazz = clazz;
-        if (StrUtil.isNotBlank(datePattern)) {
+        if (StringUtil.isNotBlank(datePattern)) {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
             if (clazz == Instant.class && dateFormatter.getZone() == null) {
                 TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
@@ -135,7 +135,7 @@ public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, Stri
      * @return
      */
     public <T> T decode(String timeStr, String format) {
-        if (StrUtil.isBlank(timeStr)) {
+        if (StringUtil.isBlank(timeStr)) {
             return null;
         }
 

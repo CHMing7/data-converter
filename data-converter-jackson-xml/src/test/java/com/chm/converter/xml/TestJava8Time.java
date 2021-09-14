@@ -55,11 +55,11 @@ public class TestJava8Time {
         jacksonXmlConverter.getMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
         jacksonXmlConverter.getMapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         jacksonXmlConverter.getMapper().configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false);
-        String encodeToString = jacksonXmlConverter.encodeToString(java8Time);
+        String encodeToString = jacksonXmlConverter.encode(java8Time);
         StaticLog.info(encodeToString);
-        StaticLog.info(jacksonXmlConverter.encodeToString(LocalDateTime.now()));
-        StaticLog.info(jacksonXmlConverter.encodeToString(MonthDay.now()));
-        StaticLog.info(jacksonXmlConverter.encodeToString((MonthDay)null));
+        StaticLog.info(jacksonXmlConverter.encode(LocalDateTime.now()));
+        StaticLog.info(jacksonXmlConverter.encode(MonthDay.now()));
+        StaticLog.info(jacksonXmlConverter.encode((MonthDay)null));
         Java8Time java8Time = jacksonXmlConverter.convertToJavaObject(encodeToString, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }
@@ -69,10 +69,10 @@ public class TestJava8Time {
         Java8Time1 java8Time1 = new Java8Time1();
         java8Time1.setInstant1(Instant.now());
         java8Time1.setInstant2(Instant.now());
-        StaticLog.info(jacksonXmlConverter.encodeToString(java8Time1));
-        StaticLog.info(jacksonXmlConverter.encodeToString(java8Time1));
-        StaticLog.info(jacksonXmlConverter.encodeToString(java8Time1));
-        jacksonXmlConverter.encodeToString(java8Time1);
+        StaticLog.info(jacksonXmlConverter.encode(java8Time1));
+        StaticLog.info(jacksonXmlConverter.encode(java8Time1));
+        StaticLog.info(jacksonXmlConverter.encode(java8Time1));
+        jacksonXmlConverter.encode(java8Time1);
     }
 
     public static class Java8Time1 {

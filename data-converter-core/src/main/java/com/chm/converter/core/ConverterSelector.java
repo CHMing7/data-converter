@@ -33,7 +33,7 @@ public class ConverterSelector implements Serializable {
                 }
                 Converter<?> jsonConverter = converterClass.newInstance();
                 jsonConverter.loadConverter();
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });

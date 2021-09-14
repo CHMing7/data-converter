@@ -1,8 +1,8 @@
 package com.chm.converter.jackson.deserializer;
 
-import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.utils.StringUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -54,7 +54,7 @@ public class JacksonJava8TimeDeserializer<T extends TemporalAccessor> extends Js
 
     public JacksonJava8TimeDeserializer(Class<T> clazz, String datePattern, Converter<?> converter) {
         this.clazz = clazz;
-        if (StrUtil.isNotBlank(datePattern)) {
+        if (StringUtil.isNotBlank(datePattern)) {
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
             if (clazz == Instant.class && dateFormatter.getZone() == null) {
                 TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
@@ -99,7 +99,7 @@ public class JacksonJava8TimeDeserializer<T extends TemporalAccessor> extends Js
             return null;
         }
         String str = p.getText();
-        if (StrUtil.isBlank(str)) {
+        if (StringUtil.isBlank(str)) {
             return null;
         }
 

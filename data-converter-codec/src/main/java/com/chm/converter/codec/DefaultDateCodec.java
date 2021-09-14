@@ -1,8 +1,8 @@
 package com.chm.converter.codec;
 
-import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.utils.DateUtil;
+import com.chm.converter.core.utils.StringUtil;
 
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
@@ -49,7 +49,7 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
 
     public DefaultDateCodec(Class<T> dateType, String datePattern, Converter<?> converter) {
         this.dateType = verifyDateType(dateType);
-        if (StrUtil.isNotBlank(datePattern)) {
+        if (StringUtil.isNotBlank(datePattern)) {
             this.dateFormatter = DateTimeFormatter.ofPattern(datePattern);
         } else {
             this.dateFormatter = null;
@@ -98,7 +98,7 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
     }
 
     public <T> T decode(String timeStr, String format) {
-        if (StrUtil.isBlank(timeStr)) {
+        if (StringUtil.isBlank(timeStr)) {
             return null;
         }
 

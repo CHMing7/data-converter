@@ -1,6 +1,7 @@
 package com.chm.converter.codec;
 
-import cn.hutool.core.util.StrUtil;
+
+import com.chm.converter.core.utils.StringUtil;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -22,7 +23,7 @@ public interface Codecs {
         if (str == null) {
             return false;
         }
-        if (StrUtil.isNotBlank(str)) {
+        if (StringUtil.isNotBlank(str)) {
             str = str.trim().toLowerCase();
             return "true".equals(str);
         }
@@ -79,7 +80,7 @@ public interface Codecs {
         if (str == null) {
             atomicBoolean.set(false);
         }
-        if (StrUtil.isNotBlank(str)) {
+        if (StringUtil.isNotBlank(str)) {
             str = str.trim().toLowerCase();
             atomicBoolean.set("true".equals(str));
         }
@@ -95,15 +96,15 @@ public interface Codecs {
     /*  SimpleToStringCodec<AtomicReference<?>> ATOMIC_REFERENCE = SimpleToStringCodec.create();*/
 
     SimpleToStringCodec<AtomicIntegerArray> ATOMIC_INTEGER_ARRAY = SimpleToStringCodec.create(str -> {
-        String s = StrUtil.removeAny("[", "]");
-        String[] strArray = StrUtil.splitToArray(s, ',');
+        String s = StringUtil.removeAny("[", "]");
+        String[] strArray = StringUtil.splitToArray(s, ',');
         int[] ints = Arrays.stream(strArray).mapToInt(Integer::decode).toArray();
         return new AtomicIntegerArray(ints);
     });
 
     SimpleToStringCodec<AtomicLongArray> ATOMIC_LONG_ARRAY = SimpleToStringCodec.create(str -> {
-        String s = StrUtil.removeAny("[", "]");
-        String[] strArray = StrUtil.splitToArray(s, ',');
+        String s = StringUtil.removeAny("[", "]");
+        String[] strArray = StringUtil.splitToArray(s, ',');
         long[] longs = Arrays.stream(strArray).mapToLong(Long::decode).toArray();
         return new AtomicLongArray(longs);
     });

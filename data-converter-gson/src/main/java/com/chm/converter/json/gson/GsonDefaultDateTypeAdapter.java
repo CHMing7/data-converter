@@ -1,8 +1,8 @@
 package com.chm.converter.json.gson;
 
-import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.utils.DateUtil;
+import com.chm.converter.core.utils.StringUtil;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -52,7 +52,7 @@ public class GsonDefaultDateTypeAdapter<T extends Date> extends TypeAdapter<T> {
 
     public GsonDefaultDateTypeAdapter(Class<T> dateType, String datePattern, Converter<?> converter) {
         this.dateType = verifyDateType(dateType);
-        if (StrUtil.isNotBlank(datePattern)) {
+        if (StringUtil.isNotBlank(datePattern)) {
             this.dateFormatter = DateTimeFormatter.ofPattern(datePattern);
         } else {
             this.dateFormatter = null;

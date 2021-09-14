@@ -1,8 +1,8 @@
 package com.chm.converter.jackson.deserializer;
 
-import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.utils.DateUtil;
+import com.chm.converter.core.utils.StringUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -54,7 +54,7 @@ public class JacksonDefaultDateTypeDeserializer<T extends Date> extends JsonDese
 
     public JacksonDefaultDateTypeDeserializer(Class<T> dateType, String datePattern, Converter<?> converter) {
         this.dateType = verifyDateType(dateType);
-        if (StrUtil.isNotBlank(datePattern)) {
+        if (StringUtil.isNotBlank(datePattern)) {
             this.dateFormatter = DateTimeFormatter.ofPattern(datePattern);
         } else {
             this.dateFormatter = null;

@@ -92,13 +92,13 @@ public class DefaultBinaryConverter implements BinaryConverter {
     }
 
     @Override
-    public Object encodeToString(Object obj) {
+    public Object encode(Object obj) {
         return null;
     }
 
     @Override
     public boolean loadConverter() {
-        ConverterSelector.put(DefaultBinaryConverter.class, new DefaultBinaryConverter());
+        ConverterSelector.put(DefaultBinaryConverter.class, this);
         return true;
     }
 }

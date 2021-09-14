@@ -1,7 +1,15 @@
 package com.chm.converter.core.utils;
 
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.text.StrBuilder;
+import cn.hutool.core.text.StrFormatter;
+import cn.hutool.core.text.StrSpliter;
 import com.chm.converter.core.text.CharPool;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link CharSequence} 相关工具类封装
@@ -11,6 +19,8 @@ import com.chm.converter.core.text.CharPool;
  * @since 2021-09-10
  **/
 public class CharSequenceUtil {
+
+    public static final int INDEX_NOT_FOUND = -1;
 
     /**
      * 字符串常量：{@code "null"} <br>
@@ -33,10 +43,10 @@ public class CharSequenceUtil {
      *
      * <p>例：</p>
      * <ul>
-     *     <li>{@code StrUtil.isBlank(null)     // true}</li>
-     *     <li>{@code StrUtil.isBlank("")       // true}</li>
-     *     <li>{@code StrUtil.isBlank(" \t\n")  // true}</li>
-     *     <li>{@code StrUtil.isBlank("abc")    // false}</li>
+     *     <li>{@code StringUtil.isBlank(null)     // true}</li>
+     *     <li>{@code StringUtil.isBlank("")       // true}</li>
+     *     <li>{@code StringUtil.isBlank(" \t\n")  // true}</li>
+     *     <li>{@code StringUtil.isBlank("abc")    // false}</li>
      * </ul>
      *
      * <p>注意：该方法与 {@link #isEmpty(CharSequence)} 的区别是：
@@ -80,10 +90,10 @@ public class CharSequenceUtil {
      *
      * <p>例：</p>
      * <ul>
-     *     <li>{@code StrUtil.isNotBlank(null)     // false}</li>
-     *     <li>{@code StrUtil.isNotBlank("")       // false}</li>
-     *     <li>{@code StrUtil.isNotBlank(" \t\n")  // false}</li>
-     *     <li>{@code StrUtil.isNotBlank("abc")    // true}</li>
+     *     <li>{@code StringUtil.isNotBlank(null)     // false}</li>
+     *     <li>{@code StringUtil.isNotBlank("")       // false}</li>
+     *     <li>{@code StringUtil.isNotBlank(" \t\n")  // false}</li>
+     *     <li>{@code StringUtil.isNotBlank("abc")    // true}</li>
      * </ul>
      *
      * <p>注意：该方法与 {@link #isNotEmpty(CharSequence)} 的区别是：
@@ -105,10 +115,10 @@ public class CharSequenceUtil {
      *
      * <p>例：</p>
      * <ul>
-     *     <li>{@code StrUtil.hasBlank()                  // true}</li>
-     *     <li>{@code StrUtil.hasBlank("", null, " ")     // true}</li>
-     *     <li>{@code StrUtil.hasBlank("123", " ")        // true}</li>
-     *     <li>{@code StrUtil.hasBlank("123", "abc")      // false}</li>
+     *     <li>{@code StringUtil.hasBlank()                  // true}</li>
+     *     <li>{@code StringUtil.hasBlank("", null, " ")     // true}</li>
+     *     <li>{@code StringUtil.hasBlank("123", " ")        // true}</li>
+     *     <li>{@code StringUtil.hasBlank("123", "abc")      // false}</li>
      * </ul>
      *
      * <p>注意：该方法与 {@link #isAllBlank(CharSequence...)} 的区别在于：</p>
@@ -140,10 +150,10 @@ public class CharSequenceUtil {
      *
      * <p>例：</p>
      * <ul>
-     *     <li>{@code StrUtil.isAllBlank()                  // true}</li>
-     *     <li>{@code StrUtil.isAllBlank("", null, " ")     // true}</li>
-     *     <li>{@code StrUtil.isAllBlank("123", " ")        // false}</li>
-     *     <li>{@code StrUtil.isAllBlank("123", "abc")      // false}</li>
+     *     <li>{@code StringUtil.isAllBlank()                  // true}</li>
+     *     <li>{@code StringUtil.isAllBlank("", null, " ")     // true}</li>
+     *     <li>{@code StringUtil.isAllBlank("123", " ")        // false}</li>
+     *     <li>{@code StringUtil.isAllBlank("123", "abc")      // false}</li>
      * </ul>
      *
      * <p>注意：该方法与 {@link #hasBlank(CharSequence...)} 的区别在于：</p>
@@ -177,10 +187,10 @@ public class CharSequenceUtil {
      *
      * <p>例：</p>
      * <ul>
-     *     <li>{@code StrUtil.isEmpty(null)     // true}</li>
-     *     <li>{@code StrUtil.isEmpty("")       // true}</li>
-     *     <li>{@code StrUtil.isEmpty(" \t\n")  // false}</li>
-     *     <li>{@code StrUtil.isEmpty("abc")    // false}</li>
+     *     <li>{@code StringUtil.isEmpty(null)     // true}</li>
+     *     <li>{@code StringUtil.isEmpty("")       // true}</li>
+     *     <li>{@code StringUtil.isEmpty(" \t\n")  // false}</li>
+     *     <li>{@code StringUtil.isEmpty("abc")    // false}</li>
      * </ul>
      *
      * <p>注意：该方法与 {@link #isBlank(CharSequence)} 的区别是：该方法不校验空白字符。</p>
@@ -207,10 +217,10 @@ public class CharSequenceUtil {
      *
      * <p>例：</p>
      * <ul>
-     *     <li>{@code StrUtil.isNotEmpty(null)     // false}</li>
-     *     <li>{@code StrUtil.isNotEmpty("")       // false}</li>
-     *     <li>{@code StrUtil.isNotEmpty(" \t\n")  // true}</li>
-     *     <li>{@code StrUtil.isNotEmpty("abc")    // true}</li>
+     *     <li>{@code StringUtil.isNotEmpty(null)     // false}</li>
+     *     <li>{@code StringUtil.isNotEmpty("")       // false}</li>
+     *     <li>{@code StringUtil.isNotEmpty(" \t\n")  // true}</li>
+     *     <li>{@code StringUtil.isNotEmpty("abc")    // true}</li>
      * </ul>
      *
      * <p>注意：该方法与 {@link #isNotBlank(CharSequence)} 的区别是：该方法不校验空白字符。</p>
@@ -221,7 +231,7 @@ public class CharSequenceUtil {
      * @see #isEmpty(CharSequence)
      */
     public static boolean isNotEmpty(CharSequence str) {
-        return false == isEmpty(str);
+        return !isEmpty(str);
     }
 
     /**
@@ -316,11 +326,11 @@ public class CharSequenceUtil {
      *
      * <p>例：</p>
      * <ul>
-     *     <li>{@code StrUtil.hasEmpty()                  // true}</li>
-     *     <li>{@code StrUtil.hasEmpty("", null)          // true}</li>
-     *     <li>{@code StrUtil.hasEmpty("123", "")         // true}</li>
-     *     <li>{@code StrUtil.hasEmpty("123", "abc")      // false}</li>
-     *     <li>{@code StrUtil.hasEmpty(" ", "\t", "\n")   // false}</li>
+     *     <li>{@code StringUtil.hasEmpty()                  // true}</li>
+     *     <li>{@code StringUtil.hasEmpty("", null)          // true}</li>
+     *     <li>{@code StringUtil.hasEmpty("123", "")         // true}</li>
+     *     <li>{@code StringUtil.hasEmpty("123", "abc")      // false}</li>
+     *     <li>{@code StringUtil.hasEmpty(" ", "\t", "\n")   // false}</li>
      * </ul>
      *
      * <p>注意：该方法与 {@link #isAllEmpty(CharSequence...)} 的区别在于：</p>
@@ -352,11 +362,11 @@ public class CharSequenceUtil {
      *
      * <p>例：</p>
      * <ul>
-     *     <li>{@code StrUtil.isAllEmpty()                  // true}</li>
-     *     <li>{@code StrUtil.isAllEmpty("", null)          // true}</li>
-     *     <li>{@code StrUtil.isAllEmpty("123", "")         // false}</li>
-     *     <li>{@code StrUtil.isAllEmpty("123", "abc")      // false}</li>
-     *     <li>{@code StrUtil.isAllEmpty(" ", "\t", "\n")   // false}</li>
+     *     <li>{@code StringUtil.isAllEmpty()                  // true}</li>
+     *     <li>{@code StringUtil.isAllEmpty("", null)          // true}</li>
+     *     <li>{@code StringUtil.isAllEmpty("123", "")         // false}</li>
+     *     <li>{@code StringUtil.isAllEmpty("123", "abc")      // false}</li>
+     *     <li>{@code StringUtil.isAllEmpty(" ", "\t", "\n")   // false}</li>
      * </ul>
      *
      * <p>注意：该方法与 {@link #hasEmpty(CharSequence...)} 的区别在于：</p>
@@ -388,11 +398,11 @@ public class CharSequenceUtil {
      *
      * <p>例：</p>
      * <ul>
-     *     <li>{@code StrUtil.isAllNotEmpty()                  // false}</li>
-     *     <li>{@code StrUtil.isAllNotEmpty("", null)          // false}</li>
-     *     <li>{@code StrUtil.isAllNotEmpty("123", "")         // false}</li>
-     *     <li>{@code StrUtil.isAllNotEmpty("123", "abc")      // true}</li>
-     *     <li>{@code StrUtil.isAllNotEmpty(" ", "\t", "\n")   // true}</li>
+     *     <li>{@code StringUtil.isAllNotEmpty()                  // false}</li>
+     *     <li>{@code StringUtil.isAllNotEmpty("", null)          // false}</li>
+     *     <li>{@code StringUtil.isAllNotEmpty("123", "")         // false}</li>
+     *     <li>{@code StringUtil.isAllNotEmpty("123", "abc")      // true}</li>
+     *     <li>{@code StringUtil.isAllNotEmpty(" ", "\t", "\n")   // true}</li>
      * </ul>
      *
      * <p>注意：该方法与 {@link #isAllEmpty(CharSequence...)} 的区别在于：</p>
@@ -416,6 +426,425 @@ public class CharSequenceUtil {
      */
     public static boolean isAllNotBlank(CharSequence... args) {
         return !hasBlank(args);
+    }
+
+    // ------------------------------------------------------------------------ contains
+
+    /**
+     * 指定字符是否在字符串中出现过
+     *
+     * @param str        字符串
+     * @param searchChar 被查找的字符
+     * @return 是否包含
+     */
+    public static boolean contains(CharSequence str, char searchChar) {
+        return indexOf(str, searchChar) > -1;
+    }
+
+    /**
+     * 指定字符串是否在字符串中出现过
+     *
+     * @param str       字符串
+     * @param searchStr 被查找的字符串
+     * @return 是否包含
+     */
+    public static boolean contains(CharSequence str, CharSequence searchStr) {
+        if (null == str || null == searchStr) {
+            return false;
+        }
+        return str.toString().contains(searchStr);
+    }
+
+    /**
+     * 查找指定字符串是否包含指定字符串列表中的任意一个字符串
+     *
+     * @param str      指定字符串
+     * @param testStrs 需要检查的字符串数组
+     * @return 是否包含任意一个字符串
+     */
+    public static boolean containsAny(CharSequence str, CharSequence... testStrs) {
+        return null != getContainsStr(str, testStrs);
+    }
+
+    /**
+     * 查找指定字符串是否包含指定字符列表中的任意一个字符
+     *
+     * @param str       指定字符串
+     * @param testChars 需要检查的字符数组
+     * @return 是否包含任意一个字符
+     */
+    public static boolean containsAny(CharSequence str, char... testChars) {
+        if (!isEmpty(str)) {
+            int len = str.length();
+            for (int i = 0; i < len; i++) {
+                if (ArrayUtil.contains(testChars, str.charAt(i))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 检查指定字符串中是否只包含给定的字符
+     *
+     * @param str       字符串
+     * @param testChars 检查的字符
+     * @return 字符串含有非检查的字符，返回false
+     */
+    public static boolean containsOnly(CharSequence str, char... testChars) {
+        if (!isEmpty(str)) {
+            int len = str.length();
+            for (int i = 0; i < len; i++) {
+                if (!ArrayUtil.contains(testChars, str.charAt(i))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 给定字符串是否包含空白符（空白符包括空格、制表符、全角空格和不间断空格）<br>
+     * 如果给定字符串为null或者""，则返回false
+     *
+     * @param str 字符串
+     * @return 是否包含空白符
+     */
+    public static boolean containsBlank(CharSequence str) {
+        if (null == str) {
+            return false;
+        }
+        final int length = str.length();
+        if (0 == length) {
+            return false;
+        }
+
+        for (int i = 0; i < length; i += 1) {
+            if (CharUtil.isBlankChar(str.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 查找指定字符串是否包含指定字符串列表中的任意一个字符串，如果包含返回找到的第一个字符串
+     *
+     * @param str      指定字符串
+     * @param testStrs 需要检查的字符串数组
+     * @return 被包含的第一个字符串
+     */
+    public static String getContainsStr(CharSequence str, CharSequence... testStrs) {
+        if (isEmpty(str) || ArrayUtil.isEmpty(testStrs)) {
+            return null;
+        }
+        for (CharSequence checkStr : testStrs) {
+            if (str.toString().contains(checkStr)) {
+                return checkStr.toString();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 是否包含特定字符，忽略大小写，如果给定两个参数都为{@code null}，返回true
+     *
+     * @param str     被检测字符串
+     * @param testStr 被测试是否包含的字符串
+     * @return 是否包含
+     */
+    public static boolean containsIgnoreCase(CharSequence str, CharSequence testStr) {
+        if (null == str) {
+            // 如果被监测字符串和
+            return null == testStr;
+        }
+        return str.toString().toLowerCase().contains(testStr.toString().toLowerCase());
+    }
+
+    /**
+     * 查找指定字符串是否包含指定字符串列表中的任意一个字符串<br>
+     * 忽略大小写
+     *
+     * @param str      指定字符串
+     * @param testStrs 需要检查的字符串数组
+     * @return 是否包含任意一个字符串
+     */
+    public static boolean containsAnyIgnoreCase(CharSequence str, CharSequence... testStrs) {
+        return null != getContainsStrIgnoreCase(str, testStrs);
+    }
+
+    /**
+     * 查找指定字符串是否包含指定字符串列表中的任意一个字符串，如果包含返回找到的第一个字符串<br>
+     * 忽略大小写
+     *
+     * @param str      指定字符串
+     * @param testStrs 需要检查的字符串数组
+     * @return 被包含的第一个字符串
+     */
+    public static String getContainsStrIgnoreCase(CharSequence str, CharSequence... testStrs) {
+        if (isEmpty(str) || ArrayUtil.isEmpty(testStrs)) {
+            return null;
+        }
+        for (CharSequence testStr : testStrs) {
+            if (containsIgnoreCase(str, testStr)) {
+                return testStr.toString();
+            }
+        }
+        return null;
+    }
+
+    // ------------------------------------------------------------------------ indexOf
+
+    /**
+     * 指定范围内查找指定字符
+     *
+     * @param str        字符串
+     * @param searchChar 被查找的字符
+     * @return 位置
+     */
+    public static int indexOf(final CharSequence str, char searchChar) {
+        return indexOf(str, searchChar, 0);
+    }
+
+    /**
+     * 指定范围内查找指定字符
+     *
+     * @param str        字符串
+     * @param searchChar 被查找的字符
+     * @param start      起始位置，如果小于0，从0开始查找
+     * @return 位置
+     */
+    public static int indexOf(CharSequence str, char searchChar, int start) {
+        if (str instanceof String) {
+            return ((String) str).indexOf(searchChar, start);
+        } else {
+            return indexOf(str, searchChar, start, -1);
+        }
+    }
+
+    /**
+     * 指定范围内查找指定字符
+     *
+     * @param str        字符串
+     * @param searchChar 被查找的字符
+     * @param start      起始位置，如果小于0，从0开始查找
+     * @param end        终止位置，如果超过str.length()则默认查找到字符串末尾
+     * @return 位置
+     */
+    public static int indexOf(final CharSequence str, char searchChar, int start, int end) {
+        if (isEmpty(str)) {
+            return INDEX_NOT_FOUND;
+        }
+        final int len = str.length();
+        if (start < 0 || start > len) {
+            start = 0;
+        }
+        if (end > len || end < 0) {
+            end = len;
+        }
+        for (int i = start; i < end; i++) {
+            if (str.charAt(i) == searchChar) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
+    }
+
+    /**
+     * 指定范围内查找字符串，忽略大小写<br>
+     *
+     * <pre>
+     * StrUtil.indexOfIgnoreCase(null, *, *)          = -1
+     * StrUtil.indexOfIgnoreCase(*, null, *)          = -1
+     * StrUtil.indexOfIgnoreCase("", "", 0)           = 0
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "A", 0)  = 0
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", 0)  = 2
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "AB", 0) = 1
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", 3)  = 5
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", 9)  = -1
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", -1) = 2
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "", 2)   = 2
+     * StrUtil.indexOfIgnoreCase("abc", "", 9)        = -1
+     * </pre>
+     *
+     * @param str       字符串
+     * @param searchStr 需要查找位置的字符串
+     * @return 位置
+     */
+    public static int indexOfIgnoreCase(final CharSequence str, final CharSequence searchStr) {
+        return indexOfIgnoreCase(str, searchStr, 0);
+    }
+
+    /**
+     * 指定范围内查找字符串
+     *
+     * <pre>
+     * StrUtil.indexOfIgnoreCase(null, *, *)          = -1
+     * StrUtil.indexOfIgnoreCase(*, null, *)          = -1
+     * StrUtil.indexOfIgnoreCase("", "", 0)           = 0
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "A", 0)  = 0
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", 0)  = 2
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "AB", 0) = 1
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", 3)  = 5
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", 9)  = -1
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "B", -1) = 2
+     * StrUtil.indexOfIgnoreCase("aabaabaa", "", 2)   = 2
+     * StrUtil.indexOfIgnoreCase("abc", "", 9)        = -1
+     * </pre>
+     *
+     * @param str       字符串
+     * @param searchStr 需要查找位置的字符串
+     * @param fromIndex 起始位置
+     * @return 位置
+     */
+    public static int indexOfIgnoreCase(final CharSequence str, final CharSequence searchStr, int fromIndex) {
+        return indexOf(str, searchStr, fromIndex, true);
+    }
+
+    /**
+     * 指定范围内查找字符串
+     *
+     * @param str        字符串
+     * @param searchStr  需要查找位置的字符串
+     * @param fromIndex  起始位置
+     * @param ignoreCase 是否忽略大小写
+     * @return 位置
+     */
+    public static int indexOf(final CharSequence str, CharSequence searchStr, int fromIndex, boolean ignoreCase) {
+        if (str == null || searchStr == null) {
+            return INDEX_NOT_FOUND;
+        }
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+
+        final int endLimit = str.length() - searchStr.length() + 1;
+        if (fromIndex > endLimit) {
+            return INDEX_NOT_FOUND;
+        }
+        if (searchStr.length() == 0) {
+            return fromIndex;
+        }
+
+        if (false == ignoreCase) {
+            // 不忽略大小写调用JDK方法
+            return str.toString().indexOf(searchStr.toString(), fromIndex);
+        }
+
+        for (int i = fromIndex; i < endLimit; i++) {
+            if (isSubEquals(str, i, searchStr, 0, searchStr.length(), true)) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
+    }
+
+    /**
+     * 指定范围内查找字符串，忽略大小写
+     *
+     * @param str       字符串
+     * @param searchStr 需要查找位置的字符串
+     * @return 位置
+     */
+    public static int lastIndexOfIgnoreCase(final CharSequence str, final CharSequence searchStr) {
+        return lastIndexOfIgnoreCase(str, searchStr, str.length());
+    }
+
+    /**
+     * 指定范围内查找字符串，忽略大小写<br>
+     * fromIndex 为搜索起始位置，从后往前计数
+     *
+     * @param str       字符串
+     * @param searchStr 需要查找位置的字符串
+     * @param fromIndex 起始位置，从后往前计数
+     * @return 位置
+     */
+    public static int lastIndexOfIgnoreCase(final CharSequence str, final CharSequence searchStr, int fromIndex) {
+        return lastIndexOf(str, searchStr, fromIndex, true);
+    }
+
+    /**
+     * 指定范围内查找字符串<br>
+     * fromIndex 为搜索起始位置，从后往前计数
+     *
+     * @param str        字符串
+     * @param searchStr  需要查找位置的字符串
+     * @param fromIndex  起始位置，从后往前计数
+     * @param ignoreCase 是否忽略大小写
+     * @return 位置
+     */
+    public static int lastIndexOf(final CharSequence str, final CharSequence searchStr, int fromIndex, boolean ignoreCase) {
+        if (str == null || searchStr == null) {
+            return INDEX_NOT_FOUND;
+        }
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+        fromIndex = Math.min(fromIndex, str.length());
+
+        if (searchStr.length() == 0) {
+            return fromIndex;
+        }
+
+        if (false == ignoreCase) {
+            // 不忽略大小写调用JDK方法
+            return str.toString().lastIndexOf(searchStr.toString(), fromIndex);
+        }
+
+        for (int i = fromIndex; i >= 0; i--) {
+            if (isSubEquals(str, i, searchStr, 0, searchStr.length(), true)) {
+                return i;
+            }
+        }
+        return INDEX_NOT_FOUND;
+    }
+
+    /**
+     * 返回字符串 searchStr 在字符串 str 中第 ordinal 次出现的位置。
+     *
+     * <p>
+     * 如果 str=null 或 searchStr=null 或 ordinal&ge;0 则返回-1<br>
+     * 此方法来自：Apache-Commons-Lang
+     * <p>
+     * 例子（*代表任意字符）：
+     *
+     * <pre>
+     * StrUtil.ordinalIndexOf(null, *, *)          = -1
+     * StrUtil.ordinalIndexOf(*, null, *)          = -1
+     * StrUtil.ordinalIndexOf("", "", *)           = 0
+     * StrUtil.ordinalIndexOf("aabaabaa", "a", 1)  = 0
+     * StrUtil.ordinalIndexOf("aabaabaa", "a", 2)  = 1
+     * StrUtil.ordinalIndexOf("aabaabaa", "b", 1)  = 2
+     * StrUtil.ordinalIndexOf("aabaabaa", "b", 2)  = 5
+     * StrUtil.ordinalIndexOf("aabaabaa", "ab", 1) = 1
+     * StrUtil.ordinalIndexOf("aabaabaa", "ab", 2) = 4
+     * StrUtil.ordinalIndexOf("aabaabaa", "", 1)   = 0
+     * StrUtil.ordinalIndexOf("aabaabaa", "", 2)   = 0
+     * </pre>
+     *
+     * @param str       被检查的字符串，可以为null
+     * @param searchStr 被查找的字符串，可以为null
+     * @param ordinal   第几次出现的位置
+     * @return 查找到的位置
+     */
+    public static int ordinalIndexOf(CharSequence str, CharSequence searchStr, int ordinal) {
+        if (str == null || searchStr == null || ordinal <= 0) {
+            return INDEX_NOT_FOUND;
+        }
+        if (searchStr.length() == 0) {
+            return 0;
+        }
+        int found = 0;
+        int index = INDEX_NOT_FOUND;
+        do {
+            index = indexOf(str, searchStr, index + 1, false);
+            if (index < 0) {
+                return index;
+            }
+            found++;
+        } while (found < ordinal);
+        return index;
     }
 
     // ------------------------------------------------------------------------ getter and setter
@@ -531,7 +960,7 @@ public class CharSequenceUtil {
         char c;
         for (int i = 0; i < len; i++) {
             c = str.charAt(i);
-            if (false == ArrayUtil.contains(chars, c)) {
+            if (!ArrayUtil.contains(chars, c)) {
                 builder.append(c);
             }
         }
@@ -602,7 +1031,8 @@ public class CharSequenceUtil {
 
         final String str2 = str.toString();
         if (str2.startsWith(prefix.toString())) {
-            return subSuf(str2, prefix.length());// 截取后半段
+            // 截取后半段
+            return subSuf(str2, prefix.length());
         }
         return str2;
     }
@@ -621,7 +1051,8 @@ public class CharSequenceUtil {
 
         final String str2 = str.toString();
         if (str2.toLowerCase().startsWith(prefix.toString().toLowerCase())) {
-            return subSuf(str2, prefix.length());// 截取后半段
+            // 截取后半段
+            return subSuf(str2, prefix.length());
         }
         return str2;
     }
@@ -640,7 +1071,8 @@ public class CharSequenceUtil {
 
         final String str2 = str.toString();
         if (str2.endsWith(suffix.toString())) {
-            return subPre(str2, str2.length() - suffix.length());// 截取前半段
+            // 截取前半段
+            return subPre(str2, str2.length() - suffix.length());
         }
         return str2;
     }
@@ -731,6 +1163,452 @@ public class CharSequenceUtil {
         return str.toString();
     }
 
+    // ------------------------------------------------------------------------ equals
+
+    /**
+     * 比较两个字符串（大小写敏感）。
+     *
+     * <pre>
+     * equals(null, null)   = true
+     * equals(null, &quot;abc&quot;)  = false
+     * equals(&quot;abc&quot;, null)  = false
+     * equals(&quot;abc&quot;, &quot;abc&quot;) = true
+     * equals(&quot;abc&quot;, &quot;ABC&quot;) = false
+     * </pre>
+     *
+     * @param str1 要比较的字符串1
+     * @param str2 要比较的字符串2
+     * @return 如果两个字符串相同，或者都是{@code null}，则返回{@code true}
+     */
+    public static boolean equals(CharSequence str1, CharSequence str2) {
+        return equals(str1, str2, false);
+    }
+
+    /**
+     * 比较两个字符串（大小写不敏感）。
+     *
+     * <pre>
+     * equalsIgnoreCase(null, null)   = true
+     * equalsIgnoreCase(null, &quot;abc&quot;)  = false
+     * equalsIgnoreCase(&quot;abc&quot;, null)  = false
+     * equalsIgnoreCase(&quot;abc&quot;, &quot;abc&quot;) = true
+     * equalsIgnoreCase(&quot;abc&quot;, &quot;ABC&quot;) = true
+     * </pre>
+     *
+     * @param str1 要比较的字符串1
+     * @param str2 要比较的字符串2
+     * @return 如果两个字符串相同，或者都是{@code null}，则返回{@code true}
+     */
+    public static boolean equalsIgnoreCase(CharSequence str1, CharSequence str2) {
+        return equals(str1, str2, true);
+    }
+
+    /**
+     * 比较两个字符串是否相等。
+     *
+     * @param str1       要比较的字符串1
+     * @param str2       要比较的字符串2
+     * @param ignoreCase 是否忽略大小写
+     * @return 如果两个字符串相同，或者都是{@code null}，则返回{@code true}
+     */
+    public static boolean equals(CharSequence str1, CharSequence str2, boolean ignoreCase) {
+        if (null == str1) {
+            // 只有两个都为null才判断相等
+            return str2 == null;
+        }
+        if (null == str2) {
+            // 字符串2空，字符串1非空，直接false
+            return false;
+        }
+
+        if (ignoreCase) {
+            return str1.toString().equalsIgnoreCase(str2.toString());
+        } else {
+            return str1.toString().contentEquals(str2);
+        }
+    }
+
+    /**
+     * 给定字符串是否与提供的中任一字符串相同（忽略大小写），相同则返回{@code true}，没有相同的返回{@code false}<br>
+     * 如果参与比对的字符串列表为空，返回{@code false}
+     *
+     * @param str1 给定需要检查的字符串
+     * @param strs 需要参与比对的字符串列表
+     * @return 是否相同
+     */
+    public static boolean equalsAnyIgnoreCase(CharSequence str1, CharSequence... strs) {
+        return equalsAny(str1, true, strs);
+    }
+
+    /**
+     * 给定字符串是否与提供的中任一字符串相同，相同则返回{@code true}，没有相同的返回{@code false}<br>
+     * 如果参与比对的字符串列表为空，返回{@code false}
+     *
+     * @param str1 给定需要检查的字符串
+     * @param strs 需要参与比对的字符串列表
+     * @return 是否相同
+     */
+    public static boolean equalsAny(CharSequence str1, CharSequence... strs) {
+        return equalsAny(str1, false, strs);
+    }
+
+    /**
+     * 给定字符串是否与提供的中任一字符串相同，相同则返回{@code true}，没有相同的返回{@code false}<br>
+     * 如果参与比对的字符串列表为空，返回{@code false}
+     *
+     * @param str1       给定需要检查的字符串
+     * @param ignoreCase 是否忽略大小写
+     * @param strs       需要参与比对的字符串列表
+     * @return 是否相同
+     */
+    public static boolean equalsAny(CharSequence str1, boolean ignoreCase, CharSequence... strs) {
+        if (ArrayUtil.isEmpty(strs)) {
+            return false;
+        }
+
+        for (CharSequence str : strs) {
+            if (equals(str1, str, ignoreCase)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 字符串指定位置的字符是否与给定字符相同<br>
+     * 如果字符串为null，返回false<br>
+     * 如果给定的位置大于字符串长度，返回false<br>
+     * 如果给定的位置小于0，返回false
+     *
+     * @param str      字符串
+     * @param position 位置
+     * @param c        需要对比的字符
+     * @return 字符串指定位置的字符是否与给定字符相同
+     */
+    public static boolean equalsCharAt(CharSequence str, int position, char c) {
+        if (null == str || position < 0) {
+            return false;
+        }
+        return str.length() > position && c == str.charAt(position);
+    }
+
+    /**
+     * 截取两个字符串的不同部分（长度一致），判断截取的子串是否相同<br>
+     * 任意一个字符串为null返回false
+     *
+     * @param str1       第一个字符串
+     * @param start1     第一个字符串开始的位置
+     * @param str2       第二个字符串
+     * @param start2     第二个字符串开始的位置
+     * @param length     截取长度
+     * @param ignoreCase 是否忽略大小写
+     * @return 子串是否相同
+     */
+    public static boolean isSubEquals(CharSequence str1, int start1, CharSequence str2, int start2, int length, boolean ignoreCase) {
+        if (null == str1 || null == str2) {
+            return false;
+        }
+
+        return str1.toString().regionMatches(ignoreCase, start1, str2.toString(), start2, length);
+    }
+
+    // ------------------------------------------------------------------------ format
+
+    /**
+     * 格式化文本, {} 表示占位符<br>
+     * 此方法只是简单将占位符 {} 按照顺序替换为参数<br>
+     * 如果想输出 {} 使用 \\转义 { 即可，如果想输出 {} 之前的 \ 使用双转义符 \\\\ 即可<br>
+     * 例：<br>
+     * 通常使用：format("this is {} for {}", "a", "b") =》 this is a for b<br>
+     * 转义{}： format("this is \\{} for {}", "a", "b") =》 this is \{} for a<br>
+     * 转义\： format("this is \\\\{} for {}", "a", "b") =》 this is \a for b<br>
+     *
+     * @param template 文本模板，被替换的部分用 {} 表示，如果模板为null，返回"null"
+     * @param params   参数值
+     * @return 格式化后的文本，如果模板为null，返回"null"
+     */
+    public static String format(CharSequence template, Object... params) {
+        if (null == template) {
+            return NULL;
+        }
+        if (ArrayUtil.isEmpty(params) || isBlank(template)) {
+            return template.toString();
+        }
+        return StrFormatter.format(template.toString(), params);
+    }
+
+    /**
+     * 有序的格式化文本，使用{number}做为占位符<br>
+     * 通常使用：format("this is {0} for {1}", "a", "b") =》 this is a for b<br>
+     *
+     * @param pattern   文本格式
+     * @param arguments 参数
+     * @return 格式化后的文本
+     */
+    public static String indexedFormat(CharSequence pattern, Object... arguments) {
+        return MessageFormat.format(pattern.toString(), arguments);
+    }
+
+    // ------------------------------------------------------------------------ split
+
+    /**
+     * 切分字符串
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符字符
+     * @return 切分后的数组
+     */
+    public static String[] splitToArray(CharSequence str, char separator) {
+        return splitToArray(str, separator, 0);
+    }
+
+    /**
+     * 切分字符串为long数组
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符
+     * @return 切分后long数组
+     */
+    public static long[] splitToLong(CharSequence str, char separator) {
+        return Convert.convert(long[].class, splitTrim(str, separator));
+    }
+
+    /**
+     * 切分字符串为long数组
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符字符串
+     * @return 切分后long数组
+     */
+    public static long[] splitToLong(CharSequence str, CharSequence separator) {
+        return Convert.convert(long[].class, splitTrim(str, separator));
+    }
+
+    /**
+     * 切分字符串为int数组
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符
+     * @return 切分后long数组
+     */
+    public static int[] splitToInt(CharSequence str, char separator) {
+        return Convert.convert(int[].class, splitTrim(str, separator));
+    }
+
+    /**
+     * 切分字符串为int数组
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符字符串
+     * @return 切分后long数组
+     */
+    public static int[] splitToInt(CharSequence str, CharSequence separator) {
+        return Convert.convert(int[].class, splitTrim(str, separator));
+    }
+
+    /**
+     * 切分字符串<br>
+     * a#b#c =》 [a,b,c] <br>
+     * a##b#c =》 [a,"",b,c]
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符字符
+     * @return 切分后的集合
+     */
+    public static List<String> split(CharSequence str, char separator) {
+        return split(str, separator, 0);
+    }
+
+    /**
+     * 切分字符串
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符字符
+     * @param limit     限制分片数
+     * @return 切分后的数组
+     */
+    public static String[] splitToArray(CharSequence str, char separator, int limit) {
+        if (null == str) {
+            return new String[]{};
+        }
+        return StrSpliter.splitToArray(str.toString(), separator, limit, false, false);
+    }
+
+    /**
+     * 切分字符串，不去除切分后每个元素两边的空白符，不去除空白项
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符字符
+     * @param limit     限制分片数，-1不限制
+     * @return 切分后的集合
+     */
+    public static List<String> split(CharSequence str, char separator, int limit) {
+        return split(str, separator, limit, false, false);
+    }
+
+    /**
+     * 切分字符串，去除切分后每个元素两边的空白符，去除空白项
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符字符
+     * @return 切分后的集合
+     */
+    public static List<String> splitTrim(CharSequence str, char separator) {
+        return splitTrim(str, separator, -1);
+    }
+
+    /**
+     * 切分字符串，去除切分后每个元素两边的空白符，去除空白项
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符字符
+     * @return 切分后的集合
+     */
+    public static List<String> splitTrim(CharSequence str, CharSequence separator) {
+        return splitTrim(str, separator, -1);
+    }
+
+    /**
+     * 切分字符串，去除切分后每个元素两边的空白符，去除空白项
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符字符
+     * @param limit     限制分片数，-1不限制
+     * @return 切分后的集合
+     */
+    public static List<String> splitTrim(CharSequence str, char separator, int limit) {
+        return split(str, separator, limit, true, true);
+    }
+
+    /**
+     * 切分字符串，去除切分后每个元素两边的空白符，去除空白项
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符字符
+     * @param limit     限制分片数，-1不限制
+     * @return 切分后的集合
+     */
+    public static List<String> splitTrim(CharSequence str, CharSequence separator, int limit) {
+        return split(str, separator, limit, true, true);
+    }
+
+    /**
+     * 切分字符串，不限制分片数量
+     *
+     * @param str         被切分的字符串
+     * @param separator   分隔符字符
+     * @param isTrim      是否去除切分字符串后每个元素两边的空格
+     * @param ignoreEmpty 是否忽略空串
+     * @return 切分后的集合
+     */
+    public static List<String> split(CharSequence str, char separator, boolean isTrim, boolean ignoreEmpty) {
+        return split(str, separator, 0, isTrim, ignoreEmpty);
+    }
+
+    /**
+     * 切分字符串
+     *
+     * @param str         被切分的字符串
+     * @param separator   分隔符字符
+     * @param limit       限制分片数，-1不限制
+     * @param isTrim      是否去除切分字符串后每个元素两边的空格
+     * @param ignoreEmpty 是否忽略空串
+     * @return 切分后的集合
+     */
+    public static List<String> split(CharSequence str, char separator, int limit, boolean isTrim, boolean ignoreEmpty) {
+        if (null == str) {
+            return new ArrayList<>(0);
+        }
+        return StrSpliter.split(str.toString(), separator, limit, isTrim, ignoreEmpty);
+    }
+
+    /**
+     * 切分字符串
+     *
+     * @param str         被切分的字符串
+     * @param separator   分隔符字符
+     * @param limit       限制分片数，-1不限制
+     * @param isTrim      是否去除切分字符串后每个元素两边的空格
+     * @param ignoreEmpty 是否忽略空串
+     * @return 切分后的集合
+     */
+    public static List<String> split(CharSequence str, CharSequence separator, int limit, boolean isTrim, boolean ignoreEmpty) {
+        if (null == str) {
+            return new ArrayList<>(0);
+        }
+        final String separatorStr = (null == separator) ? null : separator.toString();
+        return StrSpliter.split(str.toString(), separatorStr, limit, isTrim, ignoreEmpty);
+    }
+
+    /**
+     * 切分字符串，如果分隔符不存在则返回原字符串
+     *
+     * @param str       被切分的字符串
+     * @param separator 分隔符
+     * @return 字符串
+     */
+    public static String[] split(CharSequence str, CharSequence separator) {
+        if (str == null) {
+            return new String[]{};
+        }
+
+        final String separatorStr = (null == separator) ? null : separator.toString();
+        return StrSpliter.splitToArray(str.toString(), separatorStr, 0, false, false);
+    }
+
+    /**
+     * 根据给定长度，将给定字符串截取为多个部分
+     *
+     * @param str 字符串
+     * @param len 每一个小节的长度
+     * @return 截取后的字符串数组
+     * @see StrSpliter#splitByLength(String, int)
+     */
+    public static String[] split(CharSequence str, int len) {
+        if (null == str) {
+            return new String[]{};
+        }
+        return StrSpliter.splitByLength(str.toString(), len);
+    }
+
+    /**
+     * 将字符串切分为N等份
+     *
+     * @param str        字符串
+     * @param partLength 每等份的长度
+     * @return 切分后的数组
+     */
+    public static String[] cut(CharSequence str, int partLength) {
+        if (null == str) {
+            return null;
+        }
+        int len = str.length();
+        if (len < partLength) {
+            return new String[]{str.toString()};
+        }
+        int part = count(len, partLength);
+        final String[] array = new String[part];
+
+        final String str2 = str.toString();
+        for (int i = 0; i < part; i++) {
+            array[i] = str2.substring(i * partLength, (i == part - 1) ? len : (partLength + i * partLength));
+        }
+        return array;
+    }
+
+
+    /**
+     * 计算等份个数
+     *
+     * @param total 总数
+     * @param part  每份的个数
+     * @return 分成了几份
+     */
+    public static int count(int total, int part) {
+        return (total % part == 0) ? (total / part) : (total / part + 1);
+    }
+
+    // ------------------------------------------------------------------------ sub
 
     /**
      * 改进JDK subString<br>
@@ -833,5 +1711,193 @@ public class CharSequenceUtil {
             return null;
         }
         return sub(string, fromIndex, string.length());
+    }
+
+    // ------------------------------------------------------------------------ case
+
+    /**
+     * 给定字符串中的字母是否全部为大写，判断依据如下：
+     *
+     * <pre>
+     * 1. 大写字母包括A-Z
+     * 2. 其它非字母的Unicode符都算作大写
+     * </pre>
+     *
+     * @param str 被检查的字符串
+     * @return 是否全部为大写
+     */
+    public static boolean isUpperCase(CharSequence str) {
+        if (null == str) {
+            return false;
+        }
+        final int len = str.length();
+        for (int i = 0; i < len; i++) {
+            if (Character.isLowerCase(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 给定字符串中的字母是否全部为小写，判断依据如下：
+     *
+     * <pre>
+     * 1. 小写字母包括a-z
+     * 2. 其它非字母的Unicode符都算作小写
+     * </pre>
+     *
+     * @param str 被检查的字符串
+     * @return 是否全部为小写
+     */
+    public static boolean isLowerCase(CharSequence str) {
+        if (null == str) {
+            return false;
+        }
+        final int len = str.length();
+        for (int i = 0; i < len; i++) {
+            if (Character.isUpperCase(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 切换给定字符串中的大小写。大写转小写，小写转大写。
+     *
+     * <pre>
+     * StrUtil.swapCase(null)                 = null
+     * StrUtil.swapCase("")                   = ""
+     * StrUtil.swapCase("The dog has a BONE") = "tHE DOG HAS A bone"
+     * </pre>
+     *
+     * @param str 字符串
+     * @return 交换后的字符串
+     */
+    public static String swapCase(final String str) {
+        if (isEmpty(str)) {
+            return str;
+        }
+
+        final char[] buffer = str.toCharArray();
+
+        for (int i = 0; i < buffer.length; i++) {
+            final char ch = buffer[i];
+            if (Character.isUpperCase(ch)) {
+                buffer[i] = Character.toLowerCase(ch);
+            } else if (Character.isTitleCase(ch)) {
+                buffer[i] = Character.toLowerCase(ch);
+            } else if (Character.isLowerCase(ch)) {
+                buffer[i] = Character.toUpperCase(ch);
+            }
+        }
+        return new String(buffer);
+    }
+
+    /**
+     * 将驼峰式命名的字符串转换为下划线方式。如果转换前的驼峰式命名的字符串为空，则返回空字符串。<br>
+     * 例如：
+     *
+     * <pre>
+     * HelloWorld=》hello_world
+     * Hello_World=》hello_world
+     * HelloWorld_test=》hello_world_test
+     * </pre>
+     *
+     * @param str 转换前的驼峰式命名的字符串，也可以为下划线形式
+     * @return 转换后下划线方式命名的字符串
+     */
+    public static String toUnderlineCase(CharSequence str) {
+        return toSymbolCase(str, CharPool.UNDERLINE);
+    }
+
+    /**
+     * 将驼峰式命名的字符串转换为使用符号连接方式。如果转换前的驼峰式命名的字符串为空，则返回空字符串。<br>
+     *
+     * @param str    转换前的驼峰式命名的字符串，也可以为符号连接形式
+     * @param symbol 连接符
+     * @return 转换后符号连接方式命名的字符串
+     */
+    public static String toSymbolCase(CharSequence str, char symbol) {
+        if (str == null) {
+            return null;
+        }
+
+        final int length = str.length();
+        final StrBuilder sb = new StrBuilder();
+        char c;
+        for (int i = 0; i < length; i++) {
+            c = str.charAt(i);
+            final Character preChar = (i > 0) ? str.charAt(i - 1) : null;
+            if (Character.isUpperCase(c)) {
+                // 遇到大写字母处理
+                final Character nextChar = (i < str.length() - 1) ? str.charAt(i + 1) : null;
+                if (null != preChar && Character.isUpperCase(preChar)) {
+                    // 前一个字符为大写，则按照一个词对待，例如AB
+                    sb.append(c);
+                } else if (null != nextChar && (false == Character.isLowerCase(nextChar))) {
+                    // 后一个为非小写字母，按照一个词对待
+                    if (null != preChar && symbol != preChar) {
+                        // 前一个是非大写时按照新词对待，加连接符，例如xAB
+                        sb.append(symbol);
+                    }
+                    sb.append(c);
+                } else {
+                    // 前后都为非大写按照新词对待
+                    if (null != preChar && symbol != preChar) {
+                        // 前一个非连接符，补充连接符
+                        sb.append(symbol);
+                    }
+                    sb.append(Character.toLowerCase(c));
+                }
+            } else {
+                if (symbol != c
+                        && sb.length() > 0
+                        && Character.isUpperCase(sb.charAt(-1))
+                        && Character.isLowerCase(c)) {
+                    // 当结果中前一个字母为大写，当前为小写(非数字或字符)，说明此字符为新词开始（连接符也表示新词）
+                    sb.append(symbol);
+                }
+                // 小写或符号
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 将下划线方式命名的字符串转换为驼峰式。如果转换前的下划线大写方式命名的字符串为空，则返回空字符串。<br>
+     * 例如：hello_world=》helloWorld
+     *
+     * @param name 转换前的下划线大写方式命名的字符串
+     * @return 转换后的驼峰式命名的字符串
+     */
+    public static String toCamelCase(CharSequence name) {
+        if (null == name) {
+            return null;
+        }
+
+        final String name2 = name.toString();
+        if (contains(name2, CharPool.UNDERLINE)) {
+            final int length = name2.length();
+            final StringBuilder sb = new StringBuilder(length);
+            boolean upperCase = false;
+            for (int i = 0; i < length; i++) {
+                char c = name2.charAt(i);
+
+                if (c == CharPool.UNDERLINE) {
+                    upperCase = true;
+                } else if (upperCase) {
+                    sb.append(Character.toUpperCase(c));
+                    upperCase = false;
+                } else {
+                    sb.append(Character.toLowerCase(c));
+                }
+            }
+            return sb.toString();
+        } else {
+            return name2;
+        }
     }
 }

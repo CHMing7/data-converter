@@ -3,11 +3,11 @@ package com.chm.converter.core;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
-import cn.hutool.core.util.StrUtil;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.creator.ObjectConstructor;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.core.utils.TypeUtil;
 
 import java.lang.annotation.Annotation;
@@ -264,7 +264,7 @@ public class JavaBeanInfo {
 
                 if (annotation.name().length() != 0) {
                     String propertyName = annotation.name();
-                    Field field = TypeUtil.getField(clazz, StrUtil.getGeneralField(methodName));
+                    Field field = TypeUtil.getField(clazz, StringUtil.getGeneralField(methodName));
                     add(fieldList, new FieldInfo(propertyName, method, field, ordinal));
                     continue;
                 }
@@ -282,7 +282,7 @@ public class JavaBeanInfo {
                 if (TypeUtil.compatibleWithJavaBean) {
                     propertyName = TypeUtil.decapitalize(methodName.substring(3));
                 } else {
-                    propertyName = StrUtil.getGeneralField(methodName);
+                    propertyName = StringUtil.getGeneralField(methodName);
                 }
             } else if (c3 == '_') {
                 propertyName = methodName.substring(4);
@@ -368,7 +368,7 @@ public class JavaBeanInfo {
                     if (annotation != null && annotation.name().length() > 0) {
                         propertyName = annotation.name();
                     } else {
-                        propertyName = StrUtil.getGeneralField(methodName);
+                        propertyName = StringUtil.getGeneralField(methodName);
 
                         Field field = TypeUtil.getField(clazz, propertyName);
                         if (field != null) {
