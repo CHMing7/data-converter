@@ -1,8 +1,6 @@
-package com.chm.converter.protobuf.utils;
+package com.chm.converter.protostuff.utils;
 
-import com.chm.converter.protobuf.Wrapper;
-import io.protostuff.runtime.DefaultIdStrategy;
-import io.protostuff.runtime.RuntimeEnv;
+import com.chm.converter.protostuff.Wrapper;
 
 import java.math.BigDecimal;
 import java.sql.Time;
@@ -20,12 +18,7 @@ public class WrapperUtil {
     private static final Set<Class<?>> WRAPPER_SET = new HashSet<>();
 
     static {
-     /*   if (RuntimeEnv.ID_STRATEGY instanceof DefaultIdStrategy) {
-            ((DefaultIdStrategy) RuntimeEnv.ID_STRATEGY).registerDelegate(new TimeDelegate());
-            ((DefaultIdStrategy) RuntimeEnv.ID_STRATEGY).registerDelegate(new TimestampDelegate());
-            ((DefaultIdStrategy) RuntimeEnv.ID_STRATEGY).registerDelegate(new SqlDateDelegate());
-        }
-*/
+
         WRAPPER_SET.add(Map.class);
         WRAPPER_SET.add(HashMap.class);
         WRAPPER_SET.add(TreeMap.class);

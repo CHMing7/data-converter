@@ -24,6 +24,8 @@ include ':data-converter-text'
 
 include ':data-converter-protobuf'
 
+include ':data-converter-protostuff'
+
 
 project(':data-converter-all').projectDir = "$rootDir/data-converter-all" as File
 
@@ -48,4 +50,6 @@ project(':data-converter-jackson-xml').projectDir = "$rootDir/data-converter-jac
 project(':data-converter-text').projectDir = "$rootDir/data-converter-text" as File
 
 project(':data-converter-protobuf').projectDir = "$rootDir/data-converter-protobuf" as File
+
+project(':data-converter-protostuff').projectDir = "$rootDir/data-converter-protostuff" as File
 

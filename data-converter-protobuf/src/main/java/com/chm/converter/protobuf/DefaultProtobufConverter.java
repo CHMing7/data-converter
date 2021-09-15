@@ -1,15 +1,13 @@
 package com.chm.converter.protobuf;
 
 import com.chm.converter.core.ConverterSelector;
+import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ClassUtil;
-import com.chm.converter.protobuf.utils.WrapperUtil;
-import io.protostuff.LinkedBuffer;
-import io.protostuff.ProtobufIOUtil;
-import io.protostuff.Schema;
-import io.protostuff.runtime.RuntimeSchema;
+import com.chm.converter.protobuf.utils.ProtobufUtil;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Message;
 
 import java.lang.reflect.Type;
-import java.nio.ByteBuffer;
 
 /**
  * 默认Protobuf数据转换器
@@ -20,29 +18,22 @@ import java.nio.ByteBuffer;
  **/
 public class DefaultProtobufConverter implements ProtobufConverter {
 
-    public static final String PROTOBUF_NAME = "io.protostuff.ProtobufIOUtil";
+    public static final String PROTOBUF_NAME = "com.google.protobuf.Parser";
 
     @Override
-    public <T> T convertToJavaObject(ByteBuffer source, Class<T> targetType) {
+    public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
         if (source == null) {
             return null;
         }
-        Object result;
-        if (WrapperUtil.needWrapper(targetType)) {
-            Schema<Wrapper> schema = RuntimeSchema.createFrom(Wrapper.class);
-            Wrapper wrapper = schema.newMessage();
-            ProtobufIOUtil.mergeFrom(source.array(), wrapper, schema);
-            return (T) wrapper.getData();
-        } else {
-            Schema schema = RuntimeSchema.createFrom(targetType);
-            result = schema.newMessage();
-            ProtobufIOUtil.mergeFrom(source.array(), result, schema);
+        try {
+            return ProtobufUtil.deserialize(source, targetType);
+        } catch (InvalidProtocolBufferException e) {
+            throw new ConvertException("Found a protobuf message but " + targetType.getName() + " had no getDefaultInstance() method", e);
         }
-        return (T) result;
     }
 
     @Override
-    public <T> T convertToJavaObject(ByteBuffer source, Type targetType) {
+    public <T> T convertToJavaObject(byte[] source, Type targetType) {
         if (source == null) {
             return null;
         }
@@ -51,15 +42,8 @@ public class DefaultProtobufConverter implements ProtobufConverter {
     }
 
     @Override
-    public ByteBuffer encode(Object obj) {
-        if (obj == null || WrapperUtil.needWrapper(obj)) {
-            Schema<Wrapper> schema = RuntimeSchema.getSchema(Wrapper.class);
-            Wrapper wrapper = new Wrapper(obj);
-            return ByteBuffer.wrap(ProtobufIOUtil.toByteArray(wrapper, schema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE)));
-        } else {
-            Schema schema = RuntimeSchema.getSchema(obj.getClass());
-            return ByteBuffer.wrap(ProtobufIOUtil.toByteArray(obj, schema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE)));
-        }
+    public byte[] encode(Object source) {
+        return ProtobufUtil.serialize(source);
     }
 
     /**

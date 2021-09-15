@@ -1,8 +1,11 @@
+/*plugins {
+    id("com.google.protobuf") version "0.8.17"
+}*/
+
 dependencies {
     compile project(':data-converter-core')
 
-    compileOnly(libs.io_protostuff_core)
-    compileOnly(libs.io_protostuff_runtime)
+    compile(libs.protobuf_java_util)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
@@ -10,6 +13,25 @@ dependencies {
     testCompile 'junit:junit:4.13.1'
 
     testCompile(libs.hutool_log)
-    testCompile(libs.io_protostuff_core)
-    testCompile(libs.io_protostuff_runtime)
+    testCompile(libs.protobuf_java_util)
 }
+
+/*
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.17.3'
+    }
+    generatedFilesBaseDir = "$projectDir/build/generated/sources/protobuf/"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java'
+        }
+
+        proto {
+            srcDirs 'src/main/protoBean'
+        }
+    }
+}*/

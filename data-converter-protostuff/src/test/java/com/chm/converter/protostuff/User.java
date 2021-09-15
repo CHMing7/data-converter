@@ -1,4 +1,4 @@
-package com.chm.converter.protobuf;
+package com.chm.converter.protostuff;
 
 import com.chm.converter.core.annotation.FieldProperty;
 

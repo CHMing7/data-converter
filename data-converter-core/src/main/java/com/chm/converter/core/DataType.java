@@ -57,6 +57,11 @@ public class DataType {
     public final static DataType PROTOBUF = DataType.createDataType("protobuf");
 
     /**
+     * 数据类型： protostuff类型
+     */
+    public final static DataType PROTOSTUFF = DataType.createDataType("PROTOSTUFF");
+
+    /**
      * 全局数据转换器表
      */
     private final static Map<DataType, Converter<?>> CONVERTER_MAP = new HashMap<>();

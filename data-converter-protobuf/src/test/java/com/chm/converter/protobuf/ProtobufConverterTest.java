@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -24,24 +25,19 @@ public class ProtobufConverterTest {
 
     @Test
     public void testProtobuf() {
-        Map<String, User> userMap = MapUtil.newHashMap(true);
-        User user = new User();
-        user.setUserName("user");
-        user.setPassword("password");
-        user.setDate(new Date());
-        user.setLocalDateTime(LocalDateTime.now());
-        // user.setYearMonth(YearMonth.now());
-        userMap.put("user", user);
+
+        PersonOuterClass.Person person = PersonOuterClass.Person.newBuilder()
+                .setEmail("23").setName("name").build();
 
         DefaultProtobufConverter protobufConverter = (DefaultProtobufConverter) ConverterSelector.select(DataType.PROTOBUF, DefaultProtobufConverter.class);
         // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
-        ByteBuffer encode = protobufConverter.encode(userMap);
+        byte[] bytes = person.toByteArray();
+        byte[] encode = protobufConverter.encode(person);
+        assertArrayEquals(encode, bytes);
 
-        TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {
-        };
-
-        Map<String, User> newUserMap = protobufConverter.convertToJavaObject(encode, typeRef0.getType());
-
-        assertEquals(userMap, newUserMap);
+        PersonOuterClass.Person newUserMap = protobufConverter.convertToJavaObject(encode, PersonOuterClass.Person.class);
+        PersonOuterClass.Person newPerson = protobufConverter.convertToJavaObject(bytes, PersonOuterClass.Person.class);
+        assertEquals(newUserMap, newPerson);
+        assertEquals(person, newUserMap);
     }
 }

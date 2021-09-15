@@ -1,4 +1,4 @@
-package com.chm.converter.protobuf;
+package com.chm.converter.protostuff;
 
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.Converter;
@@ -28,7 +28,7 @@ public class TestJava8Time {
 
     @Before
     public void before() {
-        protobufConverter =  ConverterSelector.select(DataType.PROTOBUF, DefaultProtobufConverter.class);
+        protobufConverter =  ConverterSelector.select(DataType.PROTOSTUFF, DefaultProtostuffConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -55,42 +55,6 @@ public class TestJava8Time {
         StaticLog.info(String.valueOf(protobufConverter.encode((MonthDay)null)));
         Java8Time java8Time = (Java8Time) protobufConverter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
-    }
-
-    @Test
-    public void testJacksonCacheSerializer() {
-        Java8Time1 java8Time1 = new Java8Time1();
-        java8Time1.setInstant1(Instant.now());
-        java8Time1.setInstant2(Instant.now());
-        StaticLog.info(String.valueOf(protobufConverter.encode(java8Time1)));
-        StaticLog.info(String.valueOf(protobufConverter.encode(java8Time1)));
-        StaticLog.info(String.valueOf(protobufConverter.encode(java8Time1)));
-        protobufConverter.encode(java8Time1);
-    }
-
-    public static class Java8Time1 {
-
-        @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
-        private Instant instant1;
-
-        @FieldProperty(format = "HH:mm:ss.SSS")
-        private Instant instant2;
-
-        public Instant getInstant1() {
-            return instant1;
-        }
-
-        public void setInstant1(Instant instant1) {
-            this.instant1 = instant1;
-        }
-
-        public Instant getInstant2() {
-            return instant2;
-        }
-
-        public void setInstant2(Instant instant2) {
-            this.instant2 = instant2;
-        }
     }
 
     public static class Java8Time {
