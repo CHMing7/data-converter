@@ -1,6 +1,5 @@
 package com.chm.converter.xml.annotation;
 
-import javax.xml.bind.annotation.XmlSchema;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 

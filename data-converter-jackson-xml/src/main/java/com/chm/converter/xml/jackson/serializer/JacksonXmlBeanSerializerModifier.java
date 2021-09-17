@@ -1,10 +1,10 @@
 package com.chm.converter.xml.jackson.serializer;
 
-import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.jackson.PropertyNameTransformer;
 import com.chm.converter.jackson.serializer.JacksonDefaultDateTypeSerializer;
 import com.chm.converter.jackson.serializer.JacksonJava8TimeSerializer;

@@ -52,14 +52,19 @@ public class DataType {
     public final static DataType BINARY = DataType.createDataType("binary");
 
     /**
-     * 数据类型： protobuf类型
+     * 数据类型： protobuf 二进制类型
      */
-    public final static DataType PROTOBUF = DataType.createDataType("protobuf");
+    public final static DataType PROTOBUF_BINARY = DataType.createDataType("protobuf_binary");
 
     /**
      * 数据类型： protostuff类型
      */
-    public final static DataType PROTOSTUFF = DataType.createDataType("PROTOSTUFF");
+    public final static DataType PROTOSTUFF = DataType.createDataType("protostuff");
+
+    /**
+     * 数据类型：avro 二进制类型
+     */
+    public final static DataType AVRO_BINARY = DataType.createDataType("avro_binary");
 
     /**
      * 全局数据转换器表

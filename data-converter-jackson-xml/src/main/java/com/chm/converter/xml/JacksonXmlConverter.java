@@ -129,7 +129,7 @@ public class JacksonXmlConverter implements XmlConverter {
     public boolean loadConverter() {
         try {
             checkJacksonXmlClass();
-            ConverterSelector.put(JacksonXmlConverter.class, this);
+            ConverterSelector.put(this);
         } catch (Throwable ignored) {
             return false;
         }

@@ -1,7 +1,7 @@
 package com.chm.converter.codec;
 
-import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.utils.DateUtil;
 import com.chm.converter.core.utils.StringUtil;
 

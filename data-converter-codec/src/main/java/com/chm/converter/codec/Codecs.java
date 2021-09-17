@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.*;
  **/
 public interface Codecs {
 
-    SimpleToStringCodec<Boolean> BOOLEAN =  SimpleToStringCodec.create(str -> {
+    SimpleToStringCodec<Boolean> BOOLEAN = SimpleToStringCodec.create(str -> {
         if (str == null) {
             return false;
         }

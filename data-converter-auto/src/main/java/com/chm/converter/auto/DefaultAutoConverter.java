@@ -70,7 +70,7 @@ public class DefaultAutoConverter implements AutoConverter {
     }
 
     private <T> T tryConvert(Object source, Class<T> targetType, DataType dataType) {
-        return (T) ConverterSelector.select(dataType).convertToJavaObject(source, (Class<T>)targetType);
+        return (T) ConverterSelector.select(dataType).convertToJavaObject(source, (Class<T>) targetType);
     }
 
     private <T> T tryConvert(Object source, Type targetType, DataType dataType) {
@@ -138,7 +138,7 @@ public class DefaultAutoConverter implements AutoConverter {
 
     @Override
     public boolean loadConverter() {
-        ConverterSelector.put(DefaultAutoConverter.class, this);
+        ConverterSelector.put(this);
         return true;
     }
 

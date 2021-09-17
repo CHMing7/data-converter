@@ -32,6 +32,7 @@ public class SimpleCodec<D, E> implements Codec<D, E> {
 
     /**
      * 编码类
+     *
      * @param <D>
      * @param <E>
      */
@@ -49,6 +50,7 @@ public class SimpleCodec<D, E> implements Codec<D, E> {
 
     /**
      * 解码类
+     *
      * @param <D>
      * @param <E>
      */

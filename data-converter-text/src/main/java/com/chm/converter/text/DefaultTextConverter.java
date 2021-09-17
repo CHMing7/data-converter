@@ -30,7 +30,7 @@ public class DefaultTextConverter implements TextConverter {
 
     @Override
     public boolean loadConverter() {
-        ConverterSelector.put(DefaultTextConverter.class, this);
+        ConverterSelector.put(this);
         return true;
     }
 }

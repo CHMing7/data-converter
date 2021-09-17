@@ -55,14 +55,14 @@ public class DefaultProtostuffConverter implements ProtostuffConverter {
     }
 
     @Override
-    public byte[] encode(Object obj) {
-        if (obj == null || WrapperUtil.needWrapper(obj)) {
+    public byte[] encode(Object source) {
+        if (source == null || WrapperUtil.needWrapper(source)) {
             Schema<Wrapper> schema = getSchema(Wrapper.class);
-            Wrapper wrapper = new Wrapper(obj);
+            Wrapper wrapper = new Wrapper(source);
             return ProtostuffIOUtil.toByteArray(wrapper, schema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
         } else {
-            Schema schema = getSchema(obj.getClass());
-            return ProtostuffIOUtil.toByteArray(obj, schema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
+            Schema schema = getSchema(source.getClass());
+            return ProtostuffIOUtil.toByteArray(source, schema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
         }
     }
 
@@ -83,7 +83,7 @@ public class DefaultProtostuffConverter implements ProtostuffConverter {
     public boolean loadConverter() {
         try {
             checkProtostuffClass();
-            ConverterSelector.put(DefaultProtostuffConverter.class, this);
+            ConverterSelector.put(this);
         } catch (Throwable ignored) {
             return false;
         }

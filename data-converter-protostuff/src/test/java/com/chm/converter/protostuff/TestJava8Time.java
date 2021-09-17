@@ -28,7 +28,7 @@ public class TestJava8Time {
 
     @Before
     public void before() {
-        protobufConverter =  ConverterSelector.select(DataType.PROTOSTUFF, DefaultProtostuffConverter.class);
+        protobufConverter = ConverterSelector.select(DataType.PROTOSTUFF, DefaultProtostuffConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -52,7 +52,7 @@ public class TestJava8Time {
         StaticLog.info(String.valueOf(encode));
         StaticLog.info(String.valueOf(protobufConverter.encode(LocalDateTime.now())));
         StaticLog.info(String.valueOf(protobufConverter.encode(MonthDay.now())));
-        StaticLog.info(String.valueOf(protobufConverter.encode((MonthDay)null)));
+        StaticLog.info(String.valueOf(protobufConverter.encode((MonthDay) null)));
         Java8Time java8Time = (Java8Time) protobufConverter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }

@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 public class ConverterSelector implements Serializable {
 
-    private static final Map<DataType, Map<Class<? extends Converter<?>>, Converter<?>>> CONVERTER_MAP = new ConcurrentHashMap<>();
+    private static final Map<DataType, Map<Class<? extends Converter>, Converter>> CONVERTER_MAP = new ConcurrentHashMap<>();
 
     private ConverterSelector() {
     }
@@ -31,7 +31,7 @@ public class ConverterSelector implements Serializable {
                 if (converterClass.isInterface()) {
                     return;
                 }
-                Converter<?> jsonConverter = converterClass.newInstance();
+                Converter jsonConverter = converterClass.newInstance();
                 jsonConverter.loadConverter();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -46,7 +46,7 @@ public class ConverterSelector implements Serializable {
      * @return 数据转换器，{@link Converter}接口实例
      */
     public static Converter select(DataType dataType) {
-        Map<Class<? extends Converter<?>>, Converter<?>> classConverterMap = CONVERTER_MAP.get(dataType);
+        Map<Class<? extends Converter>, Converter> classConverterMap = CONVERTER_MAP.get(dataType);
         return MapUtil.isNotEmpty(classConverterMap) ? classConverterMap.values().stream().findFirst().orElse(null) : null;
     }
 
@@ -56,9 +56,9 @@ public class ConverterSelector implements Serializable {
      *
      * @return 数据转换器，{@link Converter}接口实例
      */
-    public static Converter select(Class<? extends Converter<?>> className) {
-        Collection<Map<Class<? extends Converter<?>>, Converter<?>>> values = CONVERTER_MAP.values();
-        for (Map<Class<? extends Converter<?>>, Converter<?>> value : values) {
+    public static Converter select(Class<? extends Converter> className) {
+        Collection<Map<Class<? extends Converter>, Converter>> values = CONVERTER_MAP.values();
+        for (Map<Class<? extends Converter>, Converter> value : values) {
             Converter converter = MapUtil.isNotEmpty(value) ? value.get(className) : null;
             if (converter != null) {
                 return converter;
@@ -73,18 +73,26 @@ public class ConverterSelector implements Serializable {
      *
      * @return 数据转换器，{@link Converter}接口实例
      */
-    public static Converter<?> select(DataType dataType, Class<? extends Converter<?>> className) {
-        Map<Class<? extends Converter<?>>, Converter<?>> classConverterMap = CONVERTER_MAP.get(dataType);
+    public static Converter select(DataType dataType, Class<? extends Converter> className) {
+        Map<Class<? extends Converter>, Converter> classConverterMap = CONVERTER_MAP.get(dataType);
         return MapUtil.isNotEmpty(classConverterMap) ? classConverterMap.get(className) : null;
     }
 
-    public static void put(Class<? extends Converter<?>> className, Converter<?> converter) {
+    public static void put(Class<? extends Converter> className, Converter converter) {
         DataType dataType = converter.getDataType();
-        Map<Class<? extends Converter<?>>, Converter<?>> classConverterMap = CONVERTER_MAP.get(dataType);
+        Map<Class<? extends Converter>, Converter> classConverterMap = CONVERTER_MAP.get(dataType);
         if (classConverterMap == null) {
             classConverterMap = new ConcurrentHashMap<>();
             CONVERTER_MAP.put(dataType, classConverterMap);
         }
         classConverterMap.put(className, converter);
+    }
+
+    public static void put(Converter converter) {
+        if (converter == null) {
+            return;
+        }
+        Class<? extends Converter> converterClass = converter.getClass();
+        ConverterSelector.put(converterClass, converter);
     }
 }

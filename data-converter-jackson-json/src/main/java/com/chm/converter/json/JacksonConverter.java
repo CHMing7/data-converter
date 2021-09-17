@@ -60,7 +60,6 @@ public class JacksonConverter implements JsonConverter {
         return mapper;
     }
 
-
     @Override
     public <T> T convertToJavaObject(String source, Class<T> targetType) {
         try {
@@ -132,7 +131,7 @@ public class JacksonConverter implements JsonConverter {
     public boolean loadConverter() {
         try {
             checkJacksonClass();
-            ConverterSelector.put(JacksonConverter.class, this);
+            ConverterSelector.put(this);
         } catch (Throwable ignored) {
             return false;
         }

@@ -1,4 +1,4 @@
-syntax = "proto2";
+syntax = "proto3";
 
 package tutorial;
 
@@ -8,5 +8,4 @@ message Person {
   optional string name = 1;
   optional int32 id = 2;
   optional string email = 3;
-
 }

@@ -1,9 +1,9 @@
 package com.chm.converter.json;
 
 import cn.hutool.log.StaticLog;
-import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
+import com.chm.converter.core.annotation.FieldProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class TestJava8Time {
         StaticLog.info(encodeToString);
         StaticLog.info(jacksonConverter.encode(LocalDateTime.now()));
         StaticLog.info(jacksonConverter.encode(MonthDay.now()));
-        StaticLog.info(jacksonConverter.encode((MonthDay)null));
+        StaticLog.info(jacksonConverter.encode((MonthDay) null));
         Java8Time java8Time = jacksonConverter.convertToJavaObject(encodeToString, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }

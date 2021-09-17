@@ -2,7 +2,6 @@ package com.chm.converter.protobuf.utils;
 
 import com.google.protobuf.*;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +43,7 @@ public class ProtobufUtil {
 
     public static byte[] serialize(Object value) {
         if (value == null) {
-            return null;
+            return new byte[0];
         }
         Class<?> cls = value.getClass();
         if (isSupported(cls) && !MARSHALLERS.containsKey(cls)) {

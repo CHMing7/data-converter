@@ -34,6 +34,7 @@ public final class JavaVersion {
 
     /**
      * 解析旧的 1.8 样式和更新的 9.0.4 样式
+     *
      * @param javaVersion
      * @return
      */

@@ -5,7 +5,6 @@ import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.protobuf.utils.ProtobufUtil;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.Message;
 
 import java.lang.reflect.Type;
 
@@ -43,6 +42,9 @@ public class DefaultProtobufConverter implements ProtobufConverter {
 
     @Override
     public byte[] encode(Object source) {
+        if (source == null) {
+            return new byte[0];
+        }
         return ProtobufUtil.serialize(source);
     }
 
@@ -59,7 +61,7 @@ public class DefaultProtobufConverter implements ProtobufConverter {
     public boolean loadConverter() {
         try {
             checkProtobufClass();
-            ConverterSelector.put(DefaultProtobufConverter.class, this);
+            ConverterSelector.put(this);
         } catch (Throwable ignored) {
             return false;
         }

@@ -15,6 +15,7 @@ public abstract class UnsafeAllocator {
 
     /**
      * 创建实例
+     *
      * @param c
      * @param <T>
      * @return
@@ -88,6 +89,7 @@ public abstract class UnsafeAllocator {
     /**
      * Check if the class can be instantiated by unsafe allocator. If the instance has interface or abstract modifiers
      * throw an {@link java.lang.UnsupportedOperationException}
+     *
      * @param c instance of the class to be checked0
      */
     static void assertInstantiable(Class<?> c) {

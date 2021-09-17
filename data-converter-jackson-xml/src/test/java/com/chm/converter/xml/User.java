@@ -49,7 +49,7 @@ public class User {
      * 新型时间
      */
     @FieldProperty(name = "localDateTime", ordinal = 3, format = "yyyy-MM-dd HH:mm:ss.SSSS")
-   // @XmlProperty(isText = true)
+    // @XmlProperty(isText = true)
     public LocalDateTime localDateTime;
 
     /**

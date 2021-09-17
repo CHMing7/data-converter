@@ -5,7 +5,7 @@
 dependencies {
     compile project(':data-converter-core')
 
-    compile(libs.protobuf_java_util)
+    compileOnly(libs.protobuf_java_util)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 

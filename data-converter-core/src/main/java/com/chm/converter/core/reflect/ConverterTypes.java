@@ -15,7 +15,7 @@ import static com.chm.converter.core.reflect.ConverterPreconditions.checkNotNull
  * @since 2021-09-07
  **/
 public final class ConverterTypes {
-    static final Type[] EMPTY_TYPE_ARRAY = new Type[] {};
+    static final Type[] EMPTY_TYPE_ARRAY = new Type[]{};
 
     private ConverterTypes() {
         throw new UnsupportedOperationException();
@@ -53,7 +53,7 @@ public final class ConverterTypes {
         if (bound instanceof WildcardType) {
             upperBounds = ((WildcardType) bound).getUpperBounds();
         } else {
-            upperBounds = new Type[] { bound };
+            upperBounds = new Type[]{bound};
         }
         return new WildcardTypeImpl(upperBounds, EMPTY_TYPE_ARRAY);
     }
@@ -68,9 +68,9 @@ public final class ConverterTypes {
         if (bound instanceof WildcardType) {
             lowerBounds = ((WildcardType) bound).getLowerBounds();
         } else {
-            lowerBounds = new Type[] { bound };
+            lowerBounds = new Type[]{bound};
         }
-        return new WildcardTypeImpl(new Type[] { Object.class }, lowerBounds);
+        return new WildcardTypeImpl(new Type[]{Object.class}, lowerBounds);
     }
 
     /**
@@ -118,7 +118,7 @@ public final class ConverterTypes {
             return (Class<?>) rawType;
 
         } else if (type instanceof GenericArrayType) {
-            Type componentType = ((GenericArrayType)type).getGenericComponentType();
+            Type componentType = ((GenericArrayType) type).getGenericComponentType();
             return Array.newInstance(getRawType(componentType), 0).getClass();
 
         } else if (type instanceof TypeVariable) {
@@ -255,7 +255,7 @@ public final class ConverterTypes {
     static Type getSupertype(Type context, Class<?> contextRawType, Class<?> supertype) {
         if (context instanceof WildcardType) {
             // wildcards are useless for resolving supertypes. As the upper bound has the same raw type, use it instead
-            context = ((WildcardType)context).getUpperBounds()[0];
+            context = ((WildcardType) context).getUpperBounds()[0];
         }
         checkArgument(supertype.isAssignableFrom(contextRawType));
         return resolve(context, contextRawType,
@@ -264,6 +264,7 @@ public final class ConverterTypes {
 
     /**
      * Returns the component type of this array type.
+     *
      * @throws ClassCastException if this type is not an array.
      */
     public static Type getArrayComponentType(Type array) {
@@ -274,13 +275,14 @@ public final class ConverterTypes {
 
     /**
      * Returns the element type of this collection type.
+     *
      * @throws IllegalArgumentException if this type is not a collection.
      */
     public static Type getCollectionElementType(Type context, Class<?> contextRawType) {
         Type collectionType = getSupertype(context, contextRawType, Collection.class);
 
         if (collectionType instanceof WildcardType) {
-            collectionType = ((WildcardType)collectionType).getUpperBounds()[0];
+            collectionType = ((WildcardType) collectionType).getUpperBounds()[0];
         }
         if (collectionType instanceof ParameterizedType) {
             return ((ParameterizedType) collectionType).getActualTypeArguments()[0];
@@ -299,7 +301,7 @@ public final class ConverterTypes {
          * extend Hashtable<Object, Object>.
          */
         if (context == Properties.class) {
-            return new Type[] { String.class, String.class }; // TODO: test subclasses of Properties!
+            return new Type[]{String.class, String.class}; // TODO: test subclasses of Properties!
         }
 
         Type mapType = getSupertype(context, contextRawType, Map.class);
@@ -308,7 +310,7 @@ public final class ConverterTypes {
             ParameterizedType mapParameterizedType = (ParameterizedType) mapType;
             return mapParameterizedType.getActualTypeArguments();
         }
-        return new Type[] { Object.class, Object.class };
+        return new Type[]{Object.class, Object.class};
     }
 
     public static Type resolve(Type context, Class<?> contextRawType, Type toResolve) {
@@ -474,18 +476,21 @@ public final class ConverterTypes {
             return ownerType;
         }
 
-        @Override public boolean equals(Object other) {
+        @Override
+        public boolean equals(Object other) {
             return other instanceof ParameterizedType
                     && ConverterTypes.equals(this, (ParameterizedType) other);
         }
 
-        @Override public int hashCode() {
+        @Override
+        public int hashCode() {
             return Arrays.hashCode(typeArguments)
                     ^ rawType.hashCode()
                     ^ hashCodeOrZero(ownerType);
         }
 
-        @Override public String toString() {
+        @Override
+        public String toString() {
             int length = typeArguments.length;
             if (length == 0) {
                 return typeToString(rawType);
@@ -514,16 +519,19 @@ public final class ConverterTypes {
             return componentType;
         }
 
-        @Override public boolean equals(Object o) {
+        @Override
+        public boolean equals(Object o) {
             return o instanceof GenericArrayType
                     && ConverterTypes.equals(this, (GenericArrayType) o);
         }
 
-        @Override public int hashCode() {
+        @Override
+        public int hashCode() {
             return componentType.hashCode();
         }
 
-        @Override public String toString() {
+        @Override
+        public String toString() {
             return typeToString(componentType) + "[]";
         }
 
@@ -560,26 +568,29 @@ public final class ConverterTypes {
 
         @Override
         public Type[] getUpperBounds() {
-            return new Type[] { upperBound };
+            return new Type[]{upperBound};
         }
 
         @Override
         public Type[] getLowerBounds() {
-            return lowerBound != null ? new Type[] { lowerBound } : EMPTY_TYPE_ARRAY;
+            return lowerBound != null ? new Type[]{lowerBound} : EMPTY_TYPE_ARRAY;
         }
 
-        @Override public boolean equals(Object other) {
+        @Override
+        public boolean equals(Object other) {
             return other instanceof WildcardType
                     && ConverterTypes.equals(this, (WildcardType) other);
         }
 
-        @Override public int hashCode() {
+        @Override
+        public int hashCode() {
             // this equals Arrays.hashCode(getLowerBounds()) ^ Arrays.hashCode(getUpperBounds());
             return (lowerBound != null ? 31 + lowerBound.hashCode() : 1)
                     ^ (31 + upperBound.hashCode());
         }
 
-        @Override public String toString() {
+        @Override
+        public String toString() {
             if (lowerBound != null) {
                 return "? super " + typeToString(lowerBound);
             } else if (upperBound == Object.class) {

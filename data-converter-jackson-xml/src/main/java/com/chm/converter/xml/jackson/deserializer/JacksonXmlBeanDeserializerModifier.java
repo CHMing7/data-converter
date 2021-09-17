@@ -1,8 +1,11 @@
 package com.chm.converter.xml.jackson.deserializer;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.chm.converter.core.Converter;
+import com.chm.converter.core.FieldInfo;
+import com.chm.converter.core.JavaBeanInfo;
+import com.chm.converter.core.UseOriginalJudge;
 import com.chm.converter.core.constant.TimeConstant;
-import com.chm.converter.core.*;
 import com.chm.converter.jackson.deserializer.JacksonDefaultDateTypeDeserializer;
 import com.chm.converter.jackson.deserializer.JacksonJava8TimeDeserializer;
 import com.chm.converter.xml.XmlClassInfoStorage;
@@ -132,7 +135,7 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
     }
 
     private SettableBeanProperty findSoleTextProp(BeanDescription beanDesc,
-                                                   Iterator<SettableBeanProperty> propIt) {
+                                                  Iterator<SettableBeanProperty> propIt) {
         JavaBeanInfo javaBeanInfo = XmlClassInfoStorage.INSTANCE.getJavaBeanInfo(beanDesc.getBeanClass());
         Map<String, FieldInfo> fieldNameFieldInfoMap = javaBeanInfo.getFieldNameFieldInfoMap();
         SettableBeanProperty textProp = null;

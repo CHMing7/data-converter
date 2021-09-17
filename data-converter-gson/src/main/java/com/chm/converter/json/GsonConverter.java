@@ -205,7 +205,7 @@ public class GsonConverter implements JsonConverter {
     public boolean loadConverter() {
         try {
             checkGsonClass();
-            ConverterSelector.put(GsonConverter.class, this);
+            ConverterSelector.put(this);
         } catch (Throwable ignored) {
             return false;
         }

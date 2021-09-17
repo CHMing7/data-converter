@@ -69,7 +69,7 @@ public class DefaultBinaryConverter implements BinaryConverter {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             int len;
-            while((len = in.read(tmp)) != -1) {
+            while ((len = in.read(tmp)) != -1) {
                 out.write(tmp, 0, len);
             }
             out.flush();
@@ -98,7 +98,7 @@ public class DefaultBinaryConverter implements BinaryConverter {
 
     @Override
     public boolean loadConverter() {
-        ConverterSelector.put(DefaultBinaryConverter.class, this);
+        ConverterSelector.put(this);
         return true;
     }
 }

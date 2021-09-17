@@ -1,9 +1,9 @@
 package com.chm.converter.json;
 
 import cn.hutool.log.StaticLog;
-import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
+import com.chm.converter.core.annotation.FieldProperty;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,7 +52,7 @@ public class TestJava8Time {
         StaticLog.info(encodeToString);
         StaticLog.info(gsonConverter.encode(LocalDateTime.now()));
         StaticLog.info(gsonConverter.encode(MonthDay.now()));
-        StaticLog.info(gsonConverter.encode((MonthDay)null));
+        StaticLog.info(gsonConverter.encode((MonthDay) null));
         Java8Time java8Time = gsonConverter.convertToJavaObject(encodeToString, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }
@@ -127,7 +127,7 @@ public class TestJava8Time {
         //@FieldProperty(format = "ZZZZZ")
         private ZoneOffset zoneOffset;
 
-       // @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
+        // @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
         private Date date;
 
         //@FieldProperty(format = "yyyy-MM-dd HH:mm:ss")

@@ -1,17 +1,8 @@
 package com.chm.converter.protobuf;
 
-import cn.hutool.core.lang.TypeReference;
-import cn.hutool.core.map.MapUtil;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import org.junit.jupiter.api.Test;
-
-import java.nio.ByteBuffer;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,7 +20,7 @@ public class ProtobufConverterTest {
         PersonOuterClass.Person person = PersonOuterClass.Person.newBuilder()
                 .setEmail("23").setName("name").build();
 
-        DefaultProtobufConverter protobufConverter = (DefaultProtobufConverter) ConverterSelector.select(DataType.PROTOBUF, DefaultProtobufConverter.class);
+        DefaultProtobufConverter protobufConverter = (DefaultProtobufConverter) ConverterSelector.select(DataType.PROTOBUF_BINARY, DefaultProtobufConverter.class);
         // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
         byte[] bytes = person.toByteArray();
         byte[] encode = protobufConverter.encode(person);

@@ -280,7 +280,7 @@ public class FastjsonConverter implements JsonConverter {
     public boolean loadConverter() {
         try {
             checkFastjsonClass();
-            ConverterSelector.put(FastjsonConverter.class, this);
+            ConverterSelector.put(this);
         } catch (Throwable ignored) {
             return false;
         }

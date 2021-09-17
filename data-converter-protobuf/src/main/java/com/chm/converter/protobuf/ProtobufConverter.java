@@ -19,6 +19,6 @@ public interface ProtobufConverter extends Converter<byte[]> {
      */
     @Override
     default DataType getDataType() {
-        return DataType.PROTOBUF;
+        return DataType.PROTOBUF_BINARY;
     }
 }

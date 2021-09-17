@@ -49,7 +49,8 @@ public class XmlConverterTest {
         xmlConverter.getMapper().configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false);
         String encodeToString = xmlConverter.encode(userMap);
 
-        TypeToken<Map<String, User>> typeRef0 = new TypeToken<Map<String, User>>(){};
+        TypeToken<Map<String, User>> typeRef0 = new TypeToken<Map<String, User>>() {
+        };
 
         Map<String, User> newUserMap = xmlConverter.convertToJavaObject(encodeToString, typeRef0.getType());
 
@@ -76,7 +77,8 @@ public class XmlConverterTest {
         // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
         String encodeToString = xmlConverter.encode(userList);
 
-        TypeToken<List<User>> typeRef0 = new TypeToken<List<User>>(){};
+        TypeToken<List<User>> typeRef0 = new TypeToken<List<User>>() {
+        };
 
         List<User> newUserList = xmlConverter.convertToJavaObject(encodeToString, List.class);
 
