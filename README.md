@@ -54,12 +54,12 @@ implementation 'com.chm.converter:data-converter-all:Version'
 
 点击以下链接，下载`data-converter-all-X.X.X.jar`即可：
 
-- [Maven中央库](https://repo1.maven.org/maven2/cn/hutool/hutool-all/5.7.13/)
+- [Maven中央库]()
 
 
 ### 🚽编译安装
 
-访问Data-converter的Gitee主页：[Gitee](https://gitee.com/CHMing7/data-converter) 下载整个项目源码（master分支）然后进入Hutool项目目录执行：
+访问Data-converter的Gitee主页：[Gitee](https://gitee.com/CHMing7/data-converter) 下载整个项目源码（master分支）然后进入Data-Converter项目目录执行：
 
 ```sh
 gradle install
