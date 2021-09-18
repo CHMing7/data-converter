@@ -137,8 +137,7 @@ public class DefaultAutoConverter implements AutoConverter {
     }
 
     @Override
-    public boolean loadConverter() {
-        ConverterSelector.put(this);
+    public boolean checkCanBeLoad() {
         return true;
     }
 

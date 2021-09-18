@@ -2,7 +2,6 @@ package com.chm.converter.avro;
 
 import com.chm.converter.avro.factorys.DefaultDateConversionFactory;
 import com.chm.converter.avro.factorys.Java8TimeConversionFactory;
-import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.StringUtil;
 import org.apache.avro.Conversion;
@@ -39,7 +38,7 @@ public class DefaultAvroConverter implements AvroConverter {
 
     private static final DecoderFactory DECODER_FACTORY = DecoderFactory.get();
 
-    protected ReflectData reflectData = ReflectData.AllowNull.get();
+    protected ReflectData reflectData = new ReflectData.AllowNull();
 
     {
         // java8Time Conversion
@@ -122,24 +121,14 @@ public class DefaultAvroConverter implements AvroConverter {
         }
     }
 
-
-    /**
-     * 检测Protobuf相关类型
-     *
-     * @return Jackson相关类型
-     */
-    public static Class<?> checkAvroClass() throws Throwable {
-        return Class.forName(AVRO_NAME);
-    }
-
     @Override
-    public boolean loadConverter() {
+    public boolean checkCanBeLoad() {
         try {
-            checkAvroClass();
-            ConverterSelector.put(this);
+            // 检测Avro相关类型是否存在
+            Class.forName(AVRO_NAME);
+            return true;
         } catch (Throwable ignored) {
             return false;
         }
-        return true;
     }
 }

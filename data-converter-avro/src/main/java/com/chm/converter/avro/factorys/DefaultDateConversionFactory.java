@@ -1,12 +1,10 @@
 package com.chm.converter.avro.factorys;
 
 import com.chm.converter.codec.DefaultDateCodec;
-import com.chm.converter.codec.Java8TimeCodec;
 import org.apache.avro.Conversion;
 import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
 
-import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 
 /**

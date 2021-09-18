@@ -62,6 +62,11 @@ public class DataType {
     public final static DataType PROTOSTUFF = DataType.createDataType("protostuff");
 
     /**
+     * 数据类型：hessian 二进制类型
+     */
+    public final static DataType HESSIAN = DataType.createDataType("hessian");
+
+    /**
      * 数据类型：avro 二进制类型
      */
     public final static DataType AVRO_BINARY = DataType.createDataType("avro_binary");

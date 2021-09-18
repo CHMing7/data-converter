@@ -1,6 +1,5 @@
 package com.chm.converter.protobuf;
 
-import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.protobuf.utils.ProtobufUtil;
@@ -48,23 +47,14 @@ public class DefaultProtobufConverter implements ProtobufConverter {
         return ProtobufUtil.serialize(source);
     }
 
-    /**
-     * 检测Protobuf相关类型
-     *
-     * @return Jackson相关类型
-     */
-    public static Class<?> checkProtobufClass() throws Throwable {
-        return Class.forName(PROTOBUF_NAME);
-    }
-
     @Override
-    public boolean loadConverter() {
+    public boolean checkCanBeLoad() {
         try {
-            checkProtobufClass();
-            ConverterSelector.put(this);
+            // 检测Protobuf相关类型是否存在
+            Class.forName(PROTOBUF_NAME);
+            return true;
         } catch (Throwable ignored) {
             return false;
         }
-        return true;
     }
 }

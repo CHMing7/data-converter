@@ -1,4 +1,4 @@
-package com.chm.converter.avro;
+package com.chm.converter.hessian;
 
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
@@ -24,6 +24,9 @@ public class ConverterTest {
     public void testConverter() {
         Map<String, User> userMap = MapUtil.newHashMap(true);
         User user = new User();
+        User user1 = new User();
+        user1.setUserName("testName");
+        user.setUser(user1);
         user.setUserName("user");
         user.setPassword("password");
         user.setDate(new Date());
@@ -32,7 +35,7 @@ public class ConverterTest {
         userMap.put("user", user);
         userMap.put("user1", user);
 
-        DefaultAvroConverter avroConverter = (DefaultAvroConverter) ConverterSelector.select(DataType.AVRO_BINARY, DefaultAvroConverter.class);
+        DefaultHessianConverter avroConverter = (DefaultHessianConverter) ConverterSelector.select(DataType.HESSIAN, DefaultHessianConverter.class);
         byte[] encode = avroConverter.encode(userMap);
 
         TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {

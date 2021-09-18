@@ -1,7 +1,6 @@
 package com.chm.converter.xml;
 
 import cn.hutool.core.collection.ListUtil;
-import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.xml.jackson.JacksonXmlModule;
@@ -116,24 +115,15 @@ public class JacksonXmlConverter implements XmlConverter {
         return mapper.convertValue(obj, javaType);
     }
 
-    /**
-     * 检测Jackson相关类型
-     *
-     * @return Jackson相关类型
-     */
-    public static Class<?> checkJacksonXmlClass() throws Throwable {
-        return Class.forName(JACKSON_XML_NAME);
-    }
-
     @Override
-    public boolean loadConverter() {
+    public boolean checkCanBeLoad() {
         try {
-            checkJacksonXmlClass();
-            ConverterSelector.put(this);
+            // 检测Jackson-Xml相关类型是否存在
+            Class.forName(JACKSON_XML_NAME);
+            return true;
         } catch (Throwable ignored) {
             return false;
         }
-        return true;
     }
 
     public static boolean checkExistJacksonXmlAnnotation(Class<?> cls) {

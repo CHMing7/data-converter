@@ -1,7 +1,6 @@
 package com.chm.converter.json;
 
 import cn.hutool.core.collection.ListUtil;
-import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.json.jackson.JacksonModule;
@@ -118,24 +117,15 @@ public class JacksonConverter implements JsonConverter {
         return mapper.convertValue(obj, javaType);
     }
 
-    /**
-     * 检测Jackson相关类型
-     *
-     * @return Jackson相关类型
-     */
-    public static Class<?> checkJacksonClass() throws Throwable {
-        return Class.forName(JACKSON_NAME);
-    }
-
     @Override
-    public boolean loadConverter() {
+    public boolean checkCanBeLoad() {
         try {
-            checkJacksonClass();
-            ConverterSelector.put(this);
+            // 检测Jackson相关类型是否存在
+            Class.forName(JACKSON_NAME);
+            return true;
         } catch (Throwable ignored) {
             return false;
         }
-        return true;
     }
 
     public static boolean checkExistJacksonAnnotation(Class<?> cls) {

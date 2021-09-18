@@ -1,16 +1,9 @@
 package com.chm.converter.binary;
 
-import cn.hutool.core.io.FileUtil;
-import com.chm.converter.binary.utils.ByteEncodeUtil;
-import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ClassUtil;
-import com.chm.converter.core.utils.StringUtil;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Type;
 
 /**
@@ -23,44 +16,20 @@ import java.lang.reflect.Type;
 public class DefaultBinaryConverter implements BinaryConverter {
 
     @Override
-    public <T> T convertToJavaObject(Object source, Class<T> targetType) {
-        if (source instanceof InputStream) {
-            InputStream in = (InputStream) source;
-            if (InputStream.class.isAssignableFrom(targetType)) {
-                return (T) source;
-            }
-            if (byte[].class.isAssignableFrom(targetType)) {
-                return (T) inputStreamToByteArray(in);
-            }
-            if (String.class.isAssignableFrom(targetType)) {
-                byte[] tmp = inputStreamToByteArray(in);
-                String result = null;
-                String encode = ByteEncodeUtil.getCharsetName(tmp);
-                if (encode.toUpperCase().startsWith("GB")) {
-                    encode = "GBK";
-                }
-                result = StringUtil.str(tmp, encode);
-                return (T) result;
-            }
-        } else if (source instanceof File) {
-            File file = (File) source;
-            if (File.class.isAssignableFrom(targetType)) {
-                return (T) file;
-            }
-            if (InputStream.class.isAssignableFrom(targetType)) {
-                return (T) FileUtil.getInputStream(file);
-            }
-            if (byte[].class.isAssignableFrom(targetType)) {
-                return (T) FileUtil.readBytes(file);
-            }
-            if (String.class.isAssignableFrom(targetType)) {
-                return (T) FileUtil.readString(file, (String) null);
-            }
+    public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
+        if (InputStream.class.isAssignableFrom(targetType)) {
+            return (T) new ByteArrayInputStream(source);
+        }
+        if (byte[].class.isAssignableFrom(targetType)) {
+            return (T) source;
+        }
+        if (String.class.isAssignableFrom(targetType)) {
+            return (T) new String(source);
         }
         return convertToJavaObjectEx(source, targetType);
     }
 
-    protected <T> T convertToJavaObjectEx(Object source, Class<T> targetType) {
+    protected <T> T convertToJavaObjectEx(byte[] source, Class<T> targetType) {
         return null;
     }
 
@@ -86,19 +55,39 @@ public class DefaultBinaryConverter implements BinaryConverter {
     }
 
     @Override
-    public <T> T convertToJavaObject(Object source, Type targetType) {
-        Class clazz = ClassUtil.getClassByType(targetType);
+    public <T> T convertToJavaObject(byte[] source, Type targetType) {
+        Class<?> clazz = ClassUtil.getClassByType(targetType);
         return (T) convertToJavaObject(source, clazz);
     }
 
     @Override
-    public Object encode(Object obj) {
+    public byte[] encode(Object source) {
+        if (source instanceof InputStream) {
+            InputStream in = (InputStream) source;
+            return inputStreamToByteArray(in);
+        } else if (source instanceof String) {
+            return ((String) source).getBytes();
+        } else if (source instanceof File) {
+            File file = (File) source;
+            try {
+                InputStream in = new FileInputStream(file);
+                return inputStreamToByteArray(in);
+            } catch (FileNotFoundException e) {
+                throw new ConvertException("binary", e);
+            }
+        } else if (source instanceof byte[]) {
+            return (byte[]) source;
+        }
+        return encodeEx(source);
+    }
+
+    protected byte[] encodeEx(Object source) {
         return null;
     }
 
     @Override
-    public boolean loadConverter() {
-        ConverterSelector.put(this);
+    public boolean checkCanBeLoad() {
         return true;
     }
+
 }

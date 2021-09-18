@@ -1,16 +1,16 @@
-package com.chm.converter.binary;
+package com.chm.converter.hessian;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.DataType;
 
 /**
- * 二进制数据转换接口
+ * hessian数据转换接口
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-09-10
+ * @since 2021-09-17
  **/
-public interface BinaryConverter extends Converter<byte[]> {
+public interface HessianConverter extends Converter<byte[]> {
 
     /**
      * 获取当前数据转换器转换类型
@@ -19,6 +19,6 @@ public interface BinaryConverter extends Converter<byte[]> {
      */
     @Override
     default DataType getDataType() {
-        return DataType.BINARY;
+        return DataType.HESSIAN;
     }
 }

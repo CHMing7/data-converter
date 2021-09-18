@@ -1,4 +1,4 @@
-package com.chm.converter.avro;
+package com.chm.converter.hessian;
 
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
@@ -7,6 +7,7 @@ import com.chm.converter.core.annotation.FieldProperty;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.*;
 import java.util.Date;
@@ -21,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class TestJava8Time {
 
-    DefaultAvroConverter avroConverter;
+    DefaultHessianConverter converter;
 
     Java8Time java8Time;
 
     @Before
     public void before() {
-        avroConverter = (DefaultAvroConverter) ConverterSelector.select(DataType.AVRO_BINARY, DefaultAvroConverter.class);
+        converter = (DefaultHessianConverter) ConverterSelector.select(DataType.HESSIAN, DefaultHessianConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -47,16 +48,16 @@ public class TestJava8Time {
 
     @Test
     public void testJava8Time() {
-        byte[] encode = avroConverter.encode(java8Time);
+        byte[] encode = converter.encode(java8Time);
         StaticLog.info(String.valueOf(encode));
-        StaticLog.info(String.valueOf(avroConverter.encode(LocalDateTime.now())));
-        StaticLog.info(String.valueOf(avroConverter.encode(MonthDay.now())));
-        StaticLog.info(String.valueOf(avroConverter.encode(null)));
-        Java8Time java8Time = avroConverter.convertToJavaObject(encode, Java8Time.class);
+        StaticLog.info(String.valueOf(converter.encode(LocalDateTime.now())));
+        StaticLog.info(String.valueOf(converter.encode(MonthDay.now())));
+        StaticLog.info(String.valueOf(converter.encode(null)));
+        Java8Time java8Time = converter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }
 
-    public static class Java8Time {
+    public static class Java8Time implements Serializable {
 
         @FieldProperty(name = "instant1", ordinal = 1)
         private Instant instant;

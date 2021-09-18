@@ -1,7 +1,6 @@
 package com.chm.converter.json;
 
 import cn.hutool.core.collection.ListUtil;
-import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.json.gson.GsonDefaultDateTypeAdapterFactory;
@@ -192,24 +191,15 @@ public class GsonConverter implements JsonConverter {
         return gson.toJson(obj, type);
     }
 
-    /**
-     * 检测Gson相关类型
-     *
-     * @return Gson相关类型
-     */
-    public static Class<?> checkGsonClass() throws Throwable {
-        return Class.forName(GSON_NAME);
-    }
-
     @Override
-    public boolean loadConverter() {
+    public boolean checkCanBeLoad() {
         try {
-            checkGsonClass();
-            ConverterSelector.put(this);
+            // 检测Gson相关类型是否存在
+            Class.forName(GSON_NAME);
+            return true;
         } catch (Throwable ignored) {
             return false;
         }
-        return true;
     }
 
     public static boolean checkExistGsonAnnotation(Class<?> cls) {

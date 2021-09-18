@@ -1,6 +1,5 @@
 package com.chm.converter.protostuff;
 
-import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.protostuff.utils.WrapperUtil;
 import io.protostuff.LinkedBuffer;
@@ -70,23 +69,15 @@ public class DefaultProtostuffConverter implements ProtostuffConverter {
         return SCHEMA_CACHE.computeIfAbsent(cls, RuntimeSchema::createFrom);
     }
 
-    /**
-     * 检测Protobuf相关类型
-     *
-     * @return Jackson相关类型
-     */
-    public static Class<?> checkProtostuffClass() throws Throwable {
-        return Class.forName(PROTOSTUFF_NAME);
-    }
-
     @Override
-    public boolean loadConverter() {
+    public boolean checkCanBeLoad() {
         try {
-            checkProtostuffClass();
-            ConverterSelector.put(this);
+            // 检测Protostuff相关类型是否存在
+            Class.forName(PROTOSTUFF_NAME);
+            return true;
         } catch (Throwable ignored) {
             return false;
         }
-        return true;
     }
+
 }

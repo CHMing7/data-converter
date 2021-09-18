@@ -61,11 +61,23 @@ public interface Converter<S> {
     DataType getDataType();
 
     /**
+     * 判断是否要载入转换器
+     *
+     * @return
+     */
+    boolean checkCanBeLoad();
+
+    /**
      * 载入数据转换接口
      *
      * @return
      */
-    boolean loadConverter();
+    default boolean loadConverter() {
+        if (checkCanBeLoad()) {
+            return ConverterSelector.put(this);
+        }
+        return false;
+    }
 
     /**
      * 设置日期格式

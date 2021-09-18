@@ -1,8 +1,9 @@
 dependencies {
     compile project(':data-converter-core')
+
     compile project(':data-converter-codec')
 
-    compileOnly(libs.avro)
+    compileOnly(libs.hessian)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
@@ -10,5 +11,5 @@ dependencies {
     testCompile 'junit:junit:4.13.1'
 
     testCompile(libs.hutool_log)
-    testCompile(libs.avro)
+    testCompile(libs.hessian)
 }

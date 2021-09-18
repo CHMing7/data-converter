@@ -13,7 +13,6 @@ import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.util.FieldInfo;
 import com.alibaba.fastjson.util.TypeUtils;
-import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.json.fastjson.deserializer.FastjsonParserConfig;
@@ -267,24 +266,15 @@ public class FastjsonConverter implements JsonConverter {
         return (Map<String, Object>) jsonObj;
     }
 
-    /**
-     * 检测FastJSON相关类型
-     *
-     * @return FastJSON相关类型
-     */
-    public static Class<?> checkFastjsonClass() throws Throwable {
-        return Class.forName(FAST_JSON_NAME);
-    }
-
     @Override
-    public boolean loadConverter() {
+    public boolean checkCanBeLoad() {
         try {
-            checkFastjsonClass();
-            ConverterSelector.put(this);
+            // 检测Fastjson相关类型是否存在
+            Class.forName(FAST_JSON_NAME);
+            return true;
         } catch (Throwable ignored) {
             return false;
         }
-        return true;
     }
 
     public static boolean checkExistFastjsonAnnotation(Class<?> cls) {

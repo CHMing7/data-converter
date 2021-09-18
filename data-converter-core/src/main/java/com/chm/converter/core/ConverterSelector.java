@@ -78,21 +78,21 @@ public class ConverterSelector implements Serializable {
         return MapUtil.isNotEmpty(classConverterMap) ? classConverterMap.get(className) : null;
     }
 
-    public static void put(Class<? extends Converter> className, Converter converter) {
+    public static boolean put(Class<? extends Converter> className, Converter converter) {
         DataType dataType = converter.getDataType();
         Map<Class<? extends Converter>, Converter> classConverterMap = CONVERTER_MAP.get(dataType);
         if (classConverterMap == null) {
             classConverterMap = new ConcurrentHashMap<>();
             CONVERTER_MAP.put(dataType, classConverterMap);
         }
-        classConverterMap.put(className, converter);
+        return classConverterMap.put(className, converter) != null;
     }
 
-    public static void put(Converter converter) {
+    public static boolean put(Converter converter) {
         if (converter == null) {
-            return;
+            return false;
         }
         Class<? extends Converter> converterClass = converter.getClass();
-        ConverterSelector.put(converterClass, converter);
+        return ConverterSelector.put(converterClass, converter);
     }
 }

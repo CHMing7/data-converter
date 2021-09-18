@@ -1,7 +1,5 @@
 package com.chm.converter.text;
 
-import com.chm.converter.core.ConverterSelector;
-
 import java.lang.reflect.Type;
 
 /**
@@ -29,8 +27,8 @@ public class DefaultTextConverter implements TextConverter {
     }
 
     @Override
-    public boolean loadConverter() {
-        ConverterSelector.put(this);
+    public boolean checkCanBeLoad() {
         return true;
     }
+
 }

@@ -10,6 +10,7 @@ ext {
             protobuf         : '3.13.0',
             io_protostuff    : '1.7.4',
             avro             : '1.9.2',
+            hessian          : '4.0.51',
     ]
 
     libs = [
@@ -29,7 +30,7 @@ ext {
             io_protostuff_core   : "io.protostuff:protostuff-core:$versions.io_protostuff",
             io_protostuff_runtime: "io.protostuff:protostuff-runtime:$versions.io_protostuff",
             avro                 : "org.apache.avro:avro:$versions.avro",
-            avro_ipc             : "org.apache.avro:avro-ipc:$versions.avro",
+            hessian              : "com.caucho:hessian:$versions.hessian",
     ]
 
 }
