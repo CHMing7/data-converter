@@ -3,6 +3,7 @@ package com.chm.converter.core;
 import com.chm.converter.core.utils.MapUtil;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ConfigurationBuilder;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -24,6 +25,8 @@ public class ConverterSelector implements Serializable {
 
     static {
         // 加载json数据转换类
+      /*  ConfigurationBuilder build = ConfigurationBuilder.build(new SubTypesScanner());
+        build.setExpandSuperTypes(false);*/
         Reflections reflections = new Reflections(new SubTypesScanner());
         Set<Class<? extends Converter>> jsonConverterClasses = reflections.getSubTypesOf(Converter.class);
         jsonConverterClasses.forEach(converterClass -> {
@@ -78,7 +81,14 @@ public class ConverterSelector implements Serializable {
         return MapUtil.isNotEmpty(classConverterMap) ? classConverterMap.get(className) : null;
     }
 
-    public static boolean put(Class<? extends Converter> className, Converter converter) {
+    /**
+     * 注册数据转换器
+     *
+     * @param className
+     * @param converter
+     * @return
+     */
+    public static boolean register(Class<? extends Converter> className, Converter converter) {
         DataType dataType = converter.getDataType();
         Map<Class<? extends Converter>, Converter> classConverterMap = CONVERTER_MAP.get(dataType);
         if (classConverterMap == null) {
@@ -88,11 +98,17 @@ public class ConverterSelector implements Serializable {
         return classConverterMap.put(className, converter) != null;
     }
 
-    public static boolean put(Converter converter) {
+    /**
+     * 注册数据转换器
+     *
+     * @param converter
+     * @return
+     */
+    public static boolean register(Converter converter) {
         if (converter == null) {
             return false;
         }
         Class<? extends Converter> converterClass = converter.getClass();
-        return ConverterSelector.put(converterClass, converter);
+        return ConverterSelector.register(converterClass, converter);
     }
 }

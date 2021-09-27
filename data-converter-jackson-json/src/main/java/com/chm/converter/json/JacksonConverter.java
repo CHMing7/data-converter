@@ -96,9 +96,9 @@ public class JacksonConverter implements JsonConverter {
     }
 
     @Override
-    public String encode(Object obj) {
+    public String encode(Object source) {
         try {
-            return mapper.writeValueAsString(obj);
+            return mapper.writeValueAsString(source);
         } catch (Throwable e) {
             throw new ConvertException("json", e);
         }

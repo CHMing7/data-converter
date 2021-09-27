@@ -5,7 +5,6 @@
 ## 📚简介
 Data-Converter是一个支持多种数据格式协议的数据转换组件
 
-
 -------------------------------------------------------------------------------
 
 ## 🛠️支持协议及相关模块
@@ -18,7 +17,7 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 |data-converter-jackson-json|JSON|
 |data-converter-jackson-xml|Xml|
 |data-converter-avro|Avro|
-|data-converter-binary|default-binary|
+|data-converter-binary|Default-Binary|
 |data-converter-hessian|Hessian|
 |data-converter-kryo|Kryo|
 |data-converter-protobuf|Protobuf|
@@ -27,8 +26,6 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 
 
 可以根据需求对每个模块单独引入，也可以通过引入`data-converter-all`方式引入所有模块。
-
--------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------
 

@@ -1,4 +1,5 @@
 dependencies {
+    compile(libs.slf4j_api)
     compile(libs.hutool_core)
     compile(libs.reflections)
 }

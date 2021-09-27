@@ -134,12 +134,12 @@ public class FastjsonConverter implements JsonConverter {
     }
 
     @Override
-    public String encode(Object obj) {
-        if (obj instanceof CharSequence) {
-            obj.toString();
+    public String encode(Object source) {
+        if (source instanceof CharSequence) {
+            source.toString();
         }
         try {
-            return parseToString(obj);
+            return parseToString(source);
         } catch (Throwable th) {
             throw new RuntimeException(th);
         }

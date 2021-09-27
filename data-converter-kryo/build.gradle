@@ -1,18 +1,13 @@
 dependencies {
     compile project(':data-converter-core')
-    compile project(':data-converter-codec')
 
-    compileOnly(libs.avro)
+    compileOnly(libs.kryo)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     testCompile 'junit:junit:4.13.1'
 
-    testCompile 'ch.qos.logback:logback-access:1.2.6'
-    testCompile 'ch.qos.logback:logback-classic:1.2.6'
-    testCompile 'ch.qos.logback:logback-core:1.2.6'
-
     testCompile(libs.hutool_log)
-    testCompile(libs.avro)
+    testCompile(libs.kryo)
 }

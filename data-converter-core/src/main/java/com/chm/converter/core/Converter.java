@@ -1,5 +1,8 @@
 package com.chm.converter.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Type;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -16,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 2021-08-13
  **/
 public interface Converter<S> {
+
+    Map<Converter<?>, Logger> CONVERTER_LOGGER_MAP = new ConcurrentHashMap<>();
 
     Map<Converter<?>, String> CONVERTER_DATE_FORMAT_PATTERN_MAP = new ConcurrentHashMap<>();
 
@@ -48,10 +53,10 @@ public interface Converter<S> {
     /**
      * 将java对象进行编码
      *
-     * @param obj
+     * @param source
      * @return
      */
-    S encode(Object obj);
+    S encode(Object source);
 
     /**
      * 获取当前数据转换器转换类型
@@ -68,13 +73,43 @@ public interface Converter<S> {
     boolean checkCanBeLoad();
 
     /**
+     * 获取logger
+     *
+     * @return
+     */
+    default Logger getLogger() {
+        if (!CONVERTER_LOGGER_MAP.containsKey(this)) {
+            Logger logger = LoggerFactory.getLogger(this.getClass());
+            CONVERTER_LOGGER_MAP.put(this, logger);
+        }
+        return CONVERTER_LOGGER_MAP.get(this);
+    }
+
+    /**
+     * 打印转换器载入成功信息
+     */
+    default void logLoadSuccess() {
+        getLogger().info("success load converter: " + this.getClass().getName());
+    }
+
+    /**
+     * 打印转换器载入失败信息
+     */
+    default void logLoadFail() {
+        getLogger().warn("fail load converter: " + this.getClass().getName());
+    }
+
+    /**
      * 载入数据转换接口
      *
      * @return
      */
     default boolean loadConverter() {
         if (checkCanBeLoad()) {
-            return ConverterSelector.put(this);
+            logLoadSuccess();
+            return ConverterSelector.register(this);
+        } else {
+            logLoadFail();
         }
         return false;
     }

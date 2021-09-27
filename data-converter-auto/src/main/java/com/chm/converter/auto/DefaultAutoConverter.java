@@ -132,7 +132,7 @@ public class DefaultAutoConverter implements AutoConverter {
     }
 
     @Override
-    public Object encode(Object obj) {
+    public Object encode(Object source) {
         return null;
     }
 

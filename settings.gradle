@@ -26,6 +26,8 @@ include ':data-converter-avro'
 
 include ':data-converter-hessian'
 
+include ':data-converter-kryo'
+
 include ':data-converter-protobuf'
 
 include ':data-converter-protostuff'
@@ -56,6 +58,8 @@ project(':data-converter-text').projectDir = "$rootDir/data-converter-text" as F
 project(':data-converter-avro').projectDir = "$rootDir/data-converter-avro" as File
 
 project(':data-converter-hessian').projectDir = "$rootDir/data-converter-hessian" as File
+
+project(':data-converter-kryo').projectDir = "$rootDir/data-converter-kryo" as File
 
 project(':data-converter-protobuf').projectDir = "$rootDir/data-converter-protobuf" as File
 

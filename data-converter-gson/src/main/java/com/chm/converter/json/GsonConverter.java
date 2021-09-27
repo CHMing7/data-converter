@@ -168,9 +168,9 @@ public class GsonConverter implements JsonConverter {
     }
 
     @Override
-    public String encode(Object obj) {
+    public String encode(Object source) {
         Gson gson = createGson();
-        return gson.toJson(obj);
+        return gson.toJson(source);
     }
 
     @Override

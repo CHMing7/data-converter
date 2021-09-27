@@ -72,6 +72,11 @@ public class DataType {
     public final static DataType AVRO_BINARY = DataType.createDataType("avro_binary");
 
     /**
+     * 数据类型：kryo类型
+     */
+    public final static DataType KRYO = DataType.createDataType("kryo");
+
+    /**
      * 全局数据转换器表
      */
     private final static Map<DataType, Converter<?>> CONVERTER_MAP = new HashMap<>();

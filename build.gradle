@@ -19,12 +19,25 @@ subprojects {
         mavenLocal()
     }
 
+    task sourceJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
     publishing {
         repositories {
-            maven { url = "http://maven.aliyun.com/nexus/content/repositories/jcenter" }
-            maven { url = "http://maven.aliyun.com/nexus/content/groups/public/" }
             mavenCentral()
             mavenLocal()
+        }
+
+        publications {
+            maven(MavenPublication) {
+                groupId = rootProject.group
+                version = rootProject.version
+                from components.java
+                // 主要是这一行
+                artifact sourceJar
+            }
         }
     }
 
@@ -34,11 +47,6 @@ subprojects {
             // Show that tests are run in the command-line output
             events 'started', 'passed'
         }
-    }
-
-    task sourceJar(type: Jar) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
     }
 
     sourceCompatibility = 1.8

@@ -22,8 +22,8 @@ public class DefaultTextConverter implements TextConverter {
     }
 
     @Override
-    public String encode(Object obj) {
-        return null != obj ? obj.toString() : null;
+    public String encode(Object source) {
+        return null != source ? source.toString() : null;
     }
 
     @Override
