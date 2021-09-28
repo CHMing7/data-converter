@@ -1,5 +1,6 @@
 package com.chm.converter.kryo;
 
+import cn.hutool.core.map.MapUtil;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
@@ -15,6 +16,8 @@ import org.objenesis.instantiator.ObjectInstantiator;
  * @since 2021-09-26
  **/
 public class CompatibleKryo extends Kryo {
+
+    public final ConstructorFactory constructorFactory = new ConstructorFactory(MapUtil.empty());
 
     @Override
     public Serializer<?> getDefaultSerializer(final Class clazz) {
@@ -53,10 +56,14 @@ public class CompatibleKryo extends Kryo {
                 instantiator = newInstantiator(type);
                 registration.setInstantiator(instantiator);
             }
-            return (T) instantiator.newInstance();
+            T t = (T) instantiator.newInstance();
+            if (t != null) {
+                return t;
+            }
+            return constructorFactory.get(TypeToken.get(type)).construct();
         } catch (Exception e) {
             try {
-                return ConstructorFactory.INSTANCE.get(TypeToken.get(type)).construct();
+                return constructorFactory.get(TypeToken.get(type)).construct();
             } catch (Exception e1) {
                 throw e;
             }

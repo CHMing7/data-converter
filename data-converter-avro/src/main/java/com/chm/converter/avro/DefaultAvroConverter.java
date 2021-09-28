@@ -24,7 +24,7 @@ import java.time.*;
 import java.util.Date;
 
 /**
- * avro数据转换器
+ * 默认avro数据转换器
  *
  * @author caihongming
  * @version v1.0
@@ -77,7 +77,8 @@ public class DefaultAvroConverter implements AvroConverter {
         try {
             return deserializer(source, schema);
         } catch (IOException e) {
-            throw new ConvertException(StringUtil.format("Byte data cannot be deserialized to type {}", targetType), e);
+
+            throw new ConvertException(StringUtil.format("bytes data cannot be avro deserialized to type: {}", targetType.getName()), e);
         }
     }
 
@@ -87,7 +88,7 @@ public class DefaultAvroConverter implements AvroConverter {
         try {
             return deserializer(source, schema);
         } catch (IOException e) {
-            throw new ConvertException(StringUtil.format("Byte data cannot be deserialized to type {}", targetType), e);
+            throw new ConvertException(StringUtil.format("bytes data cannot be avro deserialized to type: {}", targetType.getTypeName()), e);
         }
     }
 
@@ -117,7 +118,7 @@ public class DefaultAvroConverter implements AvroConverter {
             encoder.flush();
             return os.toByteArray();
         } catch (IOException e) {
-            throw new ConvertException(StringUtil.format("data cannot be serialized to avro, data type: {}", source.getClass()), e);
+            throw new ConvertException(StringUtil.format("data cannot be serialized to avro bytes, data type: {}", source.getClass()), e);
         }
     }
 

@@ -32,6 +32,8 @@ include ':data-converter-protobuf'
 
 include ':data-converter-protostuff'
 
+include ':data-converter-fst'
+
 
 project(':data-converter-all').projectDir = "$rootDir/data-converter-all" as File
 
@@ -64,4 +66,6 @@ project(':data-converter-kryo').projectDir = "$rootDir/data-converter-kryo" as F
 project(':data-converter-protobuf').projectDir = "$rootDir/data-converter-protobuf" as File
 
 project(':data-converter-protostuff').projectDir = "$rootDir/data-converter-protostuff" as File
+
+project(':data-converter-fst').projectDir = "$rootDir/data-converter-fst" as File
 

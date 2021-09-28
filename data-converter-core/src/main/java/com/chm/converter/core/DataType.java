@@ -52,16 +52,6 @@ public class DataType {
     public final static DataType BINARY = DataType.createDataType("binary");
 
     /**
-     * 数据类型： protobuf 二进制类型
-     */
-    public final static DataType PROTOBUF_BINARY = DataType.createDataType("protobuf_binary");
-
-    /**
-     * 数据类型： protostuff类型
-     */
-    public final static DataType PROTOSTUFF = DataType.createDataType("protostuff");
-
-    /**
      * 数据类型：hessian 二进制类型
      */
     public final static DataType HESSIAN = DataType.createDataType("hessian");
@@ -75,6 +65,21 @@ public class DataType {
      * 数据类型：kryo类型
      */
     public final static DataType KRYO = DataType.createDataType("kryo");
+
+    /**
+     * 数据类型： protobuf 二进制类型
+     */
+    public final static DataType PROTOBUF_BINARY = DataType.createDataType("protobuf_binary");
+
+    /**
+     * 数据类型： protostuff类型
+     */
+    public final static DataType PROTOSTUFF = DataType.createDataType("protostuff");
+
+    /**
+     * 数据类型： fst类型
+     */
+    public final static DataType FST = DataType.createDataType("fst");
 
     /**
      * 全局数据转换器表

@@ -13,6 +13,7 @@ ext {
             kryo             : '4.0.2',
             protobuf         : '3.13.0',
             io_protostuff    : '1.7.4',
+            fst              : '2.48',
     ]
 
     libs = [
@@ -35,6 +36,7 @@ ext {
             protobuf_java_util   : "com.google.protobuf:protobuf-java-util:$versions.protobuf",
             io_protostuff_core   : "io.protostuff:protostuff-core:$versions.io_protostuff",
             io_protostuff_runtime: "io.protostuff:protostuff-runtime:$versions.io_protostuff",
+            fst                  : "de.ruedigermoeller:fst:$versions.fst",
     ]
 
 }

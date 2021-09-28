@@ -24,7 +24,6 @@ public abstract class UnsafeAllocator {
     public abstract <T> T newInstance(Class<T> c) throws Exception;
 
     public static UnsafeAllocator create() {
-
         try {
             Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
             Field f = unsafeClass.getDeclaredField("theUnsafe");
@@ -41,7 +40,6 @@ public abstract class UnsafeAllocator {
             };
         } catch (Exception ignored) {
         }
-
 
         try {
             Method getConstructorId = ObjectStreamClass.class

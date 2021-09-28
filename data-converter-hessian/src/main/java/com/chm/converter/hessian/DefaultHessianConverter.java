@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 
 /**
+ * 默认hessian数据转换器
  * @author caihongming
  * @version v1.0
  * @since 2021-09-17
@@ -39,7 +40,7 @@ public class DefaultHessianConverter implements HessianConverter {
         try {
             return deserializer(source, targetType);
         } catch (IOException e) {
-            throw new ConvertException(StringUtil.format("data cannot be deserialized to hessian, data type: {}", source.getClass()), e);
+            throw new ConvertException(StringUtil.format("bytes data cannot be hessian deserialized to type: {}", targetType.getName()), e);
         }
     }
 
@@ -49,7 +50,7 @@ public class DefaultHessianConverter implements HessianConverter {
         try {
             return deserializer(source, cls);
         } catch (IOException e) {
-            throw new ConvertException(StringUtil.format("data cannot be deserialized to hessian, data type: {}", source.getClass()), e);
+            throw new ConvertException(StringUtil.format("bytes data cannot be hessian deserialized to type: {}", targetType.getTypeName()), e);
         }
     }
 
@@ -75,7 +76,7 @@ public class DefaultHessianConverter implements HessianConverter {
             ho.flush();
             return os.toByteArray();
         } catch (IOException e) {
-            throw new ConvertException(StringUtil.format("data cannot be serialized to hessian, data type: {}", source.getClass()), e);
+            throw new ConvertException(StringUtil.format("data cannot be serialized to hessian bytes, data type: {}", source.getClass()), e);
         }
     }
 

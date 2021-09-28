@@ -22,6 +22,7 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 |data-converter-kryo|Kryo|
 |data-converter-protobuf|Protobuf|
 |data-converter-protostuff|Protostuff|
+|data-converter-fst|Fst|
 |data-converter-text|Text|
 
 

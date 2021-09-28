@@ -1,16 +1,15 @@
-package com.chm.converter.kryo;
+package com.chm.converter.fst;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.DataType;
 
 /**
- * kryo数据转换接口
- *
+ * fst数据转换接口
  * @author caihongming
  * @version v1.0
- * @since 2021-09-26
+ * @since 2021-09-27
  **/
-public interface KryoConverter extends Converter<byte[]> {
+public interface FstConverter extends Converter<byte[]> {
 
     /**
      * 获取当前数据转换器转换类型
@@ -19,6 +18,6 @@ public interface KryoConverter extends Converter<byte[]> {
      */
     @Override
     default DataType getDataType() {
-        return DataType.KRYO;
+        return DataType.FST;
     }
 }
