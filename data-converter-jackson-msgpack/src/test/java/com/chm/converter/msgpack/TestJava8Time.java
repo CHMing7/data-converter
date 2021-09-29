@@ -1,4 +1,4 @@
-package com.chm.converter.fst;
+package com.chm.converter.msgpack;
 
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
@@ -21,13 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class TestJava8Time {
 
-    DefaultFstConverter converter;
+    JacksonMsgpackConverter converter;
 
     Java8Time java8Time;
 
     @Before
     public void before() {
-        converter = (DefaultFstConverter) ConverterSelector.select(DataType.FST, DefaultFstConverter.class);
+        converter = (JacksonMsgpackConverter) ConverterSelector.select(DataType.MSGPACK, JacksonMsgpackConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());

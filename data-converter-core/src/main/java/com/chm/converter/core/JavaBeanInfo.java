@@ -17,10 +17,12 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * @author caihongming
@@ -49,6 +51,16 @@ public class JavaBeanInfo {
      */
     private final Map<String, Object> expandProperty;
 
+    /**
+     * 注解集
+     */
+    private final List<Annotation> annotationList;
+
+    /**
+     * 注解类型集
+     */
+    private final Set<Class<? extends Annotation>> annotationClassSet;
+
     public JavaBeanInfo(Class<?> clazz, List<FieldInfo> fieldList) {
         this.clazz = clazz;
         this.objectConstructor = ConstructorFactory.INSTANCE.get(TypeToken.get(clazz));
@@ -58,6 +70,8 @@ public class JavaBeanInfo {
         this.nameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getName, fieldInfo -> fieldInfo);
         this.fieldNameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getFieldName, fieldInfo -> fieldInfo);
         this.expandProperty = new ConcurrentHashMap<>();
+        this.annotationList = ListUtil.toList(clazz.getAnnotations());
+        this.annotationClassSet = this.annotationList.stream().map(Annotation::annotationType).collect(Collectors.toSet());
     }
 
     public Class<?> getClazz() {
@@ -100,8 +114,16 @@ public class JavaBeanInfo {
         expandProperty.put(key, value);
     }
 
+    public List<Annotation> getAnnotationList() {
+        return annotationList;
+    }
+
+    public Set<Class<? extends Annotation>> getAnnotationClassSet() {
+        return annotationClassSet;
+    }
+
     /**
-     * 检车类中是否包含annotationList中任意一个注解
+     * 检查类中是否包含annotationList中任意一个注解
      *
      * @param cls
      * @param annotationList
@@ -110,16 +132,15 @@ public class JavaBeanInfo {
     public static boolean checkExistAnnotation(Class<?> cls, List<Class<? extends Annotation>> annotationList) {
         JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cls);
         List<FieldInfo> fieldList = javaBeanInfo.getFieldList();
+        Set<Class<? extends Annotation>> annotationClassSet = javaBeanInfo.getAnnotationClassSet();
+        for (Class<? extends Annotation> annotation : annotationList) {
+            if (annotationClassSet.contains(annotation)) {
+                return true;
+            }
+        }
         for (FieldInfo fieldInfo : fieldList) {
-            Field field = fieldInfo.getField();
-            Method method = fieldInfo.getMethod();
-            for (Class<? extends Annotation> annotation : annotationList) {
-                if (field != null && field.getAnnotation(annotation) != null) {
-                    return true;
-                }
-                if (method != null && method.getAnnotation(annotation) != null) {
-                    return true;
-                }
+            if (FieldInfo.checkExistAnnotation(fieldInfo, annotationList)) {
+                return true;
             }
         }
         return false;

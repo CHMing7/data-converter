@@ -1,13 +1,15 @@
 dependencies {
-    compileOnly(libs.gson)
+    compile project(':data-converter-jackson')
+    compile project(':data-converter-msgpack')
 
-    compile project(':data-converter-codec')
-    compile project(':data-converter-json')
+    compileOnly(libs.msgpack_jackson)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     testCompile 'junit:junit:4.13.1'
+
     testCompile(libs.hutool_log)
-    testCompile(libs.gson)
+    testCompile(libs.msgpack_jackson)
+
 }

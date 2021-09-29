@@ -135,6 +135,7 @@ public class DataCodec {
         }
         Codec<?, ?> cached = typeCache.get(type);
         if (cached != null) {
+            put(type, cached);
             return cached;
         }
         for (CodecFactory factory : factories) {

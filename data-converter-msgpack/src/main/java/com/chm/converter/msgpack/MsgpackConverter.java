@@ -1,17 +1,16 @@
-package com.chm.converter.xml;
-
+package com.chm.converter.msgpack;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.DataType;
 
 /**
- * Xml数据转换接口
+ * msgpack数据转换接口
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-01-04
+ * @since 2021-09-28
  **/
-public interface XmlConverter extends Converter<String> {
+public interface MsgpackConverter extends Converter<byte[]> {
 
     /**
      * 获取当前数据转换器转换类型
@@ -20,6 +19,6 @@ public interface XmlConverter extends Converter<String> {
      */
     @Override
     default DataType getDataType() {
-        return DataType.XML;
+        return DataType.MSGPACK;
     }
 }

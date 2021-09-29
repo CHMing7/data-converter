@@ -77,7 +77,6 @@ public class DefaultAvroConverter implements AvroConverter {
         try {
             return deserializer(source, schema);
         } catch (IOException e) {
-
             throw new ConvertException(StringUtil.format("bytes data cannot be avro deserialized to type: {}", targetType.getName()), e);
         }
     }

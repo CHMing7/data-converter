@@ -1,8 +1,7 @@
 package com.chm.converter.json.gson;
 
+import com.chm.converter.codec.Java8TimeCodec;
 import com.chm.converter.core.Converter;
-import com.chm.converter.core.constant.TimeConstant;
-import com.chm.converter.core.utils.DateUtil;
 import com.chm.converter.core.utils.StringUtil;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -10,11 +9,8 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalQuery;
-import java.util.TimeZone;
 
 /**
  * @author caihongming
@@ -23,18 +19,7 @@ import java.util.TimeZone;
  **/
 public class GsonJava8TimeAdapter<T extends TemporalAccessor> extends TypeAdapter<T> {
 
-    private final Class<T> clazz;
-
-    /**
-     * DateTimeFormatter for writing DateTime value to json string
-     */
-    private final DateTimeFormatter dateFormatter;
-
-    private final Converter<?> converter;
-
-    private final DateTimeFormatter defaultDateTimeFormatter;
-
-    private final TemporalQuery<T> temporalQuery;
+    private final Java8TimeCodec<T> java8TimeCodec;
 
     public GsonJava8TimeAdapter(Class<T> clazz) {
         this(clazz, (DateTimeFormatter) null, null);
@@ -53,44 +38,23 @@ public class GsonJava8TimeAdapter<T extends TemporalAccessor> extends TypeAdapte
     }
 
     public GsonJava8TimeAdapter(Class<T> clazz, String datePattern, Converter<?> converter) {
-        this.clazz = clazz;
-        if (StringUtil.isNotBlank(datePattern)) {
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
-            if (clazz == Instant.class && dateFormatter.getZone() == null) {
-                TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
-                dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
-            }
-            this.dateFormatter = dateFormatter;
-        } else {
-            this.dateFormatter = null;
-        }
-        this.converter = converter;
-        this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
-        this.temporalQuery = (TemporalQuery<T>) TimeConstant.CLASS_TEMPORAL_QUERY_MAP.get(clazz);
+        this.java8TimeCodec = new Java8TimeCodec<>(clazz, datePattern, converter);
     }
 
     public GsonJava8TimeAdapter(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
-        this.clazz = clazz;
-        if (dateFormatter != null && clazz == Instant.class && dateFormatter.getZone() == null) {
-            TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
-            dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
-        }
-        this.dateFormatter = dateFormatter;
-        this.converter = converter;
-        this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
-        this.temporalQuery = (TemporalQuery<T>) TimeConstant.CLASS_TEMPORAL_QUERY_MAP.get(clazz);
+        this.java8TimeCodec = new Java8TimeCodec<>(clazz, dateFormatter, converter);
     }
 
     public GsonJava8TimeAdapter<T> withDatePattern(String datePattern) {
-        return new GsonJava8TimeAdapter<>(this.clazz, datePattern, this.converter);
+        return new GsonJava8TimeAdapter<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
     }
 
     public GsonJava8TimeAdapter<T> withDateFormatter(DateTimeFormatter dateFormatter) {
-        return new GsonJava8TimeAdapter<>(this.clazz, dateFormatter, this.converter);
+        return new GsonJava8TimeAdapter<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
     }
 
     public GsonJava8TimeAdapter<T> withClass(Class<T> clazz) {
-        return new GsonJava8TimeAdapter<>(clazz, this.dateFormatter, this.converter);
+        return new GsonJava8TimeAdapter<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
     }
 
     @Override
@@ -99,22 +63,7 @@ public class GsonJava8TimeAdapter<T extends TemporalAccessor> extends TypeAdapte
             out.nullValue();
             return;
         }
-        DateTimeFormatter dtf = this.dateFormatter;
-
-        if (dtf == null && this.converter != null) {
-            dtf = this.converter.getDateFormat();
-        }
-        String str;
-        if (dtf != null) {
-            if (value instanceof Instant && dtf.getZone() == null) {
-                // Instant类需设置时区
-                TimeZone timeZone = this.converter != null ? this.converter.getTimeZone() : TimeZone.getDefault();
-                dtf = dtf.withZone(timeZone.toZoneId());
-            }
-            str = DateUtil.format(value, dtf);
-        } else {
-            str = DateUtil.format(value, defaultDateTimeFormatter);
-        }
+        String str = this.java8TimeCodec.encode(value);
         out.value(str);
     }
 
@@ -132,19 +81,6 @@ public class GsonJava8TimeAdapter<T extends TemporalAccessor> extends TypeAdapte
         if (StringUtil.isBlank(str)) {
             return null;
         }
-        DateTimeFormatter dtf = this.dateFormatter;
-        if (dtf == null && this.converter != null) {
-            dtf = this.converter.getDateFormat();
-        }
-        if (dtf != null) {
-            if (clazz == Instant.class && dtf.getZone() == null) {
-                // Instant类需设置时区
-                TimeZone timeZone = this.converter != null ? this.converter.getTimeZone() : TimeZone.getDefault();
-                dtf = dtf.withZone(timeZone.toZoneId());
-            }
-            return dtf.parse(str, temporalQuery);
-        } else {
-            return defaultDateTimeFormatter.parse(str, temporalQuery);
-        }
+        return this.java8TimeCodec.decode(str);
     }
 }

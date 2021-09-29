@@ -1,18 +1,14 @@
 package com.chm.converter.jackson.serializer;
 
+import com.chm.converter.codec.Java8TimeCodec;
 import com.chm.converter.core.Converter;
-import com.chm.converter.core.constant.TimeConstant;
-import com.chm.converter.core.utils.DateUtil;
-import com.chm.converter.core.utils.StringUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.util.TimeZone;
 
 /**
  * @author caihongming
@@ -21,16 +17,7 @@ import java.util.TimeZone;
  **/
 public class JacksonJava8TimeSerializer<T extends TemporalAccessor> extends JsonSerializer<T> {
 
-    private final Class<T> clazz;
-
-    /**
-     * DateTimeFormatter for writing DateTime value to json string
-     */
-    private final DateTimeFormatter dateFormatter;
-
-    private final Converter<?> converter;
-
-    private final DateTimeFormatter defaultDateTimeFormatter;
+    private final Java8TimeCodec<T> java8TimeCodec;
 
     public JacksonJava8TimeSerializer(Class<T> clazz) {
         this(clazz, (DateTimeFormatter) null, null);
@@ -49,64 +36,28 @@ public class JacksonJava8TimeSerializer<T extends TemporalAccessor> extends Json
     }
 
     public JacksonJava8TimeSerializer(Class<T> clazz, String datePattern, Converter<?> converter) {
-        this.clazz = clazz;
-        if (StringUtil.isNotBlank(datePattern)) {
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
-            if (clazz == Instant.class && dateFormatter.getZone() == null) {
-                TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
-                dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
-            }
-            this.dateFormatter = dateFormatter;
-        } else {
-            this.dateFormatter = null;
-        }
-        this.converter = converter;
-        this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
+        this.java8TimeCodec = new Java8TimeCodec<>(clazz, datePattern, converter);
     }
 
     public JacksonJava8TimeSerializer(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
-        this.clazz = clazz;
-        if (dateFormatter != null && clazz == Instant.class && dateFormatter.getZone() == null) {
-            TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
-            dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
-        }
-        this.dateFormatter = dateFormatter;
-        this.converter = converter;
-        this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
+        this.java8TimeCodec = new Java8TimeCodec<>(clazz, dateFormatter, converter);
     }
 
     public JacksonJava8TimeSerializer<T> withClass(Class<T> clazz) {
-        return new JacksonJava8TimeSerializer<>(clazz, this.dateFormatter, this.converter);
+        return new JacksonJava8TimeSerializer<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
     }
 
     public JacksonJava8TimeSerializer<T> withDatePattern(String datePattern) {
-        return new JacksonJava8TimeSerializer<>(this.clazz, datePattern, this.converter);
+        return new JacksonJava8TimeSerializer<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
     }
 
     public JacksonJava8TimeSerializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
-        return new JacksonJava8TimeSerializer<>(this.clazz, dateFormatter, this.converter);
+        return new JacksonJava8TimeSerializer<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
     }
 
     @Override
     public void serialize(T value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        String str;
-        DateTimeFormatter dtf = this.dateFormatter;
-        if (converter != null && dtf == null) {
-            dtf = converter.getDateFormat();
-        }
-
-        if (dtf != null) {
-            // Instant类需设置时区
-            if (value instanceof Instant && dtf.getZone() == null) {
-                TimeZone timeZone = this.converter != null ? this.converter.getTimeZone() : serializers.getTimeZone();
-                dtf = dtf.withZone(timeZone.toZoneId());
-            }
-            str = DateUtil.format(value, dtf);
-        } else {
-            str = DateUtil.format(value, defaultDateTimeFormatter);
-        }
+        String str = this.java8TimeCodec.encode(value);
         gen.writeString(str);
     }
-
-
 }

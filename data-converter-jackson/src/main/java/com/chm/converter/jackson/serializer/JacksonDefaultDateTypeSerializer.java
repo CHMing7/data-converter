@@ -1,8 +1,7 @@
 package com.chm.converter.jackson.serializer;
 
+import com.chm.converter.codec.DefaultDateCodec;
 import com.chm.converter.core.Converter;
-import com.chm.converter.core.utils.DateUtil;
-import com.chm.converter.core.utils.StringUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -19,13 +18,7 @@ import java.util.Date;
  **/
 public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerializer<T> {
 
-    private final DateTimeFormatter dateFormatter;
-
-    private final Converter<?> converter;
-
-    private static final String DEFAULT_DATE_PATTERN_STR = "yyyy-MM-dd HH:mm:ss.SSSS";
-
-    private static final DateTimeFormatter DEFAULT_DATE_FORMAT = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN_STR);
+    private final DefaultDateCodec<T> defaultDateCodec;
 
     public JacksonDefaultDateTypeSerializer() {
         this((DateTimeFormatter) null, null);
@@ -44,26 +37,20 @@ public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerial
     }
 
     public JacksonDefaultDateTypeSerializer(String datePattern, Converter<?> converter) {
-        if (StringUtil.isNotBlank(datePattern)) {
-            this.dateFormatter = DateTimeFormatter.ofPattern(datePattern);
-        } else {
-            this.dateFormatter = null;
-        }
-        this.converter = converter;
+        this.defaultDateCodec = new DefaultDateCodec(Date.class, datePattern, converter);
     }
 
     public JacksonDefaultDateTypeSerializer(DateTimeFormatter dateFormat, Converter<?> converter) {
-        this.dateFormatter = dateFormat;
-        this.converter = converter;
+        this.defaultDateCodec = new DefaultDateCodec(Date.class, dateFormat, converter);
     }
 
 
     public JacksonDefaultDateTypeSerializer<T> withDatePattern(String datePattern) {
-        return new JacksonDefaultDateTypeSerializer<>(datePattern, this.converter);
+        return new JacksonDefaultDateTypeSerializer<>(datePattern, this.defaultDateCodec.getConverter());
     }
 
     public JacksonDefaultDateTypeSerializer<T> withDateFormat(DateTimeFormatter dateFormatter) {
-        return new JacksonDefaultDateTypeSerializer<>(dateFormatter, this.converter);
+        return new JacksonDefaultDateTypeSerializer<>(dateFormatter, this.defaultDateCodec.getConverter());
     }
 
     protected SerializationFeature getTimestampsFeature() {
@@ -72,7 +59,7 @@ public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerial
 
     protected boolean useTimestamp(SerializerProvider provider) {
         // assume that explicit formatter definition implies use of textual format
-        return (dateFormatter == null) && (provider != null)
+        return (this.defaultDateCodec.getDateFormatter() == null) && (provider != null)
                 && provider.isEnabled(getTimestampsFeature());
     }
 
@@ -82,22 +69,11 @@ public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerial
 
 
     @Override
-    public void serialize(Date value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+    public void serialize(T value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         if (useTimestamp(serializers)) {
             gen.writeNumber(timestamp(value));
         } else {
-
-            String dateFormatAsString;
-            DateTimeFormatter dtf = this.dateFormatter;
-            if (converter != null && dtf == null) {
-                dtf = converter.getDateFormat();
-            }
-
-            if (dtf != null) {
-                dateFormatAsString = DateUtil.format(value, dtf);
-            } else {
-                dateFormatAsString = DateUtil.format(value, DEFAULT_DATE_FORMAT);
-            }
+            String dateFormatAsString = this.defaultDateCodec.encode(value);
             gen.writeString(dateFormatAsString);
         }
     }

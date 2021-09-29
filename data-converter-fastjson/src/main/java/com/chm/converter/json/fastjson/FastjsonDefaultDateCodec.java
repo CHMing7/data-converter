@@ -6,13 +6,12 @@ import com.alibaba.fastjson.parser.JSONToken;
 import com.alibaba.fastjson.serializer.DateCodec;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
+import com.chm.converter.codec.DefaultDateCodec;
 import com.chm.converter.core.Converter;
-import com.chm.converter.core.utils.DateUtil;
 import com.chm.converter.core.utils.StringUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -23,19 +22,7 @@ import java.util.Date;
  **/
 public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
 
-    private final Class<T> dateType;
-
-    private final DateTimeFormatter dateFormatter;
-
-    private final Converter<?> converter;
-
-    private final static String DEFAULT_DATE_PATTERN_STR = "yyyy-MM-dd HH:mm:ss.SSSS";
-
-    /**
-     * List of 1 or more different date formats used for de-serialization attempts.
-     * The first of them is used for serialization as well.
-     */
-    private final static DateTimeFormatter DEFAULT_DATE_FORMAT = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN_STR);
+    private final DefaultDateCodec<T> defaultDateCodec;
 
     public FastjsonDefaultDateCodec(Class<T> dateType) {
         this(dateType, (DateTimeFormatter) null, null);
@@ -54,38 +41,23 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
     }
 
     public FastjsonDefaultDateCodec(Class<T> dateType, String datePattern, Converter<?> converter) {
-        this.converter = converter;
-        this.dateType = verifyDateType(dateType);
-        if (StringUtil.isNotBlank(datePattern)) {
-            this.dateFormatter = DateTimeFormatter.ofPattern(datePattern);
-        } else {
-            this.dateFormatter = null;
-        }
+        this.defaultDateCodec = new DefaultDateCodec<>(dateType, datePattern, converter);
     }
 
     public FastjsonDefaultDateCodec(Class<T> dateType, DateTimeFormatter dateFormat, Converter<?> converter) {
-        this.dateType = verifyDateType(dateType);
-        this.dateFormatter = dateFormat;
-        this.converter = converter;
-    }
-
-    private Class<T> verifyDateType(Class<T> dateType) {
-        if (dateType != Date.class && dateType != java.sql.Date.class && dateType != Timestamp.class) {
-            throw new IllegalArgumentException("Date type must be one of " + Date.class + ", " + Timestamp.class + ", or " + java.sql.Date.class + " but was " + dateType);
-        }
-        return dateType;
+        this.defaultDateCodec = new DefaultDateCodec<>(dateType, dateFormat, converter);
     }
 
     public FastjsonDefaultDateCodec<T> withDateType(Class<T> dateType) {
-        return new FastjsonDefaultDateCodec<>(dateType, this.dateFormatter, this.converter);
+        return new FastjsonDefaultDateCodec<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter());
     }
 
     public FastjsonDefaultDateCodec<T> withDatePattern(String datePattern) {
-        return new FastjsonDefaultDateCodec<>(this.dateType, datePattern, this.converter);
+        return new FastjsonDefaultDateCodec<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter());
     }
 
     public FastjsonDefaultDateCodec<T> withDateFormat(DateTimeFormatter dateFormat) {
-        return new FastjsonDefaultDateCodec<>(this.dateType, dateFormat, this.converter);
+        return new FastjsonDefaultDateCodec<>(this.defaultDateCodec.getDateType(), dateFormat, this.defaultDateCodec.getConverter());
     }
 
     @Override
@@ -96,14 +68,12 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
             out.writeNull();
             return;
         }
-
-        DateTimeFormatter format = getDateFormat(serializer, null);
-        String text = DateUtil.format((Date) object, format);
+        String text = this.defaultDateCodec.encode((T) object);
         out.writeString(text);
     }
 
     @Override
-    public <T> T deserialze(DefaultJSONParser parser, Type clazz, Object fieldName) {
+    public T deserialze(DefaultJSONParser parser, Type clazz, Object fieldName) {
         JSONLexer lexer = parser.lexer;
         if (lexer.token() == JSONToken.NULL) {
             lexer.nextToken();
@@ -116,22 +86,13 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
                 return null;
             }
 
-            DateTimeFormatter format = getDateFormat(null, parser);
-
-            Date date = DateUtil.parseToDate(str, format);
-            if (dateType == Date.class) {
-                return (T) date;
-            } else if (dateType == Timestamp.class) {
-                return (T) new Timestamp(date.getTime());
-            } else if (dateType == java.sql.Date.class) {
-                return (T) new java.sql.Date(date.getTime());
-            }
+            return this.defaultDateCodec.decode(str);
         }
         return super.deserialze(parser, clazz, fieldName);
     }
 
     @Override
-    public <T> T deserialze(DefaultJSONParser parser, Type clazz, Object fieldName, String format, int features) {
+    public T deserialze(DefaultJSONParser parser, Type clazz, Object fieldName, String format, int features) {
         JSONLexer lexer = parser.lexer;
         if (lexer.token() == JSONToken.NULL) {
             lexer.nextToken();
@@ -143,57 +104,8 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
             if (StringUtil.isBlank(str)) {
                 return null;
             }
-            DateTimeFormatter dateFormat = this.dateFormatter;
-            if (dateFormat == null && format != null) {
-                dateFormat = DateTimeFormatter.ofPattern(format);
-            }
-
-            if (dateFormat == null) {
-                dateFormat = getDateFormat(null, parser);
-            }
-
-            Date date = DateUtil.parseToDate(str, dateFormat);
-
-            if (dateType == Date.class) {
-                return (T) date;
-            } else if (dateType == Timestamp.class) {
-                return (T) new Timestamp(date.getTime());
-            } else if (dateType == java.sql.Date.class) {
-                return (T) new java.sql.Date(date.getTime());
-            }
+            return this.defaultDateCodec.decode(str, format);
         }
         return super.deserialze(parser, clazz, fieldName, format, features);
-    }
-
-    private DateTimeFormatter getDateFormat(JSONSerializer serializer, DefaultJSONParser parser) {
-        DateTimeFormatter formatter = this.dateFormatter;
-
-        if (converter != null && formatter == null) {
-            formatter = converter.getDateFormat();
-        } else if (formatter == null) {
-            String dateFormatPattern = null;
-            if (serializer != null) {
-                dateFormatPattern = serializer.getDateFormatPattern();
-
-                if (StringUtil.isBlank(dateFormatPattern)) {
-                    dateFormatPattern = serializer.getFastJsonConfigDateFormatPattern();
-                }
-            }
-
-            if (parser != null) {
-                if (StringUtil.isBlank(dateFormatPattern)) {
-                    dateFormatPattern = parser.getDateFomartPattern();
-                }
-            }
-
-            if (StringUtil.isNotBlank(dateFormatPattern)) {
-                formatter = DateTimeFormatter.ofPattern(dateFormatPattern);
-            }
-        }
-
-        if (formatter == null) {
-            formatter = DEFAULT_DATE_FORMAT;
-        }
-        return formatter;
     }
 }

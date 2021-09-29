@@ -82,6 +82,11 @@ public class DataType {
     public final static DataType FST = DataType.createDataType("fst");
 
     /**
+     * 数据类型： msgpack类型
+     */
+    public final static DataType MSGPACK = DataType.createDataType("msgpack");
+
+    /**
      * 全局数据转换器表
      */
     private final static Map<DataType, Converter<?>> CONVERTER_MAP = new HashMap<>();

@@ -10,20 +10,21 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 ## 🛠️支持协议及相关模块
 
 
-|模块|协议|
-|---|---|
-|data-converter-fastjson|JSON|
-|data-converter-gson|JSON|
-|data-converter-jackson-json|JSON|
-|data-converter-jackson-xml|Xml|
-|data-converter-avro|Avro|
-|data-converter-binary|Default-Binary|
-|data-converter-hessian|Hessian|
-|data-converter-kryo|Kryo|
-|data-converter-protobuf|Protobuf|
-|data-converter-protostuff|Protostuff|
-|data-converter-fst|Fst|
-|data-converter-text|Text|
+|              模块              |      协议      |                                                                             引用模块                                                                             |
+| :----------------------------: | :------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|    data-converter-fastjson     |      JSON      |                                                                   com.alibaba:fastjson:version                                                                   |
+|      data-converter-gson       |      JSON      |                                                                com.google.code.gson:gson:version                                                                 |
+|  data-converter-jackson-json   |      JSON      | com.fasterxml.jackson.core:jackson-core:version<br>com.fasterxml.jackson.core:jackson-databind:version<br>com.fasterxml.jackson.core:jackson-annotations:version |
+|   data-converter-jackson-xml   |      Xml       |                                                 com.fasterxml.jackson.dataformat:jackson-dataformat-xml:version                                                  |
+|      data-converter-text       |      Text      |                                                                               None                                                                               |
+|      data-converter-avro       |      Avro      |                                                                   org.apache.avro:avro:version                                                                   |
+|     data-converter-binary      | Default-Binary |                                                                               None                                                                               |
+|     data-converter-hessian     |    Hessian     |                                                                    com.caucho:hessian:version                                                                    |
+|      data-converter-kryo       |      Kryo      |                                                                com.esotericsoftware:kryo:version                                                                 |
+|    data-converter-protobuf     |    Protobuf    |                                                          com.google.protobuf:protobuf-java-util:version                                                          |
+|   data-converter-protostuff    |   Protostuff   |                        io.protostuff:protostuff-core:$versions.io_protostuff<br>io.protostuff:protostuff-runtime:$versions.io_protostuff                         |
+|       data-converter-fst       |      Fst       |                                                                  de.ruedigermoeller:fst:version                                                                  |
+| data-converter-jackson-msgpack |    Msgpack     |                                                          org.msgpack:jackson-dataformat-msgpack:version                                                          |
 
 
 可以根据需求对每个模块单独引入，也可以通过引入`data-converter-all`方式引入所有模块。

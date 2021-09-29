@@ -3,7 +3,6 @@ package com.chm.converter.core;
 import com.chm.converter.core.utils.MapUtil;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ConfigurationBuilder;
 
 import java.io.Serializable;
 import java.util.Collection;

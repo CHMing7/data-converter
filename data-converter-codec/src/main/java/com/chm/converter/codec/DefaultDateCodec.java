@@ -82,13 +82,25 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
         return new DefaultDateCodec<>(this.dateType, dateFormat, this.converter);
     }
 
+    public Class<T> getDateType() {
+        return dateType;
+    }
+
+    public DateTimeFormatter getDateFormatter() {
+        return dateFormatter;
+    }
+
+    public Converter<?> getConverter() {
+        return converter;
+    }
+
     @Override
     public String encode(T t) {
         if (t == null) {
             return null;
         }
 
-        DateTimeFormatter formatter = getDateFormatter();
+        DateTimeFormatter formatter = getCodecDateFormatter();
         return DateUtil.format(t, formatter);
     }
 
@@ -108,7 +120,7 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
         }
 
         if (formatter == null) {
-            formatter = getDateFormatter();
+            formatter = getCodecDateFormatter();
         }
 
         Date date = DateUtil.parseToDate(timeStr, formatter);
@@ -118,11 +130,13 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
             return (T) new Timestamp(date.getTime());
         } else if (dateType == java.sql.Date.class) {
             return (T) new java.sql.Date(date.getTime());
+        } else {
+            // This must never happen: dateType is guarded in the primary constructor
+            throw new AssertionError();
         }
-        return (T) date;
     }
 
-    private DateTimeFormatter getDateFormatter() {
+    private DateTimeFormatter getCodecDateFormatter() {
         DateTimeFormatter dtf = this.dateFormatter;
 
         if (converter != null && dtf == null) {

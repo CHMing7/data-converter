@@ -1,14 +1,19 @@
 package com.chm.converter.core;
 
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.core.utils.TypeUtil;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author caihongming
@@ -60,6 +65,27 @@ public class FieldInfo implements Comparable<FieldInfo> {
      * 扩展属性
      */
     private final Map<String, Object> expandProperty;
+
+    /**
+     * 属性注解集
+     */
+    private final List<Annotation> fieldAnnotationList;
+
+    /**
+     * 属性注解类型集
+     */
+    private final Set<Class<? extends Annotation>> fieldAnnotationClassSet;
+
+
+    /**
+     * 方法注解集
+     */
+    private final List<Annotation> methodAnnotationList;
+
+    /**
+     * 方法注解类型集
+     */
+    private final Set<Class<? extends Annotation>> methodAnnotationClassSet;
 
     public FieldInfo(String name, Method method, Field field, int ordinal) {
         if (field != null) {
@@ -153,6 +179,10 @@ public class FieldInfo implements Comparable<FieldInfo> {
         this.serialize = serialize;
         this.deserialize = deserialize;
         this.expandProperty = new ConcurrentHashMap<>();
+        this.fieldAnnotationList = ListUtil.toList(field != null ? field.getAnnotations() : null);
+        this.fieldAnnotationClassSet = this.fieldAnnotationList.stream().map(Annotation::annotationType).collect(Collectors.toSet());
+        this.methodAnnotationList = ListUtil.toList(method != null ? method.getAnnotations() : null);
+        this.methodAnnotationClassSet = this.methodAnnotationList.stream().map(Annotation::annotationType).collect(Collectors.toSet());
     }
 
 
@@ -334,6 +364,44 @@ public class FieldInfo implements Comparable<FieldInfo> {
 
     public void putExpandProperty(String key, Object value) {
         expandProperty.put(key, value);
+    }
+
+    public List<Annotation> getFieldAnnotationList() {
+        return fieldAnnotationList;
+    }
+
+    public Set<Class<? extends Annotation>> getFieldAnnotationClassSet() {
+        return fieldAnnotationClassSet;
+    }
+
+    public List<Annotation> getMethodAnnotationList() {
+        return methodAnnotationList;
+    }
+
+    public Set<Class<? extends Annotation>> getMethodAnnotationClassSet() {
+        return methodAnnotationClassSet;
+    }
+
+    /**
+     * 检查fieldInfo中是否包含annotationList中任意一个注解
+     *
+     * @param fieldInfo
+     * @param annotationList
+     * @return
+     */
+    public static boolean checkExistAnnotation(FieldInfo fieldInfo, List<Class<? extends Annotation>> annotationList) {
+        if (fieldInfo == null) {
+            return false;
+        }
+        Set<Class<? extends Annotation>> fieldAnnotationClassSet = fieldInfo.getFieldAnnotationClassSet();
+        Set<Class<? extends Annotation>> methodAnnotationClassSet = fieldInfo.getMethodAnnotationClassSet();
+        for (Class<? extends Annotation> annotation : annotationList) {
+            if (fieldAnnotationClassSet.contains(annotation) || methodAnnotationClassSet.contains(annotation)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override

@@ -14,6 +14,7 @@ ext {
             protobuf         : '3.13.0',
             io_protostuff    : '1.7.4',
             fst              : '2.48',
+            msgpack          : '0.8.22',
     ]
 
     libs = [
@@ -37,6 +38,8 @@ ext {
             io_protostuff_core   : "io.protostuff:protostuff-core:$versions.io_protostuff",
             io_protostuff_runtime: "io.protostuff:protostuff-runtime:$versions.io_protostuff",
             fst                  : "de.ruedigermoeller:fst:$versions.fst",
+            msgpack_core         : "org.msgpack:msgpack-core:$versions.msgpack",
+            msgpack_jackson      : "org.msgpack:jackson-dataformat-msgpack:$versions.msgpack",
     ]
 
 }

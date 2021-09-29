@@ -90,6 +90,26 @@ public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, Stri
         return new Java8TimeCodec<>(this.clazz, dateFormatter, this.converter);
     }
 
+    public Class<T> getClazz() {
+        return clazz;
+    }
+
+    public DateTimeFormatter getDateFormatter() {
+        return dateFormatter;
+    }
+
+    public Converter<?> getConverter() {
+        return converter;
+    }
+
+    public DateTimeFormatter getDefaultDateTimeFormatter() {
+        return defaultDateTimeFormatter;
+    }
+
+    public TemporalQuery<T> getTemporalQuery() {
+        return temporalQuery;
+    }
+
     /**
      * 将jdk8时间类序列化成字符串
      *

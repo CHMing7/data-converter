@@ -7,7 +7,7 @@ import com.esotericsoftware.kryo.Kryo;
  * @version v1.0
  * @since 2021-09-26
  **/
-public class ThreadLocalKryoFactory extends AbstractKryoFactory{
+public class ThreadLocalKryoFactory extends AbstractKryoFactory {
 
     private final ThreadLocal<Kryo> holder = ThreadLocal.withInitial(this::create);
 

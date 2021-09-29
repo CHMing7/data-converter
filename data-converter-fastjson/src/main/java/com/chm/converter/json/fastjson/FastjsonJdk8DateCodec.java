@@ -7,19 +7,14 @@ import com.alibaba.fastjson.parser.deserializer.Jdk8DateCodec;
 import com.alibaba.fastjson.serializer.BeanContext;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
+import com.chm.converter.codec.Java8TimeCodec;
 import com.chm.converter.core.Converter;
-import com.chm.converter.core.constant.TimeConstant;
-import com.chm.converter.core.utils.DateUtil;
 import com.chm.converter.core.utils.StringUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.text.DateFormat;
-import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalQuery;
-import java.util.TimeZone;
 
 /**
  * @author caihongming
@@ -28,15 +23,7 @@ import java.util.TimeZone;
  **/
 public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateCodec {
 
-    private final Class<T> clazz;
-
-    private final DateTimeFormatter dateFormatter;
-
-    private final Converter<?> converter;
-
-    private final DateTimeFormatter defaultDateTimeFormatter;
-
-    private final TemporalQuery<T> temporalQuery;
+    private final Java8TimeCodec<T> java8TimeCodec;
 
     public FastjsonJdk8DateCodec(Class<T> clazz) {
         this(clazz, (DateTimeFormatter) null, null);
@@ -55,44 +42,23 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
     }
 
     public FastjsonJdk8DateCodec(Class<T> clazz, String datePattern, Converter<?> converter) {
-        this.clazz = clazz;
-        if (StringUtil.isNotBlank(datePattern)) {
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(datePattern);
-            if (clazz == Instant.class && dateFormatter.getZone() == null) {
-                TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
-                dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
-            }
-            this.dateFormatter = dateFormatter;
-        } else {
-            this.dateFormatter = null;
-        }
-        this.converter = converter;
-        this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
-        this.temporalQuery = (TemporalQuery<T>) TimeConstant.CLASS_TEMPORAL_QUERY_MAP.get(clazz);
+        this.java8TimeCodec = new Java8TimeCodec<>(clazz, datePattern, converter);
     }
 
     public FastjsonJdk8DateCodec(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
-        this.clazz = clazz;
-        if (dateFormatter != null && clazz == Instant.class && dateFormatter.getZone() == null) {
-            TimeZone timeZone = converter != null ? converter.getTimeZone() : TimeZone.getDefault();
-            dateFormatter = dateFormatter.withZone(timeZone.toZoneId());
-        }
-        this.dateFormatter = dateFormatter;
-        this.converter = converter;
-        this.defaultDateTimeFormatter = TimeConstant.JAVA8_TIME_DEFAULT_FORMATTER_MAP.get(clazz);
-        this.temporalQuery = (TemporalQuery<T>) TimeConstant.CLASS_TEMPORAL_QUERY_MAP.get(clazz);
+        this.java8TimeCodec = new Java8TimeCodec<>(clazz, dateFormatter, converter);
     }
 
     public FastjsonJdk8DateCodec<T> withClass(Class<T> clazz) {
-        return new FastjsonJdk8DateCodec<>(clazz, this.dateFormatter, this.converter);
+        return new FastjsonJdk8DateCodec<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
     }
 
     public FastjsonJdk8DateCodec<T> withDatePattern(String datePattern) {
-        return new FastjsonJdk8DateCodec<>(this.clazz, datePattern, this.converter);
+        return new FastjsonJdk8DateCodec<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
     }
 
     public FastjsonJdk8DateCodec<T> withDateFormatter(DateTimeFormatter dateFormatter) {
-        return new FastjsonJdk8DateCodec<>(this.clazz, dateFormatter, this.converter);
+        return new FastjsonJdk8DateCodec<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
     }
 
     @Override
@@ -108,36 +74,7 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
             if (StringUtil.isBlank(str)) {
                 return null;
             }
-            DateTimeFormatter dtf = this.dateFormatter;
-            if (dtf == null && format != null) {
-                dtf = DateTimeFormatter.ofPattern(format);
-            }
-
-            if (this.converter != null && dtf == null) {
-                dtf = this.converter.getDateFormat();
-            } else if (dtf == null) {
-                // 如果是通过FastJsonConfig进行设置，优先从FastJsonConfig获取
-                DateFormat dateFormat = parser.getDateFormat();
-                String dateFormatPattern = parser.getDateFomartPattern();
-                if (StringUtil.isNotBlank(dateFormatPattern)) {
-                    dtf = DateTimeFormatter.ofPattern(dateFormatPattern);
-                    if (clazz == Instant.class && dtf.getZone() == null) {
-                        // Instant类需设置时区
-                        dtf = dtf.withZone(dateFormat.getTimeZone().toZoneId());
-                    }
-                }
-            }
-
-            if (dtf != null) {
-                if (clazz == Instant.class && dtf.getZone() == null) {
-                    // Instant类需设置时区
-                    TimeZone timeZone = this.converter != null ? this.converter.getTimeZone() : TimeZone.getDefault();
-                    dtf = dtf.withZone(timeZone.toZoneId());
-                }
-                return (T) dtf.parse(str, temporalQuery);
-            } else {
-                return (T) defaultDateTimeFormatter.parse(str, temporalQuery);
-            }
+            return this.java8TimeCodec.decode(str, format);
         }
         return super.deserialze(parser, type, fieldName, format, feature);
     }
@@ -159,31 +96,7 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
             return;
         }
 
-        DateTimeFormatter dtf = this.dateFormatter;
-        if (converter != null && dtf == null) {
-            dtf = converter.getDateFormat();
-        } else if (dtf == null) {
-            DateFormat dateFormat = serializer.getDateFormat();
-            String dateFormatPattern = serializer.getDateFormatPattern();
-            if (StringUtil.isNotBlank(dateFormatPattern) && dateFormat != null) {
-                dtf = DateTimeFormatter.ofPattern(dateFormatPattern);
-                if (object instanceof Instant && dtf.getZone() == null) {
-                    dtf = dtf.withZone(dateFormat.getTimeZone().toZoneId());
-                }
-            }
-        }
-
-        String str;
-        if (dtf != null) {
-            if (object instanceof Instant && dtf.getZone() == null) {
-                // Instant类需设置时区
-                TimeZone timeZone = this.converter != null ? this.converter.getTimeZone() : TimeZone.getDefault();
-                dtf = dtf.withZone(timeZone.toZoneId());
-            }
-            str = DateUtil.format((TemporalAccessor) object, dtf);
-        } else {
-            str = DateUtil.format((TemporalAccessor) object, defaultDateTimeFormatter);
-        }
+        String str = this.java8TimeCodec.encode((T) object);
         out.writeString(str);
     }
 }
