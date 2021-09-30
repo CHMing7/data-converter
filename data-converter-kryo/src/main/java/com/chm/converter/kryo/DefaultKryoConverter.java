@@ -52,7 +52,7 @@ public class DefaultKryoConverter implements KryoConverter {
     @Override
     public boolean checkCanBeLoad() {
         try {
-            // 检测Avro相关类型是否存在
+            // 检测Kryo相关类型是否存在
             Class.forName(KRYO_NAME);
             return true;
         } catch (Throwable ignored) {

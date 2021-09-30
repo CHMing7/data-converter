@@ -1,8 +1,6 @@
 package com.chm.converter.core.utils;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.*;
 import java.net.URI;
 import java.net.URL;
 import java.time.temporal.TemporalAccessor;
@@ -187,21 +185,34 @@ public class ClassUtil {
      * @param genericType Java Type类型，{@link Type}接口实例
      * @return Java类，{@link Class}类实例
      */
-    public static Class<?> getClassByType(Type genericType) {
-        if (genericType instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) genericType;
-            return ((Class<?>) pt.getRawType());
-        } else if (genericType instanceof TypeVariable) {
-            TypeVariable tType = (TypeVariable) genericType;
-            String className = tType.getGenericDeclaration().toString();
-            try {
-                return Class.forName(className);
-            } catch (ClassNotFoundException ignored) {
-            }
-            return null;
-        } else {
-            return (Class<?>) genericType;
+    public static Class<?> getClassByType(Type type) {
+        if (type instanceof Class<?>) {
+            return (Class<?>) type;
         }
+        if (type instanceof ParameterizedType) {
+            return (Class<?>) ((ParameterizedType) type).getRawType();
+        }
+
+        if (type instanceof WildcardType) {
+            // Forget lower bounds and only deal with first upper bound...
+            Type[] ubs = ((WildcardType) type).getUpperBounds();
+            if (ubs.length > 0) {
+                return getClassByType(ubs[0]);
+            }
+        }
+        if (type instanceof GenericArrayType) {
+            Class<?> ct = getClassByType(((GenericArrayType) type).getGenericComponentType());
+            return (ct != null ? Array.newInstance(ct, 0).getClass() : Object[].class);
+        }
+        if (type instanceof TypeVariable<?>) {
+            // Only deal with first (upper) bound...
+            Type[] ubs = ((TypeVariable<?>) type).getBounds();
+            if (ubs.length > 0) {
+                return getClassByType(ubs[0]);
+            }
+        }
+        // Should never append...
+        return Object.class;
     }
 
     public static boolean isJdk(Class clazz) {

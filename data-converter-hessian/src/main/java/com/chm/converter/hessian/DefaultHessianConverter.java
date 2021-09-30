@@ -40,7 +40,7 @@ public class DefaultHessianConverter implements HessianConverter {
     public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
         try {
             return deserializer(source, targetType);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ConvertException(StringUtil.format("bytes data cannot be hessian deserialized to type: {}", targetType.getName()), e);
         }
     }
@@ -50,7 +50,7 @@ public class DefaultHessianConverter implements HessianConverter {
         Class<?> cls = ClassUtil.getClassByType(targetType);
         try {
             return deserializer(source, cls);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ConvertException(StringUtil.format("bytes data cannot be hessian deserialized to type: {}", targetType.getTypeName()), e);
         }
     }
@@ -76,7 +76,7 @@ public class DefaultHessianConverter implements HessianConverter {
             ho.writeObject(source);
             ho.flush();
             return os.toByteArray();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ConvertException(StringUtil.format("data cannot be serialized to hessian bytes, data type: {}", source.getClass()), e);
         }
     }

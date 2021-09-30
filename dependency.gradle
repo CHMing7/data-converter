@@ -15,6 +15,7 @@ ext {
             io_protostuff    : '1.7.4',
             fst              : '2.48',
             msgpack          : '0.8.22',
+            spearal          : '0.2.0',
     ]
 
     libs = [
@@ -40,6 +41,7 @@ ext {
             fst                  : "de.ruedigermoeller:fst:$versions.fst",
             msgpack_core         : "org.msgpack:msgpack-core:$versions.msgpack",
             msgpack_jackson      : "org.msgpack:jackson-dataformat-msgpack:$versions.msgpack",
+            spearal_java         : "org.spearal:spearal-java:$versions.spearal",
     ]
 
 }

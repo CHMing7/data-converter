@@ -73,7 +73,7 @@ public class DefaultFstConverter implements FstConverter {
     @Override
     public boolean checkCanBeLoad() {
         try {
-            // 检测Hessian相关类型是否存在
+            // 检测Fst相关类型是否存在
             for (String fstName : FST_NAME_ARRAY) {
                 Class.forName(fstName);
             }

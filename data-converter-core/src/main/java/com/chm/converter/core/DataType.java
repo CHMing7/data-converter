@@ -87,6 +87,11 @@ public class DataType {
     public final static DataType MSGPACK = DataType.createDataType("msgpack");
 
     /**
+     * 数据类型：spearal类型
+     */
+    public final static DataType SPEARAL = DataType.createDataType("spearal");
+
+    /**
      * 全局数据转换器表
      */
     private final static Map<DataType, Converter<?>> CONVERTER_MAP = new HashMap<>();

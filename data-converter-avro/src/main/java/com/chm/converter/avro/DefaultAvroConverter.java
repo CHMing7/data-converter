@@ -76,7 +76,7 @@ public class DefaultAvroConverter implements AvroConverter {
         Schema schema = reflectData.getSchema(targetType);
         try {
             return deserializer(source, schema);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ConvertException(StringUtil.format("bytes data cannot be avro deserialized to type: {}", targetType.getName()), e);
         }
     }
@@ -86,7 +86,7 @@ public class DefaultAvroConverter implements AvroConverter {
         Schema schema = reflectData.getSchema(targetType);
         try {
             return deserializer(source, schema);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ConvertException(StringUtil.format("bytes data cannot be avro deserialized to type: {}", targetType.getTypeName()), e);
         }
     }
@@ -116,7 +116,7 @@ public class DefaultAvroConverter implements AvroConverter {
             dd.write(source, encoder);
             encoder.flush();
             return os.toByteArray();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ConvertException(StringUtil.format("data cannot be serialized to avro bytes, data type: {}", source.getClass()), e);
         }
     }

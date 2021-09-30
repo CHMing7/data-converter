@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
@@ -18,7 +19,9 @@ import org.msgpack.jackson.dataformat.MessagePackFactory;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Jackson msgpack数据转换器
@@ -46,11 +49,20 @@ public class JacksonMsgpackConverter implements MsgpackConverter {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
+    /**
+     * 获取Jackson的Mapper对象
+     *
+     * @return Jackson的Mapper对象，{@link ObjectMapper}类实例
+     */
+    public ObjectMapper getMapper() {
+        return mapper;
+    }
+
     @Override
     public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
         try {
             return mapper.readValue(source, targetType);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ConvertException(StringUtil.format("bytes data cannot be msgpack deserialized to type: {}", targetType.getName()), e);
         }
     }
@@ -59,8 +71,25 @@ public class JacksonMsgpackConverter implements MsgpackConverter {
     public <T> T convertToJavaObject(byte[] source, Type targetType) {
         try {
             return mapper.readValue(source, mapper.getTypeFactory().constructType(targetType));
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ConvertException(StringUtil.format("bytes data cannot be msgpack deserialized to type: {}", targetType.getTypeName()), e);
+        }
+    }
+
+    public <T> T convertToJavaObject(String source, Class<?> parametrized, Class<?>... parameterClasses) {
+        try {
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(parametrized, parameterClasses);
+            return mapper.readValue(source, javaType);
+        } catch (IOException e) {
+            throw new ConvertException(StringUtil.format("bytes data cannot be msgpack deserialized to type: {}", parametrized.getName()), e);
+        }
+    }
+
+    public <T> T convertToJavaObject(String source, JavaType javaType) {
+        try {
+            return mapper.readValue(source, javaType);
+        } catch (IOException e) {
+            throw new ConvertException(StringUtil.format("bytes data cannot be msgpack deserialized to type: {}", javaType.getTypeName()), e);
         }
     }
 
@@ -71,15 +100,27 @@ public class JacksonMsgpackConverter implements MsgpackConverter {
         }
         try {
             return mapper.writeValueAsBytes(source);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new ConvertException(StringUtil.format("data cannot be serialized to msgpack bytes, data type: {}", source.getClass()), e);
         }
+    }
+
+    public Map<String, Object> convertObjectToMap(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        if (obj instanceof CharSequence) {
+            return convertToJavaObject(obj.toString(), LinkedHashMap.class);
+        }
+
+        JavaType javaType = mapper.getTypeFactory().constructMapType(LinkedHashMap.class, String.class, Object.class);
+        return mapper.convertValue(obj, javaType);
     }
 
     @Override
     public boolean checkCanBeLoad() {
         try {
-            // 检测Hessian相关类型是否存在
+            // 检测Jackson-Msgpack相关类型是否存在
             for (String msgpackName : MSGPACK_NAME_ARRAY) {
                 Class.forName(msgpackName);
             }

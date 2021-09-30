@@ -33,14 +33,15 @@ public class DataCodec {
     private final Converter<?> converter;
 
     public DataCodec() {
-        this(null, null);
+        this(null, null, false);
     }
 
-    public DataCodec(List<CodecFactory> factories, Converter<?> converter) {
+    public DataCodec(List<CodecFactory> factories, Converter<?> converter, boolean isInitCodecs) {
         this.factories = Collections.unmodifiableList(factories != null ? factories : ListUtil.empty());
         this.converter = converter;
-
-        initCodec();
+        if (isInitCodecs) {
+            initCodec();
+        }
     }
 
     private void initCodec() {
@@ -103,7 +104,7 @@ public class DataCodec {
         /*put(WeakReference.class, SimpleToStringCodec.create(WeakReference::new));
         put(SoftReference.class, SimpleToStringCodec.create(SoftReference::new));*/
 
-        // Java8 Time Deserializer
+        // Java8 Time Codec
         put(Instant.class, new Java8TimeCodec<>(Instant.class, converter));
         put(LocalDate.class, new Java8TimeCodec<>(LocalDate.class, converter));
         put(LocalDateTime.class, new Java8TimeCodec<>(LocalDateTime.class, converter));
@@ -116,7 +117,7 @@ public class DataCodec {
         put(Year.class, new Java8TimeCodec<>(Year.class, converter));
         put(ZoneOffset.class, new Java8TimeCodec<>(ZoneOffset.class, converter));
 
-        // Default Date Deserializer
+        // Default Date Codec
         put(java.sql.Date.class, new DefaultDateCodec<>(java.sql.Date.class, converter));
         put(Timestamp.class, new DefaultDateCodec<>(Timestamp.class, converter));
         put(Date.class, new DefaultDateCodec<>(Date.class, converter));
@@ -135,12 +136,12 @@ public class DataCodec {
         }
         Codec<?, ?> cached = typeCache.get(type);
         if (cached != null) {
-            put(type, cached);
             return cached;
         }
         for (CodecFactory factory : factories) {
             Codec<?, ?> candidate = factory.createCodec(type);
             if (candidate != null) {
+                put(type, candidate);
                 return candidate;
             }
         }
@@ -192,5 +193,44 @@ public class DataCodec {
      */
     public boolean put(Type type, Codec<?, ?> codec) {
         return this.typeCache.put(type, codec) != null;
+    }
+
+    public boolean containsByType(Type type) {
+        if (this.typeCache.containsKey(type)) {
+            return true;
+        }
+        return getCodec(type) != null;
+    }
+
+    public static final class DataCodecBuilder {
+        private List<CodecFactory> factories;
+        private Converter<?> converter;
+        private boolean isInitCodecs;
+
+        private DataCodecBuilder() {
+        }
+
+        public static DataCodecBuilder aDataCodec() {
+            return new DataCodecBuilder();
+        }
+
+        public DataCodecBuilder withFactories(List<CodecFactory> factories) {
+            this.factories = factories;
+            return this;
+        }
+
+        public DataCodecBuilder withConverter(Converter<?> converter) {
+            this.converter = converter;
+            return this;
+        }
+
+        public DataCodecBuilder withIsInitCodecs(boolean isInitCodecs) {
+            this.isInitCodecs = isInitCodecs;
+            return this;
+        }
+
+        public DataCodec build() {
+            return new DataCodec(factories, converter, isInitCodecs);
+        }
     }
 }
