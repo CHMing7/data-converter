@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.*;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
@@ -62,8 +61,8 @@ public class JacksonXmlConverter implements XmlConverter {
     public <T> T convertToJavaObject(String source, Class<T> targetType) {
         try {
             return mapper.readValue(source, targetType);
-        } catch (IOException e) {
-            throw new ConvertException("xml", e);
+        } catch (Exception e) {
+            throw new ConvertException(getConverterName(), String.class.getName(), targetType.getName(), e);
         }
     }
 
@@ -71,26 +70,26 @@ public class JacksonXmlConverter implements XmlConverter {
     public <T> T convertToJavaObject(String source, Type targetType) {
         try {
             return mapper.readValue(source, mapper.getTypeFactory().constructType(targetType));
-        } catch (IOException e) {
-            throw new ConvertException("xml", e);
+        } catch (Exception e) {
+            throw new ConvertException(getConverterName(), String.class.getName(), targetType.getTypeName(), e);
         }
 
     }
 
     public <T> T convertToJavaObject(String source, Class<?> parametrized, Class<?>... parameterClasses) {
+        JavaType javaType = mapper.getTypeFactory().constructParametricType(parametrized, parameterClasses);
         try {
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(parametrized, parameterClasses);
             return mapper.readValue(source, javaType);
-        } catch (IOException e) {
-            throw new ConvertException("xml", e);
+        } catch (Exception e) {
+            throw new ConvertException(getConverterName(), String.class.getName(), javaType.getTypeName(), e);
         }
     }
 
     public <T> T convertToJavaObject(String source, JavaType javaType) {
         try {
             return mapper.readValue(source, javaType);
-        } catch (IOException e) {
-            throw new ConvertException("xml", e);
+        } catch (Exception e) {
+            throw new ConvertException(getConverterName(), String.class.getName(), javaType.getTypeName(), e);
         }
     }
 
@@ -99,7 +98,7 @@ public class JacksonXmlConverter implements XmlConverter {
         try {
             return mapper.writeValueAsString(source);
         } catch (Throwable e) {
-            throw new ConvertException("xml", e);
+            throw new ConvertException(getConverterName(), source.getClass().getName(), String.class.getName(), e);
         }
     }
 

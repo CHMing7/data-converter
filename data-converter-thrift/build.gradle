@@ -1,0 +1,27 @@
+/*plugins {
+    id("org.jruyi.thrift") version "0.4.0"
+}*/
+
+
+dependencies {
+    compile project(':data-converter-core')
+    compile project(':data-converter-codec')
+
+    compileOnly(libs.thrift)
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testCompile 'junit:junit:4.13.1'
+
+    testCompile(libs.hutool_log)
+    testCompile(libs.thrift)
+}
+
+/*
+compileThrift {
+    recurse true
+    thriftExecutable 'thrift-0.13.0.exe'
+    generator 'html'
+    generator 'java', 'private-members'
+}*/

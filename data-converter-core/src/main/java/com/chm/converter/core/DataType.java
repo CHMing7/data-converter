@@ -91,6 +91,11 @@ public class DataType {
      */
     public final static DataType SPEARAL = DataType.createDataType("spearal");
 
+    /***
+     * 数据类型：thrift类型
+     */
+    public final static DataType THRIFT = DataType.createDataType("thrift");
+
     /**
      * 全局数据转换器表
      */

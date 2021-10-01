@@ -1,7 +1,6 @@
 package com.chm.converter.core.creator;
 
 import cn.hutool.core.map.MapUtil;
-import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.reflect.ReflectionAccessor;
 import com.chm.converter.core.reflect.TypeToken;
 
@@ -110,10 +109,10 @@ public final class ConstructorFactory {
                         if (elementType instanceof Class) {
                             return (T) EnumSet.noneOf((Class) elementType);
                         } else {
-                            throw new ConvertException("Invalid EnumSet type: " + type);
+                            throw new CreatorException("Invalid EnumSet type: " + type);
                         }
                     } else {
-                        throw new ConvertException("Invalid EnumSet type: " + type.toString());
+                        throw new CreatorException("Invalid EnumSet type: " + type.toString());
                     }
                 };
             } else if (Set.class.isAssignableFrom(rawType)) {

@@ -16,6 +16,7 @@ ext {
             fst              : '2.48',
             msgpack          : '0.8.22',
             spearal          : '0.2.0',
+            thrift           : '0.15.0',
     ]
 
     libs = [
@@ -42,6 +43,7 @@ ext {
             msgpack_core         : "org.msgpack:msgpack-core:$versions.msgpack",
             msgpack_jackson      : "org.msgpack:jackson-dataformat-msgpack:$versions.msgpack",
             spearal_java         : "org.spearal:spearal-java:$versions.spearal",
+            thrift               : "org.apache.thrift:libthrift:$versions.thrift",
     ]
 
 }

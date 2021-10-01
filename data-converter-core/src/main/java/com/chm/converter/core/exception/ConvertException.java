@@ -1,5 +1,7 @@
 package com.chm.converter.core.exception;
 
+import com.chm.converter.core.utils.StringUtil;
+
 /**
  * @author caihongming
  * @version v1.0
@@ -11,7 +13,17 @@ public class ConvertException extends RuntimeException {
         super(message);
     }
 
-    public ConvertException(String converterName, Throwable th) {
-        super("Converter '" + converterName + "' Error: " + th.getMessage(), th);
+    public ConvertException(String message, Throwable th) {
+        super(message, th);
+    }
+
+    public ConvertException(String converterName, String sourceClassName, String targetClassName, Throwable th) {
+        super(StringUtil.format("Converter '{}' Conversion Type '{}' To '{}' Error: {}", converterName,
+                sourceClassName, targetClassName, th.getMessage(), th));
+    }
+
+    public ConvertException(String converterName, Class<?> sourceClass, Class<?> targetClass, Throwable th) {
+        super(StringUtil.format("Converter '{}' Conversion Type '{}' To '{}' Error: {}", converterName,
+                sourceClass.getName(), targetClass.getName(), th.getMessage(), th));
     }
 }

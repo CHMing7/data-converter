@@ -3,7 +3,6 @@ package com.chm.converter.avro;
 import com.chm.converter.avro.factorys.DefaultDateConversionFactory;
 import com.chm.converter.avro.factorys.Java8TimeConversionFactory;
 import com.chm.converter.core.exception.ConvertException;
-import com.chm.converter.core.utils.StringUtil;
 import org.apache.avro.Conversion;
 import org.apache.avro.Schema;
 import org.apache.avro.io.BinaryDecoder;
@@ -77,7 +76,7 @@ public class DefaultAvroConverter implements AvroConverter {
         try {
             return deserializer(source, schema);
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("bytes data cannot be avro deserialized to type: {}", targetType.getName()), e);
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getName(), e);
         }
     }
 
@@ -87,7 +86,7 @@ public class DefaultAvroConverter implements AvroConverter {
         try {
             return deserializer(source, schema);
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("bytes data cannot be avro deserialized to type: {}", targetType.getTypeName()), e);
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getTypeName(), e);
         }
     }
 
@@ -117,7 +116,7 @@ public class DefaultAvroConverter implements AvroConverter {
             encoder.flush();
             return os.toByteArray();
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("data cannot be serialized to avro bytes, data type: {}", source.getClass()), e);
+            throw new ConvertException(getConverterName(), source.getClass().getName(), byte[].class.getName(), e);
         }
     }
 

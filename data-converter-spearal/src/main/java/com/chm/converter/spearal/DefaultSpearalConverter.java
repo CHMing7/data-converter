@@ -4,7 +4,6 @@ import com.chm.converter.codec.DataCodec;
 import com.chm.converter.codec.DefaultDateCodec;
 import com.chm.converter.codec.Java8TimeCodec;
 import com.chm.converter.core.exception.ConvertException;
-import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.spearal.coders.CodecProvider;
 import org.spearal.DefaultSpearalFactory;
 import org.spearal.SpearalDecoder;
@@ -13,7 +12,6 @@ import org.spearal.SpearalFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.time.*;
@@ -59,8 +57,8 @@ public class DefaultSpearalConverter implements SpearalConverter {
         SpearalDecoder decoder = factory.newDecoder(bais);
         try {
             return decoder.readAny(targetType);
-        } catch (IOException e) {
-            throw new ConvertException(StringUtil.format("bytes data cannot be hessian deserialized to type: {}", targetType.getName()), e);
+        } catch (Exception e) {
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getName(), e);
         }
     }
 
@@ -70,8 +68,8 @@ public class DefaultSpearalConverter implements SpearalConverter {
         SpearalDecoder decoder = factory.newDecoder(bais);
         try {
             return decoder.readAny(targetType);
-        } catch (IOException e) {
-            throw new ConvertException(StringUtil.format("bytes data cannot be hessian deserialized to type: {}", targetType.getTypeName()), e);
+        } catch (Exception e) {
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getTypeName(), e);
         }
     }
 
@@ -83,7 +81,7 @@ public class DefaultSpearalConverter implements SpearalConverter {
             encoder.writeAny(source);
             return baos.toByteArray();
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("data cannot be serialized to spearal bytes, data type: {}", source.getClass()), e);
+            throw new ConvertException(getConverterName(), source.getClass().getName(), byte[].class.getName(), e);
         }
     }
 

@@ -1,21 +1,21 @@
-package com.chm.converter.protobuf;
+package com.chm.converter.thrift;
 
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ClassUtil;
-import com.chm.converter.protobuf.utils.ProtobufUtil;
+import com.chm.converter.thrift.utils.ThriftUtil;
 
 import java.lang.reflect.Type;
 
 /**
- * 默认Protobuf数据转换器
+ * 默认thrift数据转换器
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-09-13
+ * @since 2021-09-30
  **/
-public class DefaultProtobufConverter implements ProtobufConverter {
+public class DefaultThriftConverter implements ThriftConverter {
 
-    public static final String PROTOBUF_NAME = "com.google.protobuf.Parser";
+    public static final String THRIFT_NAME = "org.apache.thrift.TBase";
 
     @Override
     public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
@@ -23,7 +23,7 @@ public class DefaultProtobufConverter implements ProtobufConverter {
             return null;
         }
         try {
-            return ProtobufUtil.deserialize(source, targetType);
+            return ThriftUtil.deserialize(source, targetType);
         } catch (Exception e) {
             throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getName(), e);
         }
@@ -43,14 +43,18 @@ public class DefaultProtobufConverter implements ProtobufConverter {
         if (source == null) {
             return new byte[0];
         }
-        return ProtobufUtil.serialize(source);
+        try {
+            return ThriftUtil.serialize(source);
+        } catch (Exception e) {
+            throw new ConvertException(getConverterName(), source.getClass().getName(), byte[].class.getName(), e);
+        }
     }
 
     @Override
     public boolean checkCanBeLoad() {
         try {
-            // 检测Protobuf相关类型是否存在
-            Class.forName(PROTOBUF_NAME);
+            // 检测Thrift相关类型是否存在
+            Class.forName(THRIFT_NAME);
             return true;
         } catch (Throwable ignored) {
             return false;

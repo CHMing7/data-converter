@@ -22,6 +22,8 @@ public interface Converter<S> {
 
     Map<Converter<?>, Logger> CONVERTER_LOGGER_MAP = new ConcurrentHashMap<>();
 
+    Map<Converter<?>, String> CONVERTER_NAME_MAP = new ConcurrentHashMap<>();
+
     Map<Converter<?>, String> CONVERTER_DATE_FORMAT_PATTERN_MAP = new ConcurrentHashMap<>();
 
     Map<Converter<?>, DateTimeFormatter> CONVERTER_DATE_TIME_FORMATTER_MAP = new ConcurrentHashMap<>();
@@ -83,6 +85,20 @@ public interface Converter<S> {
             CONVERTER_LOGGER_MAP.put(this, logger);
         }
         return CONVERTER_LOGGER_MAP.get(this);
+    }
+
+    /**
+     * 获取转换器名称
+     *
+     * @return
+     */
+    default String getConverterName() {
+        if (!CONVERTER_NAME_MAP.containsKey(this)) {
+            String converterName = this.getClass().getName();
+            CONVERTER_NAME_MAP.put(this, converterName);
+        }
+        return CONVERTER_NAME_MAP.get(this);
+
     }
 
     /**

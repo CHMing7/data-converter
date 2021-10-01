@@ -25,6 +25,8 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 |   data-converter-protostuff    |   Protostuff   |                        io.protostuff:protostuff-core:$versions.io_protostuff<br>io.protostuff:protostuff-runtime:$versions.io_protostuff                         |
 |       data-converter-fst       |      Fst       |                                                                  de.ruedigermoeller:fst:version                                                                  |
 | data-converter-jackson-msgpack |    Msgpack     |                                                          org.msgpack:jackson-dataformat-msgpack:version                                                          |
+|     data-converter-spearal     |    Spearal     |                                                                 org.spearal:spearal-java:version                                                                 |
+|     data-converter-thrift      |     Thrift     |                                                                 org.apache.thrift:thrift:version                                                                 |
 
 
 可以根据需求对每个模块单独引入，也可以通过引入`data-converter-all`方式引入所有模块。

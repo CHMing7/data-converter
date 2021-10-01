@@ -33,7 +33,7 @@ public class DefaultBinaryConverter implements BinaryConverter {
         return null;
     }
 
-    private byte[] inputStreamToByteArray(InputStream in) {
+    private byte[] inputStreamToByteArray(InputStream in) throws IOException {
         byte[] tmp = new byte[4096];
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -43,14 +43,8 @@ public class DefaultBinaryConverter implements BinaryConverter {
             }
             out.flush();
             return out.toByteArray();
-        } catch (IOException e) {
-            throw new ConvertException("binary", e);
         } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                throw new ConvertException("binary", e);
-            }
+            in.close();
         }
     }
 
@@ -64,7 +58,11 @@ public class DefaultBinaryConverter implements BinaryConverter {
     public byte[] encode(Object source) {
         if (source instanceof InputStream) {
             InputStream in = (InputStream) source;
-            return inputStreamToByteArray(in);
+            try {
+                return inputStreamToByteArray(in);
+            } catch (Exception e) {
+                throw new ConvertException(getConverterName(), source.getClass().getName(), byte[].class.getName(), e);
+            }
         } else if (source instanceof String) {
             return ((String) source).getBytes();
         } else if (source instanceof File) {
@@ -72,8 +70,8 @@ public class DefaultBinaryConverter implements BinaryConverter {
             try {
                 InputStream in = new FileInputStream(file);
                 return inputStreamToByteArray(in);
-            } catch (FileNotFoundException e) {
-                throw new ConvertException("binary", e);
+            } catch (Exception e) {
+                throw new ConvertException(getConverterName(), source.getClass().getName(), byte[].class.getName(), e);
             }
         } else if (source instanceof byte[]) {
             return (byte[]) source;

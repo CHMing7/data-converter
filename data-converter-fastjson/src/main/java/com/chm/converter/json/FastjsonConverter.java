@@ -103,7 +103,7 @@ public class FastjsonConverter implements JsonConverter {
         try {
             return JSON.parseObject(source, targetType, parserConfig);
         } catch (Throwable th) {
-            throw new ConvertException("json", th);
+            throw new ConvertException(getConverterName(), String.class.getName(), targetType.getName(), th);
         }
     }
 
@@ -112,7 +112,7 @@ public class FastjsonConverter implements JsonConverter {
         try {
             return JSON.parseObject(source, targetType, parserConfig);
         } catch (Throwable th) {
-            throw new ConvertException("json", th);
+            throw new ConvertException(getConverterName(), String.class.getName(), targetType.getTypeName(), th);
         }
 
     }
@@ -121,7 +121,7 @@ public class FastjsonConverter implements JsonConverter {
         try {
             return JSON.parseObject(source, typeReference.getType(), parserConfig);
         } catch (Throwable th) {
-            throw new ConvertException("json", th);
+            throw new ConvertException(getConverterName(), String.class.getName(), typeReference.getType().getTypeName(), th);
         }
 
     }
@@ -141,7 +141,7 @@ public class FastjsonConverter implements JsonConverter {
         try {
             return parseToString(source);
         } catch (Throwable th) {
-            throw new RuntimeException(th);
+            throw new ConvertException(getConverterName(), source.getClass().getName(), String.class.getName(), th);
         }
     }
 

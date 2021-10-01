@@ -5,7 +5,6 @@ import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
-import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.fst.factory.FstFactory;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
@@ -44,7 +43,7 @@ public class DefaultFstConverter implements FstConverter {
         try {
             return (T) objectInput.readObject(targetType);
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("bytes data cannot be fst deserialized to type: {}", targetType.getName()), e);
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getName(), e);
         }
     }
 
@@ -66,7 +65,7 @@ public class DefaultFstConverter implements FstConverter {
             objectOutput.flush();
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("data cannot be serialized to fst bytes, data type: {}", source.getClass()), e);
+            throw new ConvertException(getConverterName(), source.getClass().getName(), byte[].class.getName(), e);
         }
     }
 

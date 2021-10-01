@@ -48,7 +48,7 @@ public class GsonConverter implements JsonConverter {
             Gson gson = createGson();
             return gson.fromJson(source, targetType);
         } catch (Throwable th) {
-            throw new ConvertException("json", th);
+            throw new ConvertException(getConverterName(), String.class.getName(), targetType.getName(), th);
         }
     }
 
@@ -62,7 +62,7 @@ public class GsonConverter implements JsonConverter {
             }
             return convertToJavaObject(source, (Class<? extends T>) targetType);
         } catch (Exception ex) {
-            throw new ConvertException("json", ex);
+            throw new ConvertException(getConverterName(), String.class.getName(), targetType.getTypeName(), ex);
         }
     }
 

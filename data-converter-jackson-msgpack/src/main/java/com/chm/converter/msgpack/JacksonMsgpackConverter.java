@@ -3,20 +3,17 @@ package com.chm.converter.msgpack;
 import cn.hutool.core.collection.ListUtil;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
-import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.jackson.deserializer.JacksonBeanDeserializerModifier;
 import com.chm.converter.jackson.serializer.JacksonBeanSerializerModifier;
 import com.chm.converter.msgpack.jackson.JacksonMsgpackModule;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
@@ -63,7 +60,7 @@ public class JacksonMsgpackConverter implements MsgpackConverter {
         try {
             return mapper.readValue(source, targetType);
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("bytes data cannot be msgpack deserialized to type: {}", targetType.getName()), e);
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getName(), e);
         }
     }
 
@@ -72,24 +69,24 @@ public class JacksonMsgpackConverter implements MsgpackConverter {
         try {
             return mapper.readValue(source, mapper.getTypeFactory().constructType(targetType));
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("bytes data cannot be msgpack deserialized to type: {}", targetType.getTypeName()), e);
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getTypeName(), e);
         }
     }
 
-    public <T> T convertToJavaObject(String source, Class<?> parametrized, Class<?>... parameterClasses) {
+    public <T> T convertToJavaObject(byte[] source, Class<?> parametrized, Class<?>... parameterClasses) {
+        JavaType javaType = mapper.getTypeFactory().constructParametricType(parametrized, parameterClasses);
         try {
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(parametrized, parameterClasses);
             return mapper.readValue(source, javaType);
-        } catch (IOException e) {
-            throw new ConvertException(StringUtil.format("bytes data cannot be msgpack deserialized to type: {}", parametrized.getName()), e);
+        } catch (Exception e) {
+            throw new ConvertException(getConverterName(), byte[].class.getName(), javaType.getTypeName(), e);
         }
     }
 
-    public <T> T convertToJavaObject(String source, JavaType javaType) {
+    public <T> T convertToJavaObject(byte[] source, JavaType javaType) {
         try {
             return mapper.readValue(source, javaType);
-        } catch (IOException e) {
-            throw new ConvertException(StringUtil.format("bytes data cannot be msgpack deserialized to type: {}", javaType.getTypeName()), e);
+        } catch (Exception e) {
+            throw new ConvertException(getConverterName(), byte[].class.getName(), javaType.getTypeName(), e);
         }
     }
 
@@ -101,16 +98,13 @@ public class JacksonMsgpackConverter implements MsgpackConverter {
         try {
             return mapper.writeValueAsBytes(source);
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("data cannot be serialized to msgpack bytes, data type: {}", source.getClass()), e);
+            throw new ConvertException(getConverterName(), source.getClass().getName(), byte[].class.getName(), e);
         }
     }
 
-    public Map<String, Object> convertObjectToMap(Object obj) {
+    public Map<String, Object> convertObjectToMap(byte[] obj) {
         if (obj == null) {
             return null;
-        }
-        if (obj instanceof CharSequence) {
-            return convertToJavaObject(obj.toString(), LinkedHashMap.class);
         }
 
         JavaType javaType = mapper.getTypeFactory().constructMapType(LinkedHashMap.class, String.class, Object.class);

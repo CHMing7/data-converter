@@ -5,7 +5,6 @@ import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ClassUtil;
-import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.hessian.factory.Java8TimeConverterFactory;
 
 import java.io.ByteArrayInputStream;
@@ -41,7 +40,7 @@ public class DefaultHessianConverter implements HessianConverter {
         try {
             return deserializer(source, targetType);
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("bytes data cannot be hessian deserialized to type: {}", targetType.getName()), e);
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getName(), e);
         }
     }
 
@@ -51,7 +50,7 @@ public class DefaultHessianConverter implements HessianConverter {
         try {
             return deserializer(source, cls);
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("bytes data cannot be hessian deserialized to type: {}", targetType.getTypeName()), e);
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getTypeName(), e);
         }
     }
 
@@ -77,7 +76,7 @@ public class DefaultHessianConverter implements HessianConverter {
             ho.flush();
             return os.toByteArray();
         } catch (Exception e) {
-            throw new ConvertException(StringUtil.format("data cannot be serialized to hessian bytes, data type: {}", source.getClass()), e);
+            throw new ConvertException(getConverterName(), source.getClass().getName(), byte[].class.getName(), e);
         }
     }
 

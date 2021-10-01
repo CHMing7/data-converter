@@ -62,7 +62,7 @@ public class DefaultAutoConverter implements AutoConverter {
                 try {
                     result = tryConvert(trimmedStr, targetType, DataType.TEXT);
                 } catch (Throwable th2) {
-                    throw new ConvertException("auto", th2);
+                    throw new ConvertException(getConverterName(), source.getClass().getName(), targetType.getName(), th);
                 }
             }
         }
@@ -124,7 +124,7 @@ public class DefaultAutoConverter implements AutoConverter {
                 try {
                     result = tryConvert(trimmedStr, targetType, DataType.TEXT);
                 } catch (Throwable th2) {
-                    throw new ConvertException("auto", th2);
+                    throw new ConvertException(getConverterName(), source.getClass().getName(), targetType.getTypeName(), th);
                 }
             }
         }

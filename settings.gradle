@@ -39,6 +39,8 @@ include ':data-converter-jackson-msgpack'
 
 include ':data-converter-spearal'
 
+include ':data-converter-thrift'
+
 
 project(':data-converter-all').projectDir = "$rootDir/data-converter-all" as File
 
@@ -78,4 +80,6 @@ project(':data-converter-msgpack').projectDir = "$rootDir/data-converter-msgpack
 project(':data-converter-jackson-msgpack').projectDir = "$rootDir/data-converter-jackson-msgpack" as File
 
 project(':data-converter-spearal').projectDir = "$rootDir/data-converter-spearal" as File
+
+project(':data-converter-thrift').projectDir = "$rootDir/data-converter-thrift" as File
 
