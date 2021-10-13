@@ -190,4 +190,37 @@ public class MapUtil {
             return (Map<K, V>) ReflectUtil.newInstance(mapType);
         }
     }
+
+    public static <V> V safeGet(Map<?, V> map, Object key) {
+        if (map == null) {
+            throw new NullPointerException();
+        }
+        try {
+            return map.get(key);
+        } catch (ClassCastException | NullPointerException e) {
+            return null;
+        }
+    }
+
+    public static boolean safeContainsKey(Map<?, ?> map, Object key) {
+        if (map == null) {
+            throw new NullPointerException();
+        }
+        try {
+            return map.containsKey(key);
+        } catch (ClassCastException | NullPointerException e) {
+            return false;
+        }
+    }
+
+    public static <V> V safeRemove(Map<?, V> map, Object key) {
+        if (map == null) {
+            throw new NullPointerException();
+        }
+        try {
+            return map.remove(key);
+        } catch (ClassCastException | NullPointerException e) {
+            return null;
+        }
+    }
 }

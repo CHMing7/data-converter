@@ -23,10 +23,13 @@ public class JacksonBeanSerializerModifier extends BeanSerializerModifier {
 
     private final Converter<?> converter;
 
+    private final Class<? extends Converter> converterClass;
+
     private final UseOriginalJudge useOriginalJudge;
 
     public JacksonBeanSerializerModifier(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
         this.converter = converter;
+        this.converterClass = converter != null ? converter.getClass() : null;
         this.useOriginalJudge = useOriginalJudge;
     }
 
@@ -38,8 +41,8 @@ public class JacksonBeanSerializerModifier extends BeanSerializerModifier {
         List<BeanPropertyWriter> resultList = new LinkedList<>();
         Map<String, BeanPropertyWriter> propertyWriterMap = beanProperties.stream()
                 .collect(Collectors.toMap(BeanPropertyWriter::getName, beanPropertyWriter -> beanPropertyWriter));
-        NameTransformer nameTransformer = PropertyNameTransformer.get(beanDesc.getBeanClass());
-        JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(beanDesc.getBeanClass());
+        NameTransformer nameTransformer = PropertyNameTransformer.get(beanDesc.getBeanClass(), converterClass);
+        JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(beanDesc.getBeanClass(), converterClass);
         List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
         // 去除不序列化的属性
         sortedFieldList.stream().filter(FieldInfo::isSerialize).forEach(fieldInfo -> {

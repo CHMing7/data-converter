@@ -31,8 +31,11 @@ public class FastjsonParserConfig extends ParserConfig {
 
     private final UseOriginalJudge useOriginalJudge;
 
+    private final Class<? extends Converter> converterClass;
+
     public FastjsonParserConfig(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
         super();
+        this.converterClass = converter != null ? converter.getClass() : null;
         this.useOriginalJudge = useOriginalJudge;
         // Java8 Time Deserializer
         putDeserializer(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, converter));
@@ -67,7 +70,7 @@ public class FastjsonParserConfig extends ParserConfig {
             }
 
             if (deserializer instanceof JavaBeanDeserializer) {
-                JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz);
+                JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
                 if (CollectionUtil.isNotEmpty(javaBeanInfo.getSortedFieldList())) {
                     putDeserializer(clazz, deserializer = new FastjsonJavaBeanDeserializer(this, clazz));
                     return deserializer;
@@ -82,7 +85,7 @@ public class FastjsonParserConfig extends ParserConfig {
 
         public FastjsonJavaBeanDeserializer(ParserConfig config, Class<?> clazz) {
             super(config, clazz);
-            JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz);
+            JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
             List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
             if (CollectionUtil.isEmpty(sortedFieldList)) {
                 return;

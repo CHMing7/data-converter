@@ -3,6 +3,8 @@ package com.chm.converter.core;
 import com.chm.converter.core.utils.MapUtil;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -16,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 2021-09-01
  **/
 public class ConverterSelector implements Serializable {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConverterSelector.class);
 
     private static final Map<DataType, Map<Class<? extends Converter>, Converter>> CONVERTER_MAP = new ConcurrentHashMap<>();
 
@@ -35,8 +39,10 @@ public class ConverterSelector implements Serializable {
                 }
                 Converter jsonConverter = converterClass.newInstance();
                 jsonConverter.loadConverter();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Throwable e) {
+                if (logger.isErrorEnabled()) {
+                    logger.error(e.getMessage(), e);
+                }
             }
         });
     }

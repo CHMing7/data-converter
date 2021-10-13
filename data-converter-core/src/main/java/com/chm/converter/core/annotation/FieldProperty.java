@@ -1,5 +1,7 @@
 package com.chm.converter.core.annotation;
 
+import com.chm.converter.core.Converter;
+
 import java.lang.annotation.*;
 
 /**
@@ -10,6 +12,7 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.FIELD})
+@Repeatable(FieldPropertys.class)
 public @interface FieldProperty {
 
     /**
@@ -38,4 +41,9 @@ public @interface FieldProperty {
      * 是否反序列化
      */
     boolean deserialize() default true;
+
+    /**
+     * 注解作用范围
+     */
+    Class<? extends Converter>[] scope() default Converter.class;
 }

@@ -1,6 +1,7 @@
 package com.chm.converter.jackson;
 
 import com.chm.converter.core.ClassInfoStorage;
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.utils.MapUtil;
 import com.fasterxml.jackson.databind.util.NameTransformer;
@@ -22,14 +23,14 @@ public class PropertyNameTransformer extends NameTransformer {
 
     private final Map<String, FieldInfo> nameFieldInfoMap;
 
-    private PropertyNameTransformer(Class<?> clazz) {
-        this.fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(clazz);
-        this.nameFieldInfoMap = ClassInfoStorage.INSTANCE.getNameFieldInfoMap(clazz);
+    private PropertyNameTransformer(Class<?> clazz, Class<? extends Converter> converterClass) {
+        this.fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(clazz, converterClass);
+        this.nameFieldInfoMap = ClassInfoStorage.INSTANCE.getNameFieldInfoMap(clazz, converterClass);
     }
 
-    public static PropertyNameTransformer get(Class<?> clazz) {
+    public static PropertyNameTransformer get(Class<?> clazz, Class<? extends Converter> converterClass) {
         if (!CLASS_PROPERTY_NAME_TRANSFORMER_MAP.containsKey(clazz)) {
-            CLASS_PROPERTY_NAME_TRANSFORMER_MAP.put(clazz, new PropertyNameTransformer(clazz));
+            CLASS_PROPERTY_NAME_TRANSFORMER_MAP.put(clazz, new PropertyNameTransformer(clazz, converterClass));
         }
         return CLASS_PROPERTY_NAME_TRANSFORMER_MAP.get(clazz);
     }

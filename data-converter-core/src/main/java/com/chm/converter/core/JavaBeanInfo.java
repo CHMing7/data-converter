@@ -14,10 +14,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -130,7 +127,7 @@ public class JavaBeanInfo {
      * @return
      */
     public static boolean checkExistAnnotation(Class<?> cls, List<Class<? extends Annotation>> annotationList) {
-        JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cls);
+        JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cls, null);
         List<FieldInfo> fieldList = javaBeanInfo.getFieldList();
         Set<Class<? extends Annotation>> annotationClassSet = javaBeanInfo.getAnnotationClassSet();
         for (Class<? extends Annotation> annotation : annotationList) {
@@ -188,7 +185,7 @@ public class JavaBeanInfo {
         return null;
     }
 
-    private static void computeFields(List<FieldInfo> fieldList, Field[] fields) {
+    private static void computeFields(List<FieldInfo> fieldList, Field[] fields, Class<? extends Converter> scope) {
         for (Field field : fields) {
             // public static fields
             int modifiers = field.getModifiers();
@@ -223,7 +220,7 @@ public class JavaBeanInfo {
             int ordinal = 0;
             String propertyName = field.getName();
 
-            FieldProperty fieldAnnotation = TypeUtil.getAnnotation(field, FieldProperty.class);
+            FieldProperty fieldAnnotation = checkScope(TypeUtil.getAnnotation(field, FieldProperty.class), scope);
 
             if (fieldAnnotation != null) {
                 ordinal = fieldAnnotation.ordinal();
@@ -233,11 +230,35 @@ public class JavaBeanInfo {
                 }
             }
 
-            add(fieldList, new FieldInfo(propertyName, null, field, ordinal));
+            add(fieldList, new FieldInfo(propertyName, null, field, ordinal, fieldAnnotation, null));
         }
     }
 
-    public static JavaBeanInfo build(Class<?> clazz) {
+    /**
+     * 返回匹配scope的第一个FieldProperty
+     *
+     * @param fieldPropertys
+     * @param scope
+     * @return
+     */
+    private static FieldProperty checkScope(FieldProperty[] fieldPropertys, Class<? extends Converter> scope) {
+        if (scope == null && fieldPropertys != null && fieldPropertys.length >= 1) {
+            return fieldPropertys[0];
+        }
+        if (fieldPropertys != null) {
+            for (FieldProperty fieldProperty : Arrays.asList(fieldPropertys)) {
+                Class<? extends Converter>[] annotationScopes = fieldProperty.scope();
+                for (Class<? extends Converter> annotationScope : annotationScopes) {
+                    if (annotationScope.isAssignableFrom(scope)) {
+                        return fieldProperty;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public static JavaBeanInfo build(Class<?> clazz, Class<? extends Converter> scope) {
         Method[] methods = clazz.getMethods();
 
         List<FieldInfo> fieldList = ListUtil.list(true);
@@ -265,14 +286,14 @@ public class JavaBeanInfo {
                 continue;
             }
 
-            FieldProperty annotation = TypeUtil.getAnnotation(method, FieldProperty.class);
-
             if (types.length != 1) {
                 continue;
             }
 
+            FieldProperty annotation = checkScope(TypeUtil.getAnnotation(method, FieldProperty.class), scope);
+
             if (annotation == null) {
-                annotation = TypeUtil.getSuperMethodAnnotation(clazz, method, FieldProperty.class);
+                annotation = checkScope(TypeUtil.getSuperMethodAnnotation(clazz, method, FieldProperty.class), scope);
             }
 
             if (annotation == null && methodName.length() < 4) {
@@ -286,7 +307,7 @@ public class JavaBeanInfo {
                 if (annotation.name().length() != 0) {
                     String propertyName = annotation.name();
                     Field field = TypeUtil.getField(clazz, StringUtil.getGeneralField(methodName));
-                    add(fieldList, new FieldInfo(propertyName, method, field, ordinal));
+                    add(fieldList, new FieldInfo(propertyName, method, field, ordinal, null, annotation));
                     continue;
                 }
             }
@@ -338,26 +359,26 @@ public class JavaBeanInfo {
                 field = TypeUtil.getField(clazz, isFieldName);
             }
 
-            FieldProperty fieldAnnotation;
+            FieldProperty fieldAnnotation = null;
             if (field != null) {
-                fieldAnnotation = TypeUtil.getAnnotation(field, FieldProperty.class);
+                fieldAnnotation = checkScope(TypeUtil.getAnnotation(field, FieldProperty.class), scope);
 
                 if (fieldAnnotation != null) {
                     ordinal = fieldAnnotation.ordinal();
 
                     if (fieldAnnotation.name().length() != 0) {
                         propertyName = fieldAnnotation.name();
-                        add(fieldList, new FieldInfo(propertyName, method, field, ordinal));
+                        add(fieldList, new FieldInfo(propertyName, method, field, ordinal, fieldAnnotation, null));
                         continue;
                     }
                 }
             }
 
-            add(fieldList, new FieldInfo(propertyName, method, field, ordinal));
+            add(fieldList, new FieldInfo(propertyName, method, field, ordinal, fieldAnnotation, null));
         }
 
         Field[] fields = clazz.getFields();
-        computeFields(fieldList, fields);
+        computeFields(fieldList, fields, scope);
 
         for (Method method : clazz.getMethods()) {
             // getter methods
@@ -379,12 +400,11 @@ public class JavaBeanInfo {
                         || Map.class.isAssignableFrom(method.getReturnType())
                         || AtomicBoolean.class == method.getReturnType()
                         || AtomicInteger.class == method.getReturnType()
-                        || AtomicLong.class == method.getReturnType()
-                ) {
+                        || AtomicLong.class == method.getReturnType()) {
                     String propertyName;
                     Field collectionField = null;
 
-                    FieldProperty annotation = TypeUtil.getAnnotation(method, FieldProperty.class);
+                    FieldProperty annotation = checkScope(TypeUtil.getAnnotation(method, FieldProperty.class), scope);
 
                     if (annotation != null && annotation.name().length() > 0) {
                         propertyName = annotation.name();
@@ -405,7 +425,7 @@ public class JavaBeanInfo {
                         continue;
                     }
 
-                    add(fieldList, new FieldInfo(propertyName, method, collectionField, 0));
+                    add(fieldList, new FieldInfo(propertyName, method, collectionField, 0, null, annotation));
                 }
             }
         }

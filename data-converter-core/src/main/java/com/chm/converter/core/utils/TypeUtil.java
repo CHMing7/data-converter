@@ -22,11 +22,10 @@ public class TypeUtil {
      * @param <A>
      * @return
      */
-    public static <A extends Annotation> A getAnnotation(Field field, Class<A> annotationClass) {
-        A targetAnnotation = field.getAnnotation(annotationClass);
+    public static <A extends Annotation> A[] getAnnotation(Field field, Class<A> annotationClass) {
+        A[] targetAnnotations = field.getAnnotationsByType(annotationClass);
 
         Class<?> clazz = field.getDeclaringClass();
-        A mixInAnnotation;
 
         Field mixInField = null;
         String fieldName = field.getName();
@@ -41,13 +40,9 @@ public class TypeUtil {
             }
         }
         if (mixInField == null) {
-            return targetAnnotation;
+            return targetAnnotations;
         }
-        mixInAnnotation = mixInField.getAnnotation(annotationClass);
-        if (mixInAnnotation != null) {
-            return mixInAnnotation;
-        }
-        return targetAnnotation;
+        return mixInField.getAnnotationsByType(annotationClass);
     }
 
     /**
@@ -58,11 +53,11 @@ public class TypeUtil {
      * @param <A>
      * @return
      */
-    public static <A extends Annotation> A getAnnotation(Method method, Class<A> annotationClass) {
-        A targetAnnotation = method.getAnnotation(annotationClass);
+    public static <A extends Annotation> A[] getAnnotation(Method method, Class<A> annotationClass) {
+        A[] targetAnnotations = method.getAnnotationsByType(annotationClass);
 
         Class<?> clazz = method.getDeclaringClass();
-        A mixInAnnotation;
+        A[] mixInAnnotation;
         if (clazz != Object.class) {
             Method mixInMethod = null;
             String methodName = method.getName();
@@ -78,14 +73,14 @@ public class TypeUtil {
                 }
             }
             if (mixInMethod == null) {
-                return targetAnnotation;
+                return targetAnnotations;
             }
-            mixInAnnotation = mixInMethod.getAnnotation(annotationClass);
+            mixInAnnotation = mixInMethod.getAnnotationsByType(annotationClass);
             if (mixInAnnotation != null) {
                 return mixInAnnotation;
             }
         }
-        return targetAnnotation;
+        return targetAnnotations;
     }
 
     /**
@@ -126,7 +121,7 @@ public class TypeUtil {
      * @param <A>
      * @return
      */
-    public static <A extends Annotation> A getSuperMethodAnnotation(final Class<?> clazz, final Method method, Class<A> annotationClass) {
+    public static <A extends Annotation> A[] getSuperMethodAnnotation(final Class<?> clazz, final Method method, Class<A> annotationClass) {
         Class<?>[] interfaces = clazz.getInterfaces();
         if (interfaces.length > 0) {
             Class<?>[] types = method.getParameterTypes();
@@ -149,9 +144,9 @@ public class TypeUtil {
                     if (!match) {
                         continue;
                     }
-                    A annotation = TypeUtil.getAnnotation(interfaceMethod, annotationClass);
-                    if (annotation != null) {
-                        return annotation;
+                    A[] annotations = TypeUtil.getAnnotation(interfaceMethod, annotationClass);
+                    if (annotations != null) {
+                        return annotations;
                     }
                 }
             }
@@ -180,9 +175,9 @@ public class TypeUtil {
                 if (!match) {
                     continue;
                 }
-                A annotation = TypeUtil.getAnnotation(interfaceMethod, annotationClass);
-                if (annotation != null) {
-                    return annotation;
+                A[] annotations = TypeUtil.getAnnotation(interfaceMethod, annotationClass);
+                if (annotations != null) {
+                    return annotations;
                 }
             }
         }

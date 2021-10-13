@@ -5,10 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
-import com.chm.converter.core.ClassInfoStorage;
-import com.chm.converter.core.FieldInfo;
-import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
@@ -35,9 +32,12 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
 
     private final ConstructorConstructor constructorConstructor = new ConstructorConstructor(MapUtil.empty());
 
+    private final Class<? extends Converter> converterClass;
+
     private final UseOriginalJudge useOriginalJudge;
 
-    public GsonTypeAdapterFactory(UseOriginalJudge useOriginalJudge) {
+    public GsonTypeAdapterFactory(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
+        this.converterClass = converter != null ? converter.getClass() : null;
         this.useOriginalJudge = useOriginalJudge;
     }
 
@@ -59,7 +59,7 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
             @Override
             public void write(JsonWriter out, T value) throws IOException {
                 Class<?> rawClass = ClassUtil.getClass(value);
-                JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(rawClass);
+                JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(rawClass, converterClass);
                 List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
                 if (CollectionUtil.isNotEmpty(sortedFieldList)) {
                     out.beginObject();
@@ -83,7 +83,7 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
                     in.nextNull();
                     return null;
                 }
-                JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(type.getRawType());
+                JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(type.getRawType(), converterClass);
                 Map<String, FieldInfo> fieldInfoMap = javaBeanInfo.getNameFieldInfoMap();
                 if (in.hasNext() && CollectionUtil.isNotEmpty(fieldInfoMap)) {
                     ObjectConstructor<T> objectConstructor = constructorConstructor.get(type);

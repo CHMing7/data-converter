@@ -30,7 +30,7 @@ public class GsonConverter implements JsonConverter {
             Since.class,
             Until.class);
 
-    private final List<TypeAdapterFactory> factories = ListUtil.toLinkedList(new GsonTypeAdapterFactory(GsonConverter::checkExistGsonAnnotation),
+    private final List<TypeAdapterFactory> factories = ListUtil.toLinkedList(new GsonTypeAdapterFactory(this, GsonConverter::checkExistGsonAnnotation),
             new GsonJava8TimeTypeAdapterFactory(this), new GsonDefaultDateTypeAdapterFactory(this));
 
     public static final String GSON_NAME = "com.google.gson.JsonParser";

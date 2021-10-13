@@ -11,58 +11,62 @@ import java.util.Map;
  **/
 public interface ClassInfoStorage {
 
-    Map<Class<?>, JavaBeanInfo> BEAN_INFO_MAP = MapUtil.newConcurrentHashMap();
+    Map<Class<?>, Map<Class<? extends Converter>, JavaBeanInfo>> BEAN_INFO_MAP = MapUtil.newHashMap();
 
-    Map<Class<?>, Map<String, FieldInfo>> NAME_FIELD_INFO_MAP = MapUtil.newConcurrentHashMap();
+    Map<Class<?>, Map<Class<? extends Converter>, Map<String, FieldInfo>>> NAME_FIELD_INFO_MAP = MapUtil.newHashMap();
 
-    Map<Class<?>, Map<String, FieldInfo>> FIELD_NAME_FIELD_INFO_MAP = MapUtil.newConcurrentHashMap();
+    Map<Class<?>, Map<Class<? extends Converter>, Map<String, FieldInfo>>> FIELD_NAME_FIELD_INFO_MAP = MapUtil.newHashMap();
 
-    ClassInfoStorage INSTANCE = BEAN_INFO_MAP::containsKey;
+    ClassInfoStorage INSTANCE = (clazz, converterClass) -> contains(BEAN_INFO_MAP, clazz, converterClass);
 
     /**
      * 初始化class信息
      *
      * @param clazz
+     * @param converterClass
      */
-    default void initClassInfo(Class<?> clazz) {
-        JavaBeanInfo javaBeanInfo = JavaBeanInfo.build(clazz);
-        BEAN_INFO_MAP.put(clazz, javaBeanInfo);
-        NAME_FIELD_INFO_MAP.put(clazz, javaBeanInfo.getNameFieldInfoMap());
-        FIELD_NAME_FIELD_INFO_MAP.put(clazz, javaBeanInfo.getFieldNameFieldInfoMap());
+    default void initClassInfo(Class<?> clazz, Class<? extends Converter> converterClass) {
+        JavaBeanInfo javaBeanInfo = JavaBeanInfo.build(clazz, converterClass);
+        put(BEAN_INFO_MAP, clazz, converterClass, javaBeanInfo);
+        put(NAME_FIELD_INFO_MAP, clazz, converterClass, javaBeanInfo.getNameFieldInfoMap());
+        put(FIELD_NAME_FIELD_INFO_MAP, clazz, converterClass, javaBeanInfo.getFieldNameFieldInfoMap());
     }
 
     /**
      * 获取bean信息
      *
      * @param clazz
+     * @param converterClass
      * @return
      */
-    default JavaBeanInfo getJavaBeanInfo(Class<?> clazz) {
-        if (!BEAN_INFO_MAP.containsKey(clazz) || !isInit(clazz)) {
-            initClassInfo(clazz);
+    default JavaBeanInfo getJavaBeanInfo(Class<?> clazz, Class<? extends Converter> converterClass) {
+        if (!contains(BEAN_INFO_MAP, clazz, converterClass) || !isInit(clazz, converterClass)) {
+            initClassInfo(clazz, converterClass);
         }
-        return BEAN_INFO_MAP.get(clazz);
+        return get(BEAN_INFO_MAP, clazz, converterClass);
     }
 
     /**
      * 是否初始化过javaBeanInfo
      *
      * @param clazz
+     * @param converterClass
      * @return
      */
-    boolean isInit(Class<?> clazz);
+    boolean isInit(Class<?> clazz, Class<? extends Converter> converterClass);
 
     /**
      * 获取field信息
      *
      * @param clazz
+     * @param converterClass
      * @return
      */
-    default Map<String, FieldInfo> getNameFieldInfoMap(Class<?> clazz) {
-        if (!NAME_FIELD_INFO_MAP.containsKey(clazz) || !isInit(clazz)) {
-            initClassInfo(clazz);
+    default Map<String, FieldInfo> getNameFieldInfoMap(Class<?> clazz, Class<? extends Converter> converterClass) {
+        if (!contains(NAME_FIELD_INFO_MAP, clazz, converterClass) || !isInit(clazz, converterClass)) {
+            initClassInfo(clazz, converterClass);
         }
-        return NAME_FIELD_INFO_MAP.get(clazz);
+        return get(NAME_FIELD_INFO_MAP, clazz, converterClass);
     }
 
 
@@ -70,13 +74,65 @@ public interface ClassInfoStorage {
      * 获取field信息
      *
      * @param clazz
+     * @param converterClass
      * @return
      */
-    default Map<String, FieldInfo> getFieldNameFieldInfoMap(Class<?> clazz) {
-        if (!FIELD_NAME_FIELD_INFO_MAP.containsKey(clazz) || !isInit(clazz)) {
-            initClassInfo(clazz);
+    default Map<String, FieldInfo> getFieldNameFieldInfoMap(Class<?> clazz, Class<? extends Converter> converterClass) {
+        if (!contains(FIELD_NAME_FIELD_INFO_MAP, clazz, converterClass) || !isInit(clazz, converterClass)) {
+            initClassInfo(clazz, converterClass);
         }
-        return FIELD_NAME_FIELD_INFO_MAP.get(clazz);
+        return get(FIELD_NAME_FIELD_INFO_MAP, clazz, converterClass);
     }
+
+    /**
+     * put
+     *
+     * @param map
+     * @param k
+     * @param r
+     * @param v
+     * @param <K>
+     * @param <R>
+     * @param <V>
+     */
+    static <K, R, V> void put(Map<K, Map<R, V>> map, K k, R r, V v) {
+        Map<R, V> orDefault = map.getOrDefault(k, MapUtil.newHashMap());
+        orDefault.put(r, v);
+        map.put(k, orDefault);
+    }
+
+    /**
+     * get
+     *
+     * @param map
+     * @param k
+     * @param r
+     * @param <K>
+     * @param <R>
+     * @param <V>
+     * @return
+     */
+    static <K, R, V> V get(Map<K, Map<R, V>> map, K k, R r) {
+        Map<R, V> orDefault = map.getOrDefault(k, MapUtil.newHashMap());
+        return orDefault.get(r);
+    }
+
+    /**
+     * contains
+     *
+     * @param map
+     * @param k
+     * @param r
+     * @param <K>
+     * @param <R>
+     * @param <V>
+     * @return
+     */
+    static <K, R, V> boolean contains(Map<K, Map<R, V>> map, K k, R r) {
+        Map<R, V> orDefault = map.getOrDefault(k, MapUtil.newHashMap());
+        return orDefault.containsKey(r);
+    }
+
+
 }
 

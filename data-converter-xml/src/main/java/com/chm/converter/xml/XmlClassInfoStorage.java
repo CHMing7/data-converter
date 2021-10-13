@@ -1,8 +1,10 @@
 package com.chm.converter.xml;
 
 import com.chm.converter.core.ClassInfoStorage;
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
+import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.xml.annotation.XmlProperty;
 import com.chm.converter.xml.annotation.XmlRootElement;
 
@@ -10,7 +12,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author caihongming
@@ -19,14 +20,14 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 public class XmlClassInfoStorage implements ClassInfoStorage {
 
-    public static final Map<Class<?>, Boolean> INIT_MAP = new ConcurrentHashMap<>();
+    public static final Map<Class<?>, Map<Class<? extends Converter>, Boolean>> INIT_TABLE = MapUtil.newHashMap();
 
     public static final XmlClassInfoStorage INSTANCE = new XmlClassInfoStorage();
 
     @Override
-    public void initClassInfo(Class<?> clazz) {
-        ClassInfoStorage.super.initClassInfo(clazz);
-        JavaBeanInfo javaBeanInfo = ClassInfoStorage.BEAN_INFO_MAP.get(clazz);
+    public void initClassInfo(Class<?> clazz, Class<? extends Converter> converterClass) {
+        ClassInfoStorage.super.initClassInfo(clazz, converterClass);
+        JavaBeanInfo javaBeanInfo = ClassInfoStorage.get(BEAN_INFO_MAP, clazz, converterClass);
         XmlRootElement xmlRootElement = clazz.getAnnotation(XmlRootElement.class);
         if (xmlRootElement != null) {
             String xmlRootName = xmlRootElement.name();
@@ -59,11 +60,11 @@ public class XmlClassInfoStorage implements ClassInfoStorage {
                 fieldInfo.putExpandProperty("namespace", namespace);
             }
         }
-        INIT_MAP.put(clazz, true);
+        ClassInfoStorage.put(INIT_TABLE, clazz, converterClass, true);
     }
 
     @Override
-    public boolean isInit(Class<?> clazz) {
-        return INIT_MAP.getOrDefault(clazz, false);
+    public boolean isInit(Class<?> clazz, Class<? extends Converter> converterClass) {
+        return Boolean.TRUE.equals(ClassInfoStorage.get(INIT_TABLE, clazz, converterClass));
     }
 }

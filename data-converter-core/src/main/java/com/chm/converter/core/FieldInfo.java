@@ -76,7 +76,6 @@ public class FieldInfo implements Comparable<FieldInfo> {
      */
     private final Set<Class<? extends Annotation>> fieldAnnotationClassSet;
 
-
     /**
      * 方法注解集
      */
@@ -87,7 +86,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
      */
     private final Set<Class<? extends Annotation>> methodAnnotationClassSet;
 
-    public FieldInfo(String name, Method method, Field field, int ordinal) {
+    public FieldInfo(String name, Method method, Field field, int ordinal, FieldProperty fieldAnnotation , FieldProperty methodAnnotation) {
         if (field != null) {
             String fieldName = field.getName();
             if (fieldName.equals(name)) {
@@ -161,8 +160,8 @@ public class FieldInfo implements Comparable<FieldInfo> {
         this.fieldClass = fieldClass;
         this.fieldType = fieldType;
         this.getOnly = getOnly;
-        this.fieldAnnotation = field == null ? null : TypeUtil.getAnnotation(field, FieldProperty.class);
-        this.methodAnnotation = method == null ? null : TypeUtil.getAnnotation(method, FieldProperty.class);
+        this.fieldAnnotation = fieldAnnotation;
+        this.methodAnnotation = methodAnnotation;
         FieldProperty annotation = this.getAnnotation();
         boolean serialize = true;
         boolean deserialize = true;
@@ -347,7 +346,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
     }
 
     public FieldProperty getAnnotation() {
-        return this.fieldAnnotation != null ? this.fieldAnnotation : this.methodAnnotation;
+        return this.methodAnnotation != null ? this.methodAnnotation : this.fieldAnnotation;
     }
 
     public Map<String, Object> getExpandProperty() {

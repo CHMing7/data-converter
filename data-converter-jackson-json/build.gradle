@@ -14,5 +14,4 @@ dependencies {
     testCompile(libs.jackson_core)
     testCompile(libs.jackson_databind)
     testCompile(libs.jackson_annotations)
-    testCompile(libs.jackson_datatype)
 }

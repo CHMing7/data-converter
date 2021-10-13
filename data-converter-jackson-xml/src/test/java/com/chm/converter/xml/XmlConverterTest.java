@@ -80,7 +80,7 @@ public class XmlConverterTest {
         TypeToken<List<User>> typeRef0 = new TypeToken<List<User>>() {
         };
 
-        List<User> newUserList = xmlConverter.convertToJavaObject(encodeToString, List.class);
+        List<User> newUserList = xmlConverter.convertToJavaObject(encodeToString, typeRef0.getType());
 
         assertEquals(userList, newUserList);
     }

@@ -28,13 +28,18 @@ public class FastjsonSerializeConfig extends SerializeConfig {
 
     private final UseOriginalJudge useOriginalJudge;
 
-    private static final NameFilter NAME_FILTER = new FastjsonNameFilter();
+    private final Class<? extends Converter> converterClass;
 
-    private static final PropertyFilter PROPERTY_FILTER = new FastjsonPropertyFilter();
+    private final NameFilter nameFilter;
+
+    private final PropertyFilter propertyFilter;
 
     public FastjsonSerializeConfig(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
         super();
+        this.converterClass = converter != null ? converter.getClass() : null;
         this.useOriginalJudge = useOriginalJudge;
+        nameFilter = new FastjsonNameFilter(converterClass);
+        propertyFilter = new FastjsonPropertyFilter(converterClass);
         // Java8 Time Serializer
         put(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, converter));
         put(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, converter));
@@ -66,7 +71,7 @@ public class FastjsonSerializeConfig extends SerializeConfig {
         }
 
         if (objectWriter instanceof JavaBeanSerializer) {
-            JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz);
+            JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
             if (CollectionUtil.isNotEmpty(javaBeanInfo.getSortedFieldList())) {
                 put(clazz, objectWriter = new FastjsonJavaBeanSerializer(clazz));
                 return objectWriter;
@@ -80,7 +85,7 @@ public class FastjsonSerializeConfig extends SerializeConfig {
 
         public FastjsonJavaBeanSerializer(Class<?> beanType) {
             super(beanType);
-            JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(beanType);
+            JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(beanType, converterClass);
             List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
             if (CollectionUtil.isEmpty(sortedFieldList)) {
                 return;
@@ -101,8 +106,8 @@ public class FastjsonSerializeConfig extends SerializeConfig {
             // 使用反射重新赋值
             ReflectUtil.setFieldValue(this, "sortedGetters", sortedGetters);
 
-            this.addFilter(NAME_FILTER);
-            this.addFilter(PROPERTY_FILTER);
+            this.addFilter(nameFilter);
+            this.addFilter(propertyFilter);
         }
 
         private ObjectSerializer getFieldSerializer(FieldInfo fieldInfo) {
@@ -126,9 +131,15 @@ public class FastjsonSerializeConfig extends SerializeConfig {
      */
     private static class FastjsonNameFilter implements NameFilter {
 
+        private final Class<? extends Converter> converterClass;
+
+        public FastjsonNameFilter(Class<? extends Converter> converterClass) {
+            this.converterClass = converterClass;
+        }
+
         @Override
         public String process(Object object, String name, Object value) {
-            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(ClassUtil.getClass(object));
+            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(ClassUtil.getClass(object), converterClass);
             FieldInfo fieldInfo = fieldInfoMap.get(name);
             return fieldInfo != null && fieldInfo.getName() != null ? fieldInfo.getName() : name;
         }
@@ -139,9 +150,15 @@ public class FastjsonSerializeConfig extends SerializeConfig {
      */
     private static class FastjsonPropertyFilter implements PropertyFilter {
 
+        private final Class<? extends Converter> converterClass;
+
+        public FastjsonPropertyFilter(Class<? extends Converter> converterClass) {
+            this.converterClass = converterClass;
+        }
+
         @Override
         public boolean apply(Object object, String name, Object value) {
-            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(ClassUtil.getClass(object));
+            Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(ClassUtil.getClass(object), converterClass);
             FieldInfo fieldInfo = fieldInfoMap.get(name);
             return fieldInfo.isSerialize();
         }

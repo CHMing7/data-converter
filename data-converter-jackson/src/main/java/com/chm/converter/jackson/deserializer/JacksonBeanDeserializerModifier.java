@@ -26,10 +26,13 @@ public class JacksonBeanDeserializerModifier extends BeanDeserializerModifier {
 
     private final Converter<?> converter;
 
+    private final Class<? extends Converter> converterClass;
+
     private final UseOriginalJudge useOriginalJudge;
 
     public JacksonBeanDeserializerModifier(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
         this.converter = converter;
+        this.converterClass = converter != null ? converter.getClass() : null;
         this.useOriginalJudge = useOriginalJudge;
     }
 
@@ -39,7 +42,7 @@ public class JacksonBeanDeserializerModifier extends BeanDeserializerModifier {
             return super.updateProperties(config, beanDesc, propDefs);
         }
         List<BeanPropertyDefinition> resultList = new LinkedList<>();
-        Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass());
+        Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass(), converterClass);
         propDefs.forEach(beanPropertyDefinition -> {
             // 去除不反序列化的属性
             String fieldName = beanPropertyDefinition.getName();
@@ -61,7 +64,7 @@ public class JacksonBeanDeserializerModifier extends BeanDeserializerModifier {
             return super.updateBuilder(config, beanDesc, builder);
         }
         Iterator<SettableBeanProperty> properties = builder.getProperties();
-        Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass());
+        Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass(), converterClass);
         CollectionUtil.forEach(properties, (property, index) -> {
             FieldInfo fieldInfo = fieldInfoMap.get(property.getName());
             // 修改时间类型反序列化类

@@ -1,13 +1,16 @@
-package com.chm.converter.json;
+package com.chm.converter.all;
 
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
+import com.chm.converter.avro.DefaultAvroConverter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
-import com.google.gson.Gson;
+import com.chm.converter.json.FastjsonConverter;
+import com.chm.converter.json.GsonConverter;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.Date;
 import java.util.Map;
 
@@ -18,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @version v1.0
  * @since 2021-06-03
  **/
-public class JsonConverterTest {
+public class ConverterTest {
 
     @Test
-    public void testGson() {
+    public void testConverter() {
         Map<String, User> userMap = MapUtil.newHashMap(true);
         User user = new User();
         user.setUserName("user");
@@ -31,7 +34,7 @@ public class JsonConverterTest {
         // user.setYearMonth(YearMonth.now());
         userMap.put("user", user);
 
-        GsonConverter gsonConverter = (GsonConverter) ConverterSelector.select(DataType.JSON, GsonConverter.class);
+        FastjsonConverter gsonConverter = (FastjsonConverter) ConverterSelector.select(DataType.JSON, FastjsonConverter.class);
 
         String encodeToString = gsonConverter.encode(userMap);
 

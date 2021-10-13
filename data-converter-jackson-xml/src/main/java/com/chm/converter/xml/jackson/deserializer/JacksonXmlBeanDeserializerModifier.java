@@ -35,11 +35,14 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
 
     private final Converter<?> converter;
 
+    private final Class<? extends Converter> converterClass;
+
     private final UseOriginalJudge useOriginalJudge;
 
     public JacksonXmlBeanDeserializerModifier(String nameForTextValue, Converter<?> converter, UseOriginalJudge useOriginalJudge) {
         super(nameForTextValue);
         this.converter = converter;
+        this.converterClass = converter != null ? converter.getClass() : null;
         this.useOriginalJudge = useOriginalJudge;
     }
 
@@ -49,7 +52,7 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
             return super.updateProperties(config, beanDesc, propDefs);
         }
         List<BeanPropertyDefinition> resultList = new LinkedList<>();
-        Map<String, FieldInfo> fieldInfoMap = XmlClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass());
+        Map<String, FieldInfo> fieldInfoMap = XmlClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass(), converterClass);
         propDefs.forEach(beanPropertyDefinition -> {
             // 去除不反序列化的属性
             String fieldName = beanPropertyDefinition.getName();
@@ -73,7 +76,7 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
             return super.updateBuilder(config, beanDesc, builder);
         }
         Iterator<SettableBeanProperty> properties = builder.getProperties();
-        Map<String, FieldInfo> fieldInfoMap = XmlClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass());
+        Map<String, FieldInfo> fieldInfoMap = XmlClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass(), converterClass);
         CollectionUtil.forEach(properties, (property, index) -> {
             FieldInfo fieldInfo = fieldInfoMap.get(property.getName());
             // 修改时间类型反序列化类
@@ -136,7 +139,7 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
 
     private SettableBeanProperty findSoleTextProp(BeanDescription beanDesc,
                                                   Iterator<SettableBeanProperty> propIt) {
-        JavaBeanInfo javaBeanInfo = XmlClassInfoStorage.INSTANCE.getJavaBeanInfo(beanDesc.getBeanClass());
+        JavaBeanInfo javaBeanInfo = XmlClassInfoStorage.INSTANCE.getJavaBeanInfo(beanDesc.getBeanClass(), converterClass);
         Map<String, FieldInfo> fieldNameFieldInfoMap = javaBeanInfo.getFieldNameFieldInfoMap();
         SettableBeanProperty textProp = null;
         while (propIt.hasNext()) {
