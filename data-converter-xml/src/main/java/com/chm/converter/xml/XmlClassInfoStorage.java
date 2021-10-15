@@ -25,9 +25,9 @@ public class XmlClassInfoStorage implements ClassInfoStorage {
     public static final XmlClassInfoStorage INSTANCE = new XmlClassInfoStorage();
 
     @Override
-    public void initClassInfo(Class<?> clazz, Class<? extends Converter> converterClass) {
+    public <T> void initClassInfo(Class<T> clazz, Class<? extends Converter> converterClass) {
         ClassInfoStorage.super.initClassInfo(clazz, converterClass);
-        JavaBeanInfo javaBeanInfo = ClassInfoStorage.get(BEAN_INFO_MAP, clazz, converterClass);
+        JavaBeanInfo<T> javaBeanInfo = ClassInfoStorage.get(BEAN_INFO_MAP, clazz, converterClass);
         XmlRootElement xmlRootElement = clazz.getAnnotation(XmlRootElement.class);
         if (xmlRootElement != null) {
             String xmlRootName = xmlRootElement.name();

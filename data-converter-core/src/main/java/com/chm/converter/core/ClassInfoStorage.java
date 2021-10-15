@@ -25,8 +25,8 @@ public interface ClassInfoStorage {
      * @param clazz
      * @param converterClass
      */
-    default void initClassInfo(Class<?> clazz, Class<? extends Converter> converterClass) {
-        JavaBeanInfo javaBeanInfo = JavaBeanInfo.build(clazz, converterClass);
+    default <T> void initClassInfo(Class<T> clazz, Class<? extends Converter> converterClass) {
+        JavaBeanInfo<T> javaBeanInfo = JavaBeanInfo.build(clazz, converterClass);
         put(BEAN_INFO_MAP, clazz, converterClass, javaBeanInfo);
         put(NAME_FIELD_INFO_MAP, clazz, converterClass, javaBeanInfo.getNameFieldInfoMap());
         put(FIELD_NAME_FIELD_INFO_MAP, clazz, converterClass, javaBeanInfo.getFieldNameFieldInfoMap());
@@ -39,7 +39,7 @@ public interface ClassInfoStorage {
      * @param converterClass
      * @return
      */
-    default JavaBeanInfo getJavaBeanInfo(Class<?> clazz, Class<? extends Converter> converterClass) {
+    default <T> JavaBeanInfo<T> getJavaBeanInfo(Class<T> clazz, Class<? extends Converter> converterClass) {
         if (!contains(BEAN_INFO_MAP, clazz, converterClass) || !isInit(clazz, converterClass)) {
             initClassInfo(clazz, converterClass);
         }

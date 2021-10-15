@@ -26,14 +26,14 @@ import java.util.stream.Collectors;
  * @version v1.0
  * @since 2021-08-16
  **/
-public class JavaBeanInfo {
+public class JavaBeanInfo<T> {
 
-    private final Class<?> clazz;
+    private final Class<T> clazz;
 
     /**
      * 构造方法对象
      */
-    private final ObjectConstructor<?> objectConstructor;
+    private final ObjectConstructor<T> objectConstructor;
 
     private final List<FieldInfo> fieldList;
 
@@ -58,7 +58,7 @@ public class JavaBeanInfo {
      */
     private final Set<Class<? extends Annotation>> annotationClassSet;
 
-    public JavaBeanInfo(Class<?> clazz, List<FieldInfo> fieldList) {
+    public JavaBeanInfo(Class<T> clazz, List<FieldInfo> fieldList) {
         this.clazz = clazz;
         this.objectConstructor = ConstructorFactory.INSTANCE.get(TypeToken.get(clazz));
         this.fieldList = fieldList;
@@ -71,11 +71,11 @@ public class JavaBeanInfo {
         this.annotationClassSet = this.annotationList.stream().map(Annotation::annotationType).collect(Collectors.toSet());
     }
 
-    public Class<?> getClazz() {
+    public Class<T> getClazz() {
         return clazz;
     }
 
-    public ObjectConstructor<?> getObjectConstructor() {
+    public ObjectConstructor<T> getObjectConstructor() {
         return objectConstructor;
     }
 
@@ -126,8 +126,8 @@ public class JavaBeanInfo {
      * @param annotationList
      * @return
      */
-    public static boolean checkExistAnnotation(Class<?> cls, List<Class<? extends Annotation>> annotationList) {
-        JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cls, null);
+    public static <T> boolean checkExistAnnotation(Class<T> cls, List<Class<? extends Annotation>> annotationList) {
+        JavaBeanInfo<T> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cls, null);
         List<FieldInfo> fieldList = javaBeanInfo.getFieldList();
         Set<Class<? extends Annotation>> annotationClassSet = javaBeanInfo.getAnnotationClassSet();
         for (Class<? extends Annotation> annotation : annotationList) {
@@ -258,7 +258,7 @@ public class JavaBeanInfo {
         return null;
     }
 
-    public static JavaBeanInfo build(Class<?> clazz, Class<? extends Converter> scope) {
+    public static <T> JavaBeanInfo<T> build(Class<T> clazz, Class<? extends Converter> scope) {
         Method[] methods = clazz.getMethods();
 
         List<FieldInfo> fieldList = ListUtil.list(true);
@@ -429,7 +429,7 @@ public class JavaBeanInfo {
                 }
             }
         }
-        return new JavaBeanInfo(clazz, fieldList);
+        return new JavaBeanInfo<>(clazz, fieldList);
     }
 }
 

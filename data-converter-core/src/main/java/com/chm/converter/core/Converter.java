@@ -105,14 +105,14 @@ public interface Converter<S> {
      * 打印转换器载入成功信息
      */
     default void logLoadSuccess() {
-        getLogger().info("success load converter: " + this.getClass().getName());
+        getLogger().info("converter loaded success: " + this.getClass().getName());
     }
 
     /**
      * 打印转换器载入失败信息
      */
     default void logLoadFail() {
-        getLogger().warn("fail load converter: " + this.getClass().getName());
+        getLogger().warn("converter loaded fail: " + this.getClass().getName());
     }
 
     /**

@@ -83,9 +83,9 @@ public class FastjsonParserConfig extends ParserConfig {
 
     private class FastjsonJavaBeanDeserializer extends JavaBeanDeserializer {
 
-        public FastjsonJavaBeanDeserializer(ParserConfig config, Class<?> clazz) {
+        public <T> FastjsonJavaBeanDeserializer(ParserConfig config, Class<T> clazz) {
             super(config, clazz);
-            JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
+            JavaBeanInfo<T> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
             List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
             if (CollectionUtil.isEmpty(sortedFieldList)) {
                 return;

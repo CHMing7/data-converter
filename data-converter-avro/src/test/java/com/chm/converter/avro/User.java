@@ -23,13 +23,13 @@ public class User {
     /**
      * 密码
      */
-    @FieldProperty(name = "password2", ordinal = 2)
+    @FieldProperty(name = "password2", ordinal = 3)
     public String password;
 
     /**
      * 新型时间
      */
-    @FieldProperty(name = "localDateTime", ordinal = 3, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(name = "localDateTime", ordinal = 2, format = "yyyy-MM-dd HH:mm:ss.SSSS")
     public LocalDateTime localDateTime;
 
     /**
