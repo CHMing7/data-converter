@@ -98,7 +98,6 @@ public interface Converter<S> {
             CONVERTER_NAME_MAP.put(this, converterName);
         }
         return CONVERTER_NAME_MAP.get(this);
-
     }
 
     /**

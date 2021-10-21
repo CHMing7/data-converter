@@ -49,10 +49,10 @@ public class TestJava8Time {
     @Test
     public void testJava8Time() {
         byte[] encode = converter.encode(java8Time);
-        StaticLog.info(String.valueOf(encode));
-        StaticLog.info(String.valueOf(converter.encode(LocalDateTime.now())));
-        StaticLog.info(String.valueOf(converter.encode(MonthDay.now())));
-        StaticLog.info(String.valueOf(converter.encode(null)));
+        StaticLog.info(new String(encode));
+        StaticLog.info(new String(converter.encode(LocalDateTime.now())));
+        StaticLog.info(new String(converter.encode(MonthDay.now())));
+        StaticLog.info(new String(converter.encode(null)));
         Java8Time java8Time = converter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }

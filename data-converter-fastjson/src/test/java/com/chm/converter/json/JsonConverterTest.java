@@ -8,6 +8,7 @@ import com.chm.converter.core.DataType;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.Date;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class JsonConverterTest {
         user.setPassword("password");
         user.setDate(new Date());
         user.setLocalDateTime(LocalDateTime.now());
-        // user.setYearMonth(YearMonth.now());
+        user.setYearMonth(YearMonth.now());
         userMap.put("user", user);
 
         FastjsonConverter jsonConverter = (FastjsonConverter) ConverterSelector.select(DataType.JSON, FastjsonConverter.class);
@@ -41,12 +42,6 @@ public class JsonConverterTest {
         Map<String, User> newUserMap = jsonConverter.convertToJavaObject(encodeToString, typeRef0.getType());
 
         assertEquals(userMap, newUserMap);
-
-        String newEncodeToString = JSON.toJSONString(userMap);
-
-        Map<String, User> newUserMap1 = JSON.parseObject(newEncodeToString, typeRef0.getType());
-
-        assertEquals(userMap, newUserMap1);
     }
 
 }

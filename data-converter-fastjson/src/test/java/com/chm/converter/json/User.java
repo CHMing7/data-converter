@@ -41,6 +41,8 @@ public class User {
     @FieldProperty(name = "yearMonth", ordinal = 5, format = "yyyy-MM")
     public YearMonth yearMonth;
 
+    public transient String testStatic;
+
     public String getUserName() {
         return userName;
     }
@@ -79,6 +81,14 @@ public class User {
 
     public void setYearMonth(YearMonth yearMonth) {
         this.yearMonth = yearMonth;
+    }
+
+    public String getTestStatic() {
+        return testStatic;
+    }
+
+    public void setTestStatic(String testStatic) {
+        this.testStatic = testStatic;
     }
 
     @Override

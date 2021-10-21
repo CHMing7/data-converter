@@ -19,11 +19,11 @@ public class ConvertException extends RuntimeException {
 
     public ConvertException(String converterName, String sourceClassName, String targetClassName, Throwable th) {
         super(StringUtil.format("Converter '{}' Conversion Type '{}' To '{}' Error: {}", converterName,
-                sourceClassName, targetClassName, th.getMessage(), th));
+                sourceClassName, targetClassName, th.getMessage()), th);
     }
 
     public ConvertException(String converterName, Class<?> sourceClass, Class<?> targetClass, Throwable th) {
         super(StringUtil.format("Converter '{}' Conversion Type '{}' To '{}' Error: {}", converterName,
-                sourceClass.getName(), targetClass.getName(), th.getMessage(), th));
+                sourceClass.getName(), targetClass.getName(), th.getMessage()), th);
     }
 }

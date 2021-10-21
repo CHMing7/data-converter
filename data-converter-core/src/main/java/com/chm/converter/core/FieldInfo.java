@@ -5,7 +5,6 @@ import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.utils.StringUtil;
-import com.chm.converter.core.utils.TypeUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -62,6 +61,11 @@ public class FieldInfo implements Comparable<FieldInfo> {
     private final boolean deserialize;
 
     /**
+     * 是否可持久化
+     */
+    private final boolean isTransient;
+
+    /**
      * 扩展属性
      */
     private final Map<String, Object> expandProperty;
@@ -86,7 +90,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
      */
     private final Set<Class<? extends Annotation>> methodAnnotationClassSet;
 
-    public FieldInfo(String name, Method method, Field field, int ordinal, FieldProperty fieldAnnotation , FieldProperty methodAnnotation) {
+    public FieldInfo(String name, Method method, Field field, int ordinal, FieldProperty fieldAnnotation, FieldProperty methodAnnotation) {
         if (field != null) {
             String fieldName = field.getName();
             if (fieldName.equals(name)) {
@@ -177,6 +181,11 @@ public class FieldInfo implements Comparable<FieldInfo> {
         this.format = format;
         this.serialize = serialize;
         this.deserialize = deserialize;
+        if (this.field != null) {
+            this.isTransient = Modifier.isTransient(field.getModifiers());
+        } else {
+            this.isTransient = false;
+        }
         this.expandProperty = new ConcurrentHashMap<>();
         this.fieldAnnotationList = ListUtil.toList(field != null ? field.getAnnotations() : null);
         this.fieldAnnotationClassSet = this.fieldAnnotationList.stream().map(Annotation::annotationType).collect(Collectors.toSet());
@@ -473,7 +482,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
     }
 
     public boolean isSerialize() {
-        return serialize;
+        return serialize && !isTransient;
     }
 
     public boolean isDeserialize() {

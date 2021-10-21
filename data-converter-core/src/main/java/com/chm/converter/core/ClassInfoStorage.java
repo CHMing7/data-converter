@@ -69,7 +69,6 @@ public interface ClassInfoStorage {
         return get(NAME_FIELD_INFO_MAP, clazz, converterClass);
     }
 
-
     /**
      * 获取field信息
      *
@@ -132,7 +131,5 @@ public interface ClassInfoStorage {
         Map<R, V> orDefault = map.getOrDefault(k, MapUtil.newHashMap());
         return orDefault.containsKey(r);
     }
-
-
 }
 

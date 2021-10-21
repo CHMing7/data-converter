@@ -77,7 +77,6 @@ public class Java8TimeConversion<T extends TemporalAccessor> extends Conversion<
         return logicalType.addToSchema(Schema.create(Schema.Type.STRING));
     }
 
-
     public static final class Java8TimeConversionBuilder<T extends TemporalAccessor> {
 
         private Class<T> clazz;

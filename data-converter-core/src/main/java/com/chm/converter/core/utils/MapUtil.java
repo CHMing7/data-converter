@@ -4,6 +4,7 @@ import cn.hutool.core.util.ReflectUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * Map相关工具类
@@ -222,5 +223,18 @@ public class MapUtil {
         } catch (ClassCastException | NullPointerException e) {
             return null;
         }
+    }
+
+    public static <K, V> V computeIfAbsent(Map<K, V> map, K key, Function<? super K, ? extends V> mappingFunction) {
+        Objects.requireNonNull(mappingFunction);
+        V v;
+        if ((v = map.get(key)) == null) {
+            V newValue;
+            if ((newValue = mappingFunction.apply(key)) != null) {
+                map.put(key, newValue);
+                return newValue;
+            }
+        }
+        return v;
     }
 }

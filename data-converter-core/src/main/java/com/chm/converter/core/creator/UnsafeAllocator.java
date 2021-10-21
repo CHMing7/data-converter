@@ -42,12 +42,10 @@ public abstract class UnsafeAllocator {
         }
 
         try {
-            Method getConstructorId = ObjectStreamClass.class
-                    .getDeclaredMethod("getConstructorId", Class.class);
+            Method getConstructorId = ObjectStreamClass.class.getDeclaredMethod("getConstructorId", Class.class);
             getConstructorId.setAccessible(true);
             final int constructorId = (Integer) getConstructorId.invoke(null, Object.class);
-            final Method newInstance = ObjectStreamClass.class
-                    .getDeclaredMethod("newInstance", Class.class, int.class);
+            final Method newInstance = ObjectStreamClass.class.getDeclaredMethod("newInstance", Class.class, int.class);
             newInstance.setAccessible(true);
             return new UnsafeAllocator() {
                 @Override
@@ -61,8 +59,7 @@ public abstract class UnsafeAllocator {
         }
 
         try {
-            final Method newInstance = ObjectInputStream.class
-                    .getDeclaredMethod("newInstance", Class.class, Class.class);
+            final Method newInstance = ObjectInputStream.class.getDeclaredMethod("newInstance", Class.class, Class.class);
             newInstance.setAccessible(true);
             return new UnsafeAllocator() {
                 @Override

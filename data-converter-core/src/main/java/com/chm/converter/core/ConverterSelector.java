@@ -27,7 +27,7 @@ public class ConverterSelector implements Serializable {
     }
 
     static {
-        // 加载json数据转换类
+        // 加载数据转换器类
       /*  ConfigurationBuilder build = ConfigurationBuilder.build(new SubTypesScanner());
         build.setExpandSuperTypes(false);*/
         Reflections reflections = new Reflections(new SubTypesScanner());

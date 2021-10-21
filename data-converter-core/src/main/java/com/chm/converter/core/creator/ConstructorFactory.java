@@ -97,8 +97,7 @@ public final class ConstructorFactory {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private <T> ObjectConstructor<T> newDefaultImplementationConstructor(
-            final Type type, Class<? super T> rawType) {
+    private <T> ObjectConstructor<T> newDefaultImplementationConstructor(final Type type, Class<? super T> rawType) {
         if (Collection.class.isAssignableFrom(rawType)) {
             if (SortedSet.class.isAssignableFrom(rawType)) {
                 return () -> (T) new TreeSet<>();
@@ -142,8 +141,7 @@ public final class ConstructorFactory {
         return null;
     }
 
-    private <T> ObjectConstructor<T> newUnsafeAllocator(
-            final Type type, final Class<? super T> rawType) {
+    private <T> ObjectConstructor<T> newUnsafeAllocator(final Type type, final Class<? super T> rawType) {
         return new ObjectConstructor<T>() {
             private final UnsafeAllocator unsafeAllocator = UnsafeAllocator.create();
 

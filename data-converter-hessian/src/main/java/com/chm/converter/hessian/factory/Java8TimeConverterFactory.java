@@ -2,9 +2,12 @@ package com.chm.converter.hessian.factory;
 
 import com.caucho.hessian.io.*;
 import com.chm.converter.codec.Java8TimeCodec;
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.constant.TimeConstant;
+import com.chm.converter.hessian.UseDeserializer;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 
 /**
@@ -16,19 +19,16 @@ import java.time.temporal.TemporalAccessor;
  **/
 public class Java8TimeConverterFactory extends AbstractSerializerFactory {
 
-    private static final Java8TimeConverterFactory INSTANCE = new Java8TimeConverterFactory();
+    private final Converter<?> converter;
 
-    /**
-     * Return the singleton instance.
-     */
-    public static Java8TimeConverterFactory get() {
-        return INSTANCE;
+    public Java8TimeConverterFactory(Converter<?> converter) {
+        this.converter = converter;
     }
 
     @Override
     public Serializer getSerializer(Class cl) throws HessianProtocolException {
         if (TimeConstant.TEMPORAL_ACCESSOR_SET.contains(cl)) {
-            return new Java8TimeSerializer(cl);
+            return new Java8TimeConverter(cl, (String) null, converter);
         }
         return null;
     }
@@ -36,17 +36,38 @@ public class Java8TimeConverterFactory extends AbstractSerializerFactory {
     @Override
     public Deserializer getDeserializer(Class cl) throws HessianProtocolException {
         if (TimeConstant.TEMPORAL_ACCESSOR_SET.contains(cl)) {
-            return new Java8TimeDeserializer(cl);
+            return new Java8TimeConverter(cl, (String) null, converter);
         }
         return null;
     }
 
-    public static class Java8TimeSerializer<T extends TemporalAccessor> extends AbstractSerializer {
+    public static class Java8TimeConverter<T extends TemporalAccessor> extends AbstractDeserializer implements Serializer, UseDeserializer {
 
         private final Java8TimeCodec<T> java8TimeCodec;
 
-        public Java8TimeSerializer(Class<T> clazz) {
-            this.java8TimeCodec = new Java8TimeCodec<>(clazz);
+        public Java8TimeConverter(Class<T> clazz, String datePattern, Converter<?> converter) {
+            this.java8TimeCodec = new Java8TimeCodec<>(clazz, datePattern, converter);
+        }
+
+        public Java8TimeConverter(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
+            this.java8TimeCodec = new Java8TimeCodec<>(clazz, dateFormatter, converter);
+        }
+
+        public Java8TimeConverter<T> withClass(Class<T> clazz) {
+            return new Java8TimeConverter<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
+        }
+
+        public Java8TimeConverter<T> withDatePattern(String datePattern) {
+            return new Java8TimeConverter<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
+        }
+
+        public Java8TimeConverter<T> withDateFormatter(DateTimeFormatter dateFormatter) {
+            return new Java8TimeConverter<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
+        }
+
+        @Override
+        public Class getType() {
+            return this.java8TimeCodec.getClazz();
         }
 
         @Override
@@ -57,81 +78,13 @@ public class Java8TimeConverterFactory extends AbstractSerializerFactory {
                 if (out.addRef(obj)) {
                     return;
                 }
-                Class cl = obj.getClass();
-
-                int ref = out.writeObjectBegin(cl.getName());
-
-                if (ref < -1) {
-                    out.writeString("value");
-                    out.writeString(java8TimeCodec.encode((T) obj));
-                    out.writeMapEnd();
-                } else {
-                    if (ref == -1) {
-                        out.writeInt(1);
-                        out.writeString("value");
-                        out.writeObjectBegin(cl.getName());
-                    }
-
-                    out.writeString(java8TimeCodec.encode((T) obj));
-                }
+                out.writeString(java8TimeCodec.encode((T) obj));
             }
-        }
-    }
-
-    public static class Java8TimeDeserializer<T extends TemporalAccessor> extends AbstractDeserializer {
-
-        private final Class<T> clazz;
-
-        private final Java8TimeCodec<T> java8TimeCodec;
-
-        public Java8TimeDeserializer(Class<T> clazz) {
-            this.clazz = clazz;
-            this.java8TimeCodec = new Java8TimeCodec<>(clazz);
         }
 
         @Override
-        public Class getType() {
-            return clazz;
-        }
-
-        @Override
-        public Object readMap(AbstractHessianInput in)
-                throws IOException {
-            String value = null;
-
-            while (!in.isEnd()) {
-                String key = in.readString();
-
-                if (key.equals("value")) {
-                    value = in.readString();
-                } else {
-                    in.readObject();
-                }
-            }
-
-            in.readMapEnd();
-
-            Object object = java8TimeCodec.decode(value);
-
-            in.addRef(object);
-
-            return object;
-        }
-
-        @Override
-        public Object readObject(AbstractHessianInput in, Object[] fields)
-                throws IOException {
-            String[] fieldNames = (String[]) fields;
-
-            String value = null;
-
-            for (int i = 0; i < fieldNames.length; i++) {
-                if ("value".equals(fieldNames[i])) {
-                    value = in.readString();
-                } else {
-                    in.readObject();
-                }
-            }
+        public Object readObject(AbstractHessianInput in) throws IOException {
+            String value = in.readString();
 
             Object object = java8TimeCodec.decode(value);
 
