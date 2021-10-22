@@ -1,5 +1,6 @@
 package com.chm.converter.kryo.factory;
 
+import com.chm.converter.core.Converter;
 import com.esotericsoftware.kryo.Kryo;
 
 /**
@@ -10,6 +11,10 @@ import com.esotericsoftware.kryo.Kryo;
 public class ThreadLocalKryoFactory extends AbstractKryoFactory {
 
     private final ThreadLocal<Kryo> holder = ThreadLocal.withInitial(this::create);
+
+    public ThreadLocalKryoFactory(Converter<?> converter) {
+        super(converter);
+    }
 
     @Override
     public Kryo getKryo() {

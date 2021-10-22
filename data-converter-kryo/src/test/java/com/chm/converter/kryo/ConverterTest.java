@@ -26,7 +26,7 @@ public class ConverterTest {
         User user = new User();
         User user1 = new User();
         user1.setUserName("testName");
-        user.setUser(user1);
+        // user.setUser(user1);
         user.setUserName("user");
         user.setPassword("password");
         user.setDate(new Date());

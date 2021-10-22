@@ -15,18 +15,18 @@ import java.util.Date;
  * @version v1.0
  * @since 2021-10-18
  **/
-public class DefaultDateConverterFactory extends AbstractSerializerFactory {
+public class HessianDefaultDateConverterFactory extends AbstractSerializerFactory {
 
     private final Converter<?> converter;
 
-    public DefaultDateConverterFactory(Converter<?> converter) {
+    public HessianDefaultDateConverterFactory(Converter<?> converter) {
         this.converter = converter;
     }
 
     @Override
     public Serializer getSerializer(Class cl) throws HessianProtocolException {
         if (TimeConstant.DEFAULT_DATE_SET.contains(cl)) {
-            return new DefaultDateConverter(cl, (String) null, converter);
+            return new HessianDefaultDateConverter(cl, (String) null, converter);
         }
         return null;
     }
@@ -34,33 +34,33 @@ public class DefaultDateConverterFactory extends AbstractSerializerFactory {
     @Override
     public Deserializer getDeserializer(Class cl) throws HessianProtocolException {
         if (TimeConstant.DEFAULT_DATE_SET.contains(cl)) {
-            return new DefaultDateConverter(cl, (String) null, converter);
+            return new HessianDefaultDateConverter(cl, (String) null, converter);
         }
         return null;
     }
 
-    public static class DefaultDateConverter<T extends Date> extends AbstractDeserializer implements Serializer, UseDeserializer {
+    public static class HessianDefaultDateConverter<T extends Date> extends AbstractDeserializer implements Serializer, UseDeserializer {
 
         private final DefaultDateCodec<T> defaultDateCodec;
 
-        public DefaultDateConverter(Class<T> clazz, String datePattern, Converter<?> converter) {
+        public HessianDefaultDateConverter(Class<T> clazz, String datePattern, Converter<?> converter) {
             this.defaultDateCodec = new DefaultDateCodec<>(clazz, datePattern, converter);
         }
 
-        public DefaultDateConverter(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
+        public HessianDefaultDateConverter(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
             this.defaultDateCodec = new DefaultDateCodec<>(clazz, dateFormatter, converter);
         }
 
-        public DefaultDateConverter<T> withDateType(Class<T> dateType) {
-            return new DefaultDateConverter<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter());
+        public HessianDefaultDateConverter<T> withDateType(Class<T> dateType) {
+            return new HessianDefaultDateConverter<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter());
         }
 
-        public DefaultDateConverter<T> withDatePattern(String datePattern) {
-            return new DefaultDateConverter<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter());
+        public HessianDefaultDateConverter<T> withDatePattern(String datePattern) {
+            return new HessianDefaultDateConverter<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter());
         }
 
-        public DefaultDateConverter<T> withDateFormatter(DateTimeFormatter dateFormatter) {
-            return new DefaultDateConverter<>(this.defaultDateCodec.getDateType(), dateFormatter, this.defaultDateCodec.getConverter());
+        public HessianDefaultDateConverter<T> withDateFormatter(DateTimeFormatter dateFormatter) {
+            return new HessianDefaultDateConverter<>(this.defaultDateCodec.getDateType(), dateFormatter, this.defaultDateCodec.getConverter());
         }
 
         @Override

@@ -17,18 +17,18 @@ import java.time.temporal.TemporalAccessor;
  * @version v1.0
  * @since 2021-09-18
  **/
-public class Java8TimeConverterFactory extends AbstractSerializerFactory {
+public class HessianJava8TimeConverterFactory extends AbstractSerializerFactory {
 
     private final Converter<?> converter;
 
-    public Java8TimeConverterFactory(Converter<?> converter) {
+    public HessianJava8TimeConverterFactory(Converter<?> converter) {
         this.converter = converter;
     }
 
     @Override
     public Serializer getSerializer(Class cl) throws HessianProtocolException {
         if (TimeConstant.TEMPORAL_ACCESSOR_SET.contains(cl)) {
-            return new Java8TimeConverter(cl, (String) null, converter);
+            return new HessianJava8TimeConverter(cl, (String) null, converter);
         }
         return null;
     }
@@ -36,33 +36,33 @@ public class Java8TimeConverterFactory extends AbstractSerializerFactory {
     @Override
     public Deserializer getDeserializer(Class cl) throws HessianProtocolException {
         if (TimeConstant.TEMPORAL_ACCESSOR_SET.contains(cl)) {
-            return new Java8TimeConverter(cl, (String) null, converter);
+            return new HessianJava8TimeConverter(cl, (String) null, converter);
         }
         return null;
     }
 
-    public static class Java8TimeConverter<T extends TemporalAccessor> extends AbstractDeserializer implements Serializer, UseDeserializer {
+    public static class HessianJava8TimeConverter<T extends TemporalAccessor> extends AbstractDeserializer implements Serializer, UseDeserializer {
 
         private final Java8TimeCodec<T> java8TimeCodec;
 
-        public Java8TimeConverter(Class<T> clazz, String datePattern, Converter<?> converter) {
+        public HessianJava8TimeConverter(Class<T> clazz, String datePattern, Converter<?> converter) {
             this.java8TimeCodec = new Java8TimeCodec<>(clazz, datePattern, converter);
         }
 
-        public Java8TimeConverter(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
+        public HessianJava8TimeConverter(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
             this.java8TimeCodec = new Java8TimeCodec<>(clazz, dateFormatter, converter);
         }
 
-        public Java8TimeConverter<T> withClass(Class<T> clazz) {
-            return new Java8TimeConverter<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
+        public HessianJava8TimeConverter<T> withClass(Class<T> clazz) {
+            return new HessianJava8TimeConverter<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
         }
 
-        public Java8TimeConverter<T> withDatePattern(String datePattern) {
-            return new Java8TimeConverter<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
+        public HessianJava8TimeConverter<T> withDatePattern(String datePattern) {
+            return new HessianJava8TimeConverter<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
         }
 
-        public Java8TimeConverter<T> withDateFormatter(DateTimeFormatter dateFormatter) {
-            return new Java8TimeConverter<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
+        public HessianJava8TimeConverter<T> withDateFormatter(DateTimeFormatter dateFormatter) {
+            return new HessianJava8TimeConverter<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
         }
 
         @Override

@@ -16,40 +16,40 @@ import java.time.temporal.TemporalAccessor;
  * @version v1.0
  * @since 2021-09-17
  **/
-public class Java8TimeConversion<T extends TemporalAccessor> extends Conversion<T> {
+public class AvroJava8TimeConversion<T extends TemporalAccessor> extends Conversion<T> {
 
     private final Java8TimeCodec<T> java8TimeCodec;
 
     private final LogicalType logicalType;
 
-    public Java8TimeConversion(Class<T> clazz, Converter<?> converter) {
+    public AvroJava8TimeConversion(Class<T> clazz, Converter<?> converter) {
         this(clazz, (DateTimeFormatter) null, converter, clazz.getName());
     }
 
-    public Java8TimeConversion(Class<T> clazz, String datePattern, Converter<?> converter, String logicalTypeName) {
+    public AvroJava8TimeConversion(Class<T> clazz, String datePattern, Converter<?> converter, String logicalTypeName) {
         this.logicalType = new LogicalType(logicalTypeName);
         this.java8TimeCodec = new Java8TimeCodec<>(clazz, datePattern, converter);
     }
 
-    public Java8TimeConversion(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter, String logicalTypeName) {
+    public AvroJava8TimeConversion(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter, String logicalTypeName) {
         this.logicalType = new LogicalType(logicalTypeName);
         this.java8TimeCodec = new Java8TimeCodec<>(clazz, dateFormatter, converter);
     }
 
-    public Java8TimeConversion<T> withClass(Class<T> clazz) {
-        return new Java8TimeConversion<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter(), this.logicalType.getName());
+    public AvroJava8TimeConversion<T> withClass(Class<T> clazz) {
+        return new AvroJava8TimeConversion<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter(), this.logicalType.getName());
     }
 
-    public Java8TimeConversion<T> withDatePattern(String datePattern) {
-        return new Java8TimeConversion<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter(), this.logicalType.getName());
+    public AvroJava8TimeConversion<T> withDatePattern(String datePattern) {
+        return new AvroJava8TimeConversion<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter(), this.logicalType.getName());
     }
 
-    public Java8TimeConversion<T> withDateFormatter(DateTimeFormatter dateFormatter) {
-        return new Java8TimeConversion<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter(), this.logicalType.getName());
+    public AvroJava8TimeConversion<T> withDateFormatter(DateTimeFormatter dateFormatter) {
+        return new AvroJava8TimeConversion<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter(), this.logicalType.getName());
     }
 
-    public Java8TimeConversion<T> withLogicalTypeName(String logicalTypeName) {
-        return new Java8TimeConversion<>(this.java8TimeCodec.getClazz(), this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter(), logicalTypeName);
+    public AvroJava8TimeConversion<T> withLogicalTypeName(String logicalTypeName) {
+        return new AvroJava8TimeConversion<>(this.java8TimeCodec.getClazz(), this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter(), logicalTypeName);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class Java8TimeConversion<T extends TemporalAccessor> extends Conversion<
         return logicalType.addToSchema(Schema.create(Schema.Type.STRING));
     }
 
-    public static final class Java8TimeConversionBuilder<T extends TemporalAccessor> {
+    public static final class AvroJava8TimeConversionBuilder<T extends TemporalAccessor> {
 
         private Class<T> clazz;
 
@@ -89,37 +89,37 @@ public class Java8TimeConversion<T extends TemporalAccessor> extends Conversion<
 
         private String logicalTypeName;
 
-        public Java8TimeConversionBuilder() {
+        public AvroJava8TimeConversionBuilder() {
         }
 
-        public Java8TimeConversionBuilder<T> dateType(Class<T> dateType) {
+        public AvroJava8TimeConversionBuilder<T> dateType(Class<T> dateType) {
             this.clazz = dateType;
             return this;
         }
 
-        public Java8TimeConversionBuilder<T> dateFormatter(DateTimeFormatter dateFormatter) {
+        public AvroJava8TimeConversionBuilder<T> dateFormatter(DateTimeFormatter dateFormatter) {
             this.dateFormatter = dateFormatter;
             this.datePattern = null;
             return this;
         }
 
-        public Java8TimeConversionBuilder<T> datePattern(String datePattern) {
+        public AvroJava8TimeConversionBuilder<T> datePattern(String datePattern) {
             this.dateFormatter = null;
             this.datePattern = datePattern;
             return this;
         }
 
-        public Java8TimeConversionBuilder<T> converter(Converter<?> converter) {
+        public AvroJava8TimeConversionBuilder<T> converter(Converter<?> converter) {
             this.converter = converter;
             return this;
         }
 
-        public Java8TimeConversionBuilder<T> logicalTypeName(String logicalTypeName) {
+        public AvroJava8TimeConversionBuilder<T> logicalTypeName(String logicalTypeName) {
             this.logicalTypeName = logicalTypeName;
             return this;
         }
 
-        public Java8TimeConversionBuilder<T> java8TimeConversion(Java8TimeConversion<T> java8TimeConversion) {
+        public AvroJava8TimeConversionBuilder<T> java8TimeConversion(AvroJava8TimeConversion<T> java8TimeConversion) {
             if (java8TimeConversion.java8TimeCodec != null) {
                 this.clazz = java8TimeConversion.java8TimeCodec.getClazz();
                 this.dateFormatter = java8TimeConversion.java8TimeCodec.getDateFormatter();
@@ -132,11 +132,11 @@ public class Java8TimeConversion<T extends TemporalAccessor> extends Conversion<
         }
 
 
-        public Java8TimeConversion<T> build() {
+        public AvroJava8TimeConversion<T> build() {
             if (this.dateFormatter != null) {
-                return new Java8TimeConversion<>(this.clazz, this.dateFormatter, this.converter, this.logicalTypeName);
+                return new AvroJava8TimeConversion<>(this.clazz, this.dateFormatter, this.converter, this.logicalTypeName);
             } else {
-                return new Java8TimeConversion<>(this.clazz, this.datePattern, this.converter, this.logicalTypeName);
+                return new AvroJava8TimeConversion<>(this.clazz, this.datePattern, this.converter, this.logicalTypeName);
             }
         }
     }

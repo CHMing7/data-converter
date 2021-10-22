@@ -169,11 +169,11 @@ public class HessianConverterFactory extends BeanSerializerFactory {
             return MapUtil.computeIfAbsent(fieldInfoSerializerMap, fieldInfo, info -> {
                 try {
                     Serializer serializer = serializerFactory.getSerializer(info.getFieldClass());
-                    if (serializer instanceof Java8TimeConverterFactory.Java8TimeConverter) {
-                        return ((Java8TimeConverterFactory.Java8TimeConverter<?>) serializer).withDatePattern(fieldInfo.getFormat());
+                    if (serializer instanceof HessianJava8TimeConverterFactory.HessianJava8TimeConverter) {
+                        return ((HessianJava8TimeConverterFactory.HessianJava8TimeConverter<?>) serializer).withDatePattern(fieldInfo.getFormat());
                     }
-                    if (serializer instanceof DefaultDateConverterFactory.DefaultDateConverter) {
-                        return ((DefaultDateConverterFactory.DefaultDateConverter<?>) serializer).withDatePattern(fieldInfo.getFormat());
+                    if (serializer instanceof HessianDefaultDateConverterFactory.HessianDefaultDateConverter) {
+                        return ((HessianDefaultDateConverterFactory.HessianDefaultDateConverter<?>) serializer).withDatePattern(fieldInfo.getFormat());
                     }
                     return serializer;
                 } catch (HessianProtocolException e) {
@@ -319,11 +319,11 @@ public class HessianConverterFactory extends BeanSerializerFactory {
             return MapUtil.computeIfAbsent(fieldInfoDeserializerMap, fieldInfo, info -> {
                 try {
                     Deserializer deserializer = serializerFactory.getDeserializer(info.getFieldClass());
-                    if (deserializer instanceof Java8TimeConverterFactory.Java8TimeConverter) {
-                        return ((Java8TimeConverterFactory.Java8TimeConverter<?>) deserializer).withDatePattern(fieldInfo.getFormat());
+                    if (deserializer instanceof HessianJava8TimeConverterFactory.HessianJava8TimeConverter) {
+                        return ((HessianJava8TimeConverterFactory.HessianJava8TimeConverter<?>) deserializer).withDatePattern(fieldInfo.getFormat());
                     }
-                    if (deserializer instanceof DefaultDateConverterFactory.DefaultDateConverter) {
-                        return ((DefaultDateConverterFactory.DefaultDateConverter<?>) deserializer).withDatePattern(fieldInfo.getFormat());
+                    if (deserializer instanceof HessianDefaultDateConverterFactory.HessianDefaultDateConverter) {
+                        return ((HessianDefaultDateConverterFactory.HessianDefaultDateConverter<?>) deserializer).withDatePattern(fieldInfo.getFormat());
                     }
                     return deserializer;
                 } catch (HessianProtocolException e) {

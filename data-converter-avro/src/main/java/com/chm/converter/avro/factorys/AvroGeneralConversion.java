@@ -22,7 +22,7 @@ import java.util.List;
  * @version v1.0
  * @since 2021-10-14
  **/
-public class GeneralConversion<T> extends Conversion<T> {
+public class AvroGeneralConversion<T> extends Conversion<T> {
 
     private final Class<T> clazz;
 
@@ -32,7 +32,7 @@ public class GeneralConversion<T> extends Conversion<T> {
 
     private final Schema schema;
 
-    public GeneralConversion(Class<T> clazz, Schema schema, Class<? extends Converter> converterClass, GenericData data) {
+    public AvroGeneralConversion(Class<T> clazz, Schema schema, Class<? extends Converter> converterClass, GenericData data) {
         this.clazz = clazz;
         this.logicalType = new LogicalType(clazz.getName());
         this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
@@ -49,17 +49,17 @@ public class GeneralConversion<T> extends Conversion<T> {
             LogicalType logicalType = new LogicalType(logicalTypeName);
             Conversion<?> fieldConversion = data.getConversionByClass(fieldInfo.getFieldClass());
             Schema fieldSchema;
-            if (fieldConversion instanceof Java8TimeConversion &&
+            if (fieldConversion instanceof AvroJava8TimeConversion &&
                     data.getConversionByClass(fieldInfo.getFieldClass(), logicalType) == null) {
-                Java8TimeConversion java8TimeConversion = new Java8TimeConversion.Java8TimeConversionBuilder<>()
-                        .java8TimeConversion((Java8TimeConversion<TemporalAccessor>) fieldConversion)
+                AvroJava8TimeConversion java8TimeConversion = new AvroJava8TimeConversion.AvroJava8TimeConversionBuilder<>()
+                        .java8TimeConversion((AvroJava8TimeConversion<TemporalAccessor>) fieldConversion)
                         .logicalTypeName(logicalTypeName).datePattern(fieldInfo.getFormat()).build();
                 data.addLogicalTypeConversion(java8TimeConversion);
                 fieldSchema = makeNullable(java8TimeConversion.getRecommendedSchema());
-            } else if (fieldConversion instanceof DefaultDateConversion
+            } else if (fieldConversion instanceof AvroDefaultDateConversion
                     && data.getConversionByClass(fieldInfo.getFieldClass(), logicalType) == null) {
-                DefaultDateConversion dateDefaultDateConversion = new DefaultDateConversion.DefaultDateConversionBuilder<>()
-                        .defaultDateConversion((DefaultDateConversion<Date>) fieldConversion)
+                AvroDefaultDateConversion dateDefaultDateConversion = new AvroDefaultDateConversion.AvroDefaultDateConversionBuilder<>()
+                        .defaultDateConversion((AvroDefaultDateConversion<Date>) fieldConversion)
                         .logicalTypeName(logicalTypeName).datePattern(fieldInfo.getFormat()).build();
                 data.addLogicalTypeConversion(dateDefaultDateConversion);
                 fieldSchema = makeNullable(dateDefaultDateConversion.getRecommendedSchema());

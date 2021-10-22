@@ -16,41 +16,41 @@ import java.util.Date;
  * @version v1.0
  * @since 2021-09-17
  **/
-public class DefaultDateConversion<T extends Date> extends Conversion<T> {
+public class AvroDefaultDateConversion<T extends Date> extends Conversion<T> {
 
     private final DefaultDateCodec<T> defaultDateCodec;
 
     private final LogicalType logicalType;
 
 
-    public DefaultDateConversion(Class<T> dateType, Converter<?> converter) {
+    public AvroDefaultDateConversion(Class<T> dateType, Converter<?> converter) {
         this(dateType, (DateTimeFormatter) null, converter, dateType.getName());
     }
 
-    public DefaultDateConversion(Class<T> dateType, String datePattern, Converter<?> converter, String logicalTypeName) {
+    public AvroDefaultDateConversion(Class<T> dateType, String datePattern, Converter<?> converter, String logicalTypeName) {
         this.logicalType = new LogicalType(logicalTypeName);
         this.defaultDateCodec = new DefaultDateCodec<>(dateType, datePattern, converter);
     }
 
-    public DefaultDateConversion(Class<T> dateType, DateTimeFormatter dateFormat, Converter<?> converter, String logicalTypeName) {
+    public AvroDefaultDateConversion(Class<T> dateType, DateTimeFormatter dateFormat, Converter<?> converter, String logicalTypeName) {
         this.logicalType = new LogicalType(logicalTypeName);
         this.defaultDateCodec = new DefaultDateCodec<>(dateType, dateFormat, converter);
     }
 
-    public DefaultDateConversion<T> withDateType(Class<T> dateType) {
-        return new DefaultDateConversion<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter(), this.logicalType.getName());
+    public AvroDefaultDateConversion<T> withDateType(Class<T> dateType) {
+        return new AvroDefaultDateConversion<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter(), this.logicalType.getName());
     }
 
-    public DefaultDateConversion<T> withDatePattern(String datePattern) {
-        return new DefaultDateConversion<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter(), this.logicalType.getName());
+    public AvroDefaultDateConversion<T> withDatePattern(String datePattern) {
+        return new AvroDefaultDateConversion<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter(), this.logicalType.getName());
     }
 
-    public DefaultDateConversion<T> withDateFormat(DateTimeFormatter dateFormat) {
-        return new DefaultDateConversion<>(this.defaultDateCodec.getDateType(), dateFormat, this.defaultDateCodec.getConverter(), this.logicalType.getName());
+    public AvroDefaultDateConversion<T> withDateFormat(DateTimeFormatter dateFormat) {
+        return new AvroDefaultDateConversion<>(this.defaultDateCodec.getDateType(), dateFormat, this.defaultDateCodec.getConverter(), this.logicalType.getName());
     }
 
-    public DefaultDateConversion<T> withLogicalTypeName(String logicalTypeName) {
-        return new DefaultDateConversion<>(this.defaultDateCodec.getDateType(), this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter(), logicalTypeName);
+    public AvroDefaultDateConversion<T> withLogicalTypeName(String logicalTypeName) {
+        return new AvroDefaultDateConversion<>(this.defaultDateCodec.getDateType(), this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter(), logicalTypeName);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class DefaultDateConversion<T extends Date> extends Conversion<T> {
     }
 
 
-    public static final class DefaultDateConversionBuilder<T extends Date> {
+    public static final class AvroDefaultDateConversionBuilder<T extends Date> {
 
         private Class<T> dateType;
 
@@ -92,37 +92,37 @@ public class DefaultDateConversion<T extends Date> extends Conversion<T> {
         private String logicalTypeName;
 
 
-        public DefaultDateConversionBuilder() {
+        public AvroDefaultDateConversionBuilder() {
         }
 
-        public DefaultDateConversionBuilder<T> dateType(Class<T> dateType) {
+        public AvroDefaultDateConversionBuilder<T> dateType(Class<T> dateType) {
             this.dateType = dateType;
             return this;
         }
 
-        public DefaultDateConversionBuilder<T> dateFormatter(DateTimeFormatter dateFormatter) {
+        public AvroDefaultDateConversionBuilder<T> dateFormatter(DateTimeFormatter dateFormatter) {
             this.dateFormatter = dateFormatter;
             this.datePattern = null;
             return this;
         }
 
-        public DefaultDateConversionBuilder<T> datePattern(String datePattern) {
+        public AvroDefaultDateConversionBuilder<T> datePattern(String datePattern) {
             this.dateFormatter = null;
             this.datePattern = datePattern;
             return this;
         }
 
-        public DefaultDateConversionBuilder<T> converter(Converter<?> converter) {
+        public AvroDefaultDateConversionBuilder<T> converter(Converter<?> converter) {
             this.converter = converter;
             return this;
         }
 
-        public DefaultDateConversionBuilder<T> logicalTypeName(String logicalTypeName) {
+        public AvroDefaultDateConversionBuilder<T> logicalTypeName(String logicalTypeName) {
             this.logicalTypeName = logicalTypeName;
             return this;
         }
 
-        public DefaultDateConversionBuilder<T> defaultDateConversion(DefaultDateConversion<T> defaultDateConversion) {
+        public AvroDefaultDateConversionBuilder<T> defaultDateConversion(AvroDefaultDateConversion<T> defaultDateConversion) {
             if (defaultDateConversion.defaultDateCodec != null) {
                 this.dateType = defaultDateConversion.defaultDateCodec.getDateType();
                 this.dateFormatter = defaultDateConversion.defaultDateCodec.getDateFormatter();
@@ -137,11 +137,11 @@ public class DefaultDateConversion<T extends Date> extends Conversion<T> {
 
 
 
-        public DefaultDateConversion<T> build() {
+        public AvroDefaultDateConversion<T> build() {
             if (this.dateFormatter != null) {
-                return new DefaultDateConversion<>(this.dateType, this.dateFormatter, this.converter, this.logicalTypeName);
+                return new AvroDefaultDateConversion<>(this.dateType, this.dateFormatter, this.converter, this.logicalTypeName);
             } else {
-                return new DefaultDateConversion<>(this.dateType, this.datePattern, this.converter, this.logicalTypeName);
+                return new AvroDefaultDateConversion<>(this.dateType, this.datePattern, this.converter, this.logicalTypeName);
             }
         }
     }

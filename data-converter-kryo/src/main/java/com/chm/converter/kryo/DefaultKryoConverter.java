@@ -1,7 +1,8 @@
 package com.chm.converter.kryo;
 
 import com.chm.converter.core.utils.ClassUtil;
-import com.chm.converter.kryo.utils.KryoUtil;
+import com.chm.converter.kryo.factory.AbstractKryoFactory;
+import com.chm.converter.kryo.factory.ThreadLocalKryoFactory;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -21,9 +22,20 @@ public class DefaultKryoConverter implements KryoConverter {
 
     public static final String KRYO_NAME = "com.esotericsoftware.kryo.Kryo";
 
+    protected AbstractKryoFactory kryoFactory = new ThreadLocalKryoFactory(this);
+
+    /**
+     * 获取KryoFactory对象
+     *
+     * @return KryoFactory对象，{@link AbstractKryoFactory}类实例
+     */
+    public AbstractKryoFactory getKryoFactory() {
+        return kryoFactory;
+    }
+
     @Override
     public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
-        Kryo kryo = KryoUtil.get();
+        Kryo kryo = kryoFactory.getKryo();
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(source);
         Input input = new Input(byteArrayInputStream);
         input.close();
@@ -41,7 +53,7 @@ public class DefaultKryoConverter implements KryoConverter {
         if (source == null) {
             return new byte[0];
         }
-        Kryo kryo = KryoUtil.get();
+        Kryo kryo = kryoFactory.getKryo();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Output output = new Output(byteArrayOutputStream);
         kryo.writeObjectOrNull(output, source, source.getClass());

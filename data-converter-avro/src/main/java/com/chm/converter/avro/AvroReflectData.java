@@ -1,6 +1,6 @@
 package com.chm.converter.avro;
 
-import com.chm.converter.avro.factorys.GeneralConversion;
+import com.chm.converter.avro.factorys.AvroGeneralConversion;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.UseOriginalJudge;
 import org.apache.avro.Conversion;
@@ -45,7 +45,7 @@ public class AvroReflectData extends ReflectData {
             Class clazz = (Class) type;
             Conversion conversionByClass = this.getConversionByClass(clazz);
             if (conversionByClass == null) {
-                GeneralConversion generalConversion = new GeneralConversion(clazz, schema, converterClass, this);
+                AvroGeneralConversion generalConversion = new AvroGeneralConversion(clazz, schema, converterClass, this);
                 this.addLogicalTypeConversion(generalConversion);
                 return generalConversion.getRecommendedSchema();
             }
