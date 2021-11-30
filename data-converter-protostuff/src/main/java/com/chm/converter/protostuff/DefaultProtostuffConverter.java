@@ -1,15 +1,8 @@
 package com.chm.converter.protostuff;
 
-import com.chm.converter.core.utils.ClassUtil;
-import com.chm.converter.protostuff.utils.WrapperUtil;
-import io.protostuff.LinkedBuffer;
-import io.protostuff.ProtostuffIOUtil;
-import io.protostuff.Schema;
-import io.protostuff.runtime.RuntimeSchema;
+import com.chm.converter.core.exception.ConvertException;
 
 import java.lang.reflect.Type;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author caihongming
@@ -20,28 +13,19 @@ public class DefaultProtostuffConverter implements ProtostuffConverter {
 
     public static final String PROTOSTUFF_NAME = "io.protostuff.ProtostuffIOUtil";
 
-    /**
-     * 缓存Schema
-     */
-    private final static Map<Class<?>, Schema<?>> SCHEMA_CACHE = new ConcurrentHashMap<>();
+    protected Protostuff protostuff = new Protostuff(this);
 
     @Override
     public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
         if (source == null) {
             return null;
         }
-        Object result;
-        if (WrapperUtil.needWrapper(targetType)) {
-            Schema<Wrapper> schema = getSchema(Wrapper.class);
-            Wrapper wrapper = schema.newMessage();
-            ProtostuffIOUtil.mergeFrom(source, wrapper, schema);
-            return (T) wrapper.getData();
-        } else {
-            Schema schema = getSchema(targetType);
-            result = schema.newMessage();
-            ProtostuffIOUtil.mergeFrom(source, result, schema);
+
+        try {
+            return protostuff.deserialize(source, targetType);
+        } catch (Throwable e) {
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getName(), e);
         }
-        return (T) result;
     }
 
     @Override
@@ -49,24 +33,25 @@ public class DefaultProtostuffConverter implements ProtostuffConverter {
         if (source == null) {
             return null;
         }
-        Class<?> classByType = ClassUtil.getClassByType(targetType);
-        return (T) convertToJavaObject(source, classByType);
+
+        try {
+            return protostuff.deserialize(source, targetType);
+        } catch (Throwable e) {
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getTypeName(), e);
+        }
     }
 
     @Override
     public byte[] encode(Object source) {
-        if (source == null || WrapperUtil.needWrapper(source)) {
-            Schema<Wrapper> schema = getSchema(Wrapper.class);
-            Wrapper wrapper = new Wrapper(source);
-            return ProtostuffIOUtil.toByteArray(wrapper, schema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
-        } else {
-            Schema schema = getSchema(source.getClass());
-            return ProtostuffIOUtil.toByteArray(source, schema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
+        if (source == null) {
+            return new byte[0];
         }
-    }
 
-    private static Schema getSchema(Class<?> cls) {
-        return SCHEMA_CACHE.computeIfAbsent(cls, RuntimeSchema::createFrom);
+        try {
+            return protostuff.serialize(source);
+        } catch (Throwable e) {
+            throw new ConvertException(getConverterName(), source.getClass().getName(), byte[].class.getName(), e);
+        }
     }
 
     @Override

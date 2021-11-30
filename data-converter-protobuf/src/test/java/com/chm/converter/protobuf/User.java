@@ -1,4 +1,4 @@
-package com.chm.converter.protostuff;
+package com.chm.converter.protobuf;
 
 import com.chm.converter.core.annotation.FieldProperty;
 
@@ -13,12 +13,6 @@ import java.util.Objects;
  * @since 2021-06-03
  **/
 public class User {
-
-    /**
-     * 用户
-     */
-    @FieldProperty(name = "user12", ordinal = 1)
-    public User user;
 
     /**
      * 用户名
@@ -46,14 +40,6 @@ public class User {
 
     @FieldProperty(name = "yearMonth", ordinal = 5, format = "yyyy-MM")
     public YearMonth yearMonth;
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public String getUserName() {
         return userName;

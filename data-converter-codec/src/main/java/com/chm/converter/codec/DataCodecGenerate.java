@@ -1,10 +1,10 @@
 package com.chm.converter.codec;
 
-import cn.hutool.core.collection.ListUtil;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.universal.UniversalFactory;
+import com.chm.converter.core.universal.UniversalGenerate;
 
 import java.io.File;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.*;
@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.*;
 import java.util.regex.Pattern;
 
@@ -22,22 +21,16 @@ import java.util.regex.Pattern;
  * @version v1.0
  * @since 2021-09-02
  **/
-public class DataCodec {
-
-    public final static DataCodec INSTANCE = new DataCodec();
-
-    private final Map<Type, Codec<?, ?>> typeCache = new ConcurrentHashMap<>();
-
-    private final List<CodecFactory> factories;
+public class DataCodecGenerate extends UniversalGenerate<Codec> {
 
     private final Converter<?> converter;
 
-    public DataCodec() {
+    public DataCodecGenerate() {
         this(null, null, false);
     }
 
-    public DataCodec(List<CodecFactory> factories, Converter<?> converter, boolean isInitCodecs) {
-        this.factories = Collections.unmodifiableList(factories != null ? factories : ListUtil.empty());
+    public DataCodecGenerate(List<UniversalFactory<Codec>> factories, Converter<?> converter, boolean isInitCodecs) {
+        super(factories);
         this.converter = converter;
         if (isInitCodecs) {
             initCodec();
@@ -124,113 +117,38 @@ public class DataCodec {
 
     }
 
-    /**
-     * 获取编解码器
-     *
-     * @param type
-     * @return
-     */
-    public Codec<?, ?> getCodec(Type type) {
-        if (type == null) {
-            return null;
-        }
-        Codec<?, ?> cached = typeCache.get(type);
-        if (cached != null) {
-            return cached;
-        }
-        for (CodecFactory factory : factories) {
-            Codec<?, ?> candidate = factory.createCodec(type);
-            if (candidate != null) {
-                put(type, candidate);
-                return candidate;
-            }
-        }
-        return null;
-    }
+    public static final class DataCodecGenerateBuilder {
 
-    /**
-     * 获取编解码器
-     *
-     * @param skipPast 跳过工厂类
-     * @param type
-     * @return
-     */
-    public Codec<?, ?> getDelegateCodec(CodecFactory skipPast, Type type) {
-        boolean skipPastFound = false;
-        for (CodecFactory factory : factories) {
-            if (!skipPastFound) {
-                if (factory == skipPast) {
-                    skipPastFound = true;
-                }
-                continue;
-            }
+        private List<UniversalFactory<Codec>> factories;
 
-            Codec<?, ?> candidate = factory.createCodec(type);
-            if (candidate != null) {
-                return candidate;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 获取编解码器
-     *
-     * @param type
-     * @param <T>
-     * @return
-     */
-    public <T> Codec<?, ?> getCodec(Class<T> type) {
-        return getCodec((Type) type);
-    }
-
-    /**
-     * 新增编解码器
-     *
-     * @param type
-     * @param codec
-     * @return
-     */
-    public boolean put(Type type, Codec<?, ?> codec) {
-        return this.typeCache.put(type, codec) != null;
-    }
-
-    public boolean containsByType(Type type) {
-        if (this.typeCache.containsKey(type)) {
-            return true;
-        }
-        return getCodec(type) != null;
-    }
-
-    public static final class DataCodecBuilder {
-        private List<CodecFactory> factories;
         private Converter<?> converter;
+
         private boolean isInitCodecs;
 
-        private DataCodecBuilder() {
+        private DataCodecGenerateBuilder() {
         }
 
-        public static DataCodecBuilder aDataCodec() {
-            return new DataCodecBuilder();
+        public static DataCodecGenerateBuilder dataCodecGenerate() {
+            return new DataCodecGenerateBuilder();
         }
 
-        public DataCodecBuilder withFactories(List<CodecFactory> factories) {
+        public DataCodecGenerateBuilder withFactories(List<UniversalFactory<Codec>> factories) {
             this.factories = factories;
             return this;
         }
 
-        public DataCodecBuilder withConverter(Converter<?> converter) {
+        public DataCodecGenerateBuilder withConverter(Converter<?> converter) {
             this.converter = converter;
             return this;
         }
 
-        public DataCodecBuilder withIsInitCodecs(boolean isInitCodecs) {
+        public DataCodecGenerateBuilder withIsInitCodecs(boolean isInitCodecs) {
             this.isInitCodecs = isInitCodecs;
             return this;
         }
 
-        public DataCodec build() {
-            return new DataCodec(factories, converter, isInitCodecs);
+        public DataCodecGenerate build() {
+            return new DataCodecGenerate(factories, converter, isInitCodecs);
         }
     }
 }

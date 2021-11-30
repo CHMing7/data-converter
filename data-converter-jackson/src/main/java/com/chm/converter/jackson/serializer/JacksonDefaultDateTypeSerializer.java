@@ -3,9 +3,8 @@ package com.chm.converter.jackson.serializer;
 import com.chm.converter.codec.DefaultDateCodec;
 import com.chm.converter.core.Converter;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -53,6 +52,16 @@ public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerial
         return new JacksonDefaultDateTypeSerializer<>(dateFormatter, this.defaultDateCodec.getConverter());
     }
 
+    @Override
+    public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType type) throws JsonMappingException {
+        visitor.expectStringFormat(type);
+    }
+
+    @Override
+    public boolean isEmpty(SerializerProvider provider, T value) {
+        return value == null;
+    }
+
     protected SerializationFeature getTimestampsFeature() {
         return SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
     }
@@ -63,15 +72,15 @@ public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerial
                 && provider.isEnabled(getTimestampsFeature());
     }
 
-    protected long timestamp(Date value) {
-        return (value == null) ? 0L : value.getTime();
+    protected String timestamp(Date value) {
+        return (value == null) ? "" : String.valueOf(value.getTime());
     }
 
 
     @Override
     public void serialize(T value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         if (useTimestamp(serializers)) {
-            gen.writeNumber(timestamp(value));
+            gen.writeString(timestamp(value));
         } else {
             String dateFormatAsString = this.defaultDateCodec.encode(value);
             gen.writeString(dateFormatAsString);

@@ -182,7 +182,7 @@ public class ClassUtil {
     /**
      * 从Type获取Class
      *
-     * @param genericType Java Type类型，{@link Type}接口实例
+     * @param type Java Type类型，{@link Type}接口实例
      * @return Java类，{@link Class}类实例
      */
     public static Class<?> getClassByType(Type type) {

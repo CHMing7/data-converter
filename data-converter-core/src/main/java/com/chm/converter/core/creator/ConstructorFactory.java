@@ -27,6 +27,10 @@ public final class ConstructorFactory {
 
     private final ReflectionAccessor accessor = ReflectionAccessor.getInstance();
 
+    public ConstructorFactory() {
+        this.instanceCreators = MapUtil.empty();
+    }
+
     public ConstructorFactory(Map<Type, InstanceCreator<?>> instanceCreators) {
         this.instanceCreators = instanceCreators;
     }

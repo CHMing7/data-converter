@@ -1,5 +1,6 @@
 package com.chm.converter.jackson.deserializer;
 
+import cn.hutool.core.util.NumberUtil;
 import com.chm.converter.codec.DefaultDateCodec;
 import com.chm.converter.core.Converter;
 import com.fasterxml.jackson.core.JsonParser;
@@ -74,11 +75,12 @@ public class JacksonDefaultDateTypeDeserializer<T extends Date> extends JsonDese
             return null;
         }
         if (useTimestamp(ctxt)) {
-            Number numberValue = p.getNumberValue();
-            if (numberValue == null) {
+            String numberStr = p.getText();
+            if (numberStr == null) {
                 return null;
             }
-            Date date = new Date(numberValue.longValue());
+            long l = NumberUtil.parseLong(numberStr);
+            Date date = new Date(l);
             Class<T> dateType = this.defaultDateCodec.getDateType();
             if (dateType == Date.class) {
                 return (T) date;

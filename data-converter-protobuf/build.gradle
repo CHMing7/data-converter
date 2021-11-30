@@ -3,9 +3,10 @@
 }*/
 
 dependencies {
-    compile project(':data-converter-core')
+    compile project(':data-converter-protostuff-util')
 
-    compileOnly(libs.protobuf_java_util)
+    compileOnly(libs.protobuf_java)
+    compileOnly(libs.protostuff_core)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
@@ -13,7 +14,9 @@ dependencies {
     testCompile 'junit:junit:4.13.1'
 
     testCompile(libs.hutool_log)
-    testCompile(libs.protobuf_java_util)
+    testCompile(libs.protobuf_java)
+    testCompile(libs.protostuff_core)
+    testCompile(libs.protostuff_runtime)
 }
 
 /*

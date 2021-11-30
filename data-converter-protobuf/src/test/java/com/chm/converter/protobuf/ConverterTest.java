@@ -1,4 +1,4 @@
-package com.chm.converter.protostuff;
+package com.chm.converter.protobuf;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.TypeReference;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @version v1.0
  * @since 2021-06-03
  **/
-public class ProtostuffConverterTest {
+public class ConverterTest {
 
     Converter<byte[]> converter;
 
@@ -33,7 +33,7 @@ public class ProtostuffConverterTest {
 
     @BeforeEach
     public void before() {
-        converter = ConverterSelector.select(DataType.PROTOSTUFF, DefaultProtostuffConverter.class);
+        converter = ConverterSelector.select(DataType.PROTOBUF_BINARY, DefaultProtobufConverter.class);
         user = new User();
         user.setUserName("user");
         user.setPassword("password");

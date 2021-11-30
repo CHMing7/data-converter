@@ -1,6 +1,9 @@
 package com.chm.converter.core.utils;
 
-import cn.hutool.core.util.ReflectUtil;
+
+import com.chm.converter.core.creator.ConstructorFactory;
+import com.chm.converter.core.lang.Pair;
+import com.chm.converter.core.reflect.TypeToken;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -136,7 +139,7 @@ public class MapUtil {
     }
 
     /**
-     * 新建一个初始容量为{@link cn.hutool.core.map.MapUtil#DEFAULT_INITIAL_CAPACITY} 的ConcurrentHashMap
+     * 新建一个初始容量为{@link MapUtil#DEFAULT_INITIAL_CAPACITY} 的ConcurrentHashMap
      *
      * @param <K> key的类型
      * @param <V> value的类型
@@ -149,7 +152,7 @@ public class MapUtil {
     /**
      * 新建一个ConcurrentHashMap
      *
-     * @param size 初始容量，当传入的容量小于等于0时，容量为{@link cn.hutool.core.map.MapUtil#DEFAULT_INITIAL_CAPACITY}
+     * @param size 初始容量，当传入的容量小于等于0时，容量为{@link MapUtil#DEFAULT_INITIAL_CAPACITY}
      * @param <K>  key的类型
      * @param <V>  value的类型
      * @return ConcurrentHashMap
@@ -188,7 +191,7 @@ public class MapUtil {
         if (mapType.isAssignableFrom(AbstractMap.class)) {
             return new HashMap<>();
         } else {
-            return (Map<K, V>) ReflectUtil.newInstance(mapType);
+            return (Map<K, V>) ConstructorFactory.INSTANCE.get(TypeToken.get(mapType)).construct();
         }
     }
 
@@ -236,5 +239,119 @@ public class MapUtil {
             }
         }
         return v;
+    }
+
+    // ----------------------------------------------------------------------------------------------- value of
+
+    /**
+     * 将单一键值对转换为Map
+     *
+     * @param <K>   键类型
+     * @param <V>   值类型
+     * @param key   键
+     * @param value 值
+     * @return {@link HashMap}
+     */
+    public static <K, V> HashMap<K, V> of(K key, V value) {
+        return of(key, value, false);
+    }
+
+    /**
+     * 将单一键值对转换为Map
+     *
+     * @param <K>     键类型
+     * @param <V>     值类型
+     * @param key     键
+     * @param value   值
+     * @param isOrder 是否有序
+     * @return {@link HashMap}
+     */
+    public static <K, V> HashMap<K, V> of(K key, V value, boolean isOrder) {
+        final HashMap<K, V> map = newHashMap(isOrder);
+        map.put(key, value);
+        return map;
+    }
+
+    /**
+     * 根据给定的Pair数组创建Map对象
+     *
+     * @param <K>   键类型
+     * @param <V>   值类型
+     * @param pairs 键值对
+     * @return Map
+     * @since 5.4.1
+     */
+    @SafeVarargs
+    public static <K, V> Map<K, V> of(Pair<K, V>... pairs) {
+        final Map<K, V> map = new HashMap<>();
+        for (Pair<K, V> pair : pairs) {
+            map.put(pair.getKey(), pair.getValue());
+        }
+        return map;
+    }
+
+    /**
+     * 将数组转换为Map（HashMap），支持数组元素类型为：
+     *
+     * <pre>
+     * Map.Entry
+     * 长度大于1的数组（取前两个值），如果不满足跳过此元素
+     * Iterable 长度也必须大于1（取前两个值），如果不满足跳过此元素
+     * Iterator 长度也必须大于1（取前两个值），如果不满足跳过此元素
+     * </pre>
+     *
+     * <pre>
+     * Map&lt;Object, Object&gt; colorMap = MapUtil.of(new String[][] {
+     *    { "RED", "#FF0000" },
+     *    { "GREEN", "#00FF00" },
+     *    { "BLUE", "#0000FF" }
+     * });
+     * </pre>
+     * <p>
+     * 参考：commons-lang
+     *
+     * @param array 数组。元素类型为Map.Entry、数组、Iterable、Iterator
+     * @return {@link HashMap}
+     * @since 3.0.8
+     */
+    @SuppressWarnings("rawtypes")
+    public static HashMap<Object, Object> of(Object[] array) {
+        if (array == null) {
+            return null;
+        }
+        final HashMap<Object, Object> map = new HashMap<>((int) (array.length * 1.5));
+        for (int i = 0; i < array.length; i++) {
+            final Object object = array[i];
+            if (object instanceof Map.Entry) {
+                Map.Entry entry = (Map.Entry) object;
+                map.put(entry.getKey(), entry.getValue());
+            } else if (object instanceof Object[]) {
+                final Object[] entry = (Object[]) object;
+                if (entry.length > 1) {
+                    map.put(entry[0], entry[1]);
+                }
+            } else if (object instanceof Iterable) {
+                final Iterator iter = ((Iterable) object).iterator();
+                if (iter.hasNext()) {
+                    final Object key = iter.next();
+                    if (iter.hasNext()) {
+                        final Object value = iter.next();
+                        map.put(key, value);
+                    }
+                }
+            } else if (object instanceof Iterator) {
+                final Iterator iter = ((Iterator) object);
+                if (iter.hasNext()) {
+                    final Object key = iter.next();
+                    if (iter.hasNext()) {
+                        final Object value = iter.next();
+                        map.put(key, value);
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException(StringUtil.format("Array element {}, '{}', is not type of Map.Entry or Array or Iterable or Iterator", i, object));
+            }
+        }
+        return map;
     }
 }

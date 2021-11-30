@@ -58,6 +58,23 @@ public interface TimeConstant {
     );
 
     /**
+     * java8时间类型转换
+     */
+    Map<Class<? extends TemporalAccessor>, TemporalCreate<?>> CLASS_TEMPORAL_CREATE_MAP = MapUtil.of(
+            Pair.of(Instant.class, (TemporalCreate<Instant>) Instant::now),
+            Pair.of(LocalDate.class, (TemporalCreate<LocalDate>) LocalDate::now),
+            Pair.of(LocalDateTime.class, (TemporalCreate<LocalDateTime>) LocalDateTime::now),
+            Pair.of(LocalTime.class, (TemporalCreate<LocalTime>) LocalTime::now),
+            Pair.of(OffsetDateTime.class, (TemporalCreate<OffsetDateTime>) OffsetDateTime::now),
+            Pair.of(OffsetTime.class, (TemporalCreate<OffsetTime>) OffsetTime::now),
+            Pair.of(ZonedDateTime.class, (TemporalCreate<ZonedDateTime>) ZonedDateTime::now),
+            Pair.of(MonthDay.class, (TemporalCreate<MonthDay>) MonthDay::now),
+            Pair.of(YearMonth.class, (TemporalCreate<YearMonth>) YearMonth::now),
+            Pair.of(Year.class, (TemporalCreate<Year>) Year::now),
+            Pair.of(ZoneOffset.class, (TemporalCreate<ZoneOffset>) () -> OffsetDateTime.now(ZoneId.systemDefault()).getOffset())
+    );
+
+    /**
      * java8时间类型字符串转换器
      */
     Map<Class<? extends TemporalAccessor>, DateTimeFormatter> JAVA8_TIME_DEFAULT_FORMATTER_MAP = MapUtil.of(
@@ -79,4 +96,10 @@ public interface TimeConstant {
                     .toFormatter()),
             Pair.of(ZoneOffset.class, DateTimeFormatter.ofPattern("ZZZZZ"))
     );
+
+    @FunctionalInterface
+    interface TemporalCreate<R extends TemporalAccessor> {
+
+        R create();
+    }
 }

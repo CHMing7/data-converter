@@ -1,7 +1,7 @@
 package com.chm.converter.spearal.coders;
 
 import com.chm.converter.codec.Codec;
-import com.chm.converter.codec.DataCodec;
+import com.chm.converter.codec.DataCodecGenerate;
 import org.spearal.SpearalContext;
 import org.spearal.configuration.CoderProvider;
 import org.spearal.configuration.ConverterProvider;
@@ -40,17 +40,17 @@ public class CodecProvider implements CoderProvider, CoderProvider.Coder, Conver
     public static final int ID_CLASS = 17;
     public static final int ID_BEAN = 18;
 
-    private DataCodec dataCodec;
+    private DataCodecGenerate dataCodec;
 
-    public CodecProvider(DataCodec dataCodec) {
+    public CodecProvider(DataCodecGenerate dataCodec) {
         this.dataCodec = dataCodec;
     }
 
-    public DataCodec getDataCodec() {
+    public DataCodecGenerate getDataCodec() {
         return dataCodec;
     }
 
-    public void setDataCodec(DataCodec dataCodec) {
+    public void setDataCodec(DataCodecGenerate dataCodec) {
         this.dataCodec = dataCodec;
     }
 
@@ -61,7 +61,7 @@ public class CodecProvider implements CoderProvider, CoderProvider.Coder, Conver
 
     @Override
     public void encode(ExtendedSpearalEncoder encoder, Object value) throws IOException {
-        Codec codec = dataCodec.getCodec(value.getClass());
+        Codec codec = dataCodec.get(value.getClass());
         Object encode = codec.encode(value);
         if (encode == null) {
             encoder.writeNull();
@@ -138,7 +138,7 @@ public class CodecProvider implements CoderProvider, CoderProvider.Coder, Conver
 
     @Override
     public Object convert(SpearalContext context, Object value, Type targetType) {
-        Codec codec = dataCodec.getCodec(targetType);
+        Codec codec = dataCodec.get(targetType);
         return codec.decode(value);
     }
 

@@ -3,8 +3,12 @@ package com.chm.converter.jackson.serializer;
 import com.chm.converter.codec.Java8TimeCodec;
 import com.chm.converter.core.Converter;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonValueFormat;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -53,6 +57,16 @@ public class JacksonJava8TimeSerializer<T extends TemporalAccessor> extends Json
 
     public JacksonJava8TimeSerializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new JacksonJava8TimeSerializer<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
+    }
+
+    @Override
+    public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType type) throws JsonMappingException {
+        visitor.expectStringFormat(type);
+    }
+
+    @Override
+    public boolean isEmpty(SerializerProvider provider, T value) {
+        return value == null;
     }
 
     @Override

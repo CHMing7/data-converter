@@ -1,8 +1,6 @@
 package com.chm.converter.protobuf;
 
 import com.chm.converter.core.exception.ConvertException;
-import com.chm.converter.core.utils.ClassUtil;
-import com.chm.converter.protobuf.utils.ProtobufUtil;
 
 import java.lang.reflect.Type;
 
@@ -17,14 +15,17 @@ public class DefaultProtobufConverter implements ProtobufConverter {
 
     public static final String PROTOBUF_NAME = "com.google.protobuf.Parser";
 
+    protected Protobuf protobuf = new Protobuf(this);
+
     @Override
     public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
         if (source == null) {
             return null;
         }
+
         try {
-            return ProtobufUtil.deserialize(source, targetType);
-        } catch (Exception e) {
+            return protobuf.deserialize(source, targetType);
+        } catch (Throwable e) {
             throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getName(), e);
         }
     }
@@ -34,8 +35,12 @@ public class DefaultProtobufConverter implements ProtobufConverter {
         if (source == null) {
             return null;
         }
-        Class<?> classByType = ClassUtil.getClassByType(targetType);
-        return (T) convertToJavaObject(source, classByType);
+
+        try {
+            return protobuf.deserialize(source, targetType);
+        } catch (Throwable e) {
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getTypeName(), e);
+        }
     }
 
     @Override
@@ -43,7 +48,12 @@ public class DefaultProtobufConverter implements ProtobufConverter {
         if (source == null) {
             return new byte[0];
         }
-        return ProtobufUtil.serialize(source);
+
+        try {
+            return protobuf.serialize(source);
+        } catch (Throwable e) {
+            throw new ConvertException(getConverterName(), source.getClass().getName(), byte[].class.getName(), e);
+        }
     }
 
     @Override

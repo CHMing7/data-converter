@@ -4,6 +4,7 @@ import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.StringUtil;
 
 import java.lang.annotation.Annotation;
@@ -39,6 +40,8 @@ public class FieldInfo implements Comparable<FieldInfo> {
     public final Class<?> fieldClass;
 
     public final Type fieldType;
+
+    public final TypeToken<?> typeToken;
 
     public final Class<?> declaringClass;
 
@@ -163,6 +166,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
         this.ordinal = ordinal;
         this.fieldClass = fieldClass;
         this.fieldType = fieldType;
+        this.typeToken = TypeToken.get(fieldType != null ? fieldType : fieldClass);
         this.getOnly = getOnly;
         this.fieldAnnotation = fieldAnnotation;
         this.methodAnnotation = methodAnnotation;
@@ -340,6 +344,14 @@ public class FieldInfo implements Comparable<FieldInfo> {
 
     public Class<?> getFieldClass() {
         return this.fieldClass;
+    }
+
+    public Type getFieldType() {
+        return fieldType;
+    }
+
+    public TypeToken<?> getTypeToken() {
+        return typeToken;
     }
 
     protected Class<?> getDeclaredClass() {

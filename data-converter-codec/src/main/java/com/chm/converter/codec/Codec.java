@@ -1,5 +1,7 @@
 package com.chm.converter.codec;
 
+import com.chm.converter.core.universal.UniversalInterface;
+
 /**
  * 编解码器
  *
@@ -7,7 +9,7 @@ package com.chm.converter.codec;
  * @version v1.0
  * @since 2021-09-02
  **/
-public interface Codec<D, E> {
+public interface Codec<D, E> extends UniversalInterface {
 
     /**
      * 编码

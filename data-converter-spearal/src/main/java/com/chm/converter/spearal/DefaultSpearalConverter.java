@@ -1,6 +1,6 @@
 package com.chm.converter.spearal;
 
-import com.chm.converter.codec.DataCodec;
+import com.chm.converter.codec.DataCodecGenerate;
 import com.chm.converter.codec.DefaultDateCodec;
 import com.chm.converter.codec.Java8TimeCodec;
 import com.chm.converter.core.exception.ConvertException;
@@ -28,7 +28,7 @@ public class DefaultSpearalConverter implements SpearalConverter {
 
     SpearalFactory factory = new DefaultSpearalFactory();
 
-    private final DataCodec dataCodec = new DataCodec(null, this, false);
+    private final DataCodecGenerate dataCodec = new DataCodecGenerate(null, this, false);
 
     {
         // Java8 Time Codec
