@@ -3,9 +3,11 @@ package com.chm.converter.protostuff.codec.factory;
 import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
+import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
+import com.chm.converter.core.utils.TypeUtil;
 import com.chm.converter.protostuff.codec.BaseProtostuffCodec;
 import com.chm.converter.protostuff.codec.ProtostuffCodec;
 import com.chm.converter.protostuff.codec.ProtostuffConstants;
@@ -14,6 +16,8 @@ import io.protostuff.Output;
 import io.protostuff.ProtostuffException;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * 枚举类型编解码
@@ -56,8 +60,10 @@ public class EnumFactory implements UniversalFactory<ProtostuffCodec> {
         public EnumCodec(Class<T> classOfT, Converter<?> converter) {
             super(classOfT, "enumCodec");
             this.classOfT = classOfT;
-            this.enumCodec = new com.chm.converter.codec.EnumCodec<>(classOfT);
-            this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converter != null ? converter.getClass() : null);
+            Class<? extends Converter> converterClass = converter != null ? converter.getClass() : null;
+            this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
+            Map<String, String> aliasMap = javaBeanInfo.getFieldNameAliasMap();
+            this.enumCodec = new com.chm.converter.codec.EnumCodec<>(classOfT, aliasMap);
             this.converter = converter;
         }
 

@@ -14,8 +14,7 @@ public class HandlerUtil {
      * 参数为true或false时，分别进行不同的操作
      *
      * @param b
-     * @return BranchHandle
-     * @see com.chm.converter.core.handler.BranchHandle
+     * @return BranchHandle {@link com.chm.converter.core.handler.BranchHandle}
      **/
     public static BranchHandle isTureOrFalse(boolean b) {
 
@@ -32,8 +31,7 @@ public class HandlerUtil {
      * 字符串为blank时，分别进行不同的操作
      *
      * @param str
-     * @return PresentOrElseHandler
-     * @see com.chm.converter.core.handler.PresentOrElseHandler
+     * @return PresentOrElseHandler {@link com.chm.converter.core.handler.PresentOrElseHandler}
      **/
     public static PresentOrElseHandler<?> isBlankOrNoBlank(String str) {
 

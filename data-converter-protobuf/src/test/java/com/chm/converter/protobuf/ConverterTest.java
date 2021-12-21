@@ -114,6 +114,15 @@ public class ConverterTest {
 
     public enum Enum {
         @FieldProperty(name = "testOne")
-        ONE, TWO
+        ONE("one"),
+
+        @FieldProperty(name = "testTwo")
+        TWO("two");
+
+        private String name;
+
+        Enum(String name){
+            this.name = name;
+        }
     }
 }

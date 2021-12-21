@@ -1,6 +1,7 @@
 package com.chm.converter.codec;
 
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.utils.MapUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,18 +18,17 @@ public class EnumCodec<T extends Enum<T>> implements Codec<T, String> {
     private final Map<T, String> constantToName = new HashMap<T, String>();
 
     public EnumCodec(Class<T> classOfT) {
-        try {
-            for (T constant : classOfT.getEnumConstants()) {
-                String name = constant.name();
-                FieldProperty annotation = classOfT.getField(name).getAnnotation(FieldProperty.class);
-                if (annotation != null) {
-                    name = annotation.name();
-                }
-                nameToConstant.put(name, constant);
-                constantToName.put(constant, name);
+       this(classOfT, MapUtil.newHashMap());
+    }
+
+    public EnumCodec(Class<T> classOfT, Map<String, String> aliasMap) {
+        for (T constant : classOfT.getEnumConstants()) {
+            String name = constant.name();
+            if (aliasMap != null && aliasMap.containsKey(name)) {
+                name = aliasMap.get(name);
             }
-        } catch (NoSuchFieldException e) {
-            throw new AssertionError(e);
+            nameToConstant.put(name, constant);
+            constantToName.put(constant, name);
         }
     }
 

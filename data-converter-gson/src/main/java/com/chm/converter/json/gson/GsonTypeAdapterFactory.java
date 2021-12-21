@@ -93,11 +93,14 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
                         while (in.hasNext()) {
                             String name = in.nextName();
                             FieldInfo fieldInfo = fieldInfoMap.get(name);
-                            if (fieldInfo == null || !fieldInfo.isDeserialize()) {
+                            if (fieldInfo == null) {
                                 continue;
                             }
                             TypeAdapter adapter = getFieldAdapter(fieldInfo);
                             Object fieldValue = adapter.read(in);
+                            if(!fieldInfo.isDeserialize()){
+                                continue;
+                            }
                             fieldInfo.set(instance, fieldValue);
                         }
                     } catch (IllegalStateException e) {

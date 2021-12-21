@@ -1,7 +1,9 @@
 dependencies {
     compile project(':data-converter-core')
+    compile project(':data-converter-codec')
 
     compileOnly(libs.fst)
+    // compileOnly('org.beangle.serializer:beangle-serializer-fst_2.13:0.0.19')
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
@@ -10,4 +12,5 @@ dependencies {
 
     testCompile(libs.hutool_log)
     testCompile(libs.fst)
+    // testCompile('org.beangle.serializer:beangle-serializer-fst_2.13:0.0.19')
 }

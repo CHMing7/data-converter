@@ -354,7 +354,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
         return typeToken;
     }
 
-    protected Class<?> getDeclaredClass() {
+    public Class<?> getDeclaredClass() {
         if (this.method != null) {
             return this.method.getDeclaringClass();
         }

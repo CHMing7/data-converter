@@ -108,10 +108,7 @@ public class AvroGeneralConversion<T> extends Conversion<T> {
         List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
         for (FieldInfo fieldInfo : sortedFieldList) {
             Schema.Field field = schema.getField(fieldInfo.getName());
-            if (field == null) {
-                continue;
-            }
-            if (!fieldInfo.isDeserialize()) {
+            if (field == null || !fieldInfo.isDeserialize()) {
                 continue;
             }
             fieldInfo.set(construct, value.get(field.pos()));
@@ -125,10 +122,11 @@ public class AvroGeneralConversion<T> extends Conversion<T> {
         GenericData.Record record = new GenericData.Record(schema);
         for (int i = 0; i < sortedFieldList.size(); i++) {
             FieldInfo fieldInfo = sortedFieldList.get(i);
-            if (!fieldInfo.isSerialize()) {
+            Object o = fieldInfo.get(value);
+            if (o == null || !fieldInfo.isSerialize()) {
                 continue;
             }
-            record.put(i, fieldInfo.get(value));
+            record.put(i, o);
         }
         return record;
     }

@@ -36,7 +36,7 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
     @Override
     public ProtostuffCodec create(UniversalGenerate<ProtostuffCodec> generate, TypeToken<?> typeToken) {
-        return new JavaBeanCodec<>(typeToken.getRawType(), converter);
+        return new JavaBeanCodec<>(typeToken.getRawType(), generate, converter);
     }
 
 
@@ -44,14 +44,14 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         private final JavaBeanInfo<T> javaBeanInfo;
 
-        private final ProtostuffCodecGenerate codecGenerate;
+        private final UniversalGenerate<ProtostuffCodec> codecGenerate;
 
         private final Map<FieldInfo, ProtostuffCodec> fieldInfoProtostuffCodecMap;
 
-        public JavaBeanCodec(Class<T> clazz, Converter<?> converter) {
+        public JavaBeanCodec(Class<T> clazz, UniversalGenerate<ProtostuffCodec> codecGenerate, Converter<?> converter) {
             super(clazz);
             this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converter != null ? converter.getClass() : null);
-            this.codecGenerate = ProtostuffCodecGenerate.newDefault(converter);
+            this.codecGenerate = codecGenerate;
             this.fieldInfoProtostuffCodecMap = new ConcurrentHashMap<>();
         }
 

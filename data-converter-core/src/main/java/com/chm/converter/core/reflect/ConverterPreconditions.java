@@ -20,6 +20,13 @@ public class ConverterPreconditions {
         return obj;
     }
 
+    public static <T> T checkNotNull(T reference, Object errorMessage) {
+        if (reference == null) {
+            throw new NullPointerException(String.valueOf(errorMessage));
+        }
+        return reference;
+    }
+
     public static void checkArgument(boolean condition) {
         if (!condition) {
             throw new IllegalArgumentException();

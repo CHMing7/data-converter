@@ -236,10 +236,10 @@ public class HessianConverterFactory extends BeanSerializerFactory {
                 while (!in.isEnd()) {
                     Object key = in.readObject();
                     FieldInfo fieldInfo = nameFieldInfoMap.get(key);
+                    Object value = in.readObject(fieldInfo.getFieldClass());
                     if (!fieldInfo.isDeserialize()) {
                         continue;
                     }
-                    Object value = in.readObject(fieldInfo.getFieldClass());
                     fieldInfo.set(obj, value);
                 }
 
@@ -286,11 +286,11 @@ public class HessianConverterFactory extends BeanSerializerFactory {
 
             for (String fieldName : fieldNames) {
                 FieldInfo fieldInfo = nameFieldInfoMap.get(fieldName);
+                Deserializer fieldDeserializer = getFieldDeserializer(fieldInfo);
+                Object value = readeField(in, fieldDeserializer);
                 if (!fieldInfo.isDeserialize()) {
                     continue;
                 }
-                Deserializer fieldDeserializer = getFieldDeserializer(fieldInfo);
-                Object value = readeField(in, fieldDeserializer);
                 fieldInfo.set(obj, value);
             }
 

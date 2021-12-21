@@ -15,9 +15,20 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 public class UniversalGenerate<T extends UniversalInterface> {
 
-    private final Map<TypeToken<?>, T> typeCache = new ConcurrentHashMap<>();
+    private final Map<TypeToken<?>, Entry> typeCache = new ConcurrentHashMap<>();
 
     private final List<UniversalFactory<T>> factories;
+
+    final class Entry {
+        boolean forSubClasses = false;
+        T t;
+
+        Entry(boolean forSubClasses, T t) {
+            this.forSubClasses = forSubClasses;
+            this.t = t;
+        }
+    }
+
 
     public UniversalGenerate() {
         this(null);
@@ -55,7 +66,7 @@ public class UniversalGenerate<T extends UniversalInterface> {
         if (type == null) {
             return null;
         }
-        T cached = typeCache.get(type);
+        T cached = get(type, type);
         if (cached != null) {
             return cached;
         }
@@ -65,6 +76,26 @@ public class UniversalGenerate<T extends UniversalInterface> {
                 put(type, candidate);
                 return candidate;
             }
+        }
+        return null;
+    }
+
+    final T get(TypeToken<?> cl, TypeToken<?> lookupStart) {
+        if (cl == null) {
+            return null;
+        }
+        final Entry entry = typeCache.get(cl);
+        if (entry != null) {
+            if (cl == lookupStart) {
+                return entry.t;
+            }
+            if (entry.forSubClasses) {
+                put(lookupStart, entry.t, false);
+                return entry.t;
+            }
+        }
+        if (cl.getRawType() != Object.class && cl.getRawType().getSuperclass() != null) {
+            return get(TypeToken.get(cl.getRawType().getSuperclass()), lookupStart);
         }
         return null;
     }
@@ -127,8 +158,21 @@ public class UniversalGenerate<T extends UniversalInterface> {
      * @return
      */
     public boolean put(Type type, T t) {
+        return this.put(type, t, false);
+    }
+
+
+    /**
+     * 新增编解码器
+     *
+     * @param type
+     * @param t
+     * @param includeSubclasses
+     * @return
+     */
+    public boolean put(Type type, T t, boolean includeSubclasses) {
         TypeToken<?> typeToken = TypeToken.get(type);
-        return this.typeCache.put(typeToken, t) != null;
+        return this.typeCache.put(typeToken, new Entry(includeSubclasses, t)) != null;
     }
 
     /**
@@ -139,7 +183,19 @@ public class UniversalGenerate<T extends UniversalInterface> {
      * @return
      */
     public boolean put(TypeToken<?> type, T t) {
-        return this.typeCache.put(type, t) != null;
+        return this.put(type, t, false);
+    }
+
+    /**
+     * 新增编解码器
+     *
+     * @param type
+     * @param t
+     * @param includeSubclasses
+     * @return
+     */
+    public boolean put(TypeToken<?> type, T t, boolean includeSubclasses) {
+        return this.typeCache.put(type, new Entry(includeSubclasses, t)) != null;
     }
 
     public boolean containsByType(Type type) {

@@ -14,11 +14,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +48,11 @@ public class JavaBeanInfo<T> {
     private final Map<String, FieldInfo> fieldNameFieldInfoMap;
 
     /**
+     * 字段别名键值对
+     */
+    private final Map<String, String> fieldNameAliasMap;
+
+    /**
      * 扩展属性
      */
     private final Map<String, Object> expandProperty;
@@ -64,8 +73,9 @@ public class JavaBeanInfo<T> {
         this.fieldList = fieldList;
         this.sortedFieldList = ListUtil.toList(fieldList);
         CollectionUtil.sort(sortedFieldList, FieldInfo::compareTo);
-        this.nameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getName, fieldInfo -> fieldInfo);
-        this.fieldNameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getFieldName, fieldInfo -> fieldInfo);
+        this.nameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getName, Function.identity());
+        this.fieldNameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getFieldName, Function.identity());
+        this.fieldNameAliasMap = CollStreamUtil.toMap(fieldList, FieldInfo::getFieldName, FieldInfo::getName);
         this.expandProperty = new ConcurrentHashMap<>();
         this.annotationList = ListUtil.toList(clazz.getAnnotations());
         this.annotationClassSet = this.annotationList.stream().map(Annotation::annotationType).collect(Collectors.toSet());
@@ -93,6 +103,10 @@ public class JavaBeanInfo<T> {
 
     public Map<String, FieldInfo> getFieldNameFieldInfoMap() {
         return fieldNameFieldInfoMap;
+    }
+
+    public Map<String, String> getFieldNameAliasMap() {
+        return fieldNameAliasMap;
     }
 
     public Map<String, Object> getExpandProperty() {
@@ -234,6 +248,38 @@ public class JavaBeanInfo<T> {
         }
     }
 
+    private static void computeEnumFields(List<FieldInfo> fieldList, Field[] fields, Class<? extends Converter> scope) {
+        for (Field field : fields) {
+            boolean contains = false;
+            for (FieldInfo item : fieldList) {
+                if (item.name.equals(field.getName())) {
+                    contains = true;
+                    // 已经是 contains = true，无需继续遍历
+                    break;
+                }
+            }
+
+            if (contains) {
+                continue;
+            }
+
+            int ordinal = 0;
+            String propertyName = field.getName();
+
+            FieldProperty fieldAnnotation = checkScope(TypeUtil.getAnnotation(field, FieldProperty.class), scope);
+
+            if (fieldAnnotation != null) {
+                ordinal = fieldAnnotation.ordinal();
+
+                if (fieldAnnotation.name().length() != 0) {
+                    propertyName = fieldAnnotation.name();
+                }
+            }
+
+            add(fieldList, new FieldInfo(propertyName, null, field, ordinal, fieldAnnotation, null));
+        }
+    }
+
     /**
      * 返回匹配scope的第一个FieldProperty
      *
@@ -241,12 +287,12 @@ public class JavaBeanInfo<T> {
      * @param scope
      * @return
      */
-    private static FieldProperty checkScope(FieldProperty[] fieldPropertys, Class<? extends Converter> scope) {
+    public static FieldProperty checkScope(FieldProperty[] fieldPropertys, Class<? extends Converter> scope) {
         if (scope == null && fieldPropertys != null && fieldPropertys.length >= 1) {
             return fieldPropertys[0];
         }
         if (fieldPropertys != null) {
-            for (FieldProperty fieldProperty : Arrays.asList(fieldPropertys)) {
+            for (FieldProperty fieldProperty : fieldPropertys) {
                 Class<? extends Converter>[] annotationScopes = fieldProperty.scope();
                 for (Class<? extends Converter> annotationScope : annotationScopes) {
                     if (annotationScope.isAssignableFrom(scope)) {
@@ -378,7 +424,11 @@ public class JavaBeanInfo<T> {
         }
 
         Field[] fields = clazz.getFields();
-        computeFields(fieldList, fields, scope);
+        if (clazz.isEnum()) {
+            computeEnumFields(fieldList, fields, scope);
+        } else {
+            computeFields(fieldList, fields, scope);
+        }
 
         for (Method method : clazz.getMethods()) {
             // getter methods

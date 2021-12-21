@@ -1,10 +1,14 @@
 package com.chm.converter.core.utils;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Matcher;
 import cn.hutool.core.util.ObjectUtil;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -335,5 +339,45 @@ public class ArrayUtil extends PrimitiveArrayUtil {
      */
     public static boolean containsIgnoreCase(CharSequence[] array, CharSequence value) {
         return indexOfIgnoreCase(array, value) > INDEX_NOT_FOUND;
+    }
+
+
+    /**
+     * 将集合转为数组
+     *
+     * @param <T>           数组元素类型
+     * @param iterator      {@link Iterator}
+     * @param componentType 集合元素类型
+     * @return 数组
+     * @since 3.0.9
+     */
+    public static <T> T[] toArray(Iterator<T> iterator, Class<T> componentType) {
+        return toArray(CollUtil.newArrayList(iterator), componentType);
+    }
+
+    /**
+     * 将集合转为数组
+     *
+     * @param <T>           数组元素类型
+     * @param iterable      {@link Iterable}
+     * @param componentType 集合元素类型
+     * @return 数组
+     * @since 3.0.9
+     */
+    public static <T> T[] toArray(Iterable<T> iterable, Class<T> componentType) {
+        return toArray(CollectionUtil.toCollection(iterable), componentType);
+    }
+
+    /**
+     * 将集合转为数组
+     *
+     * @param <T>           数组元素类型
+     * @param collection    集合
+     * @param componentType 集合元素类型
+     * @return 数组
+     * @since 3.0.9
+     */
+    public static <T> T[] toArray(Collection<T> collection, Class<T> componentType) {
+        return collection.toArray(newArray(componentType, 0));
     }
 }

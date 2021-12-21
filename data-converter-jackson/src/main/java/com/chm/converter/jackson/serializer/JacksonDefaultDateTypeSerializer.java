@@ -43,7 +43,6 @@ public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerial
         this.defaultDateCodec = new DefaultDateCodec(Date.class, dateFormat, converter);
     }
 
-
     public JacksonDefaultDateTypeSerializer<T> withDatePattern(String datePattern) {
         return new JacksonDefaultDateTypeSerializer<>(datePattern, this.defaultDateCodec.getConverter());
     }

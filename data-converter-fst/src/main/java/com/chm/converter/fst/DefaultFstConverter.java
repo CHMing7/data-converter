@@ -25,13 +25,13 @@ public class DefaultFstConverter implements FstConverter {
     public static final String[] FST_NAME_ARRAY = new String[]{"org.nustaq.serialization.FSTObjectInput",
             "org.nustaq.serialization.FSTObjectOutput"};
 
-    private final FstFactory factory = new FstFactory();
+    private final FstFactory factory = new FstFactory(this);
 
     public final ConstructorFactory constructorFactory = new ConstructorFactory(MapUtil.empty());
 
     @Override
     public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
-        if (!factory.checkExistSerializer(targetType)) {
+        if (targetType.isInterface()) {
             T instance = constructorFactory.get(TypeToken.get(targetType)).construct();
             if (instance != null && targetType != instance.getClass()) {
                 // 若不存在序列化器就重新赋予转换目标类
