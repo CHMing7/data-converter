@@ -5,7 +5,12 @@ import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.protostuff.codec.ByteArrayInput;
 import com.chm.converter.protostuff.codec.ProtostuffCodec;
 import com.chm.converter.protostuff.codec.ProtostuffCodecGenerate;
-import io.protostuff.*;
+import io.protostuff.Input;
+import io.protostuff.LinkedBuffer;
+import io.protostuff.Message;
+import io.protostuff.ProtostuffIOUtil;
+import io.protostuff.ProtostuffOutput;
+import io.protostuff.Schema;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;

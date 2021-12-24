@@ -1,6 +1,5 @@
 package com.chm.converter.codec;
 
-import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.utils.MapUtil;
 
 import java.util.HashMap;
@@ -18,7 +17,7 @@ public class EnumCodec<T extends Enum<T>> implements Codec<T, String> {
     private final Map<T, String> constantToName = new HashMap<T, String>();
 
     public EnumCodec(Class<T> classOfT) {
-       this(classOfT, MapUtil.newHashMap());
+        this(classOfT, MapUtil.newHashMap());
     }
 
     public EnumCodec(Class<T> classOfT, Map<String, String> aliasMap) {

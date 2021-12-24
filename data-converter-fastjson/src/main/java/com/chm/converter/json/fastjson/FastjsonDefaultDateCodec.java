@@ -68,8 +68,7 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
             out.writeNull();
             return;
         }
-        String text = this.defaultDateCodec.encode((T) object);
-        out.writeString(text);
+        this.defaultDateCodec.write((T) object, out::writeString);
     }
 
     @Override

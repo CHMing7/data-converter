@@ -1,21 +1,38 @@
 package com.chm.converter.spearal;
 
+import cn.hutool.core.collection.ListUtil;
 import com.chm.converter.codec.DataCodecGenerate;
 import com.chm.converter.codec.DefaultDateCodec;
 import com.chm.converter.codec.Java8TimeCodec;
+import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.spearal.coders.CodecProvider;
+import com.chm.converter.spearal.impl.introspector.IntrospectorImpl;
 import org.spearal.DefaultSpearalFactory;
 import org.spearal.SpearalDecoder;
 import org.spearal.SpearalEncoder;
 import org.spearal.SpearalFactory;
+import org.spearal.annotation.Exclude;
+import org.spearal.annotation.Include;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author caihongming
@@ -23,6 +40,8 @@ import java.util.Date;
  * @since 2021-09-29
  **/
 public class DefaultSpearalConverter implements SpearalConverter {
+
+    public static final List<Class<? extends Annotation>> SPEARAL_ANNOTATION_LIST = ListUtil.of(Include.class, Exclude.class);
 
     public static final String SPEARAL_NAME = "org.spearal.SpearalFactory";
 
@@ -49,6 +68,7 @@ public class DefaultSpearalConverter implements SpearalConverter {
         dataCodec.put(Timestamp.class, new DefaultDateCodec<>(Timestamp.class, this));
         dataCodec.put(Date.class, new DefaultDateCodec<>(Date.class, this));
         factory.getContext().configure(new CodecProvider(dataCodec));
+        factory.getContext().configure(new IntrospectorImpl(this, DefaultSpearalConverter::checkExistSpearalAnnotation));
     }
 
     @Override
@@ -94,5 +114,9 @@ public class DefaultSpearalConverter implements SpearalConverter {
         } catch (Throwable ignored) {
             return false;
         }
+    }
+
+    public static boolean checkExistSpearalAnnotation(Class<?> cls) {
+        return JavaBeanInfo.checkExistAnnotation(cls, SPEARAL_ANNOTATION_LIST);
     }
 }

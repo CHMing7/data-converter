@@ -10,7 +10,6 @@ import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.protostuff.codec.ProtostuffCodec;
-import com.chm.converter.protostuff.codec.ProtostuffCodecGenerate;
 import io.protostuff.Input;
 import io.protostuff.Output;
 

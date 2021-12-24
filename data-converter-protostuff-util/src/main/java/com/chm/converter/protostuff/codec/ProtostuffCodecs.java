@@ -321,7 +321,7 @@ public class ProtostuffCodecs {
         }
 
         @Override
-        public Boolean  newMessage() {
+        public Boolean newMessage() {
             return false;
         }
     }

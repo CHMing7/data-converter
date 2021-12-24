@@ -9,5 +9,5 @@ package com.chm.converter.core.value;
  * @see ImmutableValue
  * @since 2021-12-04
  **/
-public interface ImmutableClassValue extends ClassValue, ImmutableValue{
+public interface ImmutableClassValue extends ClassValue, ImmutableValue {
 }

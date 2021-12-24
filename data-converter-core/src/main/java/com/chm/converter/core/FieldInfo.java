@@ -2,13 +2,20 @@ package com.chm.converter.core;
 
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.BooleanUtil;
-import cn.hutool.core.util.ReflectUtil;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.io.Reader;
+import com.chm.converter.core.io.Writer;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.ReflectUtil;
 import com.chm.converter.core.utils.StringUtil;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -334,6 +341,14 @@ public class FieldInfo implements Comparable<FieldInfo> {
         return method;
     }
 
+    public Method getSetter() {
+        return setter;
+    }
+
+    public Method getGetter() {
+        return getter;
+    }
+
     public Field getField() {
         return field;
     }
@@ -510,6 +525,18 @@ public class FieldInfo implements Comparable<FieldInfo> {
             ReflectUtil.invoke(javaObject, setter, value);
         } else {
             ReflectUtil.setFieldValue(javaObject, field, value);
+        }
+    }
+
+    public void read(Object javaObject, Reader reader) throws IOException {
+        if (reader != null) {
+            set(javaObject, reader.read());
+        }
+    }
+
+    public void write(Object javaObject, Writer writer) throws IOException {
+        if (writer != null) {
+            writer.write(get(javaObject));
         }
     }
 }

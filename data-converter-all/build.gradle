@@ -1,4 +1,3 @@
-
 dependencies {
     // 引用除了本模块与根模块之外的所有模块
     rootProject.allprojects.stream().filter({

@@ -82,7 +82,5 @@ public interface ValueFactory {
 
     <C> ImmutableClassValue newClass(Class<C> cls);
 
-    ImmutableExtensionValue newExtension(Object obj);
-
     <V extends Value> V newValue(Object value);
 }

@@ -5,7 +5,11 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
-import com.chm.converter.core.*;
+import com.chm.converter.core.ClassInfoStorage;
+import com.chm.converter.core.Converter;
+import com.chm.converter.core.FieldInfo;
+import com.chm.converter.core.JavaBeanInfo;
+import com.chm.converter.core.UseOriginalJudge;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
@@ -98,7 +102,7 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
                             }
                             TypeAdapter adapter = getFieldAdapter(fieldInfo);
                             Object fieldValue = adapter.read(in);
-                            if(!fieldInfo.isDeserialize()){
+                            if (!fieldInfo.isDeserialize()) {
                                 continue;
                             }
                             fieldInfo.set(instance, fieldValue);

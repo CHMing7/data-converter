@@ -12,6 +12,7 @@ import java.util.Map;
 
 /**
  * 数据打包器
+ *
  * @author caihongming
  * @version v1.0
  * @since 2021-12-04

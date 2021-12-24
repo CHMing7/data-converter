@@ -84,10 +84,11 @@ public class DefaultDateCodecFactory implements UniversalFactory<ProtostuffCodec
 
         @Override
         public void writeTo(Output output, T message) throws IOException {
-            String encode = defaultDateCodec.encode(message);
-            if (encode != null) {
-                output.writeString(classId(), encode, false);
-            }
+            defaultDateCodec.write(message, encode -> {
+                if (encode != null) {
+                    output.writeString(classId(), encode, false);
+                }
+            });
         }
 
         @Override

@@ -3,11 +3,9 @@ package com.chm.converter.protostuff.codec.factory;
 import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
-import com.chm.converter.core.utils.TypeUtil;
 import com.chm.converter.protostuff.codec.BaseProtostuffCodec;
 import com.chm.converter.protostuff.codec.ProtostuffCodec;
 import com.chm.converter.protostuff.codec.ProtostuffConstants;
@@ -16,7 +14,6 @@ import io.protostuff.Output;
 import io.protostuff.ProtostuffException;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Map;
 
 /**

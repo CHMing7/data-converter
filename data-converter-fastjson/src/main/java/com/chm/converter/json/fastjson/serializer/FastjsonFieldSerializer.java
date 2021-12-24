@@ -1,6 +1,11 @@
 package com.chm.converter.json.fastjson.serializer;
 
-import com.alibaba.fastjson.serializer.*;
+import com.alibaba.fastjson.serializer.FieldSerializer;
+import com.alibaba.fastjson.serializer.JSONSerializer;
+import com.alibaba.fastjson.serializer.JavaBeanSerializer;
+import com.alibaba.fastjson.serializer.ObjectSerializer;
+import com.alibaba.fastjson.serializer.SerializeWriter;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.util.FieldInfo;
 
 import java.util.Collection;

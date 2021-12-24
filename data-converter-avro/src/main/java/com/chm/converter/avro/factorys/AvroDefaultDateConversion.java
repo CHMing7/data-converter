@@ -135,8 +135,6 @@ public class AvroDefaultDateConversion<T extends Date> extends Conversion<T> {
         }
 
 
-
-
         public AvroDefaultDateConversion<T> build() {
             if (this.dateFormatter != null) {
                 return new AvroDefaultDateConversion<>(this.dateType, this.dateFormatter, this.converter, this.logicalTypeName);

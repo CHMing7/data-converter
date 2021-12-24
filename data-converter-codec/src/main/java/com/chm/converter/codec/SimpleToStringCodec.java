@@ -9,35 +9,18 @@ package com.chm.converter.codec;
  **/
 public class SimpleToStringCodec<T> extends ToStringCodec<T> {
 
-    private final SimpleCodecDecode<T> simpleCodecDecode;
+    private final Decode<T, String> simpleCodecDecode;
 
-    private SimpleToStringCodec(SimpleCodecDecode<T> simpleCodecDecode) {
+    private SimpleToStringCodec(Decode<T, String> simpleCodecDecode) {
         this.simpleCodecDecode = simpleCodecDecode;
     }
 
-    public static <T> SimpleToStringCodec<T> create(SimpleCodecDecode<T> simpleCodecDecode) {
+    public static <T> SimpleToStringCodec<T> create(Decode<T, String> simpleCodecDecode) {
         return new SimpleToStringCodec<>(simpleCodecDecode);
     }
 
     @Override
     public T decode(String s) {
         return s != null ? simpleCodecDecode.decode(s) : null;
-    }
-
-    /**
-     * 解码类
-     *
-     * @param <T>
-     */
-    @FunctionalInterface
-    public interface SimpleCodecDecode<T> {
-
-        /**
-         * 解码
-         *
-         * @param str
-         * @return
-         */
-        T decode(String str);
     }
 }

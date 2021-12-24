@@ -1,11 +1,10 @@
 package com.chm.converter.fst.serialization;
 
-import com.chm.converter.core.Converter;
-import org.nustaq.serialization.*;
-import org.nustaq.serialization.serializers.FSTArrayListSerializer;
-import org.nustaq.serialization.serializers.FSTMapSerializer;
-
-import java.util.*;
+import org.nustaq.serialization.FSTClazzInfo;
+import org.nustaq.serialization.FSTClazzInfoRegistry;
+import org.nustaq.serialization.FSTConfiguration;
+import org.nustaq.serialization.FSTObjectSerializer;
+import org.nustaq.serialization.FSTSerializerRegistryDelegate;
 
 /**
  * @author caihongming

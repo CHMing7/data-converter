@@ -3,7 +3,12 @@ package com.chm.converter.binary;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ClassUtil;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 
 /**

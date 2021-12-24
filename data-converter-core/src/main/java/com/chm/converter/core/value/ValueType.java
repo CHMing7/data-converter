@@ -59,12 +59,10 @@ public enum ValueType {
      */
     ENUM(false),
 
-    CLASS(false),
-
     /**
-     * 扩展类型
+     * Class类型
      */
-    EXTENSION(false);
+    CLASS(false);
 
     /**
      * 是否为数值
@@ -72,7 +70,7 @@ public enum ValueType {
     private final boolean numberType;
 
 
-    private ValueType(boolean numberType) {
+    ValueType(boolean numberType) {
         this.numberType = numberType;
     }
 
@@ -122,9 +120,5 @@ public enum ValueType {
 
     public boolean isClassType() {
         return this == CLASS;
-    }
-
-    public boolean isExtensionType() {
-        return this == EXTENSION;
     }
 }

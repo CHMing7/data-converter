@@ -5,7 +5,11 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.utils.MapUtil;
-import org.nustaq.serialization.*;
+import org.nustaq.serialization.FSTClazzInfo;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
+import org.nustaq.serialization.FSTObjectSerializer;
+import org.nustaq.serialization.FSTSerializerRegistry;
 
 import java.io.IOException;
 import java.util.List;

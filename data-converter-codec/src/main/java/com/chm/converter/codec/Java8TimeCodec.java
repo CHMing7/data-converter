@@ -118,27 +118,23 @@ public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, Stri
      */
     @Override
     public String encode(T t) {
+        return encode(t, null);
+    }
+
+    /**
+     * 将jdk8时间类序列化成字符串
+     *
+     * @param t
+     * @param format
+     * @return
+     */
+    public String encode(T t, String format) {
         if (t == null) {
             return null;
         }
 
-        DateTimeFormatter dtf = this.dateFormatter;
-        if (converter != null && dtf == null) {
-            dtf = converter.getDateFormat();
-        }
-
-        String str;
-        if (dtf != null) {
-            if (t instanceof Instant && dtf.getZone() == null) {
-                // Instant类需设置时区
-                TimeZone timeZone = this.converter != null ? this.converter.getTimeZone() : TimeZone.getDefault();
-                dtf = dtf.withZone(timeZone.toZoneId());
-            }
-            str = DateUtil.format(t, dtf);
-        } else {
-            str = DateUtil.format(t, defaultDateTimeFormatter);
-        }
-        return str;
+        DateTimeFormatter dtf = getCodecDateFormatter(format);
+        return DateUtil.format(t, dtf);
     }
 
     @Override
@@ -154,30 +150,36 @@ public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, Stri
      * @param <T>
      * @return
      */
-    public <T> T decode(String timeStr, String format) {
+    public T decode(String timeStr, String format) {
         if (StringUtil.isBlank(timeStr)) {
             return null;
         }
 
-        DateTimeFormatter dtf = this.dateFormatter;
-        if (dtf == null && format != null) {
-            dtf = DateTimeFormatter.ofPattern(format);
-        }
+        DateTimeFormatter dtf = getCodecDateFormatter(format);
+        return dtf.parse(timeStr, temporalQuery);
+    }
 
+    private DateTimeFormatter getCodecDateFormatter(String otherFormat) {
+        DateTimeFormatter dtf = null;
+        if (StringUtil.isNotBlank(otherFormat)) {
+            dtf = DateTimeFormatter.ofPattern(otherFormat);
+        }
+        if (dtf == null) {
+            dtf = this.dateFormatter;
+        }
         if (this.converter != null && dtf == null) {
             dtf = this.converter.getDateFormat();
         }
-
-        if (dtf != null) {
-            if (clazz == Instant.class && dtf.getZone() == null) {
-                // Instant类需设置时区
-                TimeZone timeZone = this.converter != null ? this.converter.getTimeZone() : TimeZone.getDefault();
-                dtf = dtf.withZone(timeZone.toZoneId());
-            }
-            return (T) dtf.parse(timeStr, temporalQuery);
-        } else {
-            return (T) defaultDateTimeFormatter.parse(timeStr, temporalQuery);
+        if (dtf == null) {
+            dtf = defaultDateTimeFormatter;
         }
+
+        if (clazz == Instant.class && dtf != null && dtf.getZone() == null) {
+            // Instant类需设置时区
+            TimeZone timeZone = this.converter != null ? this.converter.getTimeZone() : TimeZone.getDefault();
+            dtf = dtf.withZone(timeZone.toZoneId());
+        }
+        return dtf;
     }
 
 }

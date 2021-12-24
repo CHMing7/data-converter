@@ -216,14 +216,6 @@ public interface Value {
     ClassValue asClassValue();
 
     /**
-     * 转为{@code ExtensionValue}类型值返回,否则抛出 {@code TypeCastException}。
-     *
-     * @return
-     * @throws TypeCastException 如果此值的类型不是{@code ExtensionValue}，则抛出该异常
-     */
-    ExtensionValue asExtensionValue();
-
-    /**
      * 使用指定的 {@code DataPacker} 序列化值
      *
      * @param pk

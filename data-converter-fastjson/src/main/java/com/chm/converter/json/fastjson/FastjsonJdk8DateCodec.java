@@ -74,7 +74,11 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
             if (StringUtil.isBlank(str)) {
                 return null;
             }
-            return this.java8TimeCodec.decode(str, format);
+            try {
+                return (T) this.java8TimeCodec.read(s -> this.java8TimeCodec.decode(s, format), () -> str);
+            } catch (IOException e) {
+                return null;
+            }
         }
         return super.deserialze(parser, type, fieldName, format, feature);
     }
@@ -89,14 +93,13 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
         serializer(serializer, object);
     }
 
-    private void serializer(JSONSerializer serializer, Object object) {
+    private void serializer(JSONSerializer serializer, Object object) throws IOException {
         SerializeWriter out = serializer.out;
         if (object == null) {
             out.writeNull();
             return;
         }
 
-        String str = this.java8TimeCodec.encode((T) object);
-        out.writeString(str);
+        this.java8TimeCodec.write((T) object, out::writeString);
     }
 }

@@ -15,7 +15,7 @@ import java.time.temporal.TemporalAccessor;
  * @version v1.0
  * @since 2021-11-30
  **/
-public class Java8TimeSerializer<T extends TemporalAccessor> extends FstSerializer  {
+public class Java8TimeSerializer<T extends TemporalAccessor> extends FstSerializer {
 
     private final Java8TimeCodec<T> java8TimeCodec;
 

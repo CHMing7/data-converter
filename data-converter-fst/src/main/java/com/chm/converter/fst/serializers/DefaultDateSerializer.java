@@ -53,13 +53,15 @@ public class DefaultDateSerializer<T extends Date> extends FstSerializer {
 
     @Override
     public void writeObject(FSTObjectOutput out, Object toWrite, FSTClazzInfo clzInfo, FSTClazzInfo.FSTFieldInfo referencedBy, int streamPosition) throws IOException {
-        out.writeStringUTF(this.defaultDateCodec.encode((T) toWrite));
+        this.defaultDateCodec.write((T) toWrite, out::writeStringUTF);
     }
 
     @Override
     public Object instantiate(Class objectClass, FSTObjectInput in, FSTClazzInfo serializationInfo, FSTClazzInfo.FSTFieldInfo referencee, int streamPosition) throws Exception {
-        String s = in.readStringUTF();
-        in.registerObject(s, streamPosition, serializationInfo, referencee);
-        return this.defaultDateCodec.decode(s);
+        return this.defaultDateCodec.read(() -> {
+            String s = in.readStringUTF();
+            in.registerObject(s, streamPosition, serializationInfo, referencee);
+            return s;
+        });
     }
 }

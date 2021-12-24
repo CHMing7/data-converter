@@ -104,12 +104,4 @@ public interface ImmutableValue extends Value {
      */
     @Override
     ImmutableClassValue asClassValue();
-
-    /**
-     * 转为{@code ImmutableExtensionValue}类型值返回
-     *
-     * @return
-     */
-    @Override
-    ImmutableExtensionValue asExtensionValue();
 }

@@ -96,11 +96,15 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
 
     @Override
     public String encode(T t) {
+        return encode(t, null);
+    }
+
+    public String encode(T t, String format) {
         if (t == null) {
             return null;
         }
 
-        DateTimeFormatter formatter = getCodecDateFormatter();
+        DateTimeFormatter formatter = getCodecDateFormatter(format);
         return DateUtil.format(t, formatter);
     }
 
@@ -114,14 +118,7 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
             return null;
         }
 
-        DateTimeFormatter formatter = this.dateFormatter;
-        if (formatter == null && format != null) {
-            formatter = DateTimeFormatter.ofPattern(format);
-        }
-
-        if (formatter == null) {
-            formatter = getCodecDateFormatter();
-        }
+        DateTimeFormatter formatter = getCodecDateFormatter(format);
 
         Date date = DateUtil.parseToDate(timeStr, formatter);
         if (dateType == Date.class) {
@@ -136,11 +133,16 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
         }
     }
 
-    private DateTimeFormatter getCodecDateFormatter() {
-        DateTimeFormatter dtf = this.dateFormatter;
-
-        if (converter != null && dtf == null) {
-            dtf = converter.getDateFormat();
+    private DateTimeFormatter getCodecDateFormatter(String otherFormat) {
+        DateTimeFormatter dtf = null;
+        if (StringUtil.isNotBlank(otherFormat)) {
+            dtf = DateTimeFormatter.ofPattern(otherFormat);
+        }
+        if (dtf == null) {
+            dtf = this.dateFormatter;
+        }
+        if (this.converter != null && dtf == null) {
+            dtf = this.converter.getDateFormat();
         }
 
         if (dtf == null) {
