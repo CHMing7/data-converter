@@ -22,11 +22,12 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 |     data-converter-hessian     |    Hessian     |                                                                    com.caucho:hessian:version                                                                    |
 |      data-converter-kryo       |      Kryo      |                                                                com.esotericsoftware:kryo:version                                                                 |
 |    data-converter-protobuf     |    Protobuf    |                                        com.google.protobuf:protobuf-java:version<br>io.protostuff:protostuff-core:version                                        |
-|   data-converter-protostuff    |   Protostuff   |                                                               io.protostuff:protostuff-core:version                                                              |
+|   data-converter-protostuff    |   Protostuff   |                                                              io.protostuff:protostuff-core:version                                                               |
 |       data-converter-fst       |      Fst       |                                                                  de.ruedigermoeller:fst:version                                                                  |
 | data-converter-jackson-msgpack |    Msgpack     |                                                          org.msgpack:jackson-dataformat-msgpack:version                                                          |
 |     data-converter-spearal     |    Spearal     |                                                                 org.spearal:spearal-java:version                                                                 |
 |     data-converter-thrift      |     Thrift     |                                                                 org.apache.thrift:thrift:version                                                                 |
+|  data-converter-jackson-yaml   |      Yaml      |                                                 com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:version                                                 |
 
 
 可以根据需求对每个模块单独引入，也可以通过引入`data-converter-all`方式引入所有模块。

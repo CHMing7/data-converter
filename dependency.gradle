@@ -16,7 +16,7 @@ ext {
             msgpack          : '0.8.22',
             spearal          : '0.2.0',
             thrift           : '0.15.0',
-            wire             : '3.7.1',
+            yaml_jackson     : '2.11.2',
     ]
 
     libs = [
@@ -41,8 +41,7 @@ ext {
             msgpack_jackson    : "org.msgpack:jackson-dataformat-msgpack:$versions.msgpack",
             spearal_java       : "org.spearal:spearal-java:$versions.spearal",
             thrift             : "org.apache.thrift:libthrift:$versions.thrift",
-            wire_runtime       : "com.squareup.wire:wire-runtime:$versions.wire",
-            wire_schema        : "com.squareup.wire:wire-schema:$versions.wire",
+            yaml_jackson       : "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$versions.yaml_jackson",
     ]
 
 }

@@ -97,6 +97,11 @@ public class DataType {
     public final static DataType THRIFT_BINARY = DataType.createDataType("thrift_binary");
 
     /**
+     * 数据类型： YAML类型
+     */
+    public final static DataType YAML = DataType.createDataType("yaml");
+
+    /**
      * 全局数据转换器表
      */
     private final static Map<DataType, Converter<?>> CONVERTER_MAP = new HashMap<>();
