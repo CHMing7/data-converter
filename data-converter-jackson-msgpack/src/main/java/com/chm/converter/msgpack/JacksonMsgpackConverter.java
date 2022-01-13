@@ -1,8 +1,8 @@
 package com.chm.converter.msgpack;
 
-import cn.hutool.core.collection.ListUtil;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
+import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.jackson.deserializer.JacksonBeanDeserializerModifier;
 import com.chm.converter.jackson.serializer.JacksonBeanSerializerModifier;
 import com.chm.converter.msgpack.jackson.JacksonMsgpackModule;

@@ -84,30 +84,30 @@ public class ProtostuffCodecs {
         WRITE_MAP.put(ProtostuffConstants.ID_BYTE, (FieldWriteTo<Byte>) (fieldNumber, output, message) -> output.writeUInt32(fieldNumber, message, false));
         WRITE_MAP.put(ProtostuffConstants.ID_CHAR, (FieldWriteTo<Character>) (fieldNumber, output, message) -> output.writeUInt32(fieldNumber, message, false));
         WRITE_MAP.put(ProtostuffConstants.ID_SHORT, (FieldWriteTo<Short>) (fieldNumber, output, message) -> output.writeUInt32(fieldNumber, message, false));
-        WRITE_MAP.put(ProtostuffConstants.ID_INT32, (FieldWriteTo<Integer>) (fieldNumber, output, message) -> output.writeInt32(fieldNumber, message, false));
-        WRITE_MAP.put(ProtostuffConstants.ID_INT64, (FieldWriteTo<Long>) (fieldNumber, output, message) -> output.writeInt64(fieldNumber, message, false));
+        WRITE_MAP.put(ProtostuffConstants.ID_INT, (FieldWriteTo<Integer>) (fieldNumber, output, message) -> output.writeInt32(fieldNumber, message, false));
+        WRITE_MAP.put(ProtostuffConstants.ID_LONG, (FieldWriteTo<Long>) (fieldNumber, output, message) -> output.writeInt64(fieldNumber, message, false));
         WRITE_MAP.put(ProtostuffConstants.ID_FLOAT, (FieldWriteTo<Float>) (fieldNumber, output, message) -> output.writeFloat(fieldNumber, message, false));
         WRITE_MAP.put(ProtostuffConstants.ID_DOUBLE, (FieldWriteTo<Double>) (fieldNumber, output, message) -> output.writeDouble(fieldNumber, message, false));
         WRITE_MAP.put(ProtostuffConstants.ID_STRING, (FieldWriteTo<String>) (fieldNumber, output, message) -> output.writeString(fieldNumber, message, false));
         WRITE_MAP.put(ProtostuffConstants.ID_BYTES, (FieldWriteTo<ByteString>) (fieldNumber, output, message) -> output.writeBytes(fieldNumber, message, false));
         WRITE_MAP.put(ProtostuffConstants.ID_BYTE_ARRAY, (FieldWriteTo<byte[]>) (fieldNumber, output, message) -> output.writeByteArray(fieldNumber, message, false));
-        WRITE_MAP.put(ProtostuffConstants.ID_BIGDECIMAL, (FieldWriteTo<BigDecimal>) (fieldNumber, output, message) -> output.writeString(fieldNumber, message.toString(), false));
-        WRITE_MAP.put(ProtostuffConstants.ID_BIGINTEGER, (FieldWriteTo<BigInteger>) (fieldNumber, output, message) -> output.writeByteArray(fieldNumber, message.toByteArray(), false));
+        WRITE_MAP.put(ProtostuffConstants.ID_BIG_DECIMAL, (FieldWriteTo<BigDecimal>) (fieldNumber, output, message) -> output.writeString(fieldNumber, message.toString(), false));
+        WRITE_MAP.put(ProtostuffConstants.ID_BIG_INTEGER, (FieldWriteTo<BigInteger>) (fieldNumber, output, message) -> output.writeByteArray(fieldNumber, message.toByteArray(), false));
 
         //mergeFrom
         MERGE_FROM_MAP.put(ProtostuffConstants.ID_BOOL, Input::readBool);
         MERGE_FROM_MAP.put(ProtostuffConstants.ID_BYTE, Input::readUInt32);
         MERGE_FROM_MAP.put(ProtostuffConstants.ID_CHAR, Input::readUInt32);
         MERGE_FROM_MAP.put(ProtostuffConstants.ID_SHORT, Input::readUInt32);
-        MERGE_FROM_MAP.put(ProtostuffConstants.ID_INT32, Input::readInt32);
-        MERGE_FROM_MAP.put(ProtostuffConstants.ID_INT64, Input::readInt64);
+        MERGE_FROM_MAP.put(ProtostuffConstants.ID_INT, Input::readInt32);
+        MERGE_FROM_MAP.put(ProtostuffConstants.ID_LONG, Input::readInt64);
         MERGE_FROM_MAP.put(ProtostuffConstants.ID_FLOAT, Input::readFloat);
         MERGE_FROM_MAP.put(ProtostuffConstants.ID_DOUBLE, Input::readDouble);
         MERGE_FROM_MAP.put(ProtostuffConstants.ID_STRING, Input::readString);
         MERGE_FROM_MAP.put(ProtostuffConstants.ID_BYTES, Input::readBytes);
         MERGE_FROM_MAP.put(ProtostuffConstants.ID_BYTE_ARRAY, Input::readByteArray);
-        MERGE_FROM_MAP.put(ProtostuffConstants.ID_BIGDECIMAL, input -> new BigDecimal(input.readString()));
-        MERGE_FROM_MAP.put(ProtostuffConstants.ID_BIGINTEGER, input -> new BigInteger(input.readByteArray()));
+        MERGE_FROM_MAP.put(ProtostuffConstants.ID_BIG_DECIMAL, input -> new BigDecimal(input.readString()));
+        MERGE_FROM_MAP.put(ProtostuffConstants.ID_BIG_INTEGER, input -> new BigInteger(input.readByteArray()));
     }
 
     public static abstract class Base<T> extends BaseProtostuffCodec<T> {
@@ -229,7 +229,7 @@ public class ProtostuffCodecs {
 
         @Override
         public int classId() {
-            return ProtostuffConstants.ID_INT32;
+            return ProtostuffConstants.ID_INT;
         }
 
         @Override
@@ -251,7 +251,7 @@ public class ProtostuffCodecs {
 
         @Override
         public int classId() {
-            return ProtostuffConstants.ID_INT64;
+            return ProtostuffConstants.ID_LONG;
         }
 
         @Override
@@ -405,7 +405,7 @@ public class ProtostuffCodecs {
 
         @Override
         public int classId() {
-            return ProtostuffConstants.ID_BIGDECIMAL;
+            return ProtostuffConstants.ID_BIG_DECIMAL;
         }
 
         @Override
@@ -427,7 +427,7 @@ public class ProtostuffCodecs {
 
         @Override
         public int classId() {
-            return ProtostuffConstants.ID_BIGINTEGER;
+            return ProtostuffConstants.ID_BIG_INTEGER;
         }
 
         @Override

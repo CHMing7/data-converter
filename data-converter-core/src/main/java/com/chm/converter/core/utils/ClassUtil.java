@@ -273,4 +273,14 @@ public class ClassUtil {
 
         return null;
     }
+
+    /**
+     * 给定类是否为Boolean或者boolean
+     *
+     * @param clazz 类
+     * @return 是否为Boolean或者boolean
+     */
+    public static boolean isBoolean(Class<?> clazz) {
+        return (clazz == Boolean.class || clazz == boolean.class);
+    }
 }

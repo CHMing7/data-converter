@@ -1,8 +1,7 @@
 package com.chm.converter.thrift;
 
 import com.chm.converter.core.exception.ConvertException;
-import com.chm.converter.core.utils.ClassUtil;
-import com.chm.converter.thrift.utils.ThriftUtil;
+import com.chm.converter.thrift.utils.Thrift;
 
 import java.lang.reflect.Type;
 
@@ -17,16 +16,14 @@ public class DefaultThriftConverter implements ThriftConverter {
 
     public static final String THRIFT_NAME = "org.apache.thrift.TBase";
 
+    protected Thrift thrift = new Thrift(this);
+
     @Override
     public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
         if (source == null) {
             return null;
         }
-        try {
-            return ThriftUtil.deserialize(source, targetType);
-        } catch (Exception e) {
-            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getName(), e);
-        }
+        return convertToJavaObject(source, (Type) targetType);
     }
 
     @Override
@@ -34,8 +31,11 @@ public class DefaultThriftConverter implements ThriftConverter {
         if (source == null) {
             return null;
         }
-        Class<?> classByType = ClassUtil.getClassByType(targetType);
-        return (T) convertToJavaObject(source, classByType);
+        try {
+            return thrift.deserialize(source, targetType);
+        } catch (Throwable e) {
+            throw new ConvertException(getConverterName(), byte[].class.getName(), targetType.getTypeName(), e);
+        }
     }
 
     @Override
@@ -44,8 +44,8 @@ public class DefaultThriftConverter implements ThriftConverter {
             return new byte[0];
         }
         try {
-            return ThriftUtil.serialize(source);
-        } catch (Exception e) {
+            return thrift.serialize(source);
+        } catch (Throwable e) {
             throw new ConvertException(getConverterName(), source.getClass().getName(), byte[].class.getName(), e);
         }
     }

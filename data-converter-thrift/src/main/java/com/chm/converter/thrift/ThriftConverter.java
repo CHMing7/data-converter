@@ -19,6 +19,6 @@ public interface ThriftConverter extends Converter<byte[]> {
      */
     @Override
     default DataType getDataType() {
-        return DataType.THRIFT;
+        return DataType.THRIFT_BINARY;
     }
 }

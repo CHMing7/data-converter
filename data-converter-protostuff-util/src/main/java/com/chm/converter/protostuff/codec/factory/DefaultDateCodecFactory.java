@@ -42,16 +42,16 @@ public class DefaultDateCodecFactory implements UniversalFactory<ProtostuffCodec
 
     public static final class DefaultDateCodec<T extends Date> extends BaseProtostuffCodec<T> {
 
-        private final com.chm.converter.codec.DefaultDateCodec<T> defaultDateCodec;
+        private final com.chm.converter.core.codecs.DefaultDateCodec<T> defaultDateCodec;
 
         public DefaultDateCodec(Class<T> clazz, String datePattern, Converter<?> converter) {
             super(clazz, "defaultDate");
-            this.defaultDateCodec = new com.chm.converter.codec.DefaultDateCodec<>(clazz, datePattern, converter);
+            this.defaultDateCodec = new com.chm.converter.core.codecs.DefaultDateCodec<>(clazz, datePattern, converter);
         }
 
         public DefaultDateCodec(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
             super(clazz, "defaultDate");
-            this.defaultDateCodec = new com.chm.converter.codec.DefaultDateCodec<>(clazz, dateFormatter, converter);
+            this.defaultDateCodec = new com.chm.converter.core.codecs.DefaultDateCodec<>(clazz, dateFormatter, converter);
         }
 
         public DefaultDateCodec<T> withDateType(Class<T> dateType) {

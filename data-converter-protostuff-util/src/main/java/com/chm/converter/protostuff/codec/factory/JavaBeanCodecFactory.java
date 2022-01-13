@@ -80,6 +80,9 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
             List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
             for (int i = 0; i < sortedFieldList.size(); i++) {
                 FieldInfo fieldInfo = sortedFieldList.get(i);
+                if (!fieldInfo.isSerialize()) {
+                    continue;
+                }
                 Object o = fieldInfo.get(message);
                 if (o == null) {
                     continue;
@@ -100,6 +103,9 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
                 } else {
                     ProtostuffCodec codec = getFieldProtostuffCodec(fieldInfo);
                     Object o = input.mergeObject(null, codec);
+                    if (!fieldInfo.isDeserialize()) {
+                        continue;
+                    }
                     fieldInfo.set(construct, o);
                 }
             }

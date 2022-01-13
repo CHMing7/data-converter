@@ -41,16 +41,16 @@ public class Java8TimeCodecFactory implements UniversalFactory<ProtostuffCodec> 
 
     public static class Java8TimeCodec<T extends TemporalAccessor> extends BaseProtostuffCodec<T> {
 
-        private final com.chm.converter.codec.Java8TimeCodec<T> java8TimeCodec;
+        private final com.chm.converter.core.codecs.Java8TimeCodec<T> java8TimeCodec;
 
         public Java8TimeCodec(Class<T> clazz, String datePattern, Converter<?> converter) {
             super(clazz, "java8Time");
-            this.java8TimeCodec = new com.chm.converter.codec.Java8TimeCodec<>(clazz, datePattern, converter);
+            this.java8TimeCodec = new com.chm.converter.core.codecs.Java8TimeCodec<>(clazz, datePattern, converter);
         }
 
         public Java8TimeCodec(Class<T> clazz, DateTimeFormatter dateFormatter, Converter<?> converter) {
             super(clazz, "java8Time");
-            this.java8TimeCodec = new com.chm.converter.codec.Java8TimeCodec<>(clazz, dateFormatter, converter);
+            this.java8TimeCodec = new com.chm.converter.core.codecs.Java8TimeCodec<>(clazz, dateFormatter, converter);
         }
 
         public Java8TimeCodec<T> withClass(Class<T> clazz) {

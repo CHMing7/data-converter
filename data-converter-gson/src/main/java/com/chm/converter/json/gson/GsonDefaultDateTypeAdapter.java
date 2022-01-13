@@ -1,7 +1,7 @@
 package com.chm.converter.json.gson;
 
-import com.chm.converter.codec.DefaultDateCodec;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;

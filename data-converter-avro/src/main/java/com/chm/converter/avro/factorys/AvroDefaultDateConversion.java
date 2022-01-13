@@ -1,7 +1,7 @@
 package com.chm.converter.avro.factorys;
 
-import com.chm.converter.codec.DefaultDateCodec;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codecs.DefaultDateCodec;
 import org.apache.avro.Conversion;
 import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;

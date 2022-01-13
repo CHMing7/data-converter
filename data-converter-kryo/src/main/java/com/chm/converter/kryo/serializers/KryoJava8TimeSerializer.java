@@ -1,7 +1,7 @@
 package com.chm.converter.kryo.serializers;
 
-import com.chm.converter.codec.Java8TimeCodec;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;

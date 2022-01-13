@@ -1,7 +1,7 @@
 package com.chm.converter.jackson.serializer;
 
-import com.chm.converter.codec.Java8TimeCodec;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;

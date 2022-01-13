@@ -1,5 +1,7 @@
 package com.chm.converter.core.reflect;
 
+import com.chm.converter.core.utils.MapUtil;
+
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -15,6 +17,8 @@ import java.util.Map;
  * @since 2021-09-07
  **/
 public class TypeToken<T> {
+
+    private static final Map<Type, TypeToken<?>> TYPE_TOKEN_MAP = MapUtil.newConcurrentHashMap();
 
     final Class<? super T> rawType;
 
@@ -285,8 +289,8 @@ public class TypeToken<T> {
      * @param type
      * @return
      */
-    public static TypeToken<?> get(Type type) {
-        return new TypeToken<>(type);
+    public static <T> TypeToken<T> get(Type type) {
+        return (TypeToken<T>) MapUtil.computeIfAbsent(TYPE_TOKEN_MAP, type, TypeToken::new);
     }
 
     /**
@@ -297,7 +301,7 @@ public class TypeToken<T> {
      * @return
      */
     public static <T> TypeToken<T> get(Class<T> type) {
-        return new TypeToken<>(type);
+        return get((Type) type);
     }
 
     /**
@@ -307,7 +311,7 @@ public class TypeToken<T> {
      * @param typeArguments
      * @return
      */
-    public static TypeToken<?> getParameterized(Type rawType, Type... typeArguments) {
+    public static <T> TypeToken<T> getParameterized(Type rawType, Type... typeArguments) {
         return new TypeToken<>(ConverterTypes.newParameterizedTypeWithOwner(null, rawType, typeArguments));
     }
 
@@ -317,7 +321,7 @@ public class TypeToken<T> {
      * @param componentType
      * @return
      */
-    public static TypeToken<?> getArray(Type componentType) {
+    public static <T> TypeToken<T> getArray(Type componentType) {
         return new TypeToken<>(ConverterTypes.arrayOf(componentType));
     }
 }

@@ -94,7 +94,7 @@ public class DataType {
     /***
      * 数据类型：thrift类型
      */
-    public final static DataType THRIFT = DataType.createDataType("thrift");
+    public final static DataType THRIFT_BINARY = DataType.createDataType("thrift_binary");
 
     /**
      * 全局数据转换器表

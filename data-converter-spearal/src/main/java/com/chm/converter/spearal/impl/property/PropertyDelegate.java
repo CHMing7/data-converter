@@ -1,10 +1,10 @@
 package com.chm.converter.spearal.impl.property;
 
-import com.chm.converter.codec.Codec;
-import com.chm.converter.codec.DataCodecGenerate;
-import com.chm.converter.codec.DefaultDateCodec;
-import com.chm.converter.codec.Java8TimeCodec;
 import com.chm.converter.core.FieldInfo;
+import com.chm.converter.core.codec.Codec;
+import com.chm.converter.core.codec.DataCodecGenerate;
+import com.chm.converter.core.codecs.DefaultDateCodec;
+import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.spearal.coders.CodecProvider;
 import org.spearal.SpearalContext;
 import org.spearal.configuration.CoderProvider;

@@ -1,7 +1,7 @@
 package com.chm.converter.spearal.coders;
 
-import com.chm.converter.codec.Codec;
-import com.chm.converter.codec.DataCodecGenerate;
+import com.chm.converter.core.codec.Codec;
+import com.chm.converter.core.codec.DataCodecGenerate;
 import org.spearal.SpearalContext;
 import org.spearal.configuration.CoderProvider;
 import org.spearal.configuration.ConverterProvider;
@@ -122,13 +122,9 @@ public class CodecProvider implements CoderProvider, CoderProvider.Coder, Conver
                 encoder.writeClass((Class<?>) encode);
                 return;
             default:
+                encoder.writeBean(encode);
                 break;
         }
-        // 转换前后类型相同则直接写入bean
-        if (classId == ID_BEAN && cls == value.getClass()) {
-            encoder.writeBean(encode);
-        }
-        encoder.writeAny(encode);
     }
 
     @Override

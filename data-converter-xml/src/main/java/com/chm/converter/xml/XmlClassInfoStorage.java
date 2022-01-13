@@ -22,7 +22,7 @@ public class XmlClassInfoStorage implements ClassInfoStorage {
 
     public static final Map<Class<?>, Map<Class<? extends Converter>, Boolean>> INIT_TABLE = MapUtil.newHashMap();
 
-    public static final XmlClassInfoStorage INSTANCE = new XmlClassInfoStorage();
+    public static final ClassInfoStorage INSTANCE = new XmlClassInfoStorage();
 
     @Override
     public <T> void initClassInfo(Class<T> clazz, Class<? extends Converter> converterClass) {

@@ -1,5 +1,7 @@
 package com.chm.converter.core.reflect;
 
+import com.chm.converter.core.utils.StringUtil;
+
 /**
  * 此类参考Gson的$Gson$Preconditions实现
  *
@@ -20,9 +22,9 @@ public class ConverterPreconditions {
         return obj;
     }
 
-    public static <T> T checkNotNull(T reference, Object errorMessage) {
+    public static <T> T checkNotNull(T reference, String errorMessage, Object... params) {
         if (reference == null) {
-            throw new NullPointerException(String.valueOf(errorMessage));
+            throw new NullPointerException(StringUtil.format(errorMessage, params));
         }
         return reference;
     }
@@ -30,6 +32,12 @@ public class ConverterPreconditions {
     public static void checkArgument(boolean condition) {
         if (!condition) {
             throw new IllegalArgumentException();
+        }
+    }
+
+    public static void checkArgument(boolean condition, String errorMessage, Object... params) {
+        if (!condition) {
+            throw new IllegalArgumentException(StringUtil.format(errorMessage, params));
         }
     }
 }

@@ -1,8 +1,6 @@
 dependencies {
     compile project(':data-converter-core')
 
-    compile project(':data-converter-codec')
-
     compileOnly(libs.hessian)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'

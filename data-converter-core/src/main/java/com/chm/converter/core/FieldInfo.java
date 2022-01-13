@@ -1,11 +1,12 @@
 package com.chm.converter.core;
 
-import cn.hutool.core.collection.ListUtil;
-import cn.hutool.core.util.BooleanUtil;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.io.Reader;
 import com.chm.converter.core.io.Writer;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.ClassUtil;
+import com.chm.converter.core.utils.ListUtil;
+import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.core.utils.ReflectUtil;
 import com.chm.converter.core.utils.StringUtil;
 
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +30,13 @@ import java.util.stream.Collectors;
  * @since 2021-08-16
  **/
 public class FieldInfo implements Comparable<FieldInfo> {
+
+    public static final FieldInfo STOP = new FieldInfo("stop", null, FieldInfo.class.getFields()[0], -1, null, null){
+        @Override
+        public boolean isStop() {
+            return true;
+        }
+    };
 
     /**
      * 序列化对应属性名
@@ -43,6 +52,11 @@ public class FieldInfo implements Comparable<FieldInfo> {
     public final Field field;
 
     private int ordinal = 0;
+
+    /**
+     * 排序编号
+     */
+    private int sortedNumber = 0;
 
     public final Class<?> fieldClass;
 
@@ -138,7 +152,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
             fieldName = field.getName();
         }
         // 尝试获取getter setter
-        final boolean isBooleanField = BooleanUtil.isBoolean(fieldClass);
+        final boolean isBooleanField = ClassUtil.isBoolean(fieldClass);
         Method[] methods = this.declaringClass.getMethods();
         String methodName;
         Class<?>[] parameterTypes;
@@ -357,6 +371,14 @@ public class FieldInfo implements Comparable<FieldInfo> {
         return this.method != null ? this.method : this.field;
     }
 
+    public int getSortedNumber() {
+        return sortedNumber;
+    }
+
+    public void setSortedNumber(int sortedNumber) {
+        this.sortedNumber = sortedNumber;
+    }
+
     public Class<?> getFieldClass() {
         return this.fieldClass;
     }
@@ -370,15 +392,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
     }
 
     public Class<?> getDeclaredClass() {
-        if (this.method != null) {
-            return this.method.getDeclaringClass();
-        }
-
-        if (this.field != null) {
-            return this.field.getDeclaringClass();
-        }
-
-        return null;
+        return this.declaringClass;
     }
 
     public FieldProperty getAnnotation() {
@@ -394,7 +408,11 @@ public class FieldInfo implements Comparable<FieldInfo> {
     }
 
     public Object getExpandProperty(String key, Object defaultVal) {
-        return expandProperty.getOrDefault(key, defaultVal);
+        return MapUtil.computeIfAbsent(expandProperty, key, s -> defaultVal);
+    }
+
+    public Object getExpandProperty(String key, Supplier defaultVal) {
+        return MapUtil.computeIfAbsent(expandProperty, key, s -> defaultVal.get());
     }
 
     public void putExpandProperty(String key, Object value) {
@@ -539,4 +557,8 @@ public class FieldInfo implements Comparable<FieldInfo> {
             writer.write(get(javaObject));
         }
     }
+
+   public boolean isStop(){
+        return false;
+   }
 }

@@ -1,5 +1,4 @@
 dependencies {
     compileOnly(libs.jackson_databind)
     compile project(':data-converter-core')
-    compile project(':data-converter-codec')
 }

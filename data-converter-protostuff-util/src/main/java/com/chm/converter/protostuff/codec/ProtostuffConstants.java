@@ -18,15 +18,15 @@ public interface ProtostuffConstants {
     int ID_BYTE = 2;
     int ID_CHAR = 3;
     int ID_SHORT = 4;
-    int ID_INT32 = 5;
-    int ID_INT64 = 6;
+    int ID_INT = 5;
+    int ID_LONG = 6;
     int ID_FLOAT = 7;
     int ID_DOUBLE = 8;
     int ID_STRING = 9;
     int ID_BYTES = 10;
     int ID_BYTE_ARRAY = 11;
-    int ID_BIGDECIMAL = 12;
-    int ID_BIGINTEGER = 13;
+    int ID_BIG_DECIMAL = 12;
+    int ID_BIG_INTEGER = 13;
     int ID_DATE = 14;
     int ID_ARRAY = 15;
 

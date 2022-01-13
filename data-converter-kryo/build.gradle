@@ -1,6 +1,5 @@
 dependencies {
     compile project(':data-converter-core')
-    compile project(':data-converter-codec')
 
     compileOnly(libs.kryo)
 

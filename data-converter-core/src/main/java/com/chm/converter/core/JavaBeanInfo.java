@@ -2,17 +2,14 @@ package com.chm.converter.core;
 
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.collection.ListUtil;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.creator.ObjectConstructor;
-import com.chm.converter.core.io.Reader;
-import com.chm.converter.core.io.Writer;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.core.utils.TypeUtil;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -76,6 +73,10 @@ public class JavaBeanInfo<T> {
         this.fieldList = fieldList;
         this.sortedFieldList = ListUtil.toList(fieldList);
         CollectionUtil.sort(sortedFieldList, FieldInfo::compareTo);
+        for (int i = 0; i < sortedFieldList.size(); i++) {
+            FieldInfo fieldInfo = sortedFieldList.get(i);
+            fieldInfo.setSortedNumber(i);
+        }
         this.nameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getName, Function.identity());
         this.fieldNameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getFieldName, Function.identity());
         this.fieldNameAliasMap = CollStreamUtil.toMap(fieldList, FieldInfo::getFieldName, FieldInfo::getName);
@@ -134,16 +135,6 @@ public class JavaBeanInfo<T> {
 
     public Set<Class<? extends Annotation>> getAnnotationClassSet() {
         return annotationClassSet;
-    }
-
-    public T read(Reader<T> reader) throws IOException {
-        return reader != null ? reader.read() : null;
-    }
-
-    public void write(T t, Writer<T> writer) throws IOException {
-        if (writer != null) {
-            writer.write(t);
-        }
     }
 
     /**

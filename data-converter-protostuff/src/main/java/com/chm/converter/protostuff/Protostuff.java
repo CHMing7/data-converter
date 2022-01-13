@@ -29,7 +29,6 @@ public class Protostuff {
         this.protostuffCodecGenerate = ProtostuffCodecGenerate.newDefault(converter);
     }
 
-
     public static boolean isSupported(Type type) {
         if (type == null) {
             return false;

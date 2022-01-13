@@ -1,7 +1,7 @@
 package com.chm.converter.fst.serializers;
 
-import com.chm.converter.codec.DefaultDateCodec;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codecs.DefaultDateCodec;
 import org.nustaq.serialization.FSTClazzInfo;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;

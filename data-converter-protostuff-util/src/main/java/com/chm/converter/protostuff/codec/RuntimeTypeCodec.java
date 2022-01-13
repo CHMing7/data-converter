@@ -11,6 +11,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 /**
+ * 运行时动态类型
+ *
  * @author caihongming
  * @version v1.0
  * @since 2021-11-19
@@ -61,7 +63,6 @@ public class RuntimeTypeCodec<T> extends BaseProtostuffCodec<T> {
     public T mergeFrom(Input input) throws IOException {
         return delegate.mergeFrom(input);
     }
-
 
     /**
      * 找到运行时具体类型

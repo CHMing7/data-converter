@@ -6,8 +6,6 @@ include ':data-converter-auto'
 
 include ':data-converter-core'
 
-include ':data-converter-codec'
-
 include ':data-converter-binary'
 
 include ':data-converter-jackson'
@@ -48,8 +46,6 @@ project(':data-converter-all').projectDir = "$rootDir/data-converter-all" as Fil
 project(':data-converter-auto').projectDir = "$rootDir/data-converter-auto" as File
 
 project(':data-converter-core').projectDir = "$rootDir/data-converter-core" as File
-
-project(':data-converter-codec').projectDir = "$rootDir/data-converter-codec" as File
 
 project(':data-converter-binary').projectDir = "$rootDir/data-converter-binary" as File
 

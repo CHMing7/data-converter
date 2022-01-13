@@ -333,6 +333,9 @@ public class MapUtil {
             if (object instanceof Map.Entry) {
                 Map.Entry entry = (Map.Entry) object;
                 map.put(entry.getKey(), entry.getValue());
+            } else if (object instanceof Pair) {
+                Pair pair = (Pair) object;
+                map.put(pair.getKey(), pair.getValue());
             } else if (object instanceof Object[]) {
                 final Object[] entry = (Object[]) object;
                 if (entry.length > 1) {

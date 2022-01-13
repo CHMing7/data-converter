@@ -1,7 +1,6 @@
 dependencies {
     compileOnly(libs.gson)
 
-    compile project(':data-converter-codec')
     compile project(':data-converter-json')
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
