@@ -12,8 +12,23 @@ dependencies {
     testCompile 'junit:junit:4.13.1'
 
     testCompile(libs.hutool_log)
-    testCompile(libs.gson)
     testCompile(libs.fastjson)
+    testCompile(libs.jackson_core)
+    testCompile(libs.jackson_databind)
+    testCompile(libs.jackson_annotations)
+    testCompile(libs.jackson_xml)
+    testCompile(libs.gson)
+    testCompile(libs.avro)
+    testCompile(libs.jackson_avro)
+    testCompile(libs.hessian)
+    testCompile(libs.kryo)
+    testCompile(libs.protobuf_java)
+    testCompile(libs.protostuff_core)
+    testCompile(libs.fst)
+    testCompile(libs.msgpack_jackson)
+    testCompile(libs.spearal_java)
+    testCompile(libs.thrift)
+    testCompile(libs.yaml_jackson)
 }
 
 publishing {

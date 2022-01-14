@@ -1,14 +1,17 @@
 package com.chm.converter.avro;
 
+import com.chm.converter.avro.factorys.AvroEnumConversion;
 import com.chm.converter.avro.factorys.AvroGeneralConversion;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.utils.ListUtil;
 import org.apache.avro.Conversion;
 import org.apache.avro.Schema;
 import org.apache.avro.reflect.ReflectData;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -52,5 +55,25 @@ public class AvroReflectData extends ReflectData {
             return conversionByClass.getRecommendedSchema();
         }
         return schema;
+    }
+
+    @Override
+    protected Collection getArrayAsCollection(Object datum) {
+        return (datum instanceof Map) ? ((Map) datum).entrySet() :
+                (datum instanceof Collection) ? (Collection) datum : ListUtil.toList((Object[]) datum);
+    }
+
+    @Override
+    public Schema induce(Object datum) {
+        if (isEnum(datum)) {
+            Class clazz = datum.getClass();
+            Conversion conversionByClass = this.getConversionByClass(clazz);
+            if (conversionByClass == null) {
+                AvroEnumConversion generalConversion = new AvroEnumConversion(clazz, converterClass);
+                this.addLogicalTypeConversion(generalConversion);
+                return generalConversion.getRecommendedSchema();
+            }
+        }
+        return super.induce(datum);
     }
 }

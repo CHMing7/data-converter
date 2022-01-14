@@ -93,6 +93,7 @@ public class FastjsonSerializeConfig extends SerializeConfig {
             JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
             if (CollectionUtil.isNotEmpty(javaBeanInfo.getSortedFieldList())) {
                 put(clazz, objectWriter = new FastjsonJavaBeanSerializer(clazz));
+                ((FastjsonJavaBeanSerializer) objectWriter).init(clazz);
                 return objectWriter;
             }
         }
@@ -104,6 +105,9 @@ public class FastjsonSerializeConfig extends SerializeConfig {
 
         public FastjsonJavaBeanSerializer(Class<?> beanType) {
             super(beanType);
+        }
+
+        private void init(Class<?> beanType){
             JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(beanType, converterClass);
             List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
             if (CollectionUtil.isEmpty(sortedFieldList)) {

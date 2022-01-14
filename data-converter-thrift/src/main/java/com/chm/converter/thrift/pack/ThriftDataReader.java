@@ -86,13 +86,13 @@ public class ThriftDataReader implements DataReader {
     }
 
     @Override
-    public FieldInfo readField(Class<?> clz) throws IOException {
+    public FieldInfo readFieldBegin(Class<?> clz) throws IOException {
         JavaBeanInfo<?> javaBeanInfo = ThriftClassInfoStorage.INSTANCE.getJavaBeanInfo(clz, converterClass);
-        return readField(javaBeanInfo);
+        return readFieldBegin(javaBeanInfo);
     }
 
     @Override
-    public FieldInfo readField(JavaBeanInfo<?> javaBeanInfo) throws IOException {
+    public FieldInfo readFieldBegin(JavaBeanInfo<?> javaBeanInfo) throws IOException {
         try {
             List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
             TField field = oprot.readFieldBegin();
@@ -105,6 +105,17 @@ public class ThriftDataReader implements DataReader {
         } catch (TException e) {
             throw new CodecException(e);
         }
+    }
+
+    @Override
+    public void readFieldEnd(Class<?> clz) throws IOException {
+        JavaBeanInfo<?> javaBeanInfo = ThriftClassInfoStorage.INSTANCE.getJavaBeanInfo(clz, converterClass);
+        readFieldEnd(javaBeanInfo);
+    }
+
+    @Override
+    public void readFieldEnd(JavaBeanInfo<?> javaBeanInfo) throws IOException {
+
     }
 
     @Override

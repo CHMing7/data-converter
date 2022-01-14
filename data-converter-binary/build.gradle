@@ -1,4 +1,0 @@
-dependencies {
-    compile project(':data-converter-core')
-    compile(libs.juniversalchardet)
-}

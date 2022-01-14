@@ -2,11 +2,7 @@ rootProject.name = 'data-converter'
 
 include ':data-converter-all'
 
-include ':data-converter-auto'
-
 include ':data-converter-core'
-
-include ':data-converter-binary'
 
 include ':data-converter-jackson'
 
@@ -17,8 +13,6 @@ include ':data-converter-gson'
 
 include ':data-converter-xml'
 include ':data-converter-jackson-xml'
-
-include ':data-converter-text'
 
 include ':data-converter-avro'
 
@@ -46,11 +40,7 @@ include ':data-converter-jackson-yaml'
 
 project(':data-converter-all').projectDir = "$rootDir/data-converter-all" as File
 
-project(':data-converter-auto').projectDir = "$rootDir/data-converter-auto" as File
-
 project(':data-converter-core').projectDir = "$rootDir/data-converter-core" as File
-
-project(':data-converter-binary').projectDir = "$rootDir/data-converter-binary" as File
 
 project(':data-converter-jackson').projectDir = "$rootDir/data-converter-jackson" as File
 
@@ -61,8 +51,6 @@ project(':data-converter-gson').projectDir = "$rootDir/data-converter-gson" as F
 
 project(':data-converter-xml').projectDir = "$rootDir/data-converter-xml" as File
 project(':data-converter-jackson-xml').projectDir = "$rootDir/data-converter-jackson-xml" as File
-
-project(':data-converter-text').projectDir = "$rootDir/data-converter-text" as File
 
 project(':data-converter-avro').projectDir = "$rootDir/data-converter-avro" as File
 

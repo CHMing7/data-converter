@@ -7,10 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author caihongming
@@ -28,8 +31,6 @@ public class ConverterSelector implements Serializable {
 
     static {
         // 加载数据转换器类
-      /*  ConfigurationBuilder build = ConfigurationBuilder.build(new SubTypesScanner());
-        build.setExpandSuperTypes(false);*/
         Reflections reflections = new Reflections(new SubTypesScanner());
         Set<Class<? extends Converter>> jsonConverterClasses = reflections.getSubTypesOf(Converter.class);
         jsonConverterClasses.forEach(converterClass -> {
@@ -45,6 +46,44 @@ public class ConverterSelector implements Serializable {
                 }
             }
         });
+    }
+
+    /**
+     * 获取所有数据类型
+     *
+     * @return 数据类型
+     */
+    public static DataType[] getDateTypes() {
+        return CONVERTER_MAP.keySet().toArray(new DataType[0]);
+    }
+
+    /**
+     * 获取所有数据类型
+     *
+     * @return 数据类型
+     */
+    public static List<DataType> getDateTypeList() {
+        return new ArrayList<>(CONVERTER_MAP.keySet());
+    }
+
+    /**
+     * 根据数据类型获取所有转换器数组
+     *
+     * @param dataType 数据类型
+     * @return 转换器数组
+     */
+    public static Converter[] getConvertersByDateType(DataType dataType) {
+        return CONVERTER_MAP.get(dataType).values().toArray(new Converter[0]);
+    }
+
+    /**
+     * 根据数据类型获取所有转换器列表
+     *
+     * @param dataType 数据类型
+     * @return 转换器列表
+     */
+    public static List<Converter> getConverterListByDateType(DataType dataType) {
+        return new ArrayList<>(CONVERTER_MAP.get(dataType).values());
     }
 
     /**

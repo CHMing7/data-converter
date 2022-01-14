@@ -48,6 +48,7 @@ public class JavaBeanCodec<T> implements Codec<T, T> {
     @Override
     public void writeData(T t, DataWriter dw) throws IOException {
         List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
+        dw.writeBeanBegin(t);
         for (int i = 0; i < sortedFieldList.size(); i++) {
             FieldInfo fieldInfo = sortedFieldList.get(i);
             if (!fieldInfo.isSerialize()) {
@@ -59,11 +60,12 @@ public class JavaBeanCodec<T> implements Codec<T, T> {
                 dw.writeFieldNull(i, fieldInfo);
                 continue;
             }
-            dw.writeFieldStart(i, fieldInfo);
+            dw.writeFieldBegin(i, fieldInfo);
             Codec fieldCodec = getFieldCodec(fieldInfo);
             fieldCodec.write(o, dw);
             dw.writeFieldEnd(i, fieldInfo);
         }
+        dw.writeBeanEnd(t);
     }
 
     @Override
@@ -80,7 +82,7 @@ public class JavaBeanCodec<T> implements Codec<T, T> {
     public T readData(DataReader dr) throws IOException {
         T t = javaBeanInfo.getObjectConstructor().construct();
         while (true) {
-            FieldInfo fieldInfo = dr.readField(javaBeanInfo);
+            FieldInfo fieldInfo = dr.readFieldBegin(javaBeanInfo);
             if (fieldInfo == null || !fieldInfo.isDeserialize()) {
                 dr.skipAny();
                 continue;
@@ -90,6 +92,7 @@ public class JavaBeanCodec<T> implements Codec<T, T> {
             }
             Codec fieldCodec = getFieldCodec(fieldInfo);
             fieldInfo.set(t, fieldCodec.read(dr));
+            dr.readFieldEnd(javaBeanInfo);
         }
         return t;
     }

@@ -42,7 +42,7 @@ public interface DataReader extends Closeable {
      * @return
      * @throws IOException
      */
-    FieldInfo readField(Class<?> clz) throws IOException;
+    FieldInfo readFieldBegin(Class<?> clz) throws IOException;
 
     /**
      * 读取字段信息
@@ -51,7 +51,25 @@ public interface DataReader extends Closeable {
      * @return
      * @throws IOException
      */
-    FieldInfo readField(JavaBeanInfo<?> javaBeanInfo) throws IOException;
+    FieldInfo readFieldBegin(JavaBeanInfo<?> javaBeanInfo) throws IOException;
+
+    /**
+     * 读取字段信息结束
+     *
+     * @param clz 字段所属类
+     * @return
+     * @throws IOException
+     */
+    void readFieldEnd(Class<?> clz) throws IOException;
+
+    /**
+     * 读取字段信息结束
+     *
+     * @param javaBeanInfo 字段所属类对象信息
+     * @return
+     * @throws IOException
+     */
+    void readFieldEnd(JavaBeanInfo<?> javaBeanInfo) throws IOException;
 
     /**
      * 读取{@code boolean}值

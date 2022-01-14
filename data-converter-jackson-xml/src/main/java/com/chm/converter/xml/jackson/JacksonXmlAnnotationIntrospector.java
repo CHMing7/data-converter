@@ -21,7 +21,7 @@ public class JacksonXmlAnnotationIntrospector extends com.fasterxml.jackson.data
 
     @Override
     public PropertyName findRootName(AnnotatedClass ac) {
-        Class<?> rawClass = ac.getType().getRawClass();
+        Class<?> rawClass = ac.getRawType();
         if (useOriginalJudge.useOriginalImpl(rawClass)) {
             return super.findRootName(ac);
         }

@@ -16,9 +16,7 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 |      data-converter-gson       |      JSON      |                                                                com.google.code.gson:gson:version                                                                 |
 |  data-converter-jackson-json   |      JSON      | com.fasterxml.jackson.core:jackson-core:version<br>com.fasterxml.jackson.core:jackson-databind:version<br>com.fasterxml.jackson.core:jackson-annotations:version |
 |   data-converter-jackson-xml   |      Xml       |                                                 com.fasterxml.jackson.dataformat:jackson-dataformat-xml:version                                                  |
-|      data-converter-text       |      Text      |                                                                               None                                                                               |
 |      data-converter-avro       |      Avro      |                                                                   org.apache.avro:avro:version                                                                   |
-|     data-converter-binary      | Default-Binary |                                                                               None                                                                               |
 |     data-converter-hessian     |    Hessian     |                                                                    com.caucho:hessian:version                                                                    |
 |      data-converter-kryo       |      Kryo      |                                                                com.esotericsoftware:kryo:version                                                                 |
 |    data-converter-protobuf     |    Protobuf    |                                        com.google.protobuf:protobuf-java:version<br>io.protostuff:protostuff-core:version                                        |

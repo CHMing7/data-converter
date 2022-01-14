@@ -37,8 +37,8 @@ public interface DataWriter extends Closeable, Flushable {
      * @return 数据写入器
      * @throws IOException
      */
-    default DataWriter writeFieldStart(FieldInfo fieldInfo) throws IOException {
-        writeFieldStart(fieldInfo.getSortedNumber(), fieldInfo);
+    default DataWriter writeFieldBegin(FieldInfo fieldInfo) throws IOException {
+        writeFieldBegin(fieldInfo.getSortedNumber(), fieldInfo);
         return this;
     }
 
@@ -50,7 +50,26 @@ public interface DataWriter extends Closeable, Flushable {
      * @return 数据写入器
      * @throws IOException
      */
-    DataWriter writeFieldStart(int fieldNumber, FieldInfo fieldInfo) throws IOException;
+    DataWriter writeFieldBegin(int fieldNumber, FieldInfo fieldInfo) throws IOException;
+
+    /**
+     * 写入字段信息结束
+     *
+     * @param fieldInfo 字段信息
+     * @return 数据写入器
+     * @throws IOException
+     */
+    DataWriter writeFieldEnd(FieldInfo fieldInfo) throws IOException;
+
+    /**
+     * 写入字段信息结束
+     *
+     * @param fieldNumber 字段排序
+     * @param fieldInfo   字段信息
+     * @return 数据写入器
+     * @throws IOException
+     */
+    DataWriter writeFieldEnd(int fieldNumber, FieldInfo fieldInfo) throws IOException;
 
     /**
      * 写入{@code null}值字段信息开始
@@ -73,25 +92,6 @@ public interface DataWriter extends Closeable, Flushable {
      * @throws IOException
      */
     DataWriter writeFieldNull(int fieldNumber, FieldInfo fieldInfo) throws IOException;
-
-    /**
-     * 写入字段信息结束
-     *
-     * @param fieldInfo 字段信息
-     * @return 数据写入器
-     * @throws IOException
-     */
-    DataWriter writeFieldEnd(FieldInfo fieldInfo) throws IOException;
-
-    /**
-     * 写入字段信息结束
-     *
-     * @param fieldNumber 字段排序
-     * @param fieldInfo   字段信息
-     * @return 数据写入器
-     * @throws IOException
-     */
-    DataWriter writeFieldEnd(int fieldNumber, FieldInfo fieldInfo) throws IOException;
 
     /**
      * 写入{@code null}
@@ -312,6 +312,16 @@ public interface DataWriter extends Closeable, Flushable {
     <T> DataWriter writeClass(Class<T> value) throws IOException;
 
     /**
+     * 写入一个Java Bean开始
+     *
+     * @param value Java Bean值
+     * @param <T>
+     * @return 数据写入器
+     * @throws IOException
+     */
+    <T> DataWriter writeBeanBegin(T value) throws IOException;
+
+    /**
      * 写入一个Java Bean
      *
      * @param value Java Bean值
@@ -320,6 +330,16 @@ public interface DataWriter extends Closeable, Flushable {
      * @throws IOException
      */
     <T> DataWriter writeBean(T value) throws IOException;
+
+    /**
+     * 写入一个Java Bean结束
+     *
+     * @param value Java Bean值
+     * @param <T>
+     * @return 数据写入器
+     * @throws IOException
+     */
+    <T> DataWriter writeBeanEnd(T value) throws IOException;
 
     /**
      * 写入任意数据

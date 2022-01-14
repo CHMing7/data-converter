@@ -4,6 +4,7 @@ import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.json.FastjsonConverter;
 import com.chm.converter.json.GsonConverter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Date;
@@ -14,35 +15,50 @@ import java.util.Objects;
  * @version v1.0
  * @since 2021-06-03
  **/
-public class User {
+public class User implements Serializable {
+
+    /**
+     * 用户
+     */
+    @FieldProperty(name = "user12", ordinal = 1)
+    public User user;
 
     /**
      * 用户名
      */
-    @FieldProperty(name = "gsonUserName", ordinal = 1, scope = GsonConverter.class)
-    @FieldProperty(name = "fastjsonName", ordinal = 1, scope = FastjsonConverter.class)
+    @FieldProperty(name = "gsonUserName", ordinal = 2, scope = GsonConverter.class)
+    @FieldProperty(name = "fastjsonName", ordinal = 2, scope = FastjsonConverter.class)
+    @FieldProperty(name = "userName", ordinal = 2)
     public String userName;
 
     /**
      * 密码
      */
-    @FieldProperty(name = "password2", ordinal = 2)
+    @FieldProperty(name = "password2", ordinal = 3)
     public String password;
 
     /**
      * 新型时间
      */
-    @FieldProperty(name = "localDateTime", ordinal = 3, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(name = "localDateTime", ordinal = 4, format = "yyyy-MM-dd HH:mm:ss.SSSS")
     public LocalDateTime localDateTime;
 
     /**
      * date
      */
-    @FieldProperty(name = "date", ordinal = 4, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(name = "date", ordinal = 5, format = "yyyy-MM-dd HH:mm:ss.SSSS")
     public Date date;
 
-    @FieldProperty(name = "yearMonth", ordinal = 5, format = "yyyy-MM")
+    @FieldProperty(name = "yearMonth", ordinal = 6, format = "yyyy-MM")
     public YearMonth yearMonth;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public String getUserName() {
         return userName;
@@ -88,14 +104,13 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
-
-        if (!Objects.equals(userName, user.userName)) return false;
-        if (!Objects.equals(password, user.password)) return false;
-        if (!Objects.equals(localDateTime, user.localDateTime)) return false;
-        if (!Objects.equals(yearMonth, user.yearMonth)) return false;
-        return Objects.equals(date, user.date);
+        User user1 = (User) o;
+        return Objects.equals(user, user1.user) &&
+                Objects.equals(userName, user1.userName) &&
+                Objects.equals(password, user1.password) &&
+                Objects.equals(localDateTime, user1.localDateTime) &&
+                Objects.equals(date, user1.date) &&
+                Objects.equals(yearMonth, user1.yearMonth);
     }
 
 }

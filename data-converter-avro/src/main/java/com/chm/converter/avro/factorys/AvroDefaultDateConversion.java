@@ -22,7 +22,6 @@ public class AvroDefaultDateConversion<T extends Date> extends Conversion<T> {
 
     private final LogicalType logicalType;
 
-
     public AvroDefaultDateConversion(Class<T> dateType, Converter<?> converter) {
         this(dateType, (DateTimeFormatter) null, converter, dateType.getName());
     }

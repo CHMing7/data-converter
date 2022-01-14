@@ -34,8 +34,6 @@ import java.util.Map;
  **/
 public class ThriftDataWriter implements DataWriter {
 
-    public static final byte NULL = -1;
-
     protected final OutputStream outputStream;
 
     protected final TProtocol oprot;
@@ -64,7 +62,7 @@ public class ThriftDataWriter implements DataWriter {
     }
 
     @Override
-    public DataWriter writeFieldStart(int fieldNumber, FieldInfo fieldInfo) throws IOException {
+    public DataWriter writeFieldBegin(int fieldNumber, FieldInfo fieldInfo) throws IOException {
         Codec codec = dataCodecGenerate.get(fieldInfo.getTypeToken());
         byte type = (byte) fieldInfo.getExpandProperty(ThriftClassInfoStorage.THRIFT_TYPE_KEY,
                 () -> ThriftClassInfoStorage.getType(codec.getEncodeType().getRawType()));
@@ -78,17 +76,17 @@ public class ThriftDataWriter implements DataWriter {
     }
 
     @Override
-    public DataWriter writeFieldNull(int fieldNumber, FieldInfo fieldInfo) throws IOException {
-        return this;
-    }
-
-    @Override
     public DataWriter writeFieldEnd(FieldInfo fieldInfo) throws IOException {
         return this;
     }
 
     @Override
     public DataWriter writeFieldEnd(int fieldNumber, FieldInfo fieldInfo) throws IOException {
+        return this;
+    }
+
+    @Override
+    public DataWriter writeFieldNull(int fieldNumber, FieldInfo fieldInfo) throws IOException {
         return this;
     }
 
@@ -329,6 +327,11 @@ public class ThriftDataWriter implements DataWriter {
     }
 
     @Override
+    public <T> DataWriter writeBeanBegin(T value) throws IOException {
+        return this;
+    }
+
+    @Override
     public DataWriter writeBean(Object value) throws IOException {
         if (value == null) {
             writeNull();
@@ -345,6 +348,11 @@ public class ThriftDataWriter implements DataWriter {
         }
         Codec codec = dataCodecGenerate.get(value.getClass());
         codec.write(value, this);
+        return this;
+    }
+
+    @Override
+    public <T> DataWriter writeBeanEnd(T value) throws IOException {
         writeByte(TType.STOP);
         return this;
     }
