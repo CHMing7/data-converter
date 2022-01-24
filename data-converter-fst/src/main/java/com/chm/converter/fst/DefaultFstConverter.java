@@ -1,17 +1,29 @@
 package com.chm.converter.fst;
 
-import cn.hutool.core.map.MapUtil;
+import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
+import com.chm.converter.core.utils.ListUtil;
+import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.fst.factory.FstFactory;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
+import org.nustaq.serialization.annotations.AnonymousTransient;
+import org.nustaq.serialization.annotations.Conditional;
+import org.nustaq.serialization.annotations.Flat;
+import org.nustaq.serialization.annotations.OneOf;
+import org.nustaq.serialization.annotations.Predict;
+import org.nustaq.serialization.annotations.Serialize;
+import org.nustaq.serialization.annotations.Transient;
+import org.nustaq.serialization.annotations.Version;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * 默认fst数据转换器
@@ -21,6 +33,15 @@ import java.lang.reflect.Type;
  * @since 2021-09-27
  **/
 public class DefaultFstConverter implements FstConverter {
+
+    public static final List<Class<? extends Annotation>> FST_ANNOTATION_LIST = ListUtil.of(AnonymousTransient.class,
+            Conditional.class,
+            Flat.class,
+            OneOf.class,
+            Predict.class,
+            Serialize.class,
+            Transient.class,
+            Version.class);
 
     public static final String[] FST_NAME_ARRAY = new String[]{"org.nustaq.serialization.FSTObjectInput",
             "org.nustaq.serialization.FSTObjectOutput"};
@@ -80,5 +101,9 @@ public class DefaultFstConverter implements FstConverter {
         } catch (Throwable ignored) {
             return false;
         }
+    }
+
+    public static boolean checkExistFstAnnotation(Class<?> cls) {
+        return JavaBeanInfo.checkExistAnnotation(cls, FST_ANNOTATION_LIST);
     }
 }

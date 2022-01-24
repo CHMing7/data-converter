@@ -6,13 +6,16 @@ import com.chm.converter.core.lang.Pair;
 import com.chm.converter.core.reflect.TypeToken;
 
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Objects;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -54,6 +57,51 @@ public class MapUtil {
      */
     public static boolean isNotEmpty(Map<?, ?> map) {
         return null != map && !map.isEmpty();
+    }
+
+
+    /**
+     * 返回一个空Map
+     *
+     * @param <K> 键类型
+     * @param <V> 值类型
+     * @return 空Map
+     * @see Collections#emptyMap()
+     */
+    public static <K, V> Map<K, V> empty() {
+        return Collections.emptyMap();
+    }
+
+    /**
+     * 根据传入的Map类型不同，返回对应类型的空Map，支持类型包括：
+     *
+     * <pre>
+     *     1. NavigableMap
+     *     2. SortedMap
+     *     3. Map
+     * </pre>
+     *
+     * @param <K>      键类型
+     * @param <V>      值类型
+     * @param <T>      Map类型
+     * @param mapClass Map类型，null返回默认的Map
+     * @return 空Map
+     */
+    @SuppressWarnings("unchecked")
+    public static <K, V, T extends Map<K, V>> T empty(Class<?> mapClass) {
+        if (null == mapClass) {
+            return (T) Collections.emptyMap();
+        }
+        if (NavigableMap.class == mapClass) {
+            return (T) Collections.emptyNavigableMap();
+        } else if (SortedMap.class == mapClass) {
+            return (T) Collections.emptySortedMap();
+        } else if (Map.class == mapClass) {
+            return (T) Collections.emptyMap();
+        }
+
+        // 不支持空集合的集合类型
+        throw new IllegalArgumentException(StringUtil.format("[{}] is not support to get empty!", mapClass));
     }
 
     /**

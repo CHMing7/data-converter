@@ -43,9 +43,9 @@ import java.util.stream.Collectors;
  **/
 public class FastjsonParserConfig extends ParserConfig {
 
-    private final UseOriginalJudge useOriginalJudge;
-
     private final Class<? extends Converter> converterClass;
+
+    private final UseOriginalJudge useOriginalJudge;
 
     public FastjsonParserConfig(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
         super();

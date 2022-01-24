@@ -42,7 +42,7 @@ public class ListUtil {
      */
     @SafeVarargs
     public static <T> List<T> list(boolean isLinked, T... values) {
-        if (cn.hutool.core.util.ArrayUtil.isEmpty(values)) {
+        if (ArrayUtil.isEmpty(values)) {
             return list(isLinked);
         }
         final List<T> arrayList = isLinked ? new LinkedList<>() : new ArrayList<>(values.length);

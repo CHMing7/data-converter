@@ -1,5 +1,6 @@
 package com.chm.converter.test.avro;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.avro.DefaultAvroConverter;
 import com.chm.converter.core.ConverterSelector;
@@ -59,10 +60,10 @@ public class TestJava8Time {
     @Test
     public void testJava8Time() {
         byte[] encode = avroConverter.encode(java8Time);
-        StaticLog.info(String.valueOf(encode));
-        StaticLog.info(String.valueOf(avroConverter.encode(LocalDateTime.now())));
-        StaticLog.info(String.valueOf(avroConverter.encode(MonthDay.now())));
-        StaticLog.info(String.valueOf(avroConverter.encode(null)));
+        StaticLog.info(StrUtil.str(encode, "utf-8"));
+        StaticLog.info(StrUtil.str(avroConverter.encode(LocalDateTime.now()), "utf-8"));
+        StaticLog.info(StrUtil.str(avroConverter.encode(MonthDay.now()), "utf-8"));
+        StaticLog.info(StrUtil.str(avroConverter.encode(null), "utf-8"));
         Java8Time java8Time = avroConverter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }

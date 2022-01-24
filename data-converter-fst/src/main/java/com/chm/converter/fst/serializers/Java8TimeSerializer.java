@@ -62,8 +62,10 @@ public class Java8TimeSerializer<T extends TemporalAccessor> extends FstSerializ
 
     @Override
     public Object instantiate(Class objectClass, FSTObjectInput in, FSTClazzInfo serializationInfo, FSTClazzInfo.FSTFieldInfo referencee, int streamPosition) throws Exception {
-        String s = in.readStringUTF();
-        in.registerObject(s, streamPosition, serializationInfo, referencee);
-        return this.java8TimeCodec.decode(s);
+        return this.java8TimeCodec.read(() -> {
+            String s = in.readStringUTF();
+            in.registerObject(s, streamPosition, serializationInfo, referencee);
+            return s;
+        });
     }
 }

@@ -3,6 +3,7 @@ package com.chm.converter.fst.factory;
 import com.chm.converter.core.Converter;
 import com.chm.converter.fst.instantiators.CustomFstDefaultClassInstantiator;
 import com.chm.converter.fst.serialization.FstConfiguration;
+import com.chm.converter.fst.serialization.FstSerializerRegistryDelegate;
 import com.chm.converter.fst.serializers.DefaultDateSerializer;
 import com.chm.converter.fst.serializers.Java8TimeSerializer;
 import org.nustaq.serialization.FSTConfiguration;
@@ -37,7 +38,7 @@ public class FstFactory {
     private final FSTConfiguration conf;
 
     public FstFactory(Converter<?> converter) {
-        conf = new FstConfiguration();
+        conf = new FstConfiguration(converter);
         conf.setInstantiator(new CustomFstDefaultClassInstantiator());
         conf.setForceSerializable(true);
         // Default Date Serializer
@@ -57,7 +58,7 @@ public class FstFactory {
         conf.registerSerializer(YearMonth.class, new Java8TimeSerializer<>(YearMonth.class, converter), false);
         conf.registerSerializer(Year.class, new Java8TimeSerializer<>(Year.class, converter), false);
         conf.registerSerializer(ZoneOffset.class, new Java8TimeSerializer<>(ZoneOffset.class, converter), false);
-        // conf.setSerializerRegistryDelegate(FstSerializerRegistryDelegate.newDefault(converter));
+        conf.setSerializerRegistryDelegate(FstSerializerRegistryDelegate.newDefault(converter));
     }
 
     public FSTObjectOutput getObjectOutput(OutputStream outputStream) {
@@ -66,9 +67,5 @@ public class FstFactory {
 
     public FSTObjectInput getObjectInput(InputStream inputStream) {
         return conf.getObjectInput(inputStream);
-    }
-
-    public boolean checkExistSerializer(Class cls) {
-        return conf.getCLInfoRegistry().getSerializerRegistry().getSerializer(cls) != null;
     }
 }

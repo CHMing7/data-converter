@@ -1,5 +1,7 @@
 package com.chm.converter.fst.serialization;
 
+import com.chm.converter.core.Converter;
+import com.chm.converter.fst.DefaultFstConverter;
 import org.nustaq.serialization.FSTClazzInfo;
 import org.nustaq.serialization.FSTClazzInfoRegistry;
 import org.nustaq.serialization.FSTConfiguration;
@@ -13,10 +15,11 @@ import org.nustaq.serialization.FSTSerializerRegistryDelegate;
  **/
 public class FstConfiguration extends FSTConfiguration {
 
-    protected FstClazzInfoRegistry serializationInfoRegistry = new FstClazzInfoRegistry();
+    protected FstClazzInfoRegistry serializationInfoRegistry;
 
-    public FstConfiguration() {
+    public FstConfiguration(Converter<?> converter) {
         super(null);
+        serializationInfoRegistry  = new FstClazzInfoRegistry(converter, DefaultFstConverter::checkExistFstAnnotation);
         initDefaultFstConfigurationInternal(this);
     }
 

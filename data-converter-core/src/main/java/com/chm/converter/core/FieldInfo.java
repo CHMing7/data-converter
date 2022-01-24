@@ -17,6 +17,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +37,70 @@ public class FieldInfo implements Comparable<FieldInfo> {
         public boolean isStop() {
             return true;
         }
+    };
+
+    public static final Comparator<FieldInfo> FIELD_INFO_COMPARATOR = (o1, o2) -> {
+        // Deal extend bridge
+        if (o2.method != null && o1.method != null
+                && o2.method.isBridge() && !o1.method.isBridge()
+                && o2.method.getName().equals(o1.method.getName())) {
+            return 1;
+        }
+
+        if (o1.ordinal < o2.ordinal) {
+            return -1;
+        }
+
+        if (o1.ordinal > o2.ordinal) {
+            return 1;
+        }
+
+        int result = o1.name.compareTo(o2.name);
+
+        if (result != 0) {
+            return result;
+        }
+
+        Class<?> thisDeclaringClass = o1.getDeclaredClass();
+        Class<?> otherDeclaringClass = o2.getDeclaredClass();
+
+        if (thisDeclaringClass != null && otherDeclaringClass != null && thisDeclaringClass != otherDeclaringClass) {
+            if (thisDeclaringClass.isAssignableFrom(otherDeclaringClass)) {
+                return -1;
+            }
+
+            if (otherDeclaringClass.isAssignableFrom(thisDeclaringClass)) {
+                return 1;
+            }
+        }
+        boolean isSampeType = o1.field != null && o1.field.getType() == o1.fieldClass;
+        boolean oSameType = o2.field != null && o2.field.getType() == o2.fieldClass;
+
+        if (isSampeType && !oSameType) {
+            return 1;
+        }
+
+        if (oSameType && !isSampeType) {
+            return -1;
+        }
+
+        if (o2.fieldClass.isPrimitive() && !o1.fieldClass.isPrimitive()) {
+            return 1;
+        }
+
+        if (o1.fieldClass.isPrimitive() && !o2.fieldClass.isPrimitive()) {
+            return -1;
+        }
+
+        if (o2.fieldClass.getName().startsWith("java.") && !o1.fieldClass.getName().startsWith("java.")) {
+            return 1;
+        }
+
+        if (o1.fieldClass.getName().startsWith("java.") && !o2.fieldClass.getName().startsWith("java.")) {
+            return -1;
+        }
+
+        return o1.fieldClass.getName().compareTo(o2.fieldClass.getName());
     };
 
     /**
@@ -459,67 +524,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
 
     @Override
     public int compareTo(FieldInfo o) {
-        // Deal extend bridge
-        if (o.method != null && this.method != null
-                && o.method.isBridge() && !this.method.isBridge()
-                && o.method.getName().equals(this.method.getName())) {
-            return 1;
-        }
-
-        if (this.ordinal < o.ordinal) {
-            return -1;
-        }
-
-        if (this.ordinal > o.ordinal) {
-            return 1;
-        }
-
-        int result = this.name.compareTo(o.name);
-
-        if (result != 0) {
-            return result;
-        }
-
-        Class<?> thisDeclaringClass = this.getDeclaredClass();
-        Class<?> otherDeclaringClass = o.getDeclaredClass();
-
-        if (thisDeclaringClass != null && otherDeclaringClass != null && thisDeclaringClass != otherDeclaringClass) {
-            if (thisDeclaringClass.isAssignableFrom(otherDeclaringClass)) {
-                return -1;
-            }
-
-            if (otherDeclaringClass.isAssignableFrom(thisDeclaringClass)) {
-                return 1;
-            }
-        }
-        boolean isSampeType = this.field != null && this.field.getType() == this.fieldClass;
-        boolean oSameType = o.field != null && o.field.getType() == o.fieldClass;
-
-        if (isSampeType && !oSameType) {
-            return 1;
-        }
-
-        if (oSameType && !isSampeType) {
-            return -1;
-        }
-
-        if (o.fieldClass.isPrimitive() && !this.fieldClass.isPrimitive()) {
-            return 1;
-        }
-
-        if (this.fieldClass.isPrimitive() && !o.fieldClass.isPrimitive()) {
-            return -1;
-        }
-
-        if (o.fieldClass.getName().startsWith("java.") && !this.fieldClass.getName().startsWith("java.")) {
-            return 1;
-        }
-
-        if (this.fieldClass.getName().startsWith("java.") && !o.fieldClass.getName().startsWith("java.")) {
-            return -1;
-        }
-
-        return this.fieldClass.getName().compareTo(o.fieldClass.getName());
+     return FIELD_INFO_COMPARATOR.compare(this, o);
     }
 
     public String getFormat() {

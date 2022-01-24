@@ -45,9 +45,9 @@ import java.util.stream.Collectors;
  **/
 public class FastjsonSerializeConfig extends SerializeConfig {
 
-    private final UseOriginalJudge useOriginalJudge;
-
     private final Class<? extends Converter> converterClass;
+
+    private final UseOriginalJudge useOriginalJudge;
 
     private final NameFilter nameFilter;
 

@@ -5,16 +5,13 @@ import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
-import com.chm.converter.avro.DefaultAvroConverter;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
-import com.chm.converter.protostuff.DefaultProtostuffConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Collection;
@@ -38,7 +35,6 @@ public class ConverterTest {
 
     @BeforeEach
     public void before() {
-        converter = ConverterSelector.select(DataType.PROTOSTUFF, DefaultProtostuffConverter.class);
         user = new User();
         User user1 = new User();
         user1.setUserName("testName");
@@ -132,7 +128,20 @@ public class ConverterTest {
     }
 
     @Test
-    public void main() {
+    public void testAny() {
+        ConverterTest converterTest = new ConverterTest();
+        converterTest.before();
+        this.converter = ConverterSelector.select(DataType.FST);
+        StaticLog.info(this.converter.getConverterName());
+        this.testUser();
+        this.testMap();
+        this.testCollection();
+        this.testArray();
+        this.testEnum();
+    }
+
+    @Test
+    public void testAll() {
         ConverterTest converterTest = new ConverterTest();
         converterTest.before();
         List<DataType> dateTypeList = ConverterSelector.getDateTypeList();
@@ -146,9 +155,6 @@ public class ConverterTest {
                 this.testCollection();
                 this.testArray();
                 this.testEnum();
-                if(!(converter instanceof DefaultAvroConverter)){
-
-                }
             }
         }
     }

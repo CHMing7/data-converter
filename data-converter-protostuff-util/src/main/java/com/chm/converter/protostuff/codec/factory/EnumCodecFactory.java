@@ -46,22 +46,16 @@ public class EnumCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
     public static final class EnumCodec<T extends Enum<T>> extends BaseProtostuffCodec<T> {
 
-        private final Class<T> classOfT;
-
         private final com.chm.converter.core.codecs.EnumCodec<T> enumCodec;
 
         private final JavaBeanInfo<T> javaBeanInfo;
 
-        private final Converter<?> converter;
-
         public EnumCodec(Class<T> classOfT, Converter<?> converter) {
             super(classOfT, "enumCodec");
-            this.classOfT = classOfT;
             Class<? extends Converter> converterClass = converter != null ? converter.getClass() : null;
             this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
             Map<String, String> aliasMap = javaBeanInfo.getFieldNameAliasMap();
             this.enumCodec = new com.chm.converter.core.codecs.EnumCodec<>(classOfT, aliasMap);
-            this.converter = converter;
         }
 
         @Override

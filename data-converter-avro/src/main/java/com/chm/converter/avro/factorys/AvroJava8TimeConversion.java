@@ -1,5 +1,6 @@
 package com.chm.converter.avro.factorys;
 
+import cn.hutool.core.lang.TypeReference;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import org.apache.avro.Conversion;

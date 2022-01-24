@@ -14,10 +14,17 @@ import java.util.Objects;
  **/
 public class User {
 
+
+    /**
+     * 用户
+     */
+    @FieldProperty(name = "user12", ordinal = 1)
+    public User user;
+
     /**
      * 用户名
      */
-    @FieldProperty(name = "userName1", ordinal = 1)
+    @FieldProperty(name = "userName1", ordinal = 2)
     public String userName;
 
     /**
@@ -29,17 +36,25 @@ public class User {
     /**
      * 新型时间
      */
-    @FieldProperty(name = "localDateTime", ordinal = 2, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(name = "localDateTime", ordinal = 4, format = "yyyy-MM-dd HH:mm:ss.SSSS")
     public LocalDateTime localDateTime;
 
     /**
      * date
      */
-    @FieldProperty(name = "date", ordinal = 4, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(name = "date", ordinal = 6, format = "yyyy-MM-dd HH:mm:ss.SSSS")
     public Date date;
 
     @FieldProperty(name = "yearMonth", ordinal = 5, format = "yyyy-MM")
     public YearMonth yearMonth;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public String getUserName() {
         return userName;
