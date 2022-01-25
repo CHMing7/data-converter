@@ -47,8 +47,7 @@ public class ConverterTest {
     }
 
 
-    @Test
-    public void testUser() {
+    private void testUser() {
         Object encode = converter.encode(user);
         StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
 
@@ -58,8 +57,7 @@ public class ConverterTest {
     }
 
 
-    @Test
-    public void testMap() {
+    private void testMap() {
         Map<String, User> userMap = MapUtil.newHashMap(true);
         userMap.put("user", user);
         Object encode = converter.encode(userMap);
@@ -73,8 +71,7 @@ public class ConverterTest {
         assertEquals(userMap, newUserMap);
     }
 
-    @Test
-    public void testCollection() {
+    private void testCollection() {
         Collection<User> userCollection = CollUtil.newArrayList();
         userCollection.add(user);
         userCollection.add(user);
@@ -92,9 +89,7 @@ public class ConverterTest {
         assertEquals(userCollection, newUserCollection);
     }
 
-
-    @Test
-    public void testArray() {
+    private void testArray() {
         User[] userArray = new User[3];
         userArray[0] = user;
         userArray[1] = user;
@@ -110,9 +105,7 @@ public class ConverterTest {
         assertArrayEquals(userArray, newUserArray);
     }
 
-
-    @Test
-    public void testEnum() {
+    private void testEnum() {
 
         Object encode = converter.encode(Enum.ONE);
         StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
@@ -131,7 +124,7 @@ public class ConverterTest {
     public void testAny() {
         ConverterTest converterTest = new ConverterTest();
         converterTest.before();
-        this.converter = ConverterSelector.select(DataType.FST);
+        this.converter = ConverterSelector.select(DataType.KRYO);
         StaticLog.info(this.converter.getConverterName());
         this.testUser();
         this.testMap();

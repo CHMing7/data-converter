@@ -1,8 +1,9 @@
 package com.chm.converter.core.constant;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.lang.Pair;
-import cn.hutool.core.map.MapUtil;
+
+import com.chm.converter.core.lang.Pair;
+import com.chm.converter.core.utils.CollUtil;
+import com.chm.converter.core.utils.MapUtil;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -42,14 +43,14 @@ public interface TimeConstant {
      * 支持的java8时间类型集合
      */
     Set<Class<? extends TemporalAccessor>> TEMPORAL_ACCESSOR_SET =
-            CollectionUtil.newLinkedHashSet(Instant.class, LocalDate.class, LocalDateTime.class, LocalTime.class,
+            CollUtil.newLinkedHashSet(Instant.class, LocalDate.class, LocalDateTime.class, LocalTime.class,
                     OffsetDateTime.class, OffsetTime.class, ZonedDateTime.class, MonthDay.class, YearMonth.class,
                     Year.class, ZoneOffset.class);
 
     /**
      * 默认时间类型集合
      */
-    Set<Class<? extends Date>> DEFAULT_DATE_SET = CollectionUtil.newLinkedHashSet(java.sql.Date.class, Timestamp.class, Date.class);
+    Set<Class<? extends Date>> DEFAULT_DATE_SET = CollUtil.newLinkedHashSet(java.sql.Date.class, Timestamp.class, Date.class);
 
     /**
      * java8时间类型转换

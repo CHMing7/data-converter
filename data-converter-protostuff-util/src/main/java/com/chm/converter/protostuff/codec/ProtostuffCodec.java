@@ -1,6 +1,5 @@
 package com.chm.converter.protostuff.codec;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.creator.ObjectConstructor;
 import com.chm.converter.core.reflect.TypeToken;
@@ -71,7 +70,6 @@ public abstract class ProtostuffCodec<T> implements UniversalInterface, Schema<T
      */
     @Override
     public void mergeFrom(Input input, T message) throws IOException {
-        BeanUtil.copyProperties(mergeFrom(input), message);
     }
 
     @Override

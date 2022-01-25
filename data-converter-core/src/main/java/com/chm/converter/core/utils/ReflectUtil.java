@@ -1,31 +1,26 @@
 package com.chm.converter.core.utils;
 
-import cn.hutool.core.bean.NullWrapperBean;
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.exceptions.UtilException;
-import cn.hutool.core.lang.Assert;
-import cn.hutool.core.lang.Filter;
-import cn.hutool.core.lang.SimpleCache;
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ClassUtil;
-import cn.hutool.core.util.StrUtil;
+import com.chm.converter.core.exception.UtilException;
+import com.chm.converter.core.lang.SimpleCache;
+import com.chm.converter.core.reflect.ConverterPreconditions;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
- * copy from hutool
  * 反射工具类
+ * <br>
+ * copy from hutool
  *
  * @author caihongming
  * @version v1.0
@@ -49,6 +44,66 @@ public class ReflectUtil {
      */
     private static final SimpleCache<Class<?>, Method[]> METHODS_CACHE = new SimpleCache<>();
 
+    // --------------------------------------------------------------------------------------------------------- Constructor
+
+    /**
+     * 查找类中的指定参数的构造方法，如果找到构造方法，会自动设置可访问为true
+     *
+     * @param <T>            对象类型
+     * @param clazz          类
+     * @param parameterTypes 参数类型，只要任何一个参数是指定参数的父类或接口或相等即可，此参数可以不传
+     * @return 构造方法，如果未找到返回null
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?>... parameterTypes) {
+        if (null == clazz) {
+            return null;
+        }
+
+        final Constructor<?>[] constructors = getConstructors(clazz);
+        Class<?>[] pts;
+        for (Constructor<?> constructor : constructors) {
+            pts = constructor.getParameterTypes();
+            if (ClassUtil.isAllAssignableFrom(pts, parameterTypes)) {
+                // 构造可访问
+                setAccessible(constructor);
+                return (Constructor<T>) constructor;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获得一个类中所有构造列表
+     *
+     * @param <T>       构造的对象类型
+     * @param beanClass 类
+     * @return 字段列表
+     * @throws SecurityException 安全检查异常
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Constructor<T>[] getConstructors(Class<T> beanClass) throws SecurityException {
+        ConverterPreconditions.checkArgument(beanClass != null, "[Assertion failed] - the object argument must be null");
+        Constructor<?>[] constructors = CONSTRUCTORS_CACHE.get(beanClass);
+        if (null != constructors) {
+            return (Constructor<T>[]) constructors;
+        }
+
+        constructors = getConstructorsDirectly(beanClass);
+        return (Constructor<T>[]) CONSTRUCTORS_CACHE.put(beanClass, constructors);
+    }
+
+    /**
+     * 获得一个类中所有构造列表，直接反射获取，无缓存
+     *
+     * @param beanClass 类
+     * @return 字段列表
+     * @throws SecurityException 安全检查异常
+     */
+    public static Constructor<?>[] getConstructorsDirectly(Class<?> beanClass) throws SecurityException {
+        ConverterPreconditions.checkArgument(beanClass != null, "[Assertion failed] - the object argument must be null");
+        return beanClass.getDeclaredConstructors();
+    }
 
     /**
      * 查找指定类中是否包含指定名称对应的字段，包括所有字段（包括非public字段），也包括父类和Object类的字段
@@ -86,7 +141,7 @@ public class ReflectUtil {
      */
     public static Field getField(Class<?> beanClass, String name) throws SecurityException {
         final Field[] fields = getFields(beanClass);
-        return cn.hutool.core.util.ArrayUtil.firstMatch((field) -> name.equals(getFieldName(field)), fields);
+        return ArrayUtil.firstMatch((field) -> name.equals(getFieldName(field)), fields);
     }
 
     /**
@@ -133,7 +188,7 @@ public class ReflectUtil {
      * @throws SecurityException 安全检查异常
      */
     public static Field[] getFieldsDirectly(Class<?> beanClass, boolean withSuperClassFields) throws SecurityException {
-        Assert.notNull(beanClass);
+        ConverterPreconditions.checkArgument(beanClass != null, "[Assertion failed] - the object argument must be null");
 
         Field[] allFields = null;
         Class<?> searchType = beanClass;
@@ -160,7 +215,7 @@ public class ReflectUtil {
      * @throws UtilException 包装IllegalAccessException异常
      */
     public static Object getFieldValue(Object obj, String fieldName) throws UtilException {
-        if (null == obj || StrUtil.isBlank(fieldName)) {
+        if (null == obj || StringUtil.isBlank(fieldName)) {
             return null;
         }
         return getFieldValue(obj, getField(obj instanceof Class ? (Class<?>) obj : obj.getClass(), fieldName));
@@ -233,11 +288,11 @@ public class ReflectUtil {
      * @throws UtilException 包装IllegalAccessException异常
      */
     public static void setFieldValue(Object obj, String fieldName, Object value) throws UtilException {
-        Assert.notNull(obj);
-        Assert.notBlank(fieldName);
+        ConverterPreconditions.checkArgument(obj != null, "[Assertion failed] - the object argument must be null");
+        ConverterPreconditions.checkArgument(StringUtil.isNotBlank(fieldName), "Field [{}] is not exist in [{}]", fieldName, obj.getClass().getName());
 
         final Field field = getField((obj instanceof Class) ? (Class<?>) obj : obj.getClass(), fieldName);
-        Assert.notNull(field, "Field [{}] is not exist in [{}]", fieldName, obj.getClass().getName());
+        ConverterPreconditions.checkArgument(field != null, "Field [{}] is not exist in [{}]", fieldName, obj.getClass().getName());
         setFieldValue(obj, field, value);
     }
 
@@ -250,18 +305,10 @@ public class ReflectUtil {
      * @throws UtilException UtilException 包装IllegalAccessException异常
      */
     public static void setFieldValue(Object obj, Field field, Object value) throws UtilException {
-        Assert.notNull(field, "Field in [{}] not exist !", obj);
+        ConverterPreconditions.checkArgument(field != null, "Field in [{}] not exist !", obj);
 
         final Class<?> fieldType = field.getType();
-        if (null != value) {
-            if (false == fieldType.isAssignableFrom(value.getClass())) {
-                //对于类型不同的字段，尝试转换，转换失败则使用原对象类型
-                final Object targetValue = Convert.convert(fieldType, value);
-                if (null != targetValue) {
-                    value = targetValue;
-                }
-            }
-        } else {
+        if (null == value) {
             // 获取null对应默认值，防止原始类型造成空指针问题
             value = ClassUtil.getDefaultValue(fieldType);
         }
@@ -283,7 +330,7 @@ public class ReflectUtil {
      * @return 被设置可访问的对象
      */
     public static <T extends AccessibleObject> T setAccessible(T accessibleObject) {
-        if (null != accessibleObject && false == accessibleObject.isAccessible()) {
+        if (null != accessibleObject && !accessibleObject.isAccessible()) {
             accessibleObject.setAccessible(true);
         }
         return accessibleObject;
@@ -326,7 +373,7 @@ public class ReflectUtil {
      * @param filter 过滤器
      * @return 过滤后的方法列表
      */
-    public static List<Method> getPublicMethods(Class<?> clazz, Filter<Method> filter) {
+    public static List<Method> getPublicMethods(Class<?> clazz, Predicate<Method> filter) {
         if (null == clazz) {
             return null;
         }
@@ -336,7 +383,7 @@ public class ReflectUtil {
         if (null != filter) {
             methodList = new ArrayList<>();
             for (Method method : methods) {
-                if (filter.accept(method)) {
+                if (filter.test(method)) {
                     methodList.add(method);
                 }
             }
@@ -355,7 +402,7 @@ public class ReflectUtil {
      */
     public static List<Method> getPublicMethods(Class<?> clazz, Method... excludeMethods) {
         final HashSet<Method> excludeMethodSet = CollUtil.newHashSet(excludeMethods);
-        return getPublicMethods(clazz, method -> false == excludeMethodSet.contains(method));
+        return getPublicMethods(clazz, method -> !excludeMethodSet.contains(method));
     }
 
     /**
@@ -367,7 +414,7 @@ public class ReflectUtil {
      */
     public static List<Method> getPublicMethods(Class<?> clazz, String... excludeMethodNames) {
         final HashSet<String> excludeMethodNameSet = CollUtil.newHashSet(excludeMethodNames);
-        return getPublicMethods(clazz, method -> false == excludeMethodNameSet.contains(method.getName()));
+        return getPublicMethods(clazz, method -> !excludeMethodNameSet.contains(method.getName()));
     }
 
     /**
@@ -401,7 +448,7 @@ public class ReflectUtil {
      * @throws SecurityException 无访问权限抛出异常
      */
     public static Method getMethodOfObj(Object obj, String methodName, Object... args) throws SecurityException {
-        if (null == obj || StrUtil.isBlank(methodName)) {
+        if (null == obj || StringUtil.isBlank(methodName)) {
             return null;
         }
         return getMethod(obj.getClass(), methodName, ClassUtil.getClasses(args));
@@ -456,14 +503,14 @@ public class ReflectUtil {
      * @throws SecurityException 无权访问抛出异常
      */
     public static Method getMethod(Class<?> clazz, boolean ignoreCase, String methodName, Class<?>... paramTypes) throws SecurityException {
-        if (null == clazz || StrUtil.isBlank(methodName)) {
+        if (null == clazz || StringUtil.isBlank(methodName)) {
             return null;
         }
 
         final Method[] methods = getMethods(clazz);
         if (ArrayUtil.isNotEmpty(methods)) {
             for (Method method : methods) {
-                if (StrUtil.equals(methodName, method.getName(), ignoreCase)) {
+                if (StringUtil.equals(methodName, method.getName(), ignoreCase)) {
                     if (ClassUtil.isAllAssignableFrom(method.getParameterTypes(), paramTypes)) {
                         return method;
                     }
@@ -519,14 +566,14 @@ public class ReflectUtil {
      * @throws SecurityException 无权访问抛出异常
      */
     public static Method getMethodByName(Class<?> clazz, boolean ignoreCase, String methodName) throws SecurityException {
-        if (null == clazz || StrUtil.isBlank(methodName)) {
+        if (null == clazz || StringUtil.isBlank(methodName)) {
             return null;
         }
 
         final Method[] methods = getMethods(clazz);
         if (ArrayUtil.isNotEmpty(methods)) {
             for (Method method : methods) {
-                if (StrUtil.equals(methodName, method.getName(), ignoreCase)) {
+                if (StringUtil.equals(methodName, method.getName(), ignoreCase)) {
                     return method;
                 }
             }
@@ -559,7 +606,7 @@ public class ReflectUtil {
      * @return 过滤后的方法列表
      * @throws SecurityException 安全异常
      */
-    public static Method[] getMethods(Class<?> clazz, Filter<Method> filter) throws SecurityException {
+    public static Method[] getMethods(Class<?> clazz, Predicate<Method> filter) throws SecurityException {
         if (null == clazz) {
             return null;
         }
@@ -592,7 +639,7 @@ public class ReflectUtil {
      * @throws SecurityException 安全检查异常
      */
     public static Method[] getMethodsDirectly(Class<?> beanClass, boolean withSuperClassMethods) throws SecurityException {
-        Assert.notNull(beanClass);
+        ConverterPreconditions.checkArgument(beanClass != null, "[Assertion failed] - this argument is required; it must not be null");
 
         Method[] allMethods = null;
         Class<?> searchType = beanClass;
@@ -643,8 +690,8 @@ public class ReflectUtil {
      * @return 是否为toString方法
      */
     public static boolean isToStringMethod(Method method) {
-        return method != null//
-                && "toString".equals(method.getName())//
+        return method != null
+                && "toString".equals(method.getName())
                 && isEmptyParam(method);
     }
 
@@ -656,6 +703,108 @@ public class ReflectUtil {
      */
     public static boolean isEmptyParam(Method method) {
         return method.getParameterTypes().length == 0;
+    }
+
+    // --------------------------------------------------------------------------------------------------------- newInstance
+
+    /**
+     * 实例化对象
+     *
+     * @param <T>   对象类型
+     * @param clazz 类名
+     * @return 对象
+     * @throws UtilException 包装各类异常
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T newInstance(String clazz) throws UtilException {
+        try {
+            return (T) Class.forName(clazz).newInstance();
+        } catch (Exception e) {
+            throw new UtilException(e, "Instance class [{}] error!", clazz);
+        }
+    }
+
+    /**
+     * 实例化对象
+     *
+     * @param <T>    对象类型
+     * @param clazz  类
+     * @param params 构造函数参数
+     * @return 对象
+     * @throws UtilException 包装各类异常
+     */
+    public static <T> T newInstance(Class<T> clazz, Object... params) throws UtilException {
+        if (ArrayUtil.isEmpty(params)) {
+            final Constructor<T> constructor = getConstructor(clazz);
+            try {
+                return constructor.newInstance();
+            } catch (Exception e) {
+                throw new UtilException(e, "Instance class [{}] error!", clazz);
+            }
+        }
+
+        final Class<?>[] paramTypes = ClassUtil.getClasses(params);
+        final Constructor<T> constructor = getConstructor(clazz, paramTypes);
+        if (null == constructor) {
+            throw new UtilException("No Constructor matched for parameter types: [{}]", new Object[]{paramTypes});
+        }
+        try {
+            return constructor.newInstance(params);
+        } catch (Exception e) {
+            throw new UtilException(e, "Instance class [{}] error!", clazz);
+        }
+    }
+
+    /**
+     * 尝试遍历并调用此类的所有构造方法，直到构造成功并返回
+     * <p>
+     * 对于某些特殊的接口，按照其默认实现实例化，例如：
+     * <pre>
+     *     Map       -》 HashMap
+     *     Collction -》 ArrayList
+     *     List      -》 ArrayList
+     *     Set       -》 HashSet
+     * </pre>
+     *
+     * @param <T>       对象类型
+     * @param beanClass 被构造的类
+     * @return 构造后的对象
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T newInstanceIfPossible(Class<T> beanClass) {
+        ConverterPreconditions.checkArgument(beanClass != null, "[Assertion failed] - this argument is required; it must not be null");
+
+        // 某些特殊接口的实例化按照默认实现进行
+        if (beanClass.isAssignableFrom(AbstractMap.class)) {
+            beanClass = (Class<T>) HashMap.class;
+        } else if (beanClass.isAssignableFrom(List.class)) {
+            beanClass = (Class<T>) ArrayList.class;
+        } else if (beanClass.isAssignableFrom(Set.class)) {
+            beanClass = (Class<T>) HashSet.class;
+        }
+
+        try {
+            return newInstance(beanClass);
+        } catch (Exception e) {
+            // ignore
+            // 默认构造不存在的情况下查找其它构造
+        }
+
+        final Constructor<T>[] constructors = getConstructors(beanClass);
+        Class<?>[] parameterTypes;
+        for (Constructor<T> constructor : constructors) {
+            parameterTypes = constructor.getParameterTypes();
+            if (0 == parameterTypes.length) {
+                continue;
+            }
+            setAccessible(constructor);
+            try {
+                return constructor.newInstance(ClassUtil.getDefaultValues(parameterTypes));
+            } catch (Exception ignore) {
+                // 构造出错时继续尝试下一种构造方式
+            }
+        }
+        return null;
     }
 
     // --------------------------------------------------------------------------------------------------------- invoke
@@ -692,7 +841,7 @@ public class ReflectUtil {
     public static <T> T invokeWithCheck(Object obj, Method method, Object... args) throws UtilException {
         final Class<?>[] types = method.getParameterTypes();
         if (null != args) {
-            Assert.isTrue(args.length == types.length, "Params length [{}] is not fit for param length [{}] of method !", args.length, types.length);
+            ConverterPreconditions.checkArgument(args.length != types.length, "Params length [{}] is not fit for param length [{}] of method !", args.length, types.length);
             Class<?> type;
             for (int i = 0; i < args.length; i++) {
                 type = types[i];
@@ -742,15 +891,6 @@ public class ReflectUtil {
                 if (i >= args.length || null == args[i]) {
                     // 越界或者空值
                     actualArgs[i] = ClassUtil.getDefaultValue(parameterTypes[i]);
-                } else if (args[i] instanceof NullWrapperBean) {
-                    //如果是通过NullWrapperBean传递的null参数,直接赋值null
-                    actualArgs[i] = null;
-                } else if (false == parameterTypes[i].isAssignableFrom(args[i].getClass())) {
-                    //对于类型不同的字段，尝试转换，转换失败则使用原对象类型
-                    final Object targetValue = Convert.convert(parameterTypes[i], args[i]);
-                    if (null != targetValue) {
-                        actualArgs[i] = targetValue;
-                    }
                 } else {
                     actualArgs[i] = args[i];
                 }
@@ -774,12 +914,11 @@ public class ReflectUtil {
      * @param args       参数列表
      * @return 执行结果
      * @throws UtilException IllegalAccessException包装
-     * @see NullWrapperBean
      */
     public static <T> T invoke(Object obj, String methodName, Object... args) throws UtilException {
         final Method method = getMethodOfObj(obj, methodName, args);
         if (null == method) {
-            throw new UtilException(StrUtil.format("No such method: [{}]", methodName));
+            throw new UtilException(StringUtil.format("No such method: [{}]", methodName));
         }
         return invoke(obj, method, args);
     }

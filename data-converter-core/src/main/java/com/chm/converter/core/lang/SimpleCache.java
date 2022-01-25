@@ -13,6 +13,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * 简单缓存，无超时实现，默认使用{@link WeakHashMap}实现缓存自动清理
+ * <br>
  * copy from hutool
  *
  * @author caihongming

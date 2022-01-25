@@ -1,7 +1,5 @@
 package com.chm.converter.json;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
@@ -16,6 +14,8 @@ import com.alibaba.fastjson.util.FieldInfo;
 import com.alibaba.fastjson.util.TypeUtils;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
+import com.chm.converter.core.utils.ArrayUtil;
+import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.json.fastjson.deserializer.FastjsonParserConfig;
 import com.chm.converter.json.fastjson.serializer.FastjsonSerializeConfig;
@@ -129,7 +129,7 @@ public class FastjsonConverter implements JsonConverter {
     }
 
     private String parseToString(Object obj) {
-        if (CollectionUtil.isEmpty(serializerFeatureList)) {
+        if (CollUtil.isEmpty(serializerFeatureList)) {
             return JSON.toJSONString(obj, serializeConfig);
         }
         return JSON.toJSONString(obj, serializeConfig, serializerFeatureArray);

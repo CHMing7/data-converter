@@ -12,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * List相关工具类
- * <p>
+ * <br>
  * copy from hutool
  *
  * @author caihongming

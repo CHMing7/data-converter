@@ -1,11 +1,10 @@
 package com.chm.converter.core.utils;
 
 
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.text.StrBuilder;
-import cn.hutool.core.text.StrFormatter;
-import cn.hutool.core.text.StrSpliter;
 import com.chm.converter.core.text.CharPool;
+import com.chm.converter.core.text.StrBuilder;
+import com.chm.converter.core.text.StrFormatter;
+import com.chm.converter.core.text.StrSpliter;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -1363,50 +1362,6 @@ public class CharSequenceUtil {
     }
 
     /**
-     * 切分字符串为long数组
-     *
-     * @param str       被切分的字符串
-     * @param separator 分隔符
-     * @return 切分后long数组
-     */
-    public static long[] splitToLong(CharSequence str, char separator) {
-        return Convert.convert(long[].class, splitTrim(str, separator));
-    }
-
-    /**
-     * 切分字符串为long数组
-     *
-     * @param str       被切分的字符串
-     * @param separator 分隔符字符串
-     * @return 切分后long数组
-     */
-    public static long[] splitToLong(CharSequence str, CharSequence separator) {
-        return Convert.convert(long[].class, splitTrim(str, separator));
-    }
-
-    /**
-     * 切分字符串为int数组
-     *
-     * @param str       被切分的字符串
-     * @param separator 分隔符
-     * @return 切分后long数组
-     */
-    public static int[] splitToInt(CharSequence str, char separator) {
-        return Convert.convert(int[].class, splitTrim(str, separator));
-    }
-
-    /**
-     * 切分字符串为int数组
-     *
-     * @param str       被切分的字符串
-     * @param separator 分隔符字符串
-     * @return 切分后long数组
-     */
-    public static int[] splitToInt(CharSequence str, CharSequence separator) {
-        return Convert.convert(int[].class, splitTrim(str, separator));
-    }
-
-    /**
      * 切分字符串<br>
      * a#b#c =》 [a,b,c] <br>
      * a##b#c =》 [a,"",b,c]
@@ -1899,5 +1854,360 @@ public class CharSequenceUtil {
         } else {
             return name2;
         }
+    }
+
+    // ------------------------------------------------------------------------ Trim
+
+    /**
+     * 除去字符串头尾部的空白，如果字符串是{@code null}，依然返回{@code null}。
+     *
+     * <p>
+     * 注意，和{@link String#trim()}不同，此方法使用{@link CharUtil#isBlankChar(char)} 来判定空白， 因而可以除去英文字符集之外的其它空白，如中文空格。
+     *
+     * <pre>
+     * trim(null)          = null
+     * trim(&quot;&quot;)            = &quot;&quot;
+     * trim(&quot;     &quot;)       = &quot;&quot;
+     * trim(&quot;abc&quot;)         = &quot;abc&quot;
+     * trim(&quot;    abc    &quot;) = &quot;abc&quot;
+     * </pre>
+     *
+     * @param str 要处理的字符串
+     * @return 除去头尾空白的字符串，如果原字串为{@code null}，则返回{@code null}
+     */
+    public static String trim(CharSequence str) {
+        return (null == str) ? null : trim(str, 0);
+    }
+
+    /**
+     * 除去字符串头尾部的空白，如果字符串是{@code null}，返回{@code ""}。
+     *
+     * <pre>
+     * StrUtil.trimToEmpty(null)          = ""
+     * StrUtil.trimToEmpty("")            = ""
+     * StrUtil.trimToEmpty("     ")       = ""
+     * StrUtil.trimToEmpty("abc")         = "abc"
+     * StrUtil.trimToEmpty("    abc    ") = "abc"
+     * </pre>
+     *
+     * @param str 字符串
+     * @return 去除两边空白符后的字符串, 如果为null返回""
+     */
+    public static String trimToEmpty(CharSequence str) {
+        return str == null ? EMPTY : trim(str);
+    }
+
+    /**
+     * 除去字符串头尾部的空白，如果字符串是{@code null}或者""，返回{@code null}。
+     *
+     * <pre>
+     * StrUtil.trimToNull(null)          = null
+     * StrUtil.trimToNull("")            = null
+     * StrUtil.trimToNull("     ")       = null
+     * StrUtil.trimToNull("abc")         = "abc"
+     * StrUtil.trimToEmpty("    abc    ") = "abc"
+     * </pre>
+     *
+     * @param str 字符串
+     * @return 去除两边空白符后的字符串, 如果为空返回null
+     */
+    public static String trimToNull(CharSequence str) {
+        final String trimStr = trim(str);
+        return EMPTY.equals(trimStr) ? null : trimStr;
+    }
+
+    /**
+     * 除去字符串头部的空白，如果字符串是{@code null}，则返回{@code null}。
+     *
+     * <p>
+     * 注意，和{@link String#trim()}不同，此方法使用{@link CharUtil#isBlankChar(char)} 来判定空白， 因而可以除去英文字符集之外的其它空白，如中文空格。
+     *
+     * <pre>
+     * trimStart(null)         = null
+     * trimStart(&quot;&quot;)           = &quot;&quot;
+     * trimStart(&quot;abc&quot;)        = &quot;abc&quot;
+     * trimStart(&quot;  abc&quot;)      = &quot;abc&quot;
+     * trimStart(&quot;abc  &quot;)      = &quot;abc  &quot;
+     * trimStart(&quot; abc &quot;)      = &quot;abc &quot;
+     * </pre>
+     *
+     * @param str 要处理的字符串
+     * @return 除去空白的字符串，如果原字串为{@code null}或结果字符串为{@code ""}，则返回 {@code null}
+     */
+    public static String trimStart(CharSequence str) {
+        return trim(str, -1);
+    }
+
+    /**
+     * 除去字符串尾部的空白，如果字符串是{@code null}，则返回{@code null}。
+     *
+     * <p>
+     * 注意，和{@link String#trim()}不同，此方法使用{@link CharUtil#isBlankChar(char)} 来判定空白， 因而可以除去英文字符集之外的其它空白，如中文空格。
+     *
+     * <pre>
+     * trimEnd(null)       = null
+     * trimEnd(&quot;&quot;)         = &quot;&quot;
+     * trimEnd(&quot;abc&quot;)      = &quot;abc&quot;
+     * trimEnd(&quot;  abc&quot;)    = &quot;  abc&quot;
+     * trimEnd(&quot;abc  &quot;)    = &quot;abc&quot;
+     * trimEnd(&quot; abc &quot;)    = &quot; abc&quot;
+     * </pre>
+     *
+     * @param str 要处理的字符串
+     * @return 除去空白的字符串，如果原字串为{@code null}或结果字符串为{@code ""}，则返回 {@code null}
+     */
+    public static String trimEnd(CharSequence str) {
+        return trim(str, 1);
+    }
+
+    /**
+     * 除去字符串头尾部的空白符，如果字符串是{@code null}，依然返回{@code null}。
+     *
+     * @param str  要处理的字符串
+     * @param mode {@code -1}表示trimStart，{@code 0}表示trim全部， {@code 1}表示trimEnd
+     * @return 除去指定字符后的的字符串，如果原字串为{@code null}，则返回{@code null}
+     */
+    public static String trim(CharSequence str, int mode) {
+        String result;
+        if (str == null) {
+            result = null;
+        } else {
+            int length = str.length();
+            int start = 0;
+            // 扫描字符串头部
+            int end = length;
+            if (mode <= 0) {
+                while ((start < end) && (CharUtil.isBlankChar(str.charAt(start)))) {
+                    start++;
+                }
+            }// 扫描字符串尾部
+            if (mode >= 0) {
+                while ((start < end) && (CharUtil.isBlankChar(str.charAt(end - 1)))) {
+                    end--;
+                }
+            }
+            if ((start > 0) || (end < length)) {
+                result = str.toString().substring(start, end);
+            } else {
+                result = str.toString();
+            }
+        }
+
+        return result;
+    }
+
+    // ------------------------------------------------------------------------ startWith
+
+    /**
+     * 字符串是否以给定字符开始
+     *
+     * @param str 字符串
+     * @param c   字符
+     * @return 是否开始
+     */
+    public static boolean startWith(CharSequence str, char c) {
+        if (isEmpty(str)) {
+            return false;
+        }
+        return c == str.charAt(0);
+    }
+
+    /**
+     * 是否以指定字符串开头<br>
+     * 如果给定的字符串和开头字符串都为null则返回true，否则任意一个值为null返回false
+     *
+     * @param str        被监测字符串
+     * @param prefix     开头字符串
+     * @param ignoreCase 是否忽略大小写
+     * @return 是否以指定字符串开头
+     */
+    public static boolean startWith(CharSequence str, CharSequence prefix, boolean ignoreCase) {
+        return startWith(str, prefix, ignoreCase, false);
+    }
+
+    /**
+     * 是否以指定字符串开头<br>
+     * 如果给定的字符串和开头字符串都为null则返回true，否则任意一个值为null返回false
+     *
+     * @param str          被监测字符串
+     * @param prefix       开头字符串
+     * @param ignoreCase   是否忽略大小写
+     * @param ignoreEquals 是否忽略字符串相等的情况
+     * @return 是否以指定字符串开头
+     */
+    public static boolean startWith(CharSequence str, CharSequence prefix, boolean ignoreCase, boolean ignoreEquals) {
+        if (null == str || null == prefix) {
+            if (!ignoreEquals) {
+                return false;
+            }
+            return null == str && null == prefix;
+        }
+
+        boolean isStartWith;
+        if (ignoreCase) {
+            isStartWith = str.toString().toLowerCase().startsWith(prefix.toString().toLowerCase());
+        } else {
+            isStartWith = str.toString().startsWith(prefix.toString());
+        }
+
+        if (isStartWith) {
+            return (false == ignoreEquals) || (false == equals(str, prefix, ignoreCase));
+        }
+        return false;
+    }
+
+    /**
+     * 是否以指定字符串开头
+     *
+     * @param str    被监测字符串
+     * @param prefix 开头字符串
+     * @return 是否以指定字符串开头
+     */
+    public static boolean startWith(CharSequence str, CharSequence prefix) {
+        return startWith(str, prefix, false);
+    }
+
+    /**
+     * 是否以指定字符串开头，忽略相等字符串的情况
+     *
+     * @param str    被监测字符串
+     * @param prefix 开头字符串
+     * @return 是否以指定字符串开头并且两个字符串不相等
+     */
+    public static boolean startWithIgnoreEquals(CharSequence str, CharSequence prefix) {
+        return startWith(str, prefix, false, true);
+    }
+
+    /**
+     * 是否以指定字符串开头，忽略大小写
+     *
+     * @param str    被监测字符串
+     * @param prefix 开头字符串
+     * @return 是否以指定字符串开头
+     */
+    public static boolean startWithIgnoreCase(CharSequence str, CharSequence prefix) {
+        return startWith(str, prefix, true);
+    }
+
+    /**
+     * 给定字符串是否以任何一个字符串开始<br>
+     * 给定字符串和数组为空都返回false
+     *
+     * @param str      给定字符串
+     * @param prefixes 需要检测的开始字符串
+     * @return 给定字符串是否以任何一个字符串开始
+     */
+    public static boolean startWithAny(CharSequence str, CharSequence... prefixes) {
+        if (isEmpty(str) || ArrayUtil.isEmpty(prefixes)) {
+            return false;
+        }
+
+        for (CharSequence suffix : prefixes) {
+            if (startWith(str, suffix, false)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ------------------------------------------------------------------------ endWith
+
+    /**
+     * 字符串是否以给定字符结尾
+     *
+     * @param str 字符串
+     * @param c   字符
+     * @return 是否结尾
+     */
+    public static boolean endWith(CharSequence str, char c) {
+        if (isEmpty(str)) {
+            return false;
+        }
+        return c == str.charAt(str.length() - 1);
+    }
+
+    /**
+     * 是否以指定字符串结尾<br>
+     * 如果给定的字符串和开头字符串都为null则返回true，否则任意一个值为null返回false
+     *
+     * @param str          被监测字符串
+     * @param suffix       结尾字符串
+     * @param isIgnoreCase 是否忽略大小写
+     * @return 是否以指定字符串结尾
+     */
+    public static boolean endWith(CharSequence str, CharSequence suffix, boolean isIgnoreCase) {
+        if (null == str || null == suffix) {
+            return null == str && null == suffix;
+        }
+
+        if (isIgnoreCase) {
+            return str.toString().toLowerCase().endsWith(suffix.toString().toLowerCase());
+        } else {
+            return str.toString().endsWith(suffix.toString());
+        }
+    }
+
+    /**
+     * 是否以指定字符串结尾
+     *
+     * @param str    被监测字符串
+     * @param suffix 结尾字符串
+     * @return 是否以指定字符串结尾
+     */
+    public static boolean endWith(CharSequence str, CharSequence suffix) {
+        return endWith(str, suffix, false);
+    }
+
+    /**
+     * 是否以指定字符串结尾，忽略大小写
+     *
+     * @param str    被监测字符串
+     * @param suffix 结尾字符串
+     * @return 是否以指定字符串结尾
+     */
+    public static boolean endWithIgnoreCase(CharSequence str, CharSequence suffix) {
+        return endWith(str, suffix, true);
+    }
+
+    /**
+     * 给定字符串是否以任何一个字符串结尾<br>
+     * 给定字符串和数组为空都返回false
+     *
+     * @param str      给定字符串
+     * @param suffixes 需要检测的结尾字符串
+     * @return 给定字符串是否以任何一个字符串结尾
+     */
+    public static boolean endWithAny(CharSequence str, CharSequence... suffixes) {
+        if (isEmpty(str) || ArrayUtil.isEmpty(suffixes)) {
+            return false;
+        }
+
+        for (CharSequence suffix : suffixes) {
+            if (endWith(str, suffix, false)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 给定字符串是否以任何一个字符串结尾（忽略大小写）<br>
+     * 给定字符串和数组为空都返回false
+     *
+     * @param str      给定字符串
+     * @param suffixes 需要检测的结尾字符串
+     * @return 给定字符串是否以任何一个字符串结尾
+     */
+    public static boolean endWithAnyIgnoreCase(CharSequence str, CharSequence... suffixes) {
+        if (isEmpty(str) || ArrayUtil.isEmpty(suffixes)) {
+            return false;
+        }
+
+        for (CharSequence suffix : suffixes) {
+            if (endWith(str, suffix, true)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

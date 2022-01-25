@@ -1,9 +1,5 @@
 package com.chm.converter.json.fastjson.deserializer;
 
-import cn.hutool.core.collection.CollStreamUtil;
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.parser.deserializer.FieldDeserializer;
 import com.alibaba.fastjson.parser.deserializer.JavaBeanDeserializer;
@@ -13,7 +9,11 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.utils.ArrayUtil;
+import com.chm.converter.core.utils.CollStreamUtil;
+import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
+import com.chm.converter.core.utils.ReflectUtil;
 import com.chm.converter.json.fastjson.FastjsonDefaultDateCodec;
 import com.chm.converter.json.fastjson.FastjsonJdk8DateCodec;
 
@@ -84,8 +84,8 @@ public class FastjsonParserConfig extends ParserConfig {
             }
 
             if (deserializer instanceof JavaBeanDeserializer) {
-                JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
-                if (CollectionUtil.isNotEmpty(javaBeanInfo.getSortedFieldList())) {
+                JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
+                if (CollUtil.isNotEmpty(javaBeanInfo.getSortedFieldList())) {
                     putDeserializer(clazz, deserializer = new FastjsonJavaBeanDeserializer(this, clazz));
                     ((FastjsonJavaBeanDeserializer) deserializer).init(this, clazz);
                     return deserializer;
@@ -102,10 +102,10 @@ public class FastjsonParserConfig extends ParserConfig {
             super(config, clazz);
         }
 
-        private <T> void init(ParserConfig config, Class<T> clazz){
+        private <T> void init(ParserConfig config, Class<T> clazz) {
             JavaBeanInfo<T> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
             List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
-            if (CollectionUtil.isEmpty(sortedFieldList)) {
+            if (CollUtil.isEmpty(sortedFieldList)) {
                 return;
             }
             // 属性排序并过滤不需要序列化的属性

@@ -1,15 +1,12 @@
 package com.chm.converter.core.utils;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.lang.Matcher;
-import cn.hutool.core.util.ObjectUtil;
-
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * @author caihongming
@@ -17,7 +14,6 @@ import java.util.Objects;
  * @since 2021-09-10
  **/
 public class ArrayUtil extends PrimitiveArrayUtil {
-
 
     // ---------------------------------------------------------------------- isEmpty
 
@@ -141,10 +137,10 @@ public class ArrayUtil extends PrimitiveArrayUtil {
      * @return 非空元素，如果不存在非空元素或数组为空，返回{@code null}
      */
     @SuppressWarnings("unchecked")
-    public static <T> T firstMatch(Matcher<T> matcher, T... array) {
+    public static <T> T firstMatch(Predicate<T> matcher, T... array) {
         if (isNotEmpty(array)) {
             for (final T val : array) {
-                if (matcher.match(val)) {
+                if (matcher.test(val)) {
                     return val;
                 }
             }
@@ -349,7 +345,6 @@ public class ArrayUtil extends PrimitiveArrayUtil {
      * @param iterator      {@link Iterator}
      * @param componentType 集合元素类型
      * @return 数组
-     * @since 3.0.9
      */
     public static <T> T[] toArray(Iterator<T> iterator, Class<T> componentType) {
         return toArray(CollUtil.newArrayList(iterator), componentType);
@@ -362,10 +357,9 @@ public class ArrayUtil extends PrimitiveArrayUtil {
      * @param iterable      {@link Iterable}
      * @param componentType 集合元素类型
      * @return 数组
-     * @since 3.0.9
      */
     public static <T> T[] toArray(Iterable<T> iterable, Class<T> componentType) {
-        return toArray(CollectionUtil.toCollection(iterable), componentType);
+        return toArray(CollUtil.toCollection(iterable), componentType);
     }
 
     /**
@@ -375,9 +369,182 @@ public class ArrayUtil extends PrimitiveArrayUtil {
      * @param collection    集合
      * @param componentType 集合元素类型
      * @return 数组
-     * @since 3.0.9
      */
     public static <T> T[] toArray(Collection<T> collection, Class<T> componentType) {
         return collection.toArray(newArray(componentType, 0));
     }
+
+    /**
+     * 获取数组长度<br>
+     * 如果参数为{@code null}，返回0
+     *
+     * <pre>
+     * ArrayUtil.length(null)            = 0
+     * ArrayUtil.length([])              = 0
+     * ArrayUtil.length([null])          = 1
+     * ArrayUtil.length([true, false])   = 2
+     * ArrayUtil.length([1, 2, 3])       = 3
+     * ArrayUtil.length(["a", "b", "c"]) = 3
+     * </pre>
+     *
+     * @param array 数组对象
+     * @return 数组长度
+     * @throws IllegalArgumentException 如果参数不为数组，抛出此异常
+     * @see Array#getLength(Object)
+     */
+    public static int length(Object array) throws IllegalArgumentException {
+        if (null == array) {
+            return 0;
+        }
+        return Array.getLength(array);
+    }
+
+    /**
+     * 将新元素添加到已有数组中<br>
+     * 添加新元素会生成一个新的数组，不影响原数组
+     *
+     * @param <T>         数组元素类型
+     * @param buffer      已有数组
+     * @param newElements 新元素
+     * @return 新数组
+     */
+    @SafeVarargs
+    public static <T> T[] append(T[] buffer, T... newElements) {
+        if (isEmpty(buffer)) {
+            return newElements;
+        }
+        return insert(buffer, buffer.length, newElements);
+    }
+
+    /**
+     * 将新元素添加到已有数组中<br>
+     * 添加新元素会生成一个新的数组，不影响原数组
+     *
+     * @param <T>         数组元素类型
+     * @param array       已有数组
+     * @param newElements 新元素
+     * @return 新数组
+     */
+    @SafeVarargs
+    public static <T> Object append(Object array, T... newElements) {
+        if (isEmpty(array)) {
+            return newElements;
+        }
+        return insert(array, length(array), newElements);
+    }
+
+    /**
+     * 将元素值设置为数组的某个位置，当给定的index大于数组长度，则追加
+     *
+     * @param <T>    数组元素类型
+     * @param buffer 已有数组
+     * @param index  位置，大于长度追加，否则替换
+     * @param value  新值
+     * @return 新数组或原有数组
+     */
+    public static <T> T[] setOrAppend(T[] buffer, int index, T value) {
+        if (index < buffer.length) {
+            Array.set(buffer, index, value);
+            return buffer;
+        } else {
+            return append(buffer, value);
+        }
+    }
+
+    /**
+     * 将元素值设置为数组的某个位置，当给定的index大于数组长度，则追加
+     *
+     * @param array 已有数组
+     * @param index 位置，大于长度追加，否则替换
+     * @param value 新值
+     * @return 新数组或原有数组
+     */
+    public static Object setOrAppend(Object array, int index, Object value) {
+        if (index < length(array)) {
+            Array.set(array, index, value);
+            return array;
+        } else {
+            return append(array, value);
+        }
+    }
+
+
+    /**
+     * 将新元素插入到到已有数组中的某个位置<br>
+     * 添加新元素会生成一个新的数组，不影响原数组<br>
+     * 如果插入位置为为负数，从原数组从后向前计数，若大于原数组长度，则空白处用null填充
+     *
+     * @param <T>         数组元素类型
+     * @param buffer      已有数组
+     * @param index       插入位置，此位置为对应此位置元素之前的空档
+     * @param newElements 新元素
+     * @return 新数组
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T[] insert(T[] buffer, int index, T... newElements) {
+        return (T[]) insert((Object) buffer, index, newElements);
+    }
+
+    /**
+     * 将新元素插入到到已有数组中的某个位置<br>
+     * 添加新元素会生成一个新的数组，不影响原数组<br>
+     * 如果插入位置为为负数，从原数组从后向前计数，若大于原数组长度，则空白处用null填充
+     *
+     * @param <T>         数组元素类型
+     * @param array       已有数组
+     * @param index       插入位置，此位置为对应此位置元素之前的空档
+     * @param newElements 新元素
+     * @return 新数组
+     */
+    @SuppressWarnings({"unchecked", "SuspiciousSystemArraycopy"})
+    public static <T> Object insert(Object array, int index, T... newElements) {
+        if (isEmpty(newElements)) {
+            return array;
+        }
+        if (isEmpty(array)) {
+            return newElements;
+        }
+
+        final int len = length(array);
+        if (index < 0) {
+            index = (index % len) + len;
+        }
+
+        final T[] result = newArray(array.getClass().getComponentType(), Math.max(len, index) + newElements.length);
+        System.arraycopy(array, 0, result, 0, Math.min(len, index));
+        System.arraycopy(newElements, 0, result, index, newElements.length);
+        if (index < len) {
+            System.arraycopy(array, index, result, index + newElements.length, len - index);
+        }
+        return result;
+    }
+
+    /**
+     * 过滤<br>
+     * 过滤过程通过传入的Filter实现来过滤返回需要的元素内容，这个Filter实现可以实现以下功能：
+     *
+     * <pre>
+     * 1、过滤出需要的对象，{@link Predicate#test(Object)}方法返回true的对象将被加入结果集合中
+     * </pre>
+     *
+     * @param <T>    数组元素类型
+     * @param array  数组
+     * @param filter 过滤器接口，用于定义过滤规则，null表示不过滤，返回原数组
+     * @return 过滤后的数组
+     */
+    public static <T> T[] filter(T[] array, Predicate<T> filter) {
+        if (null == filter) {
+            return array;
+        }
+
+        final ArrayList<T> list = new ArrayList<>(array.length);
+        for (T t : array) {
+            if (filter.test(t)) {
+                list.add(t);
+            }
+        }
+        final T[] result = newArray(array.getClass().getComponentType(), list.size());
+        return list.toArray(result);
+    }
+
 }

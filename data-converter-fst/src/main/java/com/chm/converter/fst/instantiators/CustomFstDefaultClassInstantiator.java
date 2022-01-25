@@ -1,8 +1,8 @@
 package com.chm.converter.fst.instantiators;
 
-import cn.hutool.core.map.MapUtil;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.MapUtil;
 import org.nustaq.serialization.FSTDefaultClassInstantiator;
 
 import java.lang.reflect.Constructor;

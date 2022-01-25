@@ -1,8 +1,8 @@
 package com.chm.converter.core.creator;
 
-import cn.hutool.core.map.MapUtil;
 import com.chm.converter.core.reflect.ReflectionAccessor;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.MapUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

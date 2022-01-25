@@ -1,14 +1,14 @@
 package com.chm.converter.json.gson;
 
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.ReflectUtil;
 import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.utils.CollUtil;
+import com.chm.converter.core.utils.MapUtil;
+import com.chm.converter.core.utils.ObjectUtil;
+import com.chm.converter.core.utils.ReflectUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
@@ -64,7 +64,7 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
             @Override
             public void write(JsonWriter out, T value) throws IOException {
                 List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
-                if (CollectionUtil.isNotEmpty(sortedFieldList)) {
+                if (CollUtil.isNotEmpty(sortedFieldList)) {
                     out.beginObject();
                     for (FieldInfo fieldInfo : sortedFieldList) {
                         if (!fieldInfo.isSerialize()) {
@@ -87,7 +87,7 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
                     return null;
                 }
                 Map<String, FieldInfo> fieldInfoMap = javaBeanInfo.getNameFieldInfoMap();
-                if (in.hasNext() && CollectionUtil.isNotEmpty(fieldInfoMap)) {
+                if (in.hasNext() && CollUtil.isNotEmpty(fieldInfoMap)) {
                     ObjectConstructor<T> objectConstructor = constructorConstructor.get(type);
                     T instance = objectConstructor.construct();
                     try {

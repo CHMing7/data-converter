@@ -1,11 +1,11 @@
 package com.chm.converter.fst.serialization;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.ReflectUtil;
 import com.chm.converter.fst.serializers.DefaultDateSerializer;
@@ -88,7 +88,7 @@ public class FstClazzInfoRegistry extends FSTClazzInfoRegistry {
             }
         }
         // 排序
-        CollectionUtil.sort(fstFieldInfoList, (o1, o2) -> {
+        CollUtil.sort(fstFieldInfoList, (o1, o2) -> {
             FieldInfo fieldInfo1 = fieldNameFieldInfoMap.get(o1.getName());
             FieldInfo fieldInfo2 = fieldNameFieldInfoMap.get(o2.getName());
             return FieldInfo.FIELD_INFO_COMPARATOR.compare(fieldInfo1, fieldInfo2);

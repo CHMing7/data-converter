@@ -172,7 +172,6 @@ public class StringUtil extends CharSequenceUtil {
      *
      * @param obj 对象
      * @return 字符串
-     * @since 4.1.3
      */
     public static String toString(Object obj) {
         return null == obj ? NULL : obj.toString();

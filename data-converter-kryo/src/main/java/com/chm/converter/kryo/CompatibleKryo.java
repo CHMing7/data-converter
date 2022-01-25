@@ -1,10 +1,10 @@
 package com.chm.converter.kryo;
 
-import cn.hutool.core.map.MapUtil;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
+import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.kryo.serializers.KryoGeneralSerializer;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Registration;

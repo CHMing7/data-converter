@@ -1,12 +1,9 @@
 package com.chm.converter.core.utils;
 
-import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.RandomUtil;
-
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author caihongming
@@ -111,7 +108,7 @@ public class PrimitiveArrayUtil {
      * @return 是否为非空
      */
     public static boolean isNotEmpty(long[] array) {
-        return false == isEmpty(array);
+        return !isEmpty(array);
     }
 
     /**
@@ -121,7 +118,7 @@ public class PrimitiveArrayUtil {
      * @return 是否为非空
      */
     public static boolean isNotEmpty(int[] array) {
-        return false == isEmpty(array);
+        return !isEmpty(array);
     }
 
     /**
@@ -131,7 +128,7 @@ public class PrimitiveArrayUtil {
      * @return 是否为非空
      */
     public static boolean isNotEmpty(short[] array) {
-        return false == isEmpty(array);
+        return !isEmpty(array);
     }
 
     /**
@@ -141,7 +138,7 @@ public class PrimitiveArrayUtil {
      * @return 是否为非空
      */
     public static boolean isNotEmpty(char[] array) {
-        return false == isEmpty(array);
+        return !isEmpty(array);
     }
 
     /**
@@ -151,7 +148,7 @@ public class PrimitiveArrayUtil {
      * @return 是否为非空
      */
     public static boolean isNotEmpty(byte[] array) {
-        return false == isEmpty(array);
+        return !isEmpty(array);
     }
 
     /**
@@ -161,7 +158,7 @@ public class PrimitiveArrayUtil {
      * @return 是否为非空
      */
     public static boolean isNotEmpty(double[] array) {
-        return false == isEmpty(array);
+        return !isEmpty(array);
     }
 
     /**
@@ -171,7 +168,7 @@ public class PrimitiveArrayUtil {
      * @return 是否为非空
      */
     public static boolean isNotEmpty(float[] array) {
-        return false == isEmpty(array);
+        return !isEmpty(array);
     }
 
     /**
@@ -181,7 +178,7 @@ public class PrimitiveArrayUtil {
      * @return 是否为非空
      */
     public static boolean isNotEmpty(boolean[] array) {
-        return false == isEmpty(array);
+        return !isEmpty(array);
     }
 
     // ---------------------------------------------------------------------- resize
@@ -2511,7 +2508,7 @@ public class PrimitiveArrayUtil {
      * @author FengBaoheng
      */
     public static int[] shuffle(int[] array) {
-        return shuffle(array, RandomUtil.getRandom());
+        return shuffle(array, getRandom());
     }
 
     /**
@@ -2542,7 +2539,7 @@ public class PrimitiveArrayUtil {
      * @author FengBaoheng
      */
     public static long[] shuffle(long[] array) {
-        return shuffle(array, RandomUtil.getRandom());
+        return shuffle(array, getRandom());
     }
 
     /**
@@ -2573,7 +2570,7 @@ public class PrimitiveArrayUtil {
      * @author FengBaoheng
      */
     public static double[] shuffle(double[] array) {
-        return shuffle(array, RandomUtil.getRandom());
+        return shuffle(array, getRandom());
     }
 
     /**
@@ -2604,7 +2601,7 @@ public class PrimitiveArrayUtil {
      * @author FengBaoheng
      */
     public static float[] shuffle(float[] array) {
-        return shuffle(array, RandomUtil.getRandom());
+        return shuffle(array, getRandom());
     }
 
     /**
@@ -2635,7 +2632,7 @@ public class PrimitiveArrayUtil {
      * @author FengBaoheng
      */
     public static boolean[] shuffle(boolean[] array) {
-        return shuffle(array, RandomUtil.getRandom());
+        return shuffle(array, getRandom());
     }
 
     /**
@@ -2666,7 +2663,7 @@ public class PrimitiveArrayUtil {
      * @author FengBaoheng
      */
     public static byte[] shuffle(byte[] array) {
-        return shuffle(array, RandomUtil.getRandom());
+        return shuffle(array, getRandom());
     }
 
     /**
@@ -2697,7 +2694,7 @@ public class PrimitiveArrayUtil {
      * @author FengBaoheng
      */
     public static char[] shuffle(char[] array) {
-        return shuffle(array, RandomUtil.getRandom());
+        return shuffle(array, getRandom());
     }
 
     /**
@@ -2728,7 +2725,7 @@ public class PrimitiveArrayUtil {
      * @author FengBaoheng
      */
     public static short[] shuffle(short[] array) {
-        return shuffle(array, RandomUtil.getRandom());
+        return shuffle(array, getRandom());
     }
 
     /**
@@ -3266,6 +3263,22 @@ public class PrimitiveArrayUtil {
         }
 
         return true;
+    }
+
+
+    /**
+     * 获取随机数生成器对象<br>
+     * ThreadLocalRandom是JDK 7之后提供并发产生随机数，能够解决多个线程发生的竞争争夺。
+     *
+     * <p>
+     * 注意：此方法返回的{@link ThreadLocalRandom}不可以在多线程环境下共享对象，否则有重复随机数问题。
+     * 见：https://www.jianshu.com/p/89dfe990295c
+     * </p>
+     *
+     * @return {@link ThreadLocalRandom}
+     */
+    private static ThreadLocalRandom getRandom() {
+        return ThreadLocalRandom.current();
     }
 }
 

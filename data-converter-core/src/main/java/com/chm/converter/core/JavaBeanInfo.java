@@ -1,11 +1,11 @@
 package com.chm.converter.core;
 
-import cn.hutool.core.collection.CollStreamUtil;
-import cn.hutool.core.collection.CollectionUtil;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.creator.ObjectConstructor;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.CollStreamUtil;
+import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.core.utils.TypeUtil;
@@ -72,7 +72,7 @@ public class JavaBeanInfo<T> {
         this.objectConstructor = ConstructorFactory.INSTANCE.get(TypeToken.get(clazz));
         this.fieldList = fieldList;
         this.sortedFieldList = ListUtil.toList(fieldList);
-        CollectionUtil.sort(sortedFieldList, FieldInfo::compareTo);
+        CollUtil.sort(sortedFieldList, FieldInfo::compareTo);
         for (int i = 0; i < sortedFieldList.size(); i++) {
             FieldInfo fieldInfo = sortedFieldList.get(i);
             fieldInfo.setSortedNumber(i);

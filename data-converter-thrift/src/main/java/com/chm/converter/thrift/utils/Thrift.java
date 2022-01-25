@@ -1,25 +1,18 @@
 package com.chm.converter.thrift.utils;
 
-import cn.hutool.core.map.MapUtil;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.codec.DataCodecGenerate;
-import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.thrift.pack.ThriftDataReader;
 import com.chm.converter.thrift.pack.ThriftDataWriter;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.transport.TIOStreamTransport;
-import org.apache.thrift.transport.TTransport;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author caihongming

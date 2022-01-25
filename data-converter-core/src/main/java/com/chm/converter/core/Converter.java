@@ -1,5 +1,6 @@
 package com.chm.converter.core;
 
+import com.chm.converter.core.reflect.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +52,18 @@ public interface Converter<S> {
      * @return 转换后的目标类型对象
      */
     <T> T convertToJavaObject(S source, Type targetType);
+
+    /**
+     * 将源数据转换为目标类型（Type）的java对象
+     *
+     * @param source     源数据
+     * @param targetType 目标类型 (Type对象)
+     * @param <T>        目标类型泛型
+     * @return 转换后的目标类型对象
+     */
+    default <T> T convertToJavaObject(S source, TypeToken<T> targetType) {
+        return convertToJavaObject(source, targetType.getType());
+    }
 
     /**
      * 将java对象进行编码

@@ -18,7 +18,6 @@ public class DataType {
      * 数据类型表
      * <p>所有在Mbp中创建的数据类型对象都会放入这个哈希表中</p>
      *
-     * @since 1.5.0-BETA4
      */
     public final static Map<String, DataType> DATA_TYPES = new HashMap<>();
 
@@ -140,7 +139,6 @@ public class DataType {
      * <p>需要通过静态方法DataType.createDataType或DataType.findOrCreateDataType进行创建</p>
      *
      * @param name Date type name
-     * @since 1.5.0-BETA4
      */
     private DataType(String name) {
         this.name = name;

@@ -1,11 +1,11 @@
 package com.chm.converter.xml.jackson.deserializer;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
 import com.chm.converter.core.constant.TimeConstant;
+import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.jackson.deserializer.JacksonDefaultDateTypeDeserializer;
 import com.chm.converter.jackson.deserializer.JacksonJava8TimeDeserializer;
 import com.chm.converter.xml.XmlClassInfoStorage;
@@ -82,7 +82,7 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
         }
         Iterator<SettableBeanProperty> properties = builder.getProperties();
         Map<String, FieldInfo> fieldInfoMap = XmlClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass(), converterClass);
-        CollectionUtil.forEach(properties, (property, index) -> {
+        CollUtil.forEach(properties, (property, index) -> {
             FieldInfo fieldInfo = fieldInfoMap.get(property.getName());
             // 修改时间类型反序列化类
             JsonDeserializer<Object> dateTimeDeserializer = createDateTimeDeserializer(property, fieldInfo);

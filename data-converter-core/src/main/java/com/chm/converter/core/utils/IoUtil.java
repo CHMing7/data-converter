@@ -1,6 +1,6 @@
 package com.chm.converter.core.utils;
 
-import cn.hutool.core.io.IORuntimeException;
+import com.chm.converter.core.exception.IORuntimeException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +11,6 @@ import java.io.InputStream;
  * @since 2022-01-07
  **/
 public class IoUtil {
-
 
     /**
      * 读取指定长度的byte数组，不关闭流
