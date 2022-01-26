@@ -6,15 +6,35 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.avro.DefaultAvroConverter;
+import com.chm.converter.avro.factorys.AvroDefaultDateConversion;
+import com.chm.converter.avro.factorys.AvroJava8TimeConversion;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
+import org.apache.avro.Conversion;
+import org.apache.avro.Schema;
+import org.apache.avro.io.BinaryEncoder;
+import org.apache.avro.io.EncoderFactory;
+import org.apache.avro.reflect.ReflectData;
+import org.apache.avro.reflect.ReflectDatumWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -31,6 +51,8 @@ public class ConverterTest {
 
     Converter converter;
 
+    ReflectData reflectData;
+
     User user;
 
     @BeforeEach
@@ -45,6 +67,44 @@ public class ConverterTest {
         user.setDate(new Date());
         user.setLocalDateTime(LocalDateTime.now());
         user.setYearMonth(YearMonth.now());
+        reflectData = ReflectData.AllowNull.get();
+        // java8Time Conversion
+        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(Instant.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(LocalDate.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(LocalDateTime.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(LocalTime.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(OffsetDateTime.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(OffsetTime.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(ZonedDateTime.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(MonthDay.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(YearMonth.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(Year.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(ZoneOffset.class, converter));
+
+        // DefaultDate Conversion
+        reflectData.addLogicalTypeConversion(new AvroDefaultDateConversion<>(java.sql.Date.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroDefaultDateConversion<>(Timestamp.class, converter));
+        reflectData.addLogicalTypeConversion(new AvroDefaultDateConversion<>(Date.class, converter));
+    }
+
+    @Test
+    public void testOriginal() throws IOException {
+        // new
+        byte[] encode = (byte[]) converter.encode(user);
+        // original
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(os, null);
+        // 获取Schema
+        Conversion<?> conversion = reflectData.getConversionByClass(user.getClass());
+        Schema schema = conversion != null ? conversion.getRecommendedSchema() : reflectData.induce(user);
+        ReflectDatumWriter dd = new ReflectDatumWriter(schema, reflectData);
+        dd.write(user, encoder);
+        encoder.flush();
+        byte[] encode2 = os.toByteArray();
+        StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testUser2:" + StrUtil.str(os.toByteArray(), "utf-8"));
+
+        assertArrayEquals(encode, encode2);
     }
 
 

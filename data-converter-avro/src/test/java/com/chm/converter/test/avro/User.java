@@ -36,16 +36,16 @@ public class User {
     /**
      * 新型时间
      */
-    @FieldProperty(name = "localDateTime", ordinal = 4, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(name = "localDateTime", ordinal = 4)
     public LocalDateTime localDateTime;
 
     /**
      * date
      */
-    @FieldProperty(name = "date", ordinal = 6, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(name = "date", ordinal = 5, format = "yyyy-MM-dd HH:mm:ss.SSSS")
     public Date date;
 
-    @FieldProperty(name = "yearMonth", ordinal = 5, format = "yyyy-MM")
+    @FieldProperty(name = "yearMonth", ordinal = 6, format = "yyyy-MM")
     public YearMonth yearMonth;
 
     public User getUser() {
