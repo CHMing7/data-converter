@@ -7,10 +7,12 @@ import com.chm.converter.core.UseOriginalJudge;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.jackson.deserializer.JacksonDefaultDateTypeDeserializer;
+import com.chm.converter.jackson.deserializer.JacksonEnumDeserializer;
 import com.chm.converter.jackson.deserializer.JacksonJava8TimeDeserializer;
 import com.chm.converter.xml.XmlClassInfoStorage;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerBase;
@@ -173,4 +175,8 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
         return textProp;
     }
 
+    @Override
+    public JsonDeserializer<?> modifyEnumDeserializer(DeserializationConfig config, JavaType type, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+        return new JacksonEnumDeserializer(type.getRawClass(), converter);
+    }
 }

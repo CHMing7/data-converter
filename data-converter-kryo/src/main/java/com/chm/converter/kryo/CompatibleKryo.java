@@ -4,11 +4,12 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
-import com.chm.converter.core.utils.MapUtil;
+import com.chm.converter.kryo.serializers.KryoEnumSerializer;
 import com.chm.converter.kryo.serializers.KryoGeneralSerializer;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Registration;
 import com.esotericsoftware.kryo.Serializer;
+import com.esotericsoftware.kryo.serializers.DefaultSerializers;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import org.objenesis.instantiator.ObjectInstantiator;
@@ -20,11 +21,12 @@ import org.objenesis.instantiator.ObjectInstantiator;
  **/
 public class CompatibleKryo extends Kryo {
 
-    public final ConstructorFactory constructorFactory = new ConstructorFactory(MapUtil.empty());
+    private final  Converter<?> converter;
 
     private final Class<? extends Converter> converterClass;
 
     public CompatibleKryo(Converter<?> converter) {
+        this.converter = converter;
         this.converterClass = converter != null ? converter.getClass() : null;
     }
 
@@ -47,6 +49,10 @@ public class CompatibleKryo extends Kryo {
             return new JavaSerializer();
         }
         Serializer defaultSerializer = super.getDefaultSerializer(clazz);
+        if(defaultSerializer instanceof DefaultSerializers.EnumSerializer){
+            return new KryoEnumSerializer(clazz, converter);
+        }
+
         if (defaultSerializer instanceof FieldSerializer) {
             return new KryoGeneralSerializer(clazz, converterClass);
         }
@@ -73,10 +79,10 @@ public class CompatibleKryo extends Kryo {
             if (t != null) {
                 return t;
             }
-            return constructorFactory.get(TypeToken.get(type)).construct();
+            return ConstructorFactory.INSTANCE.get(TypeToken.get(type)).construct();
         } catch (Exception e) {
             try {
-                return constructorFactory.get(TypeToken.get(type)).construct();
+                return ConstructorFactory.INSTANCE.get(TypeToken.get(type)).construct();
             } catch (Exception e1) {
                 throw e;
             }

@@ -41,13 +41,13 @@ public class KryoDefaultDateSerializer<T extends Date> extends Serializer<T> {
 
     @Override
     public void write(Kryo kryo, Output output, T object) {
-        String encode = defaultDateCodec.encode(object);
+        String encode = this.defaultDateCodec.encode(object);
         output.writeString(encode);
     }
 
     @Override
     public T read(Kryo kryo, Input input, Class<T> type) {
         String s = input.readString();
-        return defaultDateCodec.decode(s);
+        return this.defaultDateCodec.decode(s);
     }
 }

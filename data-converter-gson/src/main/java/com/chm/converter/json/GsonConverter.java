@@ -4,6 +4,7 @@ import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.json.gson.GsonDefaultDateTypeAdapterFactory;
+import com.chm.converter.json.gson.GsonEnumTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonJava8TimeTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonTypeAdapterFactory;
 import com.google.gson.Gson;
@@ -46,8 +47,11 @@ public class GsonConverter implements JsonConverter {
             Since.class,
             Until.class);
 
-    private final List<TypeAdapterFactory> factories = ListUtil.toLinkedList(new GsonTypeAdapterFactory(this, GsonConverter::checkExistGsonAnnotation),
-            new GsonJava8TimeTypeAdapterFactory(this), new GsonDefaultDateTypeAdapterFactory(this));
+    private final List<TypeAdapterFactory> factories = ListUtil.toLinkedList(
+            new GsonTypeAdapterFactory(this, GsonConverter::checkExistGsonAnnotation),
+            new GsonJava8TimeTypeAdapterFactory(this),
+            new GsonDefaultDateTypeAdapterFactory(this),
+            new GsonEnumTypeAdapterFactory(this));
 
     public static final String GSON_NAME = "com.google.gson.JsonParser";
 

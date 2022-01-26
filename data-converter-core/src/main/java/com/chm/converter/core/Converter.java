@@ -1,6 +1,8 @@
 package com.chm.converter.core;
 
+import com.chm.converter.core.cfg.ConvertFeature;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.MapUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,8 @@ public interface Converter<S> {
     Map<Converter<?>, TimeZone> CONVERTER_TIME_ZONE_MAP = new ConcurrentHashMap<>();
 
     Map<Converter<?>, Locale> CONVERTER_LOCALE_MAP = new ConcurrentHashMap<>();
+
+    Map<Converter<?>, Integer> CONVERTER_FEATURES_MAP = new ConcurrentHashMap<>();
 
     /**
      * 将源数据转换为目标类型（Class）的java对象
@@ -235,4 +239,51 @@ public interface Converter<S> {
         CONVERTER_LOCALE_MAP.put(this, locale);
     }
 
+    /**
+     * 检查功能是否启用
+     *
+     * @param f 功能配置
+     * @return
+     */
+    default boolean isEnabled(ConvertFeature f) {
+        int features = MapUtil.computeIfAbsent(CONVERTER_FEATURES_MAP, this, converter -> getDefaultFeature());
+        return (features & f.getMask()) != 0;
+    }
+
+    /**
+     * 启用功能
+     *
+     * @param f 功能配置
+     * @return
+     */
+    default Converter<S> enable(ConvertFeature f) {
+        int features = MapUtil.computeIfAbsent(CONVERTER_FEATURES_MAP, this, converter -> getDefaultFeature());
+        int newFeatures = features | f.getMask();
+        CONVERTER_FEATURES_MAP.put(this, newFeatures);
+        return this;
+    }
+
+    /**
+     * 禁用功能
+     *
+     * @param f 功能配置
+     * @return
+     */
+    default Converter<S> disable(ConvertFeature f) {
+        int features = MapUtil.computeIfAbsent(CONVERTER_FEATURES_MAP, this, converter -> getDefaultFeature());
+        int newFeatures = features & ~f.getMask();
+        CONVERTER_FEATURES_MAP.put(this, newFeatures);
+        return this;
+    }
+
+    static int getDefaultFeature() {
+        int flags = 0;
+        Class<ConvertFeature> enumClass = ConvertFeature.class;
+        for (ConvertFeature value : enumClass.getEnumConstants()) {
+            if (value.enabledByDefault()) {
+                flags |= value.getMask();
+            }
+        }
+        return flags;
+    }
 }

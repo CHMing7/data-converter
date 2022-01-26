@@ -96,7 +96,5 @@ public class HessianDefaultDateConverterFactory extends AbstractSerializerFactor
 
             return object;
         }
-
-
     }
 }

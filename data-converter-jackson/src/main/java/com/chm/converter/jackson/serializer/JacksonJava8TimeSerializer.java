@@ -70,7 +70,6 @@ public class JacksonJava8TimeSerializer<T extends TemporalAccessor> extends Json
 
     @Override
     public void serialize(T value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        String str = this.java8TimeCodec.encode(value);
-        gen.writeString(str);
+        this.java8TimeCodec.write(value, gen::writeString);
     }
 }

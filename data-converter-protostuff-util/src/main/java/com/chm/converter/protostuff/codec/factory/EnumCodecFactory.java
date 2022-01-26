@@ -44,27 +44,22 @@ public class EnumCodecFactory implements UniversalFactory<ProtostuffCodec> {
         return new EnumCodec(rawType, converter);
     }
 
-    public static final class EnumCodec<T extends Enum<T>> extends BaseProtostuffCodec<T> {
+    public static final class EnumCodec<E extends Enum<E>> extends BaseProtostuffCodec<E> {
 
-        private final com.chm.converter.core.codecs.EnumCodec<T> enumCodec;
+        private final com.chm.converter.core.codecs.EnumCodec<E> enumCodec;
 
-        private final JavaBeanInfo<T> javaBeanInfo;
-
-        public EnumCodec(Class<T> classOfT, Converter<?> converter) {
+        public EnumCodec(Class<E> classOfT, Converter<?> converter) {
             super(classOfT, "enumCodec");
-            Class<? extends Converter> converterClass = converter != null ? converter.getClass() : null;
-            this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
-            Map<String, String> aliasMap = javaBeanInfo.getFieldNameAliasMap();
-            this.enumCodec = new com.chm.converter.core.codecs.EnumCodec<>(classOfT, aliasMap);
+            this.enumCodec = new com.chm.converter.core.codecs.EnumCodec<>(classOfT, converter);
         }
 
         @Override
-        public T newMessage() {
+        public E newMessage() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public void writeTo(Output output, T message) throws IOException {
+        public void writeTo(Output output, E message) throws IOException {
             String encode = enumCodec.encode(message);
             if (encode != null) {
                 output.writeString(classId(), encode, false);
@@ -72,16 +67,16 @@ public class EnumCodecFactory implements UniversalFactory<ProtostuffCodec> {
         }
 
         @Override
-        public T mergeFrom(Input input) throws IOException {
+        public E mergeFrom(Input input) throws IOException {
             if (classId() != input.readFieldNumber(this)) {
                 throw new ProtostuffException("Corrupt input.");
             }
-            T t = enumCodec.decode(input.readString());
+            E e = this.enumCodec.read(input::readString);
 
             if (0 != input.readFieldNumber(this)) {
                 throw new ProtostuffException("Corrupt input.");
             }
-            return t;
+            return e;
         }
 
         @Override

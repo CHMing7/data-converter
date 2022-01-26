@@ -32,9 +32,10 @@ public class AvroGeneralConversion<T> extends Conversion<T> {
 
     private final Schema schema;
 
-    public AvroGeneralConversion(Class<T> clazz, Schema schema, Class<? extends Converter> converterClass, GenericData data) {
+    public AvroGeneralConversion(Class<T> clazz, Schema schema, Converter<?> converter, GenericData data) {
         this.clazz = clazz;
         this.logicalType = new LogicalType(clazz.getName());
+        Class<? extends Converter> converterClass = converter != null ? converter.getClass() : null;
         this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
         this.schema = createSchema(schema, data);
     }

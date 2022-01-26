@@ -62,8 +62,7 @@ public class GsonDefaultDateTypeAdapter<T extends Date> extends TypeAdapter<T> {
             out.nullValue();
             return;
         }
-        String dateFormatAsString = this.defaultDateCodec.encode(value);
-        out.value(dateFormatAsString);
+        this.defaultDateCodec.write(value, out::value);
     }
 
     @Override
@@ -72,6 +71,6 @@ public class GsonDefaultDateTypeAdapter<T extends Date> extends TypeAdapter<T> {
             in.nextNull();
             return null;
         }
-        return this.defaultDateCodec.decode(in.nextString());
+        return this.defaultDateCodec.read(in::nextString);
     }
 }

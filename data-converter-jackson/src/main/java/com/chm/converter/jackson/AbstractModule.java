@@ -67,4 +67,6 @@ public abstract class AbstractModule extends SimpleModule {
         addDeserializer(Timestamp.class, new JacksonDefaultDateTypeDeserializer<>(Timestamp.class, converter));
         addDeserializer(Date.class, new JacksonDefaultDateTypeDeserializer<>(Date.class, converter));
     }
+
+
 }

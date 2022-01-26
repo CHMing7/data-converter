@@ -6,7 +6,6 @@ import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.ListUtil;
-import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.fst.factory.FstFactory;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
@@ -48,12 +47,10 @@ public class DefaultFstConverter implements FstConverter {
 
     private final FstFactory factory = new FstFactory(this);
 
-    public final ConstructorFactory constructorFactory = new ConstructorFactory(MapUtil.empty());
-
     @Override
     public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
         if (targetType.isInterface()) {
-            T instance = constructorFactory.get(TypeToken.get(targetType)).construct();
+            T instance = ConstructorFactory.INSTANCE.get(TypeToken.get(targetType)).construct();
             if (instance != null && targetType != instance.getClass()) {
                 // 若不存在序列化器就重新赋予转换目标类
                 targetType = (Class<T>) instance.getClass();

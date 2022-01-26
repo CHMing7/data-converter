@@ -9,6 +9,8 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.cfg.ConvertFeature;
+import com.chm.converter.json.FastjsonConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -124,12 +126,13 @@ public class ConverterTest {
     public void testAny() {
         ConverterTest converterTest = new ConverterTest();
         converterTest.before();
-        this.converter = ConverterSelector.select(DataType.KRYO);
+        this.converter = ConverterSelector.select(FastjsonConverter.class);
+        converter.disable(ConvertFeature.ENUMS_USING_TO_STRING);
         StaticLog.info(this.converter.getConverterName());
-        this.testUser();
+      /*  this.testUser();
         this.testMap();
         this.testCollection();
-        this.testArray();
+        this.testArray();*/
         this.testEnum();
     }
 

@@ -15,6 +15,7 @@ import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.ReflectUtil;
 import com.chm.converter.json.fastjson.FastjsonDefaultDateCodec;
+import com.chm.converter.json.fastjson.FastjsonEnumCodec;
 import com.chm.converter.json.fastjson.FastjsonJdk8DateCodec;
 
 import java.lang.reflect.Type;
@@ -43,12 +44,15 @@ import java.util.stream.Collectors;
  **/
 public class FastjsonParserConfig extends ParserConfig {
 
+    private final Converter<?> converter;
+
     private final Class<? extends Converter> converterClass;
 
     private final UseOriginalJudge useOriginalJudge;
 
     public FastjsonParserConfig(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
         super();
+        this.converter = converter;
         this.converterClass = converter != null ? converter.getClass() : null;
         this.useOriginalJudge = useOriginalJudge;
         // Java8 Time Deserializer
@@ -81,6 +85,13 @@ public class FastjsonParserConfig extends ParserConfig {
             // 校验制定类或其父类集中是否存在Fastjson框架注解
             if (useOriginalJudge.useOriginalImpl(clazz)) {
                 return deserializer;
+            }
+
+            if (Enum.class.isAssignableFrom(clazz) && clazz != Enum.class) {
+                if (!clazz.isEnum()) {
+                    clazz = clazz.getSuperclass();
+                }
+                return new FastjsonEnumCodec(clazz, converter);
             }
 
             if (deserializer instanceof JavaBeanDeserializer) {

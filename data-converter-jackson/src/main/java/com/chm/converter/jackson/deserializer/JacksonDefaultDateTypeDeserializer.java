@@ -2,15 +2,12 @@ package com.chm.converter.jackson.deserializer;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.codecs.DefaultDateCodec;
-import com.chm.converter.core.utils.NumberUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -59,49 +56,11 @@ public class JacksonDefaultDateTypeDeserializer<T extends Date> extends JsonDese
         return new JacksonDefaultDateTypeDeserializer<>(this.defaultDateCodec.getDateType(), dateFormatter, this.defaultDateCodec.getConverter());
     }
 
-    protected DeserializationFeature getTimestampsFeature() {
-        return DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS;
-    }
-
-    protected boolean useTimestamp(DeserializationContext ctxt) {
-        // assume that explicit formatter definition implies use of textual format
-        return (this.defaultDateCodec.getDateFormatter() == null) && (ctxt != null)
-                && ctxt.isEnabled(getTimestampsFeature());
-    }
-
     @Override
     public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         if (p.currentTokenId() == JsonToken.VALUE_NULL.id()) {
             return null;
         }
-        if (useTimestamp(ctxt)) {
-            String numberStr = p.getText();
-            if (numberStr == null) {
-                return null;
-            }
-            long l = NumberUtil.parseLong(numberStr);
-            Date date = new Date(l);
-            Class<T> dateType = this.defaultDateCodec.getDateType();
-            if (dateType == Date.class) {
-                return (T) date;
-            } else if (dateType == Timestamp.class) {
-                return (T) new Timestamp(date.getTime());
-            } else if (dateType == java.sql.Date.class) {
-                return (T) new java.sql.Date(date.getTime());
-            } else {
-                // This must never happen: dateType is guarded in the primary constructor
-                throw new AssertionError();
-            }
-        } else {
-            String str = p.getText();
-            return deserializeToDate(str);
-        }
-    }
-
-    private T deserializeToDate(String s) {
-        if (s == null) {
-            return null;
-        }
-        return this.defaultDateCodec.decode(s);
+        return this.defaultDateCodec.read(p::getText);
     }
 }

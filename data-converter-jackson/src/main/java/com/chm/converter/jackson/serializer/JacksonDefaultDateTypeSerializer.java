@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 
@@ -65,29 +64,9 @@ public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerial
         return value == null;
     }
 
-    protected SerializationFeature getTimestampsFeature() {
-        return SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
-    }
-
-    protected boolean useTimestamp(SerializerProvider provider) {
-        // assume that explicit formatter definition implies use of textual format
-        return (this.defaultDateCodec.getDateFormatter() == null) && (provider != null)
-                && provider.isEnabled(getTimestampsFeature());
-    }
-
-    protected String timestamp(Date value) {
-        return (value == null) ? "" : String.valueOf(value.getTime());
-    }
-
-
     @Override
     public void serialize(T value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        if (useTimestamp(serializers)) {
-            gen.writeString(timestamp(value));
-        } else {
-            String dateFormatAsString = this.defaultDateCodec.encode(value);
-            gen.writeString(dateFormatAsString);
-        }
+        this.defaultDateCodec.write(value, gen::writeString);
     }
 
 }

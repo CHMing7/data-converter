@@ -13,6 +13,10 @@ public class ConvertException extends RuntimeException {
         super(message);
     }
 
+    public ConvertException(Throwable th) {
+        super(th);
+    }
+
     public ConvertException(String message, Throwable th) {
         super(message, th);
     }

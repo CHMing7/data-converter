@@ -18,6 +18,7 @@ import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.ReflectUtil;
 import com.chm.converter.json.fastjson.FastjsonDefaultDateCodec;
+import com.chm.converter.json.fastjson.FastjsonEnumCodec;
 import com.chm.converter.json.fastjson.FastjsonJdk8DateCodec;
 
 import java.sql.Timestamp;
@@ -45,6 +46,8 @@ import java.util.stream.Collectors;
  **/
 public class FastjsonSerializeConfig extends SerializeConfig {
 
+    private final Converter<?> converter;
+
     private final Class<? extends Converter> converterClass;
 
     private final UseOriginalJudge useOriginalJudge;
@@ -55,6 +58,7 @@ public class FastjsonSerializeConfig extends SerializeConfig {
 
     public FastjsonSerializeConfig(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
         super();
+        this.converter = converter;
         this.converterClass = converter != null ? converter.getClass() : null;
         this.useOriginalJudge = useOriginalJudge;
         nameFilter = new FastjsonNameFilter(converterClass);
@@ -87,6 +91,13 @@ public class FastjsonSerializeConfig extends SerializeConfig {
         // 校验制定类或其父类集中是否存在Fastjson框架注解
         if (useOriginalJudge.useOriginalImpl(clazz)) {
             return objectWriter;
+        }
+
+        if (Enum.class.isAssignableFrom(clazz) && clazz != Enum.class) {
+            if (!clazz.isEnum()) {
+                clazz = clazz.getSuperclass();
+            }
+            return new FastjsonEnumCodec(clazz, converter);
         }
 
         if (objectWriter instanceof JavaBeanSerializer) {

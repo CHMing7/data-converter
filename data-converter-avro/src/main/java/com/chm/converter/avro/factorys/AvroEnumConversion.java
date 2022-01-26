@@ -24,11 +24,9 @@ public class AvroEnumConversion<E extends Enum<E>> extends Conversion<E> {
 
     private final LogicalType logicalType;
 
-    public AvroEnumConversion(Class<E> classOfT, Class<? extends Converter> converterClass) {
+    public AvroEnumConversion(Class<E> classOfT, Converter<?> converter) {
         this.classOfT = classOfT;
-        JavaBeanInfo<E> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(classOfT, converterClass);
-        Map<String, String> aliasMap = javaBeanInfo.getFieldNameAliasMap();
-        this.enumCodec = new EnumCodec<>(classOfT, aliasMap);
+        this.enumCodec = new EnumCodec<>(classOfT, converter);
         this.logicalType = new LogicalType(classOfT.getName());
     }
 

@@ -8,6 +8,7 @@ import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.utils.CollUtil;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
@@ -96,5 +97,10 @@ public class JacksonBeanDeserializerModifier extends BeanDeserializerModifier {
         Optional<Class<? extends Date>> defaultDateFirst = TimeConstant.DEFAULT_DATE_SET.stream()
                 .filter(dateClass -> dateClass.isAssignableFrom(cls)).findFirst();
         return defaultDateFirst.map(clazz -> new JacksonDefaultDateTypeDeserializer(cls, format, converter)).orElse(null);
+    }
+
+    @Override
+    public JsonDeserializer<?> modifyEnumDeserializer(DeserializationConfig config, JavaType type, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+        return new JacksonEnumDeserializer(type.getRawClass(), converter);
     }
 }

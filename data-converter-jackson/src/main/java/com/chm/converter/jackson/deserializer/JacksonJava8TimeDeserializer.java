@@ -2,7 +2,6 @@ package com.chm.converter.jackson.deserializer;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.codecs.Java8TimeCodec;
-import com.chm.converter.core.utils.StringUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -63,11 +62,6 @@ public class JacksonJava8TimeDeserializer<T extends TemporalAccessor> extends Js
         if (p.currentTokenId() == JsonToken.VALUE_NULL.id()) {
             return null;
         }
-        String str = p.getText();
-        if (StringUtil.isBlank(str)) {
-            return null;
-        }
-
-        return java8TimeCodec.decode(str);
+        return this.java8TimeCodec.read(p::getText);
     }
 }

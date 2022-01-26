@@ -36,10 +36,7 @@ public class EnumCodecFactory implements UniversalFactory<Codec> {
             // handle anonymous subclasses
             rawType = rawType.getSuperclass();
         }
-        Class<? extends Converter> converterClass = converter != null ? converter.getClass() : null;
-        JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(rawType, converterClass);
-        Map<String, String> aliasMap = javaBeanInfo.getFieldNameAliasMap();
-        return new EnumCodec(rawType, aliasMap);
+        return new EnumCodec(rawType, converter);
     }
 
 }

@@ -7,10 +7,9 @@ package com.chm.converter.core.exception;
  * @version v1.0
  * @since 2021-12-04
  **/
-public class TypeCastException extends RuntimeException {
+public class TypeCastException extends AbstractRuntimeException {
 
     public TypeCastException() {
-        super();
     }
 
     public TypeCastException(String message) {

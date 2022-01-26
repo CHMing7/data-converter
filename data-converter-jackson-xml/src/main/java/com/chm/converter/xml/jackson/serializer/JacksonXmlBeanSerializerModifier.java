@@ -7,9 +7,11 @@ import com.chm.converter.core.UseOriginalJudge;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.jackson.PropertyNameTransformer;
 import com.chm.converter.jackson.serializer.JacksonDefaultDateTypeSerializer;
+import com.chm.converter.jackson.serializer.JacksonEnumSerializer;
 import com.chm.converter.jackson.serializer.JacksonJava8TimeSerializer;
 import com.chm.converter.xml.XmlClassInfoStorage;
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.SerializationConfig;
@@ -111,6 +113,11 @@ public class JacksonXmlBeanSerializerModifier extends XmlBeanSerializerModifier 
         Optional<Class<? extends Date>> defaultDateFirst = TimeConstant.DEFAULT_DATE_SET.stream()
                 .filter(dateClass -> dateClass.isAssignableFrom(cls)).findFirst();
         return defaultDateFirst.map(clazz -> new JacksonDefaultDateTypeSerializer(format, converter)).orElse(null);
+    }
+
+    @Override
+    public JsonSerializer<?> modifyEnumSerializer(SerializationConfig config, JavaType valueType, BeanDescription beanDesc, JsonSerializer<?> serializer) {
+        return new JacksonEnumSerializer(valueType.getRawClass(), converter);
     }
 
 }

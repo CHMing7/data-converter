@@ -23,11 +23,11 @@ public class AvroReflectData extends ReflectData {
 
     private final UseOriginalJudge useOriginalJudge;
 
-    private final Class<? extends Converter> converterClass;
+    private final Converter<?> converter;
 
     public AvroReflectData(UseOriginalJudge useOriginalJudge, Converter<?> converter) {
         this.useOriginalJudge = useOriginalJudge;
-        this.converterClass = converter != null ? converter.getClass() : null;
+        this.converter = converter;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class AvroReflectData extends ReflectData {
             Class clazz = (Class) type;
             Conversion conversionByClass = this.getConversionByClass(clazz);
             if (conversionByClass == null) {
-                AvroGeneralConversion generalConversion = new AvroGeneralConversion(clazz, schema, converterClass, this);
+                AvroGeneralConversion generalConversion = new AvroGeneralConversion(clazz, schema, converter, this);
                 this.addLogicalTypeConversion(generalConversion);
                 return generalConversion.getRecommendedSchema();
             }
@@ -69,7 +69,7 @@ public class AvroReflectData extends ReflectData {
             Class clazz = datum.getClass();
             Conversion conversionByClass = this.getConversionByClass(clazz);
             if (conversionByClass == null) {
-                AvroEnumConversion generalConversion = new AvroEnumConversion(clazz, converterClass);
+                AvroEnumConversion generalConversion = new AvroEnumConversion(clazz, converter);
                 this.addLogicalTypeConversion(generalConversion);
                 return generalConversion.getRecommendedSchema();
             }

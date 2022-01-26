@@ -1,15 +1,16 @@
 package com.chm.converter.core.codecs;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.cfg.ConvertFeature;
 import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.pack.DataReader;
 import com.chm.converter.core.pack.DataWriter;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.DateUtil;
+import com.chm.converter.core.utils.NumberUtil;
 import com.chm.converter.core.utils.StringUtil;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -124,6 +125,9 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
             return null;
         }
 
+        if (useTimestamp(format)) {
+            return timestamp(t);
+        }
         DateTimeFormatter formatter = getCodecDateFormatter(format);
         return DateUtil.format(t, formatter);
     }
@@ -147,10 +151,15 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
         if (StringUtil.isBlank(timeStr)) {
             return null;
         }
+        Date date;
+        if (useTimestamp(format)) {
+            long l = NumberUtil.parseLong(timeStr);
+            date = new Date(l);
+        } else {
+            DateTimeFormatter formatter = getCodecDateFormatter(format);
+            date = DateUtil.parseToDate(timeStr, formatter);
+        }
 
-        DateTimeFormatter formatter = getCodecDateFormatter(format);
-
-        Date date = DateUtil.parseToDate(timeStr, formatter);
         if (dateType == Date.class) {
             return (T) date;
         } else if (dateType == Timestamp.class) {
@@ -179,5 +188,15 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
             dtf = DEFAULT_DATE_FORMAT;
         }
         return dtf;
+    }
+
+    protected boolean useTimestamp(String format) {
+        return StringUtil.isBlank(format) && this.dateFormatter == null && this.converter != null &&
+                this.converter.getDateFormat() != null &&
+                this.converter.isEnabled(ConvertFeature.DATES_AS_TIMESTAMPS);
+    }
+
+    protected String timestamp(Date value) {
+        return (value == null) ? "" : String.valueOf(value.getTime());
     }
 }

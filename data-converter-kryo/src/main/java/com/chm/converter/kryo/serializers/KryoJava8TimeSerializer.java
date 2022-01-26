@@ -41,13 +41,13 @@ public class KryoJava8TimeSerializer<T extends TemporalAccessor> extends Seriali
 
     @Override
     public void write(Kryo kryo, Output output, T object) {
-        String encode = java8TimeCodec.encode(object);
+        String encode = this.java8TimeCodec.encode(object);
         output.writeString(encode);
     }
 
     @Override
     public T read(Kryo kryo, Input input, Class<T> type) {
         String s = input.readString();
-        return java8TimeCodec.decode(s);
+        return this.java8TimeCodec.decode(s);
     }
 }
