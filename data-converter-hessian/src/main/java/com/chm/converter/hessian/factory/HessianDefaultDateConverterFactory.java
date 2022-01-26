@@ -82,7 +82,7 @@ public class HessianDefaultDateConverterFactory extends AbstractSerializerFactor
                 if (out.addRef(obj)) {
                     return;
                 }
-                out.writeString(defaultDateCodec.encode((T) obj));
+                out.writeString(this.defaultDateCodec.encode((T) obj));
             }
         }
 
@@ -90,7 +90,7 @@ public class HessianDefaultDateConverterFactory extends AbstractSerializerFactor
         public Object readObject(AbstractHessianInput in) throws IOException {
             String value = in.readString();
 
-            Object object = defaultDateCodec.decode(value);
+            Object object = this.defaultDateCodec.decode(value);
 
             in.addRef(object);
 

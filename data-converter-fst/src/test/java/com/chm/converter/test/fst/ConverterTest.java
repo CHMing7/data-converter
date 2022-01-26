@@ -19,7 +19,6 @@ import org.nustaq.serialization.FSTObjectOutput;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -103,7 +102,8 @@ public class ConverterTest {
 
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(encode);
         FSTObjectInput objectInput = conf.getObjectInput(byteArrayInputStream);
-        TypeToken<HashMap<String, User>> typeToken = new TypeToken<HashMap<String, User>>(){};
+        TypeToken<HashMap<String, User>> typeToken = new TypeToken<HashMap<String, User>>() {
+        };
         Map<String, User> newUserMap = (Map<String, User>) objectInput.readObject(typeToken.getRawType());
         assertEquals(userMap, newUserMap);
     }

@@ -192,7 +192,7 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
 
     protected boolean useTimestamp(String format) {
         return StringUtil.isBlank(format) && this.dateFormatter == null && this.converter != null &&
-                this.converter.getDateFormat() != null &&
+                this.converter.getDateFormat() == null &&
                 this.converter.isEnabled(ConvertFeature.DATES_AS_TIMESTAMPS);
     }
 
