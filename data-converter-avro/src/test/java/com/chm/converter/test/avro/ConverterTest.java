@@ -14,15 +14,20 @@ import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import org.apache.avro.Conversion;
 import org.apache.avro.Schema;
+import org.apache.avro.io.BinaryDecoder;
 import org.apache.avro.io.BinaryEncoder;
+import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.reflect.ReflectData;
+import org.apache.avro.reflect.ReflectDatumReader;
 import org.apache.avro.reflect.ReflectDatumWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -90,21 +95,30 @@ public class ConverterTest {
     @Test
     public void testOriginal() throws IOException {
         // new
-        byte[] encode = (byte[]) converter.encode(user);
+        Map<String, User> userMap = MapUtil.newHashMap(true);
+        userMap.put("user", user);
+        userMap.put("user1", user);
+        byte[] encode = (byte[]) converter.encode(userMap);
         // original
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(os, null);
         // 获取Schema
-        Conversion<?> conversion = reflectData.getConversionByClass(user.getClass());
-        Schema schema = conversion != null ? conversion.getRecommendedSchema() : reflectData.induce(user);
+        Conversion<?> conversion = reflectData.getConversionByClass(userMap.getClass());
+        Schema schema = conversion != null ? conversion.getRecommendedSchema() : reflectData.induce(userMap);
         ReflectDatumWriter dd = new ReflectDatumWriter(schema, reflectData);
-        dd.write(user, encoder);
+        dd.write(userMap, encoder);
         encoder.flush();
         byte[] encode2 = os.toByteArray();
         StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
-        StaticLog.info("testUser2:" + StrUtil.str(os.toByteArray(), "utf-8"));
+        StaticLog.info("testUser2:" + StrUtil.str(encode2, "utf-8"));
 
         assertArrayEquals(encode, encode2);
+
+        InputStream in = new ByteArrayInputStream(encode);
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(in, null);
+        ReflectDatumReader reader = new ReflectDatumReader<>(schema, schema, reflectData);
+        Map<String, User> newUserMap = (Map<String, User>) reader.read(null, decoder);
+        assertEquals(userMap, newUserMap);
     }
 
 
