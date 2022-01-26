@@ -6,7 +6,6 @@ import com.chm.converter.core.pack.DataWriter;
 import com.chm.converter.core.reflect.TypeToken;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 /**
  * @author caihongming

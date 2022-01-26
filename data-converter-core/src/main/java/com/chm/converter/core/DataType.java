@@ -17,7 +17,6 @@ public class DataType {
     /**
      * 数据类型表
      * <p>所有在Mbp中创建的数据类型对象都会放入这个哈希表中</p>
-     *
      */
     public final static Map<String, DataType> DATA_TYPES = new HashMap<>();
 

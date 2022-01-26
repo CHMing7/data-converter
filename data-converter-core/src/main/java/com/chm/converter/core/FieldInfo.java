@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  **/
 public class FieldInfo implements Comparable<FieldInfo> {
 
-    public static final FieldInfo STOP = new FieldInfo("stop", null, FieldInfo.class.getFields()[0], -1, null, null){
+    public static final FieldInfo STOP = new FieldInfo("stop", null, FieldInfo.class.getFields()[0], -1, null, null) {
         @Override
         public boolean isStop() {
             return true;
@@ -524,7 +524,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
 
     @Override
     public int compareTo(FieldInfo o) {
-     return FIELD_INFO_COMPARATOR.compare(this, o);
+        return FIELD_INFO_COMPARATOR.compare(this, o);
     }
 
     public String getFormat() {
@@ -563,7 +563,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
         }
     }
 
-   public boolean isStop(){
+    public boolean isStop() {
         return false;
-   }
+    }
 }

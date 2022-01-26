@@ -6,7 +6,6 @@ import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalInterface;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 /**
  * 编解码器

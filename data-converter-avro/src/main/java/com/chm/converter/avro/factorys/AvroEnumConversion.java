@@ -1,15 +1,10 @@
 package com.chm.converter.avro.factorys;
 
-import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
-import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.chm.converter.core.codecs.EnumCodec;
 import org.apache.avro.Conversion;
 import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
-
-import java.util.Map;
 
 /**
  * @author caihongming

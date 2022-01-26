@@ -118,7 +118,7 @@ public class FastjsonSerializeConfig extends SerializeConfig {
             super(beanType);
         }
 
-        private void init(Class<?> beanType){
+        private void init(Class<?> beanType) {
             JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(beanType, converterClass);
             List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
             if (CollUtil.isEmpty(sortedFieldList)) {

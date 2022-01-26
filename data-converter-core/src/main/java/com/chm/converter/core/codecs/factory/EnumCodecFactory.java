@@ -1,15 +1,11 @@
 package com.chm.converter.core.codecs.factory;
 
-import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
-import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codecs.EnumCodec;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
-
-import java.util.Map;
 
 /**
  * 枚举类型编解码

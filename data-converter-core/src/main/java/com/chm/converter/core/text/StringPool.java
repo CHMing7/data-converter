@@ -2,6 +2,7 @@ package com.chm.converter.core.text;
 
 /**
  * 常用字符串常量定义
+ *
  * @author caihongming
  * @version v1.0
  * @since 2022-01-25

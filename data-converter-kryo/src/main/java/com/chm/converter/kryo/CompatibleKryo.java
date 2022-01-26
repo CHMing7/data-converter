@@ -21,7 +21,7 @@ import org.objenesis.instantiator.ObjectInstantiator;
  **/
 public class CompatibleKryo extends Kryo {
 
-    private final  Converter<?> converter;
+    private final Converter<?> converter;
 
     private final Class<? extends Converter> converterClass;
 
@@ -49,7 +49,7 @@ public class CompatibleKryo extends Kryo {
             return new JavaSerializer();
         }
         Serializer defaultSerializer = super.getDefaultSerializer(clazz);
-        if(defaultSerializer instanceof DefaultSerializers.EnumSerializer){
+        if (defaultSerializer instanceof DefaultSerializers.EnumSerializer) {
             return new KryoEnumSerializer(clazz, converter);
         }
 

@@ -32,7 +32,7 @@ public class FstObjectInput extends FSTObjectInput {
         Class c = clzSerInfo.getClazz();
         EnumCodec enumCodec = MapUtil.computeIfAbsent(enumCodecMap, c,
                 enumClass -> new EnumCodec<>(enumClass, this.converter));
-        Object res =  enumCodec.read(getCodec()::readStringUTF);
+        Object res = enumCodec.read(getCodec()::readStringUTF);
         if (REGISTER_ENUMS_READ) {
             if (!referencee.isFlat()) {
                 // should be unnecessary

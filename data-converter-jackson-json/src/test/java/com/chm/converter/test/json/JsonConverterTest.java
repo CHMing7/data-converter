@@ -4,7 +4,6 @@ import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
-import com.chm.converter.core.cfg.ConvertFeature;
 import com.chm.converter.json.JacksonConverter;
 import org.junit.jupiter.api.Test;
 

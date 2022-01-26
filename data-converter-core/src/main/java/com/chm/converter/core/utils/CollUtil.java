@@ -626,7 +626,7 @@ public class CollUtil {
      * @param consumer {@link Consumer} 遍历的每条数据处理器
      */
     public static <T> void forEach(Iterable<T> iterable, Consumer<T> consumer) {
-        if(iterable == null){
+        if (iterable == null) {
             return;
         }
         forEach(iterable.iterator(), consumer);
@@ -640,7 +640,7 @@ public class CollUtil {
      * @param consumer {@link Consumer} 遍历的每条数据处理器
      */
     public static <T> void forEach(Iterator<T> iterator, Consumer<T> consumer) {
-        if(iterator == null){
+        if (iterator == null) {
             return;
         }
         int index = 0;
@@ -658,7 +658,7 @@ public class CollUtil {
      * @param consumer    {@link Consumer} 遍历的每条数据处理器
      */
     public static <T> void forEach(Enumeration<T> enumeration, Consumer<T> consumer) {
-        if(enumeration == null){
+        if (enumeration == null) {
             return;
         }
         int index = 0;
@@ -678,7 +678,7 @@ public class CollUtil {
      * @param kvConsumer {@link KVConsumer} 遍历的每条数据处理器
      */
     public static <K, V> void forEach(Map<K, V> map, KVConsumer<K, V> kvConsumer) {
-        if(map == null){
+        if (map == null) {
             return;
         }
         int index = 0;
@@ -716,7 +716,7 @@ public class CollUtil {
      * @author Looly
      */
     @FunctionalInterface
-    public interface KVConsumer<K, V> extends Serializable{
+    public interface KVConsumer<K, V> extends Serializable {
         /**
          * 接受并处理一对参数
          *

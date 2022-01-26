@@ -271,7 +271,7 @@ public interface DataReader extends Closeable {
      * @return 字段数据
      * @throws IOException
      */
-    default Object readAny() throws IOException{
+    default Object readAny() throws IOException {
         return readAny(null);
     }
 

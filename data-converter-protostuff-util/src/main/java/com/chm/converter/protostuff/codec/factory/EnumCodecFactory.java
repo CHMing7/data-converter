@@ -1,8 +1,6 @@
 package com.chm.converter.protostuff.codec.factory;
 
-import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
-import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
@@ -14,7 +12,6 @@ import io.protostuff.Output;
 import io.protostuff.ProtostuffException;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * 枚举类型编解码
