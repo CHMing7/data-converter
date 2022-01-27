@@ -19,34 +19,34 @@ public class User implements Serializable {
     /**
      * 用户
      */
-    @FieldProperty(name = "user12", ordinal = 1)
+    @FieldProperty(name = "user", ordinal = 4)
     public User user;
 
     /**
      * 用户名
      */
-    @FieldProperty(name = "userName1", ordinal = 1)
+    @FieldProperty(name = "userName", ordinal = 5)
     public String userName;
 
     /**
      * 密码
      */
-    @FieldProperty(name = "password2", ordinal = 2)
+    @FieldProperty(name = "password", ordinal = 3)
     public String password;
 
     /**
      * 新型时间
      */
-    @FieldProperty(name = "localDateTime", ordinal = 3, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(name = "localDateTime", ordinal = 2)
     public LocalDateTime localDateTime;
 
     /**
      * date
      */
-    @FieldProperty(name = "date", ordinal = 4, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(name = "date", ordinal = 1, format = "yyyy-MM-dd HH:mm:ss.SSSS")
     public Date date;
 
-    @FieldProperty(name = "yearMonth", ordinal = 5, format = "yyyy-MM")
+    @FieldProperty(name = "yearMonth", ordinal = 6, format = "yyyy-MM")
     public YearMonth yearMonth;
 
     public User getUser() {
