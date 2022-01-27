@@ -92,7 +92,6 @@ public abstract class AbstractKryoFactory implements KryoFactory {
 
         kryo.addDefaultSerializer(Throwable.class, new JavaSerializer());
 
-
         // now just added some very common classes
         kryo.register(HashMap.class);
         kryo.register(ArrayList.class);

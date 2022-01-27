@@ -15,7 +15,7 @@ import java.util.Date;
  * @version v1.0
  * @since 2021-10-22
  **/
-public class KryoDefaultDateSerializer<T extends Date> extends Serializer<T> {
+public class KryoDefaultDateSerializer<T extends Date> extends Serializer<T> implements CustomizeSerializer {
 
     private final DefaultDateCodec<T> defaultDateCodec;
 

@@ -70,7 +70,6 @@ public class ConverterTest {
         Map<String, User> userMap = MapUtil.newHashMap(true);
         userMap.put("user", user);
         userMap.put("user1", user);
-        converter.enable(ConvertFeature.DATES_AS_TIMESTAMPS);
         byte[] encode = (byte[]) converter.encode(userMap);
         // original
         ByteArrayOutputStream os = new ByteArrayOutputStream();

@@ -12,7 +12,7 @@ import com.esotericsoftware.kryo.io.Output;
  * @version v1.0
  * @since 2022-01-26
  **/
-public class KryoEnumSerializer<E extends Enum<E>> extends Serializer<E> {
+public class KryoEnumSerializer<E extends Enum<E>> extends Serializer<E> implements CustomizeSerializer {
 
     private final EnumCodec<E> enumCodec;
 
