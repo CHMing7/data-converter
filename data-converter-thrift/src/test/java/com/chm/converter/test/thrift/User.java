@@ -16,6 +16,12 @@ import java.util.Objects;
 public class User implements Serializable {
 
     /**
+     * 用户
+     */
+    @FieldProperty(name = "user12", ordinal = 1)
+    public User user;
+
+    /**
      * 用户名
      */
     @FieldProperty(name = "userName1", ordinal = 2)
@@ -41,6 +47,14 @@ public class User implements Serializable {
 
     @FieldProperty(name = "yearMonth", ordinal = 6, format = "yyyy-MM")
     public YearMonth yearMonth;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public String getUserName() {
         return userName;

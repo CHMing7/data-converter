@@ -48,6 +48,14 @@ public final class ConstructorFactory {
         this.instanceCreators = instanceCreators;
     }
 
+    public <T> ObjectConstructor<T> get(Class<T> cls) {
+       return get(TypeToken.get(cls));
+    }
+
+    public <T> ObjectConstructor<T> get(Type type) {
+        return get(TypeToken.get(type));
+    }
+
     @SuppressWarnings("unchecked")
     public <T> ObjectConstructor<T> get(TypeToken<T> typeToken) {
         final Type type = typeToken.getType();

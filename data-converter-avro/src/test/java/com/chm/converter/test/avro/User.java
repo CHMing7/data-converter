@@ -14,7 +14,6 @@ import java.util.Objects;
  **/
 public class User {
 
-
     /**
      * 用户
      */
