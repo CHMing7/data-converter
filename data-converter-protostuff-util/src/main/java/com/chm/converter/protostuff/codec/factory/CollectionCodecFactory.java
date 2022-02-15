@@ -83,5 +83,10 @@ public class CollectionCodecFactory implements UniversalFactory<ProtostuffCodec>
                 }
             }
         }
+
+        @Override
+        public CollectionCodec<V> newInstance() {
+            return new CollectionCodec<>(this.clazz, this.elementCodec);
+        }
     }
 }

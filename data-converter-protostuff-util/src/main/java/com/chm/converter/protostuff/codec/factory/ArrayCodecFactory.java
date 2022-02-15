@@ -94,5 +94,10 @@ public class ArrayCodecFactory implements UniversalFactory<ProtostuffCodec> {
                 }
             }
         }
+
+        @Override
+        public ArrayCodec<E> newInstance() {
+            return new ArrayCodec<>(this.clazz, this.componentTypeCodec, this.componentType);
+        }
     }
 }

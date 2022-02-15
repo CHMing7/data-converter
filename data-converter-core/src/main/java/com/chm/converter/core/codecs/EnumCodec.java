@@ -53,6 +53,10 @@ public class EnumCodec<E extends Enum<E>> implements Codec<E, String> {
         return enumType;
     }
 
+    public Converter<?> getConverter() {
+        return converter;
+    }
+
     @Override
     public String encode(E e) {
         if (e == null) {

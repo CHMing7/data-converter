@@ -3,17 +3,24 @@ package com.chm.converter.test.protobuf;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.log.StaticLog;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.creator.ConstructorFactory;
+import com.chm.converter.core.utils.DateUtil;
 import com.chm.converter.protobuf.DefaultProtobufConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -36,11 +43,40 @@ public class ConverterTest {
     public void before() {
         converter = ConverterSelector.select(DataType.PROTOBUF_BINARY, DefaultProtobufConverter.class);
         user = new User();
+        User user1 = new User();
+        user1.setUserName("testName");
+        user.setUser(user1);
         user.setUserName("user");
         user.setPassword("password");
         user.setDate(new Date());
         user.setLocalDateTime(LocalDateTime.now());
         user.setYearMonth(YearMonth.now());
+    }
+
+    @Test
+    public void testOriginal() throws Exception {
+        // new
+
+        byte[] encode = converter.encode(user);
+        // original
+        TestUserOuterClass.TestUser user1 = TestUserOuterClass.TestUser.newBuilder()
+                .setUserName("testName").build();
+        TestUserOuterClass.TestUser testUser = TestUserOuterClass.TestUser.newBuilder()
+                .setUser(user1)
+                .setUserName(user.userName)
+                .setPassword(user.password)
+                .setDate(DateUtil.format(user.date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS")))
+                .setLocalDateTime(user.getLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS")))
+                .setYearMonth(user.getYearMonth().format(DateTimeFormatter.ofPattern("yyyy-MM")))
+                .build();
+        byte[] encode2 = testUser.toByteArray();
+        StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testUser2:" + StrUtil.str(encode2, "utf-8"));
+
+        assertArrayEquals(encode, encode2);
+
+        TestUserOuterClass.TestUser newTestUser = TestUserOuterClass.TestUser.parseFrom(encode);
+        assertEquals(testUser, newTestUser);
     }
 
 

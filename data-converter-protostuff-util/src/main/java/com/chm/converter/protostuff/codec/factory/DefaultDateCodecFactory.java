@@ -7,10 +7,8 @@ import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.protostuff.codec.BaseProtostuffCodec;
 import com.chm.converter.protostuff.codec.ProtostuffCodec;
-import com.chm.converter.protostuff.codec.ProtostuffConstants;
 import io.protostuff.Input;
 import io.protostuff.Output;
-import io.protostuff.ProtostuffException;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -86,27 +84,22 @@ public class DefaultDateCodecFactory implements UniversalFactory<ProtostuffCodec
         public void writeTo(Output output, T message) throws IOException {
             defaultDateCodec.write(message, encode -> {
                 if (encode != null) {
-                    output.writeString(classId(), encode, false);
+                    output.writeString(this.fieldNumber, encode, false);
                 }
             });
         }
 
         @Override
         public T mergeFrom(Input input) throws IOException {
-            if (classId() != input.readFieldNumber(this)) {
-                throw new ProtostuffException("Corrupt input.");
+            if (this.fieldNumber == -1) {
+                input.readFieldNumber(this);
             }
-            T t = defaultDateCodec.decode(input.readString());
-
-            if (0 != input.readFieldNumber(this)) {
-                throw new ProtostuffException("Corrupt input.");
-            }
-            return t;
+            return defaultDateCodec.read(input::readString);
         }
 
         @Override
-        public int classId() {
-            return ProtostuffConstants.ID_DEFAULT_DATE;
+        public DefaultDateCodec<T> newInstance() {
+            return new DefaultDateCodec<>(this.defaultDateCodec.getDateType(), this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter());
         }
     }
 }

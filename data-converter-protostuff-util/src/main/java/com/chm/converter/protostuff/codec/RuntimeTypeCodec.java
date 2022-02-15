@@ -27,7 +27,7 @@ public class RuntimeTypeCodec<T> extends BaseProtostuffCodec<T> {
 
 
     public RuntimeTypeCodec(UniversalGenerate<ProtostuffCodec> generate, ProtostuffCodec<T> delegate, Type type) {
-        super(delegate.clazz, delegate.clazz.getSimpleName());
+        super(delegate.clazz, delegate.clazz.getName());
         this.generate = generate;
         this.delegate = delegate;
         this.type = type;
@@ -43,7 +43,7 @@ public class RuntimeTypeCodec<T> extends BaseProtostuffCodec<T> {
         ProtostuffCodec<T> chosen = delegate;
         Type runtimeType = getRuntimeTypeIfMoreSpecific(type, message);
         if (runtimeType != type) {
-            ProtostuffCodec runtimeTypeAdapter = generate.get(TypeToken.get(runtimeType));
+            ProtostuffCodec runtimeTypeAdapter = generate.get(runtimeType);
             if (!(runtimeTypeAdapter instanceof JavaBeanCodecFactory.JavaBeanCodec)) {
                 // The user registered a type adapter for the runtime type, so we will use that
                 chosen = runtimeTypeAdapter;
@@ -75,7 +75,7 @@ public class RuntimeTypeCodec<T> extends BaseProtostuffCodec<T> {
     }
 
     @Override
-    public int classId() {
-        return 0;
+    public RuntimeTypeCodec<T> newInstance() {
+        return new RuntimeTypeCodec<>(this.generate, this.delegate, this.type);
     }
 }

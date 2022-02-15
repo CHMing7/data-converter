@@ -100,6 +100,11 @@ public class MapCodecFactory implements UniversalFactory<ProtostuffCodec> {
                 }
             }
         }
+
+        @Override
+        public MapCodec<K, V> newInstance() {
+            return new MapCodec<>(this.clazz, this.pairCodec.kCodec, this.pairCodec.vCodec);
+        }
     }
 
     public static class PairCodec<K, V> extends ProtostuffCodec<Pair<K, V>> {
@@ -153,6 +158,11 @@ public class MapCodecFactory implements UniversalFactory<ProtostuffCodec> {
         }
 
         @Override
+        public PairCodec<K, V> newInstance() {
+            return new PairCodec<>(this.clazz, this.kCodec, this.vCodec);
+        }
+
+        @Override
         public void writeTo(Output output, Pair<K, V> message) throws IOException {
             if (message.getKey() != null) {
                 output.writeObject(1, message.getKey(), kCodec, false);
@@ -173,23 +183,20 @@ public class MapCodecFactory implements UniversalFactory<ProtostuffCodec> {
                         return Pair.of(key, value);
                     case 1:
                         if (key != null) {
-                            throw new ProtostuffException("The map was incorrectly " +
-                                    "serialized.");
+                            throw new ProtostuffException("The map was incorrectly serialized.");
                         }
                         key = input.mergeObject(null, kCodec);
                         assert key != null;
                         break;
                     case 2:
                         if (value != null) {
-                            throw new ProtostuffException("The map was incorrectly " +
-                                    "serialized.");
+                            throw new ProtostuffException("The map was incorrectly serialized.");
                         }
                         value = input.mergeObject(null, vCodec);
                         assert value != null;
                         break;
                     default:
-                        throw new ProtostuffException("The map was incorrectly " +
-                                "serialized.");
+                        throw new ProtostuffException("The map was incorrectly serialized.");
                 }
             }
         }

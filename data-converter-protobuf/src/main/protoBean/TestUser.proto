@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package tutorial;
+
+option java_package = "com.chm.converter.test.protobuf";
+
+message TestUser {
+  optional TestUser user = 1;
+  optional string userName = 2;
+  optional string password = 3;
+  optional string localDateTime = 4;
+  optional string date = 5;
+  optional string yearMonth = 6;
+}

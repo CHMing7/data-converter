@@ -1,6 +1,6 @@
-/*plugins {
+plugins {
     id("com.google.protobuf") version "0.8.17"
-}*/
+}
 
 dependencies {
     compile project(':data-converter-protostuff-util')
@@ -18,7 +18,6 @@ dependencies {
     testCompile(libs.protostuff_core)
 }
 
-/*
 protobuf {
     protoc {
         artifact = 'com.google.protobuf:protoc:3.17.3'
@@ -36,4 +35,4 @@ sourceSets {
             srcDirs 'src/main/protoBean'
         }
     }
-}*/
+}

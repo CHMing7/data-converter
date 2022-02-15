@@ -47,11 +47,14 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         private final Map<FieldInfo, ProtostuffCodec> fieldInfoProtostuffCodecMap;
 
+        private final Converter<?> converter;
+
         public JavaBeanCodec(Class<T> clazz, UniversalGenerate<ProtostuffCodec> codecGenerate, Converter<?> converter) {
             super(clazz);
             this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converter != null ? converter.getClass() : null);
             this.codecGenerate = codecGenerate;
             this.fieldInfoProtostuffCodecMap = new ConcurrentHashMap<>();
+            this.converter = converter;
         }
 
         @Override
@@ -76,6 +79,11 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
         }
 
         @Override
+        public JavaBeanCodec<T> newInstance() {
+            return new JavaBeanCodec<>(this.javaBeanInfo.getClazz(), this.codecGenerate, this.converter);
+        }
+
+        @Override
         public void writeTo(Output output, T message) throws IOException {
             List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
             for (int i = 0; i < sortedFieldList.size(); i++) {
@@ -88,7 +96,7 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
                     continue;
                 }
                 ProtostuffCodec codec = getFieldProtostuffCodec(fieldInfo);
-                output.writeObject(i + 1, o, codec, false);
+                ProtostuffCodec.write(codec, output, o, i + 1);
             }
         }
 
@@ -102,7 +110,7 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
                     input.handleUnknownField(n, this);
                 } else {
                     ProtostuffCodec codec = getFieldProtostuffCodec(fieldInfo);
-                    Object o = input.mergeObject(null, codec);
+                    Object o = ProtostuffCodec.merge(codec, input);
                     if (!fieldInfo.isDeserialize()) {
                         continue;
                     }
@@ -121,7 +129,7 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
                 if (codec instanceof DefaultDateCodecFactory.DefaultDateCodec) {
                     codec = ((DefaultDateCodecFactory.DefaultDateCodec<?>) codec).withDatePattern(fieldInfo.getFormat());
                 }
-                return codec;
+                return codec.withFieldNumber(fieldInfo.getSortedNumber() + 1);
             });
         }
     }

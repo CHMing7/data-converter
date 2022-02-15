@@ -6,10 +6,8 @@ import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.protostuff.codec.BaseProtostuffCodec;
 import com.chm.converter.protostuff.codec.ProtostuffCodec;
-import com.chm.converter.protostuff.codec.ProtostuffConstants;
 import io.protostuff.Input;
 import io.protostuff.Output;
-import io.protostuff.ProtostuffException;
 
 import java.io.IOException;
 
@@ -57,28 +55,24 @@ public class EnumCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         @Override
         public void writeTo(Output output, E message) throws IOException {
-            String encode = enumCodec.encode(message);
-            if (encode != null) {
-                output.writeString(classId(), encode, false);
-            }
+            enumCodec.write(message, encode -> {
+                if (encode != null) {
+                    output.writeString(this.fieldNumber, encode, false);
+                }
+            });
         }
 
         @Override
         public E mergeFrom(Input input) throws IOException {
-            if (classId() != input.readFieldNumber(this)) {
-                throw new ProtostuffException("Corrupt input.");
+            if (this.fieldNumber == -1) {
+                input.readFieldNumber(this);
             }
-            E e = this.enumCodec.read(input::readString);
-
-            if (0 != input.readFieldNumber(this)) {
-                throw new ProtostuffException("Corrupt input.");
-            }
-            return e;
+            return this.enumCodec.read(input::readString);
         }
 
         @Override
-        public int classId() {
-            return ProtostuffConstants.ID_ENUM;
+        public EnumCodec<E> newInstance() {
+            return new EnumCodec<>(this.clazz, this.enumCodec.getConverter());
         }
     }
 }

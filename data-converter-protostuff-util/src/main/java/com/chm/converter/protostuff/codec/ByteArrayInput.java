@@ -45,6 +45,9 @@ public class ByteArrayInput extends FilterInput<io.protostuff.ByteArrayInput> {
         if (!schema.isInitialized(value)) {
             throw new UninitializedMessageException(value, schema);
         }
+        if (input.getLastTag() != 0) {
+            input.readFieldNumber(schema);
+        }
         input.checkLastTagWas(0);
 
         // restore old limit
@@ -67,6 +70,9 @@ public class ByteArrayInput extends FilterInput<io.protostuff.ByteArrayInput> {
             throw new UninitializedMessageException(value, schema);
         }
         // handling is in #readFieldNumber
+        if (input.getLastTag() != 0) {
+            input.readFieldNumber(schema);
+        }
         input.checkLastTagWas(0);
         return resultValue;
     }

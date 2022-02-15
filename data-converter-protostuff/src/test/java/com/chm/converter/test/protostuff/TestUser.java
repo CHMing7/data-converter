@@ -1,10 +1,7 @@
-package com.chm.converter.test.protobuf;
+package com.chm.converter.test.protostuff;
 
 import com.chm.converter.core.annotation.FieldProperty;
 
-import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -12,13 +9,13 @@ import java.util.Objects;
  * @version v1.0
  * @since 2021-06-03
  **/
-public class User {
+public class TestUser {
 
     /**
      * 用户
      */
     @FieldProperty(name = "user12", ordinal = 1)
-    public User user;
+    public TestUser user;
 
     /**
      * 用户名
@@ -35,23 +32,23 @@ public class User {
     /**
      * 新型时间
      */
-    @FieldProperty(name = "localDateTime", ordinal = 4, format = "yyyy-MM-dd HH:mm:ss.SSSS")
-    public LocalDateTime localDateTime;
+    @FieldProperty(name = "localDateTime", ordinal = 4)
+    public String localDateTime;
 
     /**
      * date
      */
-    @FieldProperty(name = "date", ordinal = 5, format = "yyyy-MM-dd HH:mm:ss.SSSS")
-    public Date date;
+    @FieldProperty(name = "date", ordinal = 5)
+    public String date;
 
-    @FieldProperty(name = "yearMonth", ordinal = 6, format = "yyyy-MM")
-    public YearMonth yearMonth;
+    @FieldProperty(name = "yearMonth", ordinal = 6)
+    public String yearMonth;
 
-    public User getUser() {
+    public TestUser getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(TestUser user) {
         this.user = user;
     }
 
@@ -71,40 +68,45 @@ public class User {
         this.password = password;
     }
 
-    public LocalDateTime getLocalDateTime() {
+    public String getLocalDateTime() {
         return localDateTime;
     }
 
-    public void setLocalDateTime(LocalDateTime localDateTime) {
+    public void setLocalDateTime(String localDateTime) {
         this.localDateTime = localDateTime;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
-    public YearMonth getYearMonth() {
+    public String getYearMonth() {
         return yearMonth;
     }
 
-    public void setYearMonth(YearMonth yearMonth) {
+    public void setYearMonth(String yearMonth) {
         this.yearMonth = yearMonth;
     }
-
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user1 = (User) o;
-        return Objects.equals(user, user1.user) &&
-                Objects.equals(userName, user1.userName) &&
-                Objects.equals(password, user1.password) &&
-                Objects.equals(localDateTime, user1.localDateTime) &&
-                Objects.equals(date, user1.date) && Objects.equals(yearMonth, user1.yearMonth);
+        TestUser testUser = (TestUser) o;
+        return Objects.equals(user, testUser.user) &&
+                Objects.equals(userName, testUser.userName) &&
+                Objects.equals(password, testUser.password) &&
+                Objects.equals(localDateTime, testUser.localDateTime) &&
+                Objects.equals(date, testUser.date) &&
+                Objects.equals(yearMonth, testUser.yearMonth);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user, userName, password, localDateTime, date, yearMonth);
     }
 }

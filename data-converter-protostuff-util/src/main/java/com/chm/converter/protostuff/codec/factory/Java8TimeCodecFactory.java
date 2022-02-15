@@ -7,10 +7,8 @@ import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.protostuff.codec.BaseProtostuffCodec;
 import com.chm.converter.protostuff.codec.ProtostuffCodec;
-import com.chm.converter.protostuff.codec.ProtostuffConstants;
 import io.protostuff.Input;
 import io.protostuff.Output;
-import io.protostuff.ProtostuffException;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -78,26 +76,21 @@ public class Java8TimeCodecFactory implements UniversalFactory<ProtostuffCodec> 
         public void writeTo(Output output, T message) throws IOException {
             String encode = java8TimeCodec.encode(message);
             if (encode != null) {
-                output.writeString(classId(), encode, false);
+                output.writeString(this.fieldNumber, encode, false);
             }
         }
 
         @Override
         public T mergeFrom(Input input) throws IOException {
-            if (classId() != input.readFieldNumber(this)) {
-                throw new ProtostuffException("Corrupt input.");
+            if (this.fieldNumber == -1) {
+                input.readFieldNumber(this);
             }
-            T t = java8TimeCodec.decode(input.readString());
-
-            if (0 != input.readFieldNumber(this)) {
-                throw new ProtostuffException("Corrupt input.");
-            }
-            return t;
+            return java8TimeCodec.read(input::readString);
         }
 
         @Override
-        public int classId() {
-            return ProtostuffConstants.ID_JAVA8_TIME;
+        public Java8TimeCodec<T> newInstance() {
+            return new Java8TimeCodec<>(this.java8TimeCodec.getClazz(), this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
         }
     }
 }

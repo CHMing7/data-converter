@@ -37,6 +37,7 @@ ext {
             kryo               : "com.esotericsoftware:kryo:$versions.kryo",
             protobuf_java      : "com.google.protobuf:protobuf-java:$versions.protobuf",
             protostuff_core    : "io.protostuff:protostuff-core:$versions.protostuff",
+            protostuff_runtime : "io.protostuff:protostuff-runtime:$versions.protostuff",
             fst                : "de.ruedigermoeller:fst:$versions.fst",
             msgpack_jackson    : "org.msgpack:jackson-dataformat-msgpack:$versions.msgpack",
             spearal_java       : "org.spearal:spearal-java:$versions.spearal",

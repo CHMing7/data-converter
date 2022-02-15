@@ -11,4 +11,5 @@ dependencies {
 
     testCompile(libs.hutool_log)
     testCompile(libs.protostuff_core)
+    testCompile(libs.protostuff_runtime)
 }

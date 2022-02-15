@@ -5,7 +5,6 @@ import com.chm.converter.core.utils.MapUtil;
 import io.protostuff.ByteString;
 import io.protostuff.Input;
 import io.protostuff.Output;
-import io.protostuff.ProtostuffException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -121,25 +120,26 @@ public class ProtostuffCodecs {
             if (message != null) {
                 FieldWriteTo writeTo = WRITE_MAP.get(classId());
                 if (writeTo != null) {
-                    writeTo.apply(classId(), output, message);
+                    writeTo.apply(this.fieldNumber, output, message);
                 }
             }
         }
 
         @Override
         public T mergeFrom(Input input) throws IOException {
-            if (classId() != input.readFieldNumber(this)) {
-                throw new ProtostuffException("Corrupt input.");
-            }
             FieldMergeFrom mergeFrom = MERGE_FROM_MAP.get(classId());
-
-            T t = mergeFrom != null ? (T) mergeFrom.apply(input) : null;
-
-            if (0 != input.readFieldNumber(this)) {
-                throw new ProtostuffException("Corrupt input.");
+            if (this.fieldNumber == -1) {
+                input.readFieldNumber(this);
             }
-            return t;
+            return mergeFrom != null ? (T) mergeFrom.apply(input) : null;
         }
+
+        /**
+         * 类型id
+         *
+         * @return
+         */
+        public abstract int classId();
     }
 
     @FunctionalInterface
@@ -170,6 +170,11 @@ public class ProtostuffCodecs {
         public Character newMessage() {
             return 0;
         }
+
+        @Override
+        public CharCodec newInstance() {
+            return new CharCodec();
+        }
     }
 
     private static final CharCodec CHAR = new CharCodec();
@@ -191,6 +196,11 @@ public class ProtostuffCodecs {
         @Override
         public Short newMessage() {
             return 0;
+        }
+
+        @Override
+        public ShortCodec newInstance() {
+            return new ShortCodec();
         }
     }
 
@@ -214,6 +224,11 @@ public class ProtostuffCodecs {
         public Byte newMessage() {
             return 0;
         }
+
+        @Override
+        public ByteCodec newInstance() {
+            return new ByteCodec();
+        }
     }
 
     private static final ByteCodec BYTE = new ByteCodec();
@@ -235,6 +250,11 @@ public class ProtostuffCodecs {
         @Override
         public Integer newMessage() {
             return 0;
+        }
+
+        @Override
+        public IntCodec newInstance() {
+            return new IntCodec();
         }
     }
 
@@ -258,6 +278,11 @@ public class ProtostuffCodecs {
         public Long newMessage() {
             return 0L;
         }
+
+        @Override
+        public LongCodec newInstance() {
+            return new LongCodec();
+        }
     }
 
     private static final LongCodec LONG = new LongCodec();
@@ -279,6 +304,11 @@ public class ProtostuffCodecs {
         @Override
         public Float newMessage() {
             return 0F;
+        }
+
+        @Override
+        public FloatCodec newInstance() {
+            return new FloatCodec();
         }
     }
 
@@ -302,6 +332,11 @@ public class ProtostuffCodecs {
         public Double newMessage() {
             return .0;
         }
+
+        @Override
+        public DoubleCodec newInstance() {
+            return new DoubleCodec();
+        }
     }
 
     private static final DoubleCodec DOUBLE = new DoubleCodec();
@@ -323,6 +358,11 @@ public class ProtostuffCodecs {
         @Override
         public Boolean newMessage() {
             return false;
+        }
+
+        @Override
+        public BoolCodec newInstance() {
+            return new BoolCodec();
         }
     }
 
@@ -346,6 +386,11 @@ public class ProtostuffCodecs {
         public String newMessage() {
             return "";
         }
+
+        @Override
+        public StringCodec newInstance() {
+            return new StringCodec();
+        }
     }
 
     private static final StringCodec STRING = new StringCodec();
@@ -367,6 +412,11 @@ public class ProtostuffCodecs {
         @Override
         public ByteString newMessage() {
             return ByteString.EMPTY;
+        }
+
+        @Override
+        public ByteStringCodec newInstance() {
+            return new ByteStringCodec();
         }
     }
 
@@ -390,6 +440,11 @@ public class ProtostuffCodecs {
         public byte[] newMessage() {
             return new byte[0];
         }
+
+        @Override
+        public BytesCodec newInstance() {
+            return new BytesCodec();
+        }
     }
 
     private static final BytesCodec BYTES = new BytesCodec();
@@ -412,6 +467,11 @@ public class ProtostuffCodecs {
         public BigDecimal newMessage() {
             return BigDecimal.valueOf(0);
         }
+
+        @Override
+        public BigDecimalCodec newInstance() {
+            return new BigDecimalCodec();
+        }
     }
 
     private static final BigDecimalCodec BIG_DECIMAL = new BigDecimalCodec();
@@ -433,6 +493,11 @@ public class ProtostuffCodecs {
         @Override
         public BigInteger newMessage() {
             return BigInteger.valueOf(0);
+        }
+
+        @Override
+        public BigIntegerCodec newInstance() {
+            return new BigIntegerCodec();
         }
     }
 

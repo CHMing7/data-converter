@@ -18,18 +18,11 @@ public abstract class BaseProtostuffCodec<T> extends ProtostuffCodec<T> {
 
     @Override
     public String getFieldName(int number) {
-        return number == classId() ? this.name : null;
+        return number == this.fieldNumber ? this.name : null;
     }
 
     @Override
     public int getFieldNumber(String name) {
-        return StringUtil.equals(this.name, name) ? classId() : 0;
+        return StringUtil.equals(this.name, name) ? this.fieldNumber : 0;
     }
-
-    /**
-     * 类型id
-     *
-     * @return
-     */
-    public abstract int classId();
 }

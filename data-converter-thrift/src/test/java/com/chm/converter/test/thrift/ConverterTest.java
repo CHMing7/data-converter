@@ -84,17 +84,20 @@ public class ConverterTest {
         assertArrayEquals(encode, encode2);
 
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(encode);
-        TBase instance = ConstructorFactory.INSTANCE.get(TestUser.class).construct();
+        TBase newTestUser = ConstructorFactory.INSTANCE.get(TestUser.class).construct();
         TTransport transport2 = new TIOStreamTransport(byteArrayInputStream);
         TProtocol oprot2 = new TBinaryProtocol(transport2);
-        instance.read(oprot2);
-        assertEquals(testUser, instance);
+        newTestUser.read(oprot2);
+        assertEquals(testUser, newTestUser);
     }
 
 
     @Test
     public void testUser() {
         TestUser testUser = new TestUser();
+        TestUser user1 = new TestUser();
+        user1.setUserName("testName");
+        testUser.setUser(user1);
         testUser.setUserName("user");
         testUser.setPassword("password");
         testUser.setDate(DateUtil.format(user.date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS")));
