@@ -39,7 +39,7 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 
 ```xml
 <dependency>
-    <groupId>com.chm.converter</groupId>
+    <groupId>io.gitee.chming7</groupId>
     <artifactId>data-converter-all</artifactId>
     <version>Version</version>
 </dependency>
@@ -47,7 +47,7 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 
 ### 🍐Gradle
 ```
-implementation 'com.chm.converter:data-converter-all:Version'
+implementation 'io.gitee.chming7:data-converter-all:Version'
 ```
 
 ### 📥下载jar
