@@ -52,9 +52,9 @@ implementation 'io.gitee.chming7:data-converter-all:Version'
 
 ### 📥下载jar
 
-点击以下链接，下载`data-converter-all-X.X.X.jar`即可：
+点击以下链接，搜索下载`data-converter-xxx-X.X.X.jar`即可：
 
-- [Maven中央库]()
+- [Maven中央库](https://mvnrepository.com/search?q=io.gitee.chming7)
 
 
 ### 🚽编译安装

@@ -30,14 +30,3 @@ dependencies {
     testCompile(libs.thrift)
     testCompile(libs.yaml_jackson)
 }
-
-publishing {
-
-
-    repositories {
-        maven { url = "http://maven.aliyun.com/nexus/content/repositories/jcenter" }
-        maven { url = "http://maven.aliyun.com/nexus/content/groups/public/" }
-        mavenCentral()
-        mavenLocal()
-    }
-}
