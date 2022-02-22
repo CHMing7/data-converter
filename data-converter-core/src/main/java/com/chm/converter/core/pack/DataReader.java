@@ -248,12 +248,11 @@ public interface DataReader extends Closeable {
     /**
      * 读取{@code Class}值
      *
-     * @param targetType {@code Class}类型
      * @param <T>
      * @return {@code Class}值
      * @throws IOException
      */
-    <T> Class<T> readClass(TypeToken<Class<T>> targetType) throws IOException;
+    <T> Class<T> readClass() throws IOException;
 
     /**
      * 读取Bean值
@@ -335,7 +334,7 @@ public interface DataReader extends Closeable {
                 return readEnum(targetType);
 
             case DataToken.CLASS:
-                return readClass(targetType);
+                return readClass();
 
             default:
                 return readBean(targetType);

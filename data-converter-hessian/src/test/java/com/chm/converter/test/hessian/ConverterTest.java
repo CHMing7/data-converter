@@ -10,7 +10,6 @@ import com.caucho.hessian.io.SerializerFactory;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
-import com.chm.converter.core.cfg.ConvertFeature;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.hessian.DefaultHessianConverter;
 import com.chm.converter.hessian.factory.HessianDefaultDateConverterFactory;
@@ -24,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +53,7 @@ public class ConverterTest {
         user.setUser(user1);
         user.setUserName("user");
         user.setPassword("password");
-       // user.setDate(new Date());
+        // user.setDate(new Date());
         user.setLocalDateTime(LocalDateTime.now());
         user.setYearMonth(YearMonth.now());
 
@@ -107,13 +107,13 @@ public class ConverterTest {
         userMap.put("user", user);
         userMap.put("user1", user);
 
-        DefaultHessianConverter avroConverter = (DefaultHessianConverter) ConverterSelector.select(DataType.HESSIAN, DefaultHessianConverter.class);
-        byte[] encode = avroConverter.encode(userMap);
-
+        DefaultHessianConverter hessianConverter = (DefaultHessianConverter) ConverterSelector.select(DataType.HESSIAN, DefaultHessianConverter.class);
+        byte[] encode = hessianConverter.encode(userMap);
+        StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
         TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {
         };
 
-        Map<String, User> newUserMap = avroConverter.convertToJavaObject(encode, typeRef0.getType());
+        Map<String, User> newUserMap = hessianConverter.convertToJavaObject(encode, typeRef0.getType());
 
         assertEquals(userMap, newUserMap);
     }

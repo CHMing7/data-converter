@@ -9,8 +9,8 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
-import com.chm.converter.core.cfg.ConvertFeature;
-import com.chm.converter.json.FastjsonConverter;
+import com.chm.converter.core.utils.ListUtil;
+import com.chm.converter.hessian.DefaultHessianConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,6 +46,16 @@ public class ConverterTest {
         user.setDate(new Date());
         user.setLocalDateTime(LocalDateTime.now());
         user.setYearMonth(YearMonth.now());
+
+        List<User> userList = ListUtil.list(true);
+        userList.add(user1);
+        user.setUserList(userList);
+
+        Map<String, User> userMap = MapUtil.newHashMap();
+        userMap.put("user3", user1);
+        user.setUserMap(userMap);
+
+        user.setOne(User.Enum.ONE);
     }
 
 
@@ -61,7 +71,7 @@ public class ConverterTest {
 
     private void testMap() {
         Map<String, User> userMap = MapUtil.newHashMap(true);
-        userMap.put("user", user);
+        userMap.put("testMap", user);
         Object encode = converter.encode(userMap);
         StaticLog.info("testMap:" + StrUtil.str(encode, "utf-8"));
 
@@ -126,14 +136,14 @@ public class ConverterTest {
     public void testAny() {
         ConverterTest converterTest = new ConverterTest();
         converterTest.before();
-        this.converter = ConverterSelector.select(FastjsonConverter.class);
-        converter.disable(ConvertFeature.ENUMS_USING_TO_STRING);
+        this.converter = ConverterSelector.select(DefaultHessianConverter.class);
+        // converter.disable(ConvertFeature.ENUMS_USING_TO_STRING);
         StaticLog.info(this.converter.getConverterName());
-      /*  this.testUser();
-        this.testMap();
+        this.testUser();
+        /*this.testMap();
         this.testCollection();
-        this.testArray();*/
-        this.testEnum();
+        this.testArray();
+        this.testEnum();*/
     }
 
     @Test

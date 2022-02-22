@@ -1,6 +1,5 @@
 package com.chm.converter.test.spearal;
 
-import com.chm.converter.core.Converter;
 import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.utils.ClassUtil;
@@ -20,7 +19,7 @@ import java.util.Optional;
  * @version v1.0
  * @since 2022-01-27
  **/
-public class DefaultDateCoder<T extends Date> implements CoderProvider, CoderProvider.Coder, ConverterProvider, ConverterProvider.Converter{
+public class DefaultDateCoder<T extends Date> implements CoderProvider, CoderProvider.Coder, ConverterProvider, ConverterProvider.Converter {
 
     private final DefaultDateCodec<T> defaultDateCodec;
 

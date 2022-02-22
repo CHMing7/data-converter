@@ -49,7 +49,7 @@ public final class ConstructorFactory {
     }
 
     public <T> ObjectConstructor<T> get(Class<T> cls) {
-       return get(TypeToken.get(cls));
+        return get(TypeToken.get(cls));
     }
 
     public <T> ObjectConstructor<T> get(Type type) {

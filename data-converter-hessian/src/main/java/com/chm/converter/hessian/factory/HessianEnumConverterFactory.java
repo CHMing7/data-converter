@@ -9,7 +9,6 @@ import com.caucho.hessian.io.HessianProtocolException;
 import com.caucho.hessian.io.Serializer;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.codecs.EnumCodec;
-import com.chm.converter.hessian.UseDeserializer;
 
 import java.io.IOException;
 
@@ -48,7 +47,7 @@ public class HessianEnumConverterFactory extends AbstractSerializerFactory {
         return new HessianEnumConverter(cl, converter);
     }
 
-    public static class HessianEnumConverter<E extends Enum<E>> extends AbstractDeserializer implements Serializer, UseDeserializer {
+    public static class HessianEnumConverter<E extends Enum<E>> extends AbstractDeserializer implements Serializer {
 
         private final EnumCodec<E> enumCodec;
 
@@ -63,6 +62,10 @@ public class HessianEnumConverterFactory extends AbstractSerializerFactory {
 
         @Override
         public void writeObject(Object obj, AbstractHessianOutput out) throws IOException {
+            if (obj == null) {
+                out.writeNull();
+                return;
+            }
             if (out.addRef(obj)) {
                 return;
             }
@@ -93,10 +96,8 @@ public class HessianEnumConverterFactory extends AbstractSerializerFactory {
         }
 
         @Override
-        public Object readMap(AbstractHessianInput in)
-                throws IOException {
+        public Object readMap(AbstractHessianInput in) throws IOException {
             String name = null;
-
             while (!in.isEnd()) {
                 String key = in.readString();
 
@@ -114,6 +115,11 @@ public class HessianEnumConverterFactory extends AbstractSerializerFactory {
             in.addRef(obj);
 
             return obj;
+        }
+
+        @Override
+        public Object readObject(AbstractHessianInput in) throws IOException {
+            return readMap(in);
         }
 
         @Override

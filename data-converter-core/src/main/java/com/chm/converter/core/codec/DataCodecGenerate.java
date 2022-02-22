@@ -9,6 +9,7 @@ import com.chm.converter.core.codecs.factory.EnumCodecFactory;
 import com.chm.converter.core.codecs.factory.Java8TimeCodecFactory;
 import com.chm.converter.core.codecs.factory.JavaBeanCodecFactory;
 import com.chm.converter.core.codecs.factory.MapCodecFactory;
+import com.chm.converter.core.codecs.factory.ObjectCodecFactory;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
 
@@ -62,6 +63,7 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
         factories.add(new ArrayCodecFactory());
         factories.add(new DefaultDateCodecFactory(converter));
         factories.add(new Java8TimeCodecFactory(converter));
+        factories.add(new ObjectCodecFactory());
         DataCodecGenerate generate = new DataCodecGenerate(factories, converter);
         generate.put(Boolean.class, Codecs.BOOLEAN);
         generate.put(boolean.class, Codecs.BOOLEAN);
@@ -81,6 +83,7 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
         generate.put(double.class, Codecs.DOUBLE);
         generate.put(BigDecimal.class, Codecs.BIG_DECIMAL);
         generate.put(BigInteger.class, Codecs.BIG_INTEGER);
+        generate.put(CharSequence.class, Codecs.STRING);
         generate.put(String.class, Codecs.STRING);
 
         generate.put(byte[].class, Codecs.BYTE_ARRAY);

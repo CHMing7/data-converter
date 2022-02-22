@@ -147,7 +147,7 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
     private SettableBeanProperty findSoleTextProp(BeanDescription beanDesc,
                                                   Iterator<SettableBeanProperty> propIt) {
         JavaBeanInfo javaBeanInfo = XmlClassInfoStorage.INSTANCE.getJavaBeanInfo(beanDesc.getBeanClass(), converterClass);
-        Map<String, FieldInfo> fieldNameFieldInfoMap = javaBeanInfo.getFieldNameFieldInfoMap();
+        Map<String, FieldInfo> nameFieldInfoMap = javaBeanInfo.getNameFieldInfoMap();
         SettableBeanProperty textProp = null;
         while (propIt.hasNext()) {
             SettableBeanProperty prop = propIt.next();
@@ -155,7 +155,7 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
             if (m != null) {
                 // Ok, let's use a simple check: we should have renamed it earlier so:
                 PropertyName n = prop.getFullName();
-                FieldInfo fieldInfo = fieldNameFieldInfoMap.get(n.getSimpleName());
+                FieldInfo fieldInfo = nameFieldInfoMap.get(n.getSimpleName());
                 Boolean isText = (Boolean) fieldInfo.getExpandProperty("isText", false);
                 if (isText) {
                     // should we verify we only got one?
