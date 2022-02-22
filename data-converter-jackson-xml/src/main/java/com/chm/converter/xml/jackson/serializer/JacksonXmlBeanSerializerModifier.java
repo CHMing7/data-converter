@@ -78,9 +78,9 @@ public class JacksonXmlBeanSerializerModifier extends XmlBeanSerializerModifier 
                     new XmlInfo(isAttribute, namespace, isText, isCData));
             // 修改key值
             BeanPropertyWriter newWriter = bpw.rename(nameTransformer);
-            if (TypeUtil.isIndexedType(bpw.getType())) {
-                PropertyName wrappedName = PropertyName.construct(bpw.getName(), namespace);
-                PropertyName wrapperName = bpw.getWrapperName();
+            if (TypeUtil.isIndexedType(newWriter.getType())) {
+                PropertyName wrappedName = PropertyName.construct(newWriter.getName(), namespace);
+                PropertyName wrapperName = newWriter.getWrapperName();
 
                 // first things first: no wrapping?
                 if (wrapperName != null && wrapperName != PropertyName.NO_NAME) {
@@ -89,7 +89,7 @@ public class JacksonXmlBeanSerializerModifier extends XmlBeanSerializerModifier 
                     if (localName == null || localName.length() == 0) {
                         wrapperName = wrappedName;
                     }
-                    resultList.add(new XmlBeanPropertyWriter(bpw, wrapperName, wrappedName));
+                    resultList.add(new XmlBeanPropertyWriter(newWriter, wrapperName, wrappedName));
                 } else {
                     resultList.add(newWriter);
                 }

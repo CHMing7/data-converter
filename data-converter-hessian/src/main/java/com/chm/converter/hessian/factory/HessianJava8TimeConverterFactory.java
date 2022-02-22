@@ -84,7 +84,7 @@ public class HessianJava8TimeConverterFactory extends AbstractSerializerFactory 
                 if (out.addRef(obj)) {
                     return;
                 }
-                out.writeString(java8TimeCodec.encode((T) obj));
+                out.writeString(this.java8TimeCodec.encode((T) obj));
             }
         }
 
@@ -92,7 +92,7 @@ public class HessianJava8TimeConverterFactory extends AbstractSerializerFactory 
         public Object readObject(AbstractHessianInput in) throws IOException {
             String value = in.readString();
 
-            Object object = java8TimeCodec.decode(value);
+            Object object = this.java8TimeCodec.decode(value);
 
             in.addRef(object);
 

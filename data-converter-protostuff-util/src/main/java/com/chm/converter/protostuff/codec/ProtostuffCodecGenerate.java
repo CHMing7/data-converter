@@ -1,10 +1,12 @@
 package com.chm.converter.protostuff.codec;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.DataCodecGenerate;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.protostuff.codec.factory.ArrayCodecFactory;
 import com.chm.converter.protostuff.codec.factory.CollectionCodecFactory;
+import com.chm.converter.protostuff.codec.factory.CoreCodecFactory;
 import com.chm.converter.protostuff.codec.factory.DefaultDateCodecFactory;
 import com.chm.converter.protostuff.codec.factory.EnumCodecFactory;
 import com.chm.converter.protostuff.codec.factory.Java8TimeCodecFactory;
@@ -44,12 +46,14 @@ public class ProtostuffCodecGenerate extends UniversalGenerate<ProtostuffCodec> 
     public static ProtostuffCodecGenerate newDefault(Converter<?> converter) {
         List<UniversalFactory<ProtostuffCodec>> factories = new ArrayList<>();
         factories.add(new JavaBeanCodecFactory(converter));
+        factories.add(new CoreCodecFactory(DataCodecGenerate.newDefault(converter)));
         factories.add(new EnumCodecFactory(converter));
         factories.add(new MapCodecFactory());
         factories.add(new CollectionCodecFactory());
         factories.add(new ArrayCodecFactory());
         factories.add(new DefaultDateCodecFactory(converter));
         factories.add(new Java8TimeCodecFactory(converter));
+        // factories.add(new ObjectCodecFactory());
         factories.add(ProtostuffCodecs.CHAR_FACTORY);
         factories.add(ProtostuffCodecs.SHORT_FACTORY);
         factories.add(ProtostuffCodecs.BYTE_FACTORY);

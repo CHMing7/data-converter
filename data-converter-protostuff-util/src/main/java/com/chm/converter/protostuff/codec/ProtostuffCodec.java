@@ -4,7 +4,10 @@ import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.creator.ObjectConstructor;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalInterface;
+import com.chm.converter.protostuff.codec.factory.ArrayCodecFactory;
+import com.chm.converter.protostuff.codec.factory.CollectionCodecFactory;
 import com.chm.converter.protostuff.codec.factory.JavaBeanCodecFactory;
+import com.chm.converter.protostuff.codec.factory.MapCodecFactory;
 import io.protostuff.Input;
 import io.protostuff.Output;
 import io.protostuff.Schema;
@@ -108,7 +111,10 @@ public abstract class ProtostuffCodec<T> implements UniversalInterface, Schema<T
     }
 
     public static void write(ProtostuffCodec codec, Output output, Object o, int fieldNumber) throws IOException {
-        if (codec instanceof JavaBeanCodecFactory.JavaBeanCodec) {
+        if (codec instanceof JavaBeanCodecFactory.JavaBeanCodec ||
+                codec instanceof CollectionCodecFactory.CollectionCodec ||
+                codec instanceof MapCodecFactory.MapCodec ||
+                codec instanceof ArrayCodecFactory.ArrayCodec) {
             output.writeObject(fieldNumber, o, codec, false);
         } else {
             codec.writeTo(output, o);
@@ -116,7 +122,10 @@ public abstract class ProtostuffCodec<T> implements UniversalInterface, Schema<T
     }
 
     public static Object merge(ProtostuffCodec codec, Input input) throws IOException {
-        if (codec instanceof JavaBeanCodecFactory.JavaBeanCodec) {
+        if (codec instanceof JavaBeanCodecFactory.JavaBeanCodec ||
+                codec instanceof CollectionCodecFactory.CollectionCodec ||
+                codec instanceof MapCodecFactory.MapCodec ||
+                codec instanceof ArrayCodecFactory.ArrayCodec) {
             return input.mergeObject(null, codec);
         } else {
             return codec.mergeFrom(input);

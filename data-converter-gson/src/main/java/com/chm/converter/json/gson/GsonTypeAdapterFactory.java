@@ -119,7 +119,7 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
                 if (typeAdapter != null) {
                     return typeAdapter;
                 }
-                typeAdapter = gson.getAdapter(TypeToken.get(fieldInfo.getFieldClass()));
+                typeAdapter = gson.getAdapter(TypeToken.get(fieldInfo.getFieldType()));
                 if (typeAdapter instanceof GsonJava8TimeAdapter) {
                     String format = fieldInfo.getFormat();
                     String gsonFormat = (String) ReflectUtil.getFieldValue(gson, "datePattern");

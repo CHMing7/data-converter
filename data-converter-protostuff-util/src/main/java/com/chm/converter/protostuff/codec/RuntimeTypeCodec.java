@@ -1,6 +1,5 @@
 package com.chm.converter.protostuff.codec;
 
-import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.protostuff.codec.factory.JavaBeanCodecFactory;
 import io.protostuff.Input;
@@ -24,7 +23,6 @@ public class RuntimeTypeCodec<T> extends BaseProtostuffCodec<T> {
     private final ProtostuffCodec<T> delegate;
 
     private final Type type;
-
 
     public RuntimeTypeCodec(UniversalGenerate<ProtostuffCodec> generate, ProtostuffCodec<T> delegate, Type type) {
         super(delegate.clazz, delegate.clazz.getName());

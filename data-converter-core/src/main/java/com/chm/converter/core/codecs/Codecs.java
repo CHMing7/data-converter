@@ -1,6 +1,5 @@
 package com.chm.converter.core.codecs;
 
-
 import com.chm.converter.core.exception.CodecException;
 import com.chm.converter.core.pack.DataReader;
 import com.chm.converter.core.reflect.TypeToken;

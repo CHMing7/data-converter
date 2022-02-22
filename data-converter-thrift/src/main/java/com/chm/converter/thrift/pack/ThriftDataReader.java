@@ -319,7 +319,7 @@ public class ThriftDataReader implements DataReader {
     }
 
     @Override
-    public <T> Class<T> readClass(TypeToken<Class<T>> targetType) throws IOException {
+    public <T> Class<T> readClass() throws IOException {
         Codec enumCodec = dataCodecGenerate.get(Class.class);
         return (Class<T>) enumCodec.read(this);
     }

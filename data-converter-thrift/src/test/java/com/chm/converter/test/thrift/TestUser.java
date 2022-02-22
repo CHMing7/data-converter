@@ -12,32 +12,39 @@ package com.chm.converter.test.thrift;
 public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fields>, java.io.Serializable, Cloneable, Comparable<TestUser> {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TestUser");
 
-    private static final org.apache.thrift.protocol.TField USER_FIELD_DESC = new org.apache.thrift.protocol.TField("user", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-    private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)2);
-    private static final org.apache.thrift.protocol.TField PASSWORD_FIELD_DESC = new org.apache.thrift.protocol.TField("password", org.apache.thrift.protocol.TType.STRING, (short)3);
-    private static final org.apache.thrift.protocol.TField LOCAL_DATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("localDateTime", org.apache.thrift.protocol.TType.STRING, (short)4);
-    private static final org.apache.thrift.protocol.TField DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("date", org.apache.thrift.protocol.TType.STRING, (short)5);
-    private static final org.apache.thrift.protocol.TField YEAR_MONTH_FIELD_DESC = new org.apache.thrift.protocol.TField("yearMonth", org.apache.thrift.protocol.TType.STRING, (short)6);
+    private static final org.apache.thrift.protocol.TField USER_FIELD_DESC = new org.apache.thrift.protocol.TField("user", org.apache.thrift.protocol.TType.STRUCT, (short) 1);
+    private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short) 2);
+    private static final org.apache.thrift.protocol.TField PASSWORD_FIELD_DESC = new org.apache.thrift.protocol.TField("password", org.apache.thrift.protocol.TType.STRING, (short) 3);
+    private static final org.apache.thrift.protocol.TField LOCAL_DATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("localDateTime", org.apache.thrift.protocol.TType.STRING, (short) 4);
+    private static final org.apache.thrift.protocol.TField DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("date", org.apache.thrift.protocol.TType.STRING, (short) 5);
+    private static final org.apache.thrift.protocol.TField YEAR_MONTH_FIELD_DESC = new org.apache.thrift.protocol.TField("yearMonth", org.apache.thrift.protocol.TType.STRING, (short) 6);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new TestUser.TestUserStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new TestUser.TestUserTupleSchemeFactory();
 
     private @org.apache.thrift.annotation.Nullable
     TestUser user; // required
-    private @org.apache.thrift.annotation.Nullable java.lang.String userName; // required
-    private @org.apache.thrift.annotation.Nullable java.lang.String password; // required
-    private @org.apache.thrift.annotation.Nullable java.lang.String localDateTime; // required
-    private @org.apache.thrift.annotation.Nullable java.lang.String date; // required
-    private @org.apache.thrift.annotation.Nullable java.lang.String yearMonth; // required
+    private @org.apache.thrift.annotation.Nullable
+    java.lang.String userName; // required
+    private @org.apache.thrift.annotation.Nullable
+    java.lang.String password; // required
+    private @org.apache.thrift.annotation.Nullable
+    java.lang.String localDateTime; // required
+    private @org.apache.thrift.annotation.Nullable
+    java.lang.String date; // required
+    private @org.apache.thrift.annotation.Nullable
+    java.lang.String yearMonth; // required
 
-    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    /**
+     * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
+     */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-        USER((short)1, "user"),
-        USER_NAME((short)2, "userName"),
-        PASSWORD((short)3, "password"),
-        LOCAL_DATE_TIME((short)4, "localDateTime"),
-        DATE((short)5, "date"),
-        YEAR_MONTH((short)6, "yearMonth");
+        USER((short) 1, "user"),
+        USER_NAME((short) 2, "userName"),
+        PASSWORD((short) 3, "password"),
+        LOCAL_DATE_TIME((short) 4, "localDateTime"),
+        DATE((short) 5, "date"),
+        YEAR_MONTH((short) 6, "yearMonth");
 
         private static final java.util.Map<java.lang.String, TestUser._Fields> byName = new java.util.HashMap<java.lang.String, TestUser._Fields>();
 
@@ -52,7 +59,7 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
          */
         @org.apache.thrift.annotation.Nullable
         public static TestUser._Fields findByThriftId(int fieldId) {
-            switch(fieldId) {
+            switch (fieldId) {
                 case 1: // USER
                     return USER;
                 case 2: // USER_NAME
@@ -107,10 +114,11 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
 
     // isset id assignments
     public static final java.util.Map<TestUser._Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+
     static {
         java.util.Map<TestUser._Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<TestUser._Fields, org.apache.thrift.meta_data.FieldMetaData>(TestUser._Fields.class);
         tmpMap.put(TestUser._Fields.USER, new org.apache.thrift.meta_data.FieldMetaData("user", org.apache.thrift.TFieldRequirementType.DEFAULT,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT        , "TestUser")));
+                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT, "TestUser")));
         tmpMap.put(TestUser._Fields.USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("userName", org.apache.thrift.TFieldRequirementType.DEFAULT,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
         tmpMap.put(TestUser._Fields.PASSWORD, new org.apache.thrift.meta_data.FieldMetaData("password", org.apache.thrift.TFieldRequirementType.DEFAULT,
@@ -134,8 +142,7 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
             java.lang.String password,
             java.lang.String localDateTime,
             java.lang.String date,
-            java.lang.String yearMonth)
-    {
+            java.lang.String yearMonth) {
         this();
         this.user = user;
         this.userName = userName;
@@ -197,7 +204,9 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
         this.user = null;
     }
 
-    /** Returns true if field user is set (has been assigned a value) and false otherwise */
+    /**
+     * Returns true if field user is set (has been assigned a value) and false otherwise
+     */
     public boolean isSetUser() {
         return this.user != null;
     }
@@ -222,7 +231,9 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
         this.userName = null;
     }
 
-    /** Returns true if field userName is set (has been assigned a value) and false otherwise */
+    /**
+     * Returns true if field userName is set (has been assigned a value) and false otherwise
+     */
     public boolean isSetUserName() {
         return this.userName != null;
     }
@@ -247,7 +258,9 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
         this.password = null;
     }
 
-    /** Returns true if field password is set (has been assigned a value) and false otherwise */
+    /**
+     * Returns true if field password is set (has been assigned a value) and false otherwise
+     */
     public boolean isSetPassword() {
         return this.password != null;
     }
@@ -272,7 +285,9 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
         this.localDateTime = null;
     }
 
-    /** Returns true if field localDateTime is set (has been assigned a value) and false otherwise */
+    /**
+     * Returns true if field localDateTime is set (has been assigned a value) and false otherwise
+     */
     public boolean isSetLocalDateTime() {
         return this.localDateTime != null;
     }
@@ -297,7 +312,9 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
         this.date = null;
     }
 
-    /** Returns true if field date is set (has been assigned a value) and false otherwise */
+    /**
+     * Returns true if field date is set (has been assigned a value) and false otherwise
+     */
     public boolean isSetDate() {
         return this.date != null;
     }
@@ -322,7 +339,9 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
         this.yearMonth = null;
     }
 
-    /** Returns true if field yearMonth is set (has been assigned a value) and false otherwise */
+    /**
+     * Returns true if field yearMonth is set (has been assigned a value) and false otherwise
+     */
     public boolean isSetYearMonth() {
         return this.yearMonth != null;
     }
@@ -339,7 +358,7 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
                 if (value == null) {
                     unsetUser();
                 } else {
-                    setUser((TestUser)value);
+                    setUser((TestUser) value);
                 }
                 break;
 
@@ -347,7 +366,7 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
                 if (value == null) {
                     unsetUserName();
                 } else {
-                    setUserName((java.lang.String)value);
+                    setUserName((java.lang.String) value);
                 }
                 break;
 
@@ -355,7 +374,7 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
                 if (value == null) {
                     unsetPassword();
                 } else {
-                    setPassword((java.lang.String)value);
+                    setPassword((java.lang.String) value);
                 }
                 break;
 
@@ -363,7 +382,7 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
                 if (value == null) {
                     unsetLocalDateTime();
                 } else {
-                    setLocalDateTime((java.lang.String)value);
+                    setLocalDateTime((java.lang.String) value);
                 }
                 break;
 
@@ -371,7 +390,7 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
                 if (value == null) {
                     unsetDate();
                 } else {
-                    setDate((java.lang.String)value);
+                    setDate((java.lang.String) value);
                 }
                 break;
 
@@ -379,7 +398,7 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
                 if (value == null) {
                     unsetYearMonth();
                 } else {
-                    setYearMonth((java.lang.String)value);
+                    setYearMonth((java.lang.String) value);
                 }
                 break;
 
@@ -411,7 +430,9 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
         throw new java.lang.IllegalStateException();
     }
 
-    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    /**
+     * Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise
+     */
     public boolean isSet(TestUser._Fields field) {
         if (field == null) {
             throw new java.lang.IllegalArgumentException();
@@ -439,7 +460,7 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
         if (that == null)
             return false;
         if (that instanceof TestUser)
-            return this.equals((TestUser)that);
+            return this.equals((TestUser) that);
         return false;
     }
 
@@ -709,8 +730,7 @@ public class TestUser implements org.apache.thrift.TBase<TestUser, TestUser._Fie
         public void read(org.apache.thrift.protocol.TProtocol iprot, TestUser struct) throws org.apache.thrift.TException {
             org.apache.thrift.protocol.TField schemeField;
             iprot.readStructBegin();
-            while (true)
-            {
+            while (true) {
                 schemeField = iprot.readFieldBegin();
                 if (schemeField.type == org.apache.thrift.protocol.TType.STOP) {
                     break;

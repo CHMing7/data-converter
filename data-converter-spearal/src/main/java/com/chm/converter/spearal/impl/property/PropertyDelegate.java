@@ -119,15 +119,22 @@ public class PropertyDelegate implements Property {
 
     @Override
     public void write(ExtendedSpearalEncoder encoder, Object holder) throws IOException, IllegalAccessException, InvocationTargetException {
-        Codec codec = getCodec(encoder.getContext());
         Object o = fieldInfo.get(holder);
+        if (o == null) {
+            encoder.writeNull();
+            return;
+        }
+        Codec codec = getCodec(encoder.getContext());
         encoder.writeAny(fieldInfo.isSerialize() ? codec != null ? codec.encode(o) : o : null);
     }
 
     @Override
     public void read(ExtendedSpearalDecoder decoder, Object holder, int parameterizedType) throws IOException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        Codec codec = getCodec(decoder.getContext());
         Object o = decoder.readAny(parameterizedType);
+        if (o == null) {
+            return;
+        }
+        Codec codec = getCodec(decoder.getContext());
         fieldInfo.set(holder, fieldInfo.isDeserialize() ? codec != null ? codec.decode(o) : o : null);
     }
 
