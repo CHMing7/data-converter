@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Type;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -67,6 +68,63 @@ public interface Converter<S> {
      */
     default <T> T convertToJavaObject(S source, TypeToken<T> targetType) {
         return convertToJavaObject(source, targetType.getType());
+    }
+
+    /**
+     * 将源数据转换为List对象
+     *
+     * @param source 源数据
+     * @param <T>    目标类型泛型
+     * @return 转换后的目标类型对象
+     */
+    default <T> List<T> convertToList(S source, Class<T> targetType) {
+        TypeToken<List<T>> listType = TypeToken.getParameterized(List.class, targetType);
+        return convertToJavaObject(source, listType);
+    }
+
+    /**
+     * 将源数据转换为List对象
+     *
+     * @param source 源数据
+     * @param <T>    目标类型泛型
+     * @return 转换后的目标类型对象
+     */
+    default <T> List<T> convertToList(S source, Type targetType) {
+        TypeToken<List<T>> listType = TypeToken.getParameterized(List.class, targetType);
+        return convertToJavaObject(source, listType);
+    }
+
+    /**
+     * 将源数据转换为Map对象
+     *
+     * @param source 源数据
+     * @return 转换后的目标类型对象
+     */
+    default Map<String, Object> convertToMap(S source) {
+        TypeToken<Map<String, Object>> mapType = new TypeToken<Map<String, Object>>() {
+        };
+        return convertToJavaObject(source, mapType);
+    }
+
+    /**
+     * 将源对象转换为Map对象
+     *
+     * @param obj 源对象
+     * @return 转换后的Map对象
+     */
+    default Map<String, Object> convertObjectToMap(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+
+        JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(obj.getClass(), this.getClass());
+        Map<String, Object> resultMap = MapUtil.newHashMap(true);
+        List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
+        for (FieldInfo fieldInfo : sortedFieldList) {
+            resultMap.put(fieldInfo.getName(), fieldInfo.get(obj));
+        }
+
+        return resultMap;
     }
 
     /**

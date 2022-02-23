@@ -2,7 +2,9 @@ package com.chm.converter.json;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.DataType;
+import com.chm.converter.core.reflect.TypeToken;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -20,7 +22,13 @@ public interface JsonConverter extends Converter<String> {
      * @param obj 源对象
      * @return 转换后的Map对象
      */
-    Map<String, Object> convertObjectToMap(Object obj);
+    @Override
+    default Map<String, Object> convertObjectToMap(Object obj) {
+        if (obj instanceof CharSequence) {
+            return convertToJavaObject(obj.toString(), new TypeToken<LinkedHashMap<String, Object>>(){});
+        }
+        return Converter.super.convertObjectToMap(obj);
+    }
 
     /**
      * 获取当前数据转换器转换类型

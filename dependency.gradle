@@ -6,7 +6,7 @@ ext {
             fastjson         : '1.2.76',
             jackson          : '2.12.3',
             gson             : '2.8.6',
-            reflections      : '0.9.12',
+            reflections      : '0.10.2',
             avro             : '1.9.2',
             hessian          : '4.0.51',
             kryo             : '4.0.2',

@@ -148,40 +148,6 @@ public class FastjsonConverter implements JsonConverter {
     }
 
     @Override
-    public Map<String, Object> convertObjectToMap(Object obj) {
-        if (obj == null) {
-            return null;
-        }
-        if (nameField == null && nameMethod == null) {
-            return defaultJsonMap(obj);
-        }
-        if (obj instanceof CharSequence) {
-            return convertToJavaObject(obj.toString(), LinkedHashMap.class);
-        }
-        List<FieldInfo> getters = TypeUtils.computeGetters(obj.getClass(), null);
-        JSONObject json = new JSONObject(getters.size(), true);
-
-        try {
-            for (FieldInfo field : getters) {
-                Object value = field.get(obj);
-                if (nameField != null) {
-                    json.put((String) nameField.get(field), value);
-                } else if (nameMethod != null) {
-                    json.put((String) nameMethod.invoke(field), value);
-                }
-            }
-            return json;
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            return defaultJsonMap(obj);
-        }
-    }
-
-    public Map<String, Object> defaultJsonMap(Object obj) {
-        Object jsonObj = JSON.toJSON(obj);
-        return (Map<String, Object>) jsonObj;
-    }
-
-    @Override
     public boolean checkCanBeLoad() {
         try {
             // 检测Fastjson相关类型是否存在

@@ -117,19 +117,6 @@ public class JacksonConverter implements JsonConverter {
     }
 
     @Override
-    public Map<String, Object> convertObjectToMap(Object obj) {
-        if (obj == null) {
-            return null;
-        }
-        if (obj instanceof CharSequence) {
-            return convertToJavaObject(obj.toString(), LinkedHashMap.class);
-        }
-
-        JavaType javaType = mapper.getTypeFactory().constructMapType(LinkedHashMap.class, String.class, Object.class);
-        return mapper.convertValue(obj, javaType);
-    }
-
-    @Override
     public boolean checkCanBeLoad() {
         try {
             // 检测Jackson相关类型是否存在

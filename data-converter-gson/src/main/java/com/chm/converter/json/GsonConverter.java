@@ -194,24 +194,6 @@ public class GsonConverter implements JsonConverter {
     }
 
     @Override
-    public Map<String, Object> convertObjectToMap(Object obj) {
-        if (obj == null) {
-            return null;
-        }
-        if (obj instanceof CharSequence) {
-            return convertToJavaObject(obj.toString(), LinkedHashMap.class);
-        }
-        Gson gson = createGson();
-        JsonElement jsonElement = gson.toJsonTree(obj);
-        return toMap(jsonElement.getAsJsonObject(), true);
-    }
-
-    public String convertToJson(Object obj, Type type) {
-        Gson gson = createGson();
-        return gson.toJson(obj, type);
-    }
-
-    @Override
     public boolean checkCanBeLoad() {
         try {
             // 检测Gson相关类型是否存在

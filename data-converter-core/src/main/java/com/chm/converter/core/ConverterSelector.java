@@ -2,7 +2,7 @@ package com.chm.converter.core;
 
 import com.chm.converter.core.utils.MapUtil;
 import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.Scanners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ public class ConverterSelector implements Serializable {
 
     static {
         // 加载数据转换器类
-        Reflections reflections = new Reflections(new SubTypesScanner());
+        Reflections reflections = new Reflections(Scanners.SubTypes);
         Set<Class<? extends Converter>> jsonConverterClasses = reflections.getSubTypesOf(Converter.class);
         jsonConverterClasses.forEach(converterClass -> {
             try {
