@@ -38,7 +38,11 @@ public class ConverterSelector implements Serializable {
                     return;
                 }
                 Converter jsonConverter = converterClass.newInstance();
-                jsonConverter.loadConverter();
+                if (jsonConverter.loadConverter()) {
+                    jsonConverter.logLoadSuccess();
+                } else {
+                    jsonConverter.logLoadFail();
+                }
             } catch (Throwable e) {
                 if (logger.isErrorEnabled()) {
                     logger.error(e.getMessage(), e);

@@ -62,7 +62,7 @@ public interface Converter<S> {
      * 将源数据转换为目标类型（Type）的java对象
      *
      * @param source     源数据
-     * @param targetType 目标类型 (Type对象)
+     * @param targetType 目标类型 (TypeToken对象)
      * @param <T>        目标类型泛型
      * @return 转换后的目标类型对象
      */
@@ -73,9 +73,10 @@ public interface Converter<S> {
     /**
      * 将源数据转换为List对象
      *
-     * @param source 源数据
-     * @param <T>    目标类型泛型
-     * @return 转换后的目标类型对象
+     * @param source     源数据
+     * @param targetType 目标类型 (Class对象)
+     * @param <T>        目标类型泛型
+     * @return 转换后的目标类型List对象
      */
     default <T> List<T> convertToList(S source, Class<T> targetType) {
         TypeToken<List<T>> listType = TypeToken.getParameterized(List.class, targetType);
@@ -85,9 +86,10 @@ public interface Converter<S> {
     /**
      * 将源数据转换为List对象
      *
-     * @param source 源数据
-     * @param <T>    目标类型泛型
-     * @return 转换后的目标类型对象
+     * @param source     源数据
+     * @param targetType 目标类型 (Type对象)
+     * @param <T>        目标类型泛型
+     * @return 转换后的目标类型List对象
      */
     default <T> List<T> convertToList(S source, Type targetType) {
         TypeToken<List<T>> listType = TypeToken.getParameterized(List.class, targetType);
@@ -195,13 +197,7 @@ public interface Converter<S> {
      * @return
      */
     default boolean loadConverter() {
-        if (checkCanBeLoad()) {
-            logLoadSuccess();
-            return ConverterSelector.register(this);
-        } else {
-            logLoadFail();
-        }
-        return false;
+        return checkCanBeLoad() && ConverterSelector.register(this);
     }
 
     /**
@@ -334,6 +330,11 @@ public interface Converter<S> {
         return this;
     }
 
+    /**
+     * 获取默认功能配置
+     *
+     * @return
+     */
     static int getDefaultFeature() {
         int flags = 0;
         Class<ConvertFeature> enumClass = ConvertFeature.class;
