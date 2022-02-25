@@ -157,11 +157,7 @@ public interface Converter<S> {
      * @return
      */
     default Logger getLogger() {
-        if (!CONVERTER_LOGGER_MAP.containsKey(this)) {
-            Logger logger = LoggerFactory.getLogger(this.getClass());
-            CONVERTER_LOGGER_MAP.put(this, logger);
-        }
-        return CONVERTER_LOGGER_MAP.get(this);
+        return MapUtil.computeIfAbsent(CONVERTER_LOGGER_MAP, this, converter -> LoggerFactory.getLogger(converter.getClass()));
     }
 
     /**
@@ -170,11 +166,7 @@ public interface Converter<S> {
      * @return
      */
     default String getConverterName() {
-        if (!CONVERTER_NAME_MAP.containsKey(this)) {
-            String converterName = this.getClass().getName();
-            CONVERTER_NAME_MAP.put(this, converterName);
-        }
-        return CONVERTER_NAME_MAP.get(this);
+        return MapUtil.computeIfAbsent(CONVERTER_NAME_MAP, this, converter -> converter.getClass().getName());
     }
 
     /**
@@ -204,7 +196,6 @@ public interface Converter<S> {
      * 设置日期格式
      *
      * @param dateFormatPattern 日期格式化模板字符
-     * @return
      */
     default void setDateFormat(String dateFormatPattern) {
         CONVERTER_DATE_FORMAT_PATTERN_MAP.put(this, dateFormatPattern);
@@ -214,8 +205,7 @@ public interface Converter<S> {
     /**
      * 设置日期格式
      *
-     * @param dateFormatter 日期格式化模板字符
-     * @return
+     * @param dateFormatter 日期格式化模板
      */
     default void setDateFormat(DateTimeFormatter dateFormatter) {
         CONVERTER_DATE_FORMAT_PATTERN_MAP.remove(this);
@@ -225,7 +215,7 @@ public interface Converter<S> {
     /**
      * 获取日期格式
      *
-     * @return 日期格式化模板字符
+     * @return 日期格式化模板
      */
     default DateTimeFormatter getDateFormat() {
         DateTimeFormatter dateTimeFormatter = CONVERTER_DATE_TIME_FORMATTER_MAP.get(this);
@@ -240,8 +230,8 @@ public interface Converter<S> {
     /**
      * 生成日期格式化模版
      *
-     * @param dateFormatPattern
-     * @return
+     * @param dateFormatPattern 日期格式化模板字符
+     * @return 日期格式化模板
      */
     default DateTimeFormatter generateDateFormat(String dateFormatPattern) {
         DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
@@ -257,10 +247,7 @@ public interface Converter<S> {
      * @return
      */
     default TimeZone getTimeZone() {
-        if (!CONVERTER_TIME_ZONE_MAP.containsKey(this)) {
-            CONVERTER_TIME_ZONE_MAP.put(this, TimeZone.getDefault());
-        }
-        return CONVERTER_TIME_ZONE_MAP.get(this);
+        return MapUtil.computeIfAbsent(CONVERTER_TIME_ZONE_MAP, this, converter -> TimeZone.getDefault());
     }
 
     /**
@@ -278,10 +265,7 @@ public interface Converter<S> {
      * @return
      */
     default Locale getLocale() {
-        if (!CONVERTER_LOCALE_MAP.containsKey(this)) {
-            CONVERTER_LOCALE_MAP.put(this, Locale.getDefault());
-        }
-        return CONVERTER_LOCALE_MAP.get(this);
+        return MapUtil.computeIfAbsent(CONVERTER_LOCALE_MAP, this, converter -> Locale.getDefault());
     }
 
     /**
