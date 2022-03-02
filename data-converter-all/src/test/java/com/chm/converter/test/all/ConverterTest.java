@@ -10,7 +10,6 @@ import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.utils.ListUtil;
-import com.chm.converter.hessian.DefaultHessianConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -136,7 +135,7 @@ public class ConverterTest {
     public void testAny() {
         ConverterTest converterTest = new ConverterTest();
         converterTest.before();
-        this.converter = ConverterSelector.select(DefaultHessianConverter.class);
+        this.converter = ConverterSelector.select(DataType.JSON);
         // converter.disable(ConvertFeature.ENUMS_USING_TO_STRING);
         StaticLog.info(this.converter.getConverterName());
         this.testUser();

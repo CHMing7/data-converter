@@ -20,9 +20,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author caihongming

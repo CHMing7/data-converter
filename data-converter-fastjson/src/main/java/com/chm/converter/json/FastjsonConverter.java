@@ -1,7 +1,6 @@
 package com.chm.converter.json;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.annotation.JSONCreator;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -10,8 +9,6 @@ import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.util.FieldInfo;
-import com.alibaba.fastjson.util.TypeUtils;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ArrayUtil;
@@ -21,13 +18,8 @@ import com.chm.converter.json.fastjson.deserializer.FastjsonParserConfig;
 import com.chm.converter.json.fastjson.serializer.FastjsonSerializeConfig;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 使用Fastjson实现的消息转换实现类
@@ -57,22 +49,6 @@ public class FastjsonConverter implements JsonConverter {
     protected SerializeConfig serializeConfig = new FastjsonSerializeConfig(this, FastjsonConverter::checkExistFastjsonAnnotation);
 
     protected ParserConfig parserConfig = new FastjsonParserConfig(this, FastjsonConverter::checkExistFastjsonAnnotation);
-
-    private static Field nameField;
-
-    private static Method nameMethod;
-
-    static {
-        Class<FieldInfo> clazz = FieldInfo.class;
-        try {
-            nameField = clazz.getField("name");
-        } catch (NoSuchFieldException e) {
-            try {
-                nameMethod = clazz.getMethod("getName", new Class[0]);
-            } catch (NoSuchMethodException ignored) {
-            }
-        }
-    }
 
     /**
      * 获取FastJson的序列化特性对象

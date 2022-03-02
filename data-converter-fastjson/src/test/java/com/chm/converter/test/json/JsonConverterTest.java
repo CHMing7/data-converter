@@ -3,16 +3,13 @@ package com.chm.converter.test.json;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
-import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.json.FastjsonConverter;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;

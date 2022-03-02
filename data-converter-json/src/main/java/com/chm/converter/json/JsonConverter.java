@@ -25,7 +25,8 @@ public interface JsonConverter extends Converter<String> {
     @Override
     default Map<String, Object> convertObjectToMap(Object obj) {
         if (obj instanceof CharSequence) {
-            return convertToJavaObject(obj.toString(), new TypeToken<LinkedHashMap<String, Object>>(){});
+            return convertToJavaObject(obj.toString(), new TypeToken<LinkedHashMap<String, Object>>() {
+            });
         }
         return Converter.super.convertObjectToMap(obj);
     }

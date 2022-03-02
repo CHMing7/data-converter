@@ -29,9 +29,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 使用Jackson实现的消息转折实现类

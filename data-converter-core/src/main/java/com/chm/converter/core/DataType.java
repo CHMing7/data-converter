@@ -25,16 +25,6 @@ public class DataType {
     }
 
     /**
-     * 数据类型： 自动类型
-     */
-    public final static DataType AUTO = DataType.createDataType("auto");
-
-    /**
-     * 数据类型： 文本类型
-     */
-    public final static DataType TEXT = DataType.createDataType("text");
-
-    /**
      * 数据类型： JSON类型
      */
     public final static DataType JSON = DataType.createDataType("json");
@@ -43,11 +33,6 @@ public class DataType {
      * 数据类型： XML类型
      */
     public final static DataType XML = DataType.createDataType("xml");
-
-    /**
-     * 数据类型： 二进制类型
-     */
-    public final static DataType BINARY = DataType.createDataType("binary");
 
     /**
      * 数据类型：hessian 二进制类型
