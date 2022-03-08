@@ -102,13 +102,13 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
         Class<?> cls = property.getType().getRawClass();
         Optional<Class<? extends TemporalAccessor>> jdk8TimeFirst = TimeConstant.TEMPORAL_ACCESSOR_SET.stream()
                 .filter(temporalAccessorClass -> temporalAccessorClass.isAssignableFrom(cls)).findFirst();
-        JsonDeserializer<Object> serializer = jdk8TimeFirst.map(clazz -> new JacksonJava8TimeDeserializer(cls, format, converter)).orElse(null);
+        JsonDeserializer<Object> serializer = jdk8TimeFirst.map(clazz -> new JacksonJava8TimeDeserializer(clazz, format, converter)).orElse(null);
         if (serializer != null) {
             return serializer;
         }
         Optional<Class<? extends Date>> defaultDateFirst = TimeConstant.DEFAULT_DATE_SET.stream()
                 .filter(dateClass -> dateClass.isAssignableFrom(cls)).findFirst();
-        return defaultDateFirst.map(clazz -> new JacksonDefaultDateTypeDeserializer(cls, format, converter)).orElse(null);
+        return defaultDateFirst.map(clazz -> new JacksonDefaultDateTypeDeserializer(clazz, format, converter)).orElse(null);
     }
 
     @Override

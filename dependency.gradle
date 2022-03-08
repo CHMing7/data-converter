@@ -8,6 +8,7 @@ ext {
             gson             : '2.8.6',
             reflections      : '0.10.2',
             avro             : '1.9.2',
+            cbor             : '1.9.2',
             hessian          : '4.0.51',
             kryo             : '4.0.2',
             protobuf         : '3.13.0',
@@ -16,7 +17,8 @@ ext {
             msgpack          : '0.8.22',
             spearal          : '0.2.0',
             thrift           : '0.15.0',
-            yaml_jackson     : '2.11.2',
+            yaml_jackson     : '2.12.3',
+            cbor_jackson     : '2.12.3',
     ]
 
     libs = [
@@ -32,7 +34,6 @@ ext {
             jackson_xml        : "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$versions.jackson",
             gson               : "com.google.code.gson:gson:$versions.gson",
             avro               : "org.apache.avro:avro:$versions.avro",
-            jackson_avro       : "com.fasterxml.jackson.dataformat:jackson-dataformat-avro:$versions.avro",
             hessian            : "com.caucho:hessian:$versions.hessian",
             kryo               : "com.esotericsoftware:kryo:$versions.kryo",
             protobuf_java      : "com.google.protobuf:protobuf-java:$versions.protobuf",
@@ -43,6 +44,7 @@ ext {
             spearal_java       : "org.spearal:spearal-java:$versions.spearal",
             thrift             : "org.apache.thrift:libthrift:$versions.thrift",
             yaml_jackson       : "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$versions.yaml_jackson",
+            cbor_jackson       : "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:$versions.cbor_jackson",
     ]
 
 }

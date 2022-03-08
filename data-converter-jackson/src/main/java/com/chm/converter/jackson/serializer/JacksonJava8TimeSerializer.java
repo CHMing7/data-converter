@@ -46,16 +46,20 @@ public class JacksonJava8TimeSerializer<T extends TemporalAccessor> extends Json
         this.java8TimeCodec = new Java8TimeCodec<>(clazz, dateFormatter, converter);
     }
 
+    public JacksonJava8TimeSerializer(Java8TimeCodec<T> java8TimeCodec) {
+        this.java8TimeCodec = java8TimeCodec;
+    }
+
     public JacksonJava8TimeSerializer<T> withClass(Class<T> clazz) {
-        return new JacksonJava8TimeSerializer<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
+        return new JacksonJava8TimeSerializer<>(this.java8TimeCodec.withClass(clazz));
     }
 
     public JacksonJava8TimeSerializer<T> withDatePattern(String datePattern) {
-        return new JacksonJava8TimeSerializer<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
+        return new JacksonJava8TimeSerializer<>(this.java8TimeCodec.withDatePattern(datePattern));
     }
 
     public JacksonJava8TimeSerializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
-        return new JacksonJava8TimeSerializer<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
+        return new JacksonJava8TimeSerializer<>(this.java8TimeCodec.withDateFormatter(dateFormatter));
     }
 
     @Override

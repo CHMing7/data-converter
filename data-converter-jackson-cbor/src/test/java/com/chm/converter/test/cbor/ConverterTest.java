@@ -1,10 +1,9 @@
-package com.chm.converter.test.msgpack;
+package com.chm.converter.test.cbor;
 
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
+import com.chm.converter.cbor.JacksonCborConverter;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
-import com.chm.converter.msgpack.JacksonMsgpackConverter;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -36,7 +35,7 @@ public class ConverterTest {
         userMap.put("user", user);
         userMap.put("user1", user);
 
-        JacksonMsgpackConverter converter = ConverterSelector.select(DataType.MSGPACK, JacksonMsgpackConverter.class);
+        JacksonCborConverter converter = ConverterSelector.select(JacksonCborConverter.class);
         byte[] encode = converter.encode(userMap);
 
         TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {

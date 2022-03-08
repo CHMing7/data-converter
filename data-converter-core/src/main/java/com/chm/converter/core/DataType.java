@@ -85,6 +85,11 @@ public class DataType {
     public final static DataType YAML = DataType.createDataType("yaml");
 
     /**
+     * 数据类型： CBOR类型
+     */
+    public final static DataType CBOR = DataType.createDataType("cbor");
+
+    /**
      * 全局数据转换器表
      */
     private final static Map<DataType, Converter<?>> CONVERTER_MAP = new HashMap<>();

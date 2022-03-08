@@ -1,10 +1,9 @@
-package com.chm.converter.test.yaml;
+package com.chm.converter.test.cbor;
 
 import cn.hutool.log.StaticLog;
+import com.chm.converter.cbor.JacksonCborConverter;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
-import com.chm.converter.yaml.JacksonYamlConverter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,13 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class TestJava8Time {
 
-    JacksonYamlConverter converter;
+    JacksonCborConverter converter;
 
     Java8Time java8Time;
 
     @Before
     public void before() {
-        converter = ConverterSelector.select(DataType.YAML, JacksonYamlConverter.class);
+        converter = ConverterSelector.select(JacksonCborConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -58,11 +57,11 @@ public class TestJava8Time {
 
     @Test
     public void testJava8Time() {
-        String encode = converter.encode(java8Time);
-        StaticLog.info(encode);
-        StaticLog.info(converter.encode(LocalDateTime.now()));
-        StaticLog.info(converter.encode(MonthDay.now()));
-        StaticLog.info(converter.encode(null));
+        byte[] encode = converter.encode(java8Time);
+        StaticLog.info(new String(encode));
+        StaticLog.info(new String(converter.encode(LocalDateTime.now())));
+        StaticLog.info(new String(converter.encode(MonthDay.now())));
+        StaticLog.info(new String(converter.encode(null)));
         Java8Time java8Time = converter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }

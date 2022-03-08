@@ -2,6 +2,7 @@ package com.chm.converter.jackson.serializer;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.codecs.DefaultDateCodec;
+import com.chm.converter.jackson.deserializer.JacksonDefaultDateTypeDeserializer;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -22,36 +23,43 @@ public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerial
 
     private final DefaultDateCodec<T> defaultDateCodec;
 
-    public JacksonDefaultDateTypeSerializer() {
-        this((DateTimeFormatter) null, null);
+    public JacksonDefaultDateTypeSerializer(Class<T> dateType) {
+        this(dateType, (DateTimeFormatter) null, null);
     }
 
-    public JacksonDefaultDateTypeSerializer(String datePattern) {
-        this(datePattern, null);
+    public JacksonDefaultDateTypeSerializer(Class<T> dateType, String datePattern) {
+        this(dateType, datePattern, null);
     }
 
-    public JacksonDefaultDateTypeSerializer(DateTimeFormatter dateFormat) {
-        this(dateFormat, null);
+    public JacksonDefaultDateTypeSerializer(Class<T> dateType, DateTimeFormatter dateFormatter) {
+        this(dateType, dateFormatter, null);
     }
 
-    public JacksonDefaultDateTypeSerializer(Converter<?> converter) {
-        this((DateTimeFormatter) null, converter);
+    public JacksonDefaultDateTypeSerializer(Class<T> dateType, Converter<?> converter) {
+        this(dateType, (DateTimeFormatter) null, converter);
     }
 
-    public JacksonDefaultDateTypeSerializer(String datePattern, Converter<?> converter) {
-        this.defaultDateCodec = new DefaultDateCodec(Date.class, datePattern, converter);
+    public JacksonDefaultDateTypeSerializer(Class<T> dateType, String datePattern, Converter<?> converter) {
+        this.defaultDateCodec = new DefaultDateCodec<>(dateType, datePattern, converter);
     }
 
-    public JacksonDefaultDateTypeSerializer(DateTimeFormatter dateFormat, Converter<?> converter) {
-        this.defaultDateCodec = new DefaultDateCodec(Date.class, dateFormat, converter);
+    public JacksonDefaultDateTypeSerializer(Class<T> dateType, DateTimeFormatter dateFormatter, Converter<?> converter) {
+        this.defaultDateCodec = new DefaultDateCodec<>(dateType, dateFormatter, converter);
+    }
+    public JacksonDefaultDateTypeSerializer(DefaultDateCodec<T> defaultDateCodec) {
+        this.defaultDateCodec = defaultDateCodec;
+    }
+
+    public JacksonDefaultDateTypeSerializer<T> withClass(Class<T> clazz) {
+        return new JacksonDefaultDateTypeSerializer<>(this.defaultDateCodec.withDateType(clazz));
     }
 
     public JacksonDefaultDateTypeSerializer<T> withDatePattern(String datePattern) {
-        return new JacksonDefaultDateTypeSerializer<>(datePattern, this.defaultDateCodec.getConverter());
+        return new JacksonDefaultDateTypeSerializer<>(this.defaultDateCodec.withDatePattern(datePattern));
     }
 
     public JacksonDefaultDateTypeSerializer<T> withDateFormat(DateTimeFormatter dateFormatter) {
-        return new JacksonDefaultDateTypeSerializer<>(dateFormatter, this.defaultDateCodec.getConverter());
+        return new JacksonDefaultDateTypeSerializer<>(this.defaultDateCodec.withDateFormat(dateFormatter));
     }
 
     @Override

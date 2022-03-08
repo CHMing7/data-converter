@@ -45,9 +45,9 @@ public abstract class AbstractModule extends SimpleModule {
         addSerializer(ZoneOffset.class, new JacksonJava8TimeSerializer<>(ZoneOffset.class, converter));
 
         // Default Date Serializer
-        addSerializer(java.sql.Date.class, new JacksonDefaultDateTypeSerializer<>(converter));
-        addSerializer(Timestamp.class, new JacksonDefaultDateTypeSerializer<>(converter));
-        addSerializer(Date.class, new JacksonDefaultDateTypeSerializer<>(converter));
+        addSerializer(java.sql.Date.class, new JacksonDefaultDateTypeSerializer<>(java.sql.Date.class, converter));
+        addSerializer(Timestamp.class, new JacksonDefaultDateTypeSerializer<>(Timestamp.class, converter));
+        addSerializer(Date.class, new JacksonDefaultDateTypeSerializer<>(Date.class, converter));
 
         // Java8 Time Deserializer
         addDeserializer(Instant.class, new JacksonJava8TimeDeserializer<>(Instant.class, converter));
@@ -67,6 +67,5 @@ public abstract class AbstractModule extends SimpleModule {
         addDeserializer(Timestamp.class, new JacksonDefaultDateTypeDeserializer<>(Timestamp.class, converter));
         addDeserializer(Date.class, new JacksonDefaultDateTypeDeserializer<>(Date.class, converter));
     }
-
 
 }

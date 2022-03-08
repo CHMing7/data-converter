@@ -23,7 +23,7 @@ dependencies {
     testCompile(libs.jackson_xml)
     testCompile(libs.gson)
     testCompile(libs.avro)
-    testCompile(libs.jackson_avro)
+    testCompile(libs.cbor_jackson)
     testCompile(libs.hessian)
     testCompile(libs.kryo)
     testCompile(libs.protobuf_java)
