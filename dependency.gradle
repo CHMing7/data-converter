@@ -1,13 +1,14 @@
 ext {
     versions = [
+            auto_service     : '1.0.1',
             slf4j            : '1.7.32',
             hutool           : '5.6.5',
             juniversalchardet: '1.0.3',
             fastjson         : '1.2.76',
             jackson          : '2.12.3',
             gson             : '2.8.6',
-            reflections      : '0.9.12',
             avro             : '1.9.2',
+            cbor             : '1.9.2',
             hessian          : '4.0.51',
             kryo             : '4.0.2',
             protobuf         : '3.13.0',
@@ -16,15 +17,16 @@ ext {
             msgpack          : '0.8.22',
             spearal          : '0.2.0',
             thrift           : '0.15.0',
-            yaml_jackson     : '2.11.2',
+            yaml_jackson     : '2.12.3',
+            cbor_jackson     : '2.12.3',
     ]
 
     libs = [
+            auto_service       : "com.google.auto.service:auto-service:$versions.auto_service",
             slf4j_api          : "org.slf4j:slf4j-api:$versions.slf4j",
             hutool_core        : "cn.hutool:hutool-core:$versions.hutool",
             hutool_log         : "cn.hutool:hutool-log:$versions.hutool",
             juniversalchardet  : "com.googlecode.juniversalchardet:juniversalchardet:$versions.juniversalchardet",
-            reflections        : "org.reflections:reflections:$versions.reflections",
             fastjson           : "com.alibaba:fastjson:$versions.fastjson",
             jackson_core       : "com.fasterxml.jackson.core:jackson-core:$versions.jackson",
             jackson_databind   : "com.fasterxml.jackson.core:jackson-databind:$versions.jackson",
@@ -32,7 +34,6 @@ ext {
             jackson_xml        : "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$versions.jackson",
             gson               : "com.google.code.gson:gson:$versions.gson",
             avro               : "org.apache.avro:avro:$versions.avro",
-            jackson_avro       : "com.fasterxml.jackson.dataformat:jackson-dataformat-avro:$versions.avro",
             hessian            : "com.caucho:hessian:$versions.hessian",
             kryo               : "com.esotericsoftware:kryo:$versions.kryo",
             protobuf_java      : "com.google.protobuf:protobuf-java:$versions.protobuf",
@@ -43,6 +44,7 @@ ext {
             spearal_java       : "org.spearal:spearal-java:$versions.spearal",
             thrift             : "org.apache.thrift:libthrift:$versions.thrift",
             yaml_jackson       : "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$versions.yaml_jackson",
+            cbor_jackson       : "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:$versions.cbor_jackson",
     ]
 
 }

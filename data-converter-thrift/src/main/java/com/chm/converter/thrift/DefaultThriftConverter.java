@@ -1,7 +1,9 @@
 package com.chm.converter.thrift;
 
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.thrift.utils.Thrift;
+import com.google.auto.service.AutoService;
 
 import java.lang.reflect.Type;
 
@@ -12,6 +14,7 @@ import java.lang.reflect.Type;
  * @version v1.0
  * @since 2021-09-30
  **/
+@AutoService(Converter.class)
 public class DefaultThriftConverter implements ThriftConverter {
 
     public static final String THRIFT_NAME = "org.apache.thrift.TBase";

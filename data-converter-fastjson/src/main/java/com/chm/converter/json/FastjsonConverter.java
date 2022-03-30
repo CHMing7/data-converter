@@ -1,7 +1,6 @@
 package com.chm.converter.json;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.annotation.JSONCreator;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -10,8 +9,7 @@ import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.util.FieldInfo;
-import com.alibaba.fastjson.util.TypeUtils;
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ArrayUtil;
@@ -19,15 +17,11 @@ import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.json.fastjson.deserializer.FastjsonParserConfig;
 import com.chm.converter.json.fastjson.serializer.FastjsonSerializeConfig;
+import com.google.auto.service.AutoService;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 使用Fastjson实现的消息转换实现类
@@ -36,6 +30,7 @@ import java.util.Map;
  * @version v1.0
  * @since 2021-08-16
  **/
+@AutoService(Converter.class)
 public class FastjsonConverter implements JsonConverter {
 
     public static final List<Class<? extends Annotation>> FASTJSON_ANNOTATION_LIST = ListUtil.of(JSONCreator.class,
@@ -57,22 +52,6 @@ public class FastjsonConverter implements JsonConverter {
     protected SerializeConfig serializeConfig = new FastjsonSerializeConfig(this, FastjsonConverter::checkExistFastjsonAnnotation);
 
     protected ParserConfig parserConfig = new FastjsonParserConfig(this, FastjsonConverter::checkExistFastjsonAnnotation);
-
-    private static Field nameField;
-
-    private static Method nameMethod;
-
-    static {
-        Class<FieldInfo> clazz = FieldInfo.class;
-        try {
-            nameField = clazz.getField("name");
-        } catch (NoSuchFieldException e) {
-            try {
-                nameMethod = clazz.getMethod("getName", new Class[0]);
-            } catch (NoSuchMethodException ignored) {
-            }
-        }
-    }
 
     /**
      * 获取FastJson的序列化特性对象
@@ -145,40 +124,6 @@ public class FastjsonConverter implements JsonConverter {
         } catch (Throwable th) {
             throw new ConvertException(getConverterName(), source.getClass().getName(), String.class.getName(), th);
         }
-    }
-
-    @Override
-    public Map<String, Object> convertObjectToMap(Object obj) {
-        if (obj == null) {
-            return null;
-        }
-        if (nameField == null && nameMethod == null) {
-            return defaultJsonMap(obj);
-        }
-        if (obj instanceof CharSequence) {
-            return convertToJavaObject(obj.toString(), LinkedHashMap.class);
-        }
-        List<FieldInfo> getters = TypeUtils.computeGetters(obj.getClass(), null);
-        JSONObject json = new JSONObject(getters.size(), true);
-
-        try {
-            for (FieldInfo field : getters) {
-                Object value = field.get(obj);
-                if (nameField != null) {
-                    json.put((String) nameField.get(field), value);
-                } else if (nameMethod != null) {
-                    json.put((String) nameMethod.invoke(field), value);
-                }
-            }
-            return json;
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            return defaultJsonMap(obj);
-        }
-    }
-
-    public Map<String, Object> defaultJsonMap(Object obj) {
-        Object jsonObj = JSON.toJSON(obj);
-        return (Map<String, Object>) jsonObj;
     }
 
     @Override

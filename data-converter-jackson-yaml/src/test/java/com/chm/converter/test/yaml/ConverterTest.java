@@ -45,7 +45,7 @@ public class ConverterTest {
         userMap.put("user", user);
         userMap.put("user1", user);
 
-        JacksonYamlConverter converter = (JacksonYamlConverter) ConverterSelector.select(DataType.YAML, JacksonYamlConverter.class);
+        JacksonYamlConverter converter = ConverterSelector.select(DataType.YAML, JacksonYamlConverter.class);
         String encode = converter.encode(userMap);
         StaticLog.info(encode);
 
@@ -71,7 +71,7 @@ public class ConverterTest {
         user.setYearMonth(YearMonth.now());
         userMap.put("user", user);
 
-        JacksonYamlConverter converter = (JacksonYamlConverter) ConverterSelector.select(DataType.YAML, JacksonYamlConverter.class);
+        JacksonYamlConverter converter = ConverterSelector.select(DataType.YAML, JacksonYamlConverter.class);
         // xmlConverter.getMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
         // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
         String encodeToString = converter.encode(userMap);
@@ -101,7 +101,7 @@ public class ConverterTest {
         userList.add(user);
         userList.add(user);
         userList.add(user);
-        JacksonYamlConverter converter = (JacksonYamlConverter) ConverterSelector.select(DataType.YAML, JacksonYamlConverter.class);
+        JacksonYamlConverter converter = ConverterSelector.select(DataType.YAML, JacksonYamlConverter.class);
         // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
         String encodeToString = converter.encode(userList);
         StaticLog.info(encodeToString);

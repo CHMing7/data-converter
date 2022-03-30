@@ -1,4 +1,4 @@
 dependencies {
+    compile(libs.auto_service)
     compile(libs.slf4j_api)
-    compile(libs.reflections)
 }

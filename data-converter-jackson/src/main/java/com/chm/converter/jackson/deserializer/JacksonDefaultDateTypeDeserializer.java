@@ -44,16 +44,20 @@ public class JacksonDefaultDateTypeDeserializer<T extends Date> extends JsonDese
         this.defaultDateCodec = new DefaultDateCodec<>(dateType, dateFormatter, converter);
     }
 
+    public JacksonDefaultDateTypeDeserializer(DefaultDateCodec<T> defaultDateCodec) {
+        this.defaultDateCodec = defaultDateCodec;
+    }
+
     public JacksonDefaultDateTypeDeserializer<T> withClass(Class<T> clazz) {
-        return new JacksonDefaultDateTypeDeserializer<>(clazz, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter());
+        return new JacksonDefaultDateTypeDeserializer<>(this.defaultDateCodec.withDateType(clazz));
     }
 
     public JacksonDefaultDateTypeDeserializer<T> withDatePattern(String datePattern) {
-        return new JacksonDefaultDateTypeDeserializer<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter());
+        return new JacksonDefaultDateTypeDeserializer<>(this.defaultDateCodec.withDatePattern(datePattern));
     }
 
     public JacksonDefaultDateTypeDeserializer<T> withDateFormat(DateTimeFormatter dateFormatter) {
-        return new JacksonDefaultDateTypeDeserializer<>(this.defaultDateCodec.getDateType(), dateFormatter, this.defaultDateCodec.getConverter());
+        return new JacksonDefaultDateTypeDeserializer<>(this.defaultDateCodec.withDateFormat(dateFormatter));
     }
 
     @Override

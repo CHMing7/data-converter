@@ -1,5 +1,6 @@
 package com.chm.converter.json;
 
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
@@ -26,12 +27,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.auto.service.AutoService;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 使用Jackson实现的消息转折实现类
@@ -40,6 +40,7 @@ import java.util.Map;
  * @version v1.0
  * @since 2021-01-04
  **/
+@AutoService(Converter.class)
 public class JacksonConverter implements JsonConverter {
 
     public static final List<Class<? extends Annotation>> JACKSON_ANNOTATION_LIST = ListUtil.of(JsonIgnore.class,
@@ -114,19 +115,6 @@ public class JacksonConverter implements JsonConverter {
         } catch (Throwable e) {
             throw new ConvertException(getConverterName(), source.getClass().getName(), String.class.getName(), e);
         }
-    }
-
-    @Override
-    public Map<String, Object> convertObjectToMap(Object obj) {
-        if (obj == null) {
-            return null;
-        }
-        if (obj instanceof CharSequence) {
-            return convertToJavaObject(obj.toString(), LinkedHashMap.class);
-        }
-
-        JavaType javaType = mapper.getTypeFactory().constructMapType(LinkedHashMap.class, String.class, Object.class);
-        return mapper.convertValue(obj, javaType);
     }
 
     @Override

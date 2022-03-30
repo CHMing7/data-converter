@@ -114,7 +114,8 @@ public class ConverterTest {
         userMap.put("user", user);
         userMap.put("user1", user);
 
-        DefaultFstConverter fstConverter = (DefaultFstConverter) ConverterSelector.select(DataType.FST, DefaultFstConverter.class);
+        Converter converter = new DefaultFstConverter();
+        DefaultFstConverter fstConverter = ConverterSelector.select(DataType.FST, DefaultFstConverter.class);
         byte[] encode = fstConverter.encode(userMap);
 
         TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {

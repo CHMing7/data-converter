@@ -1,11 +1,13 @@
 package com.chm.converter.kryo;
 
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.kryo.factory.AbstractKryoFactory;
 import com.chm.converter.kryo.factory.ThreadLocalKryoFactory;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.google.auto.service.AutoService;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,6 +20,7 @@ import java.lang.reflect.Type;
  * @version v1.0
  * @since 2021-09-26
  **/
+@AutoService(Converter.class)
 public class DefaultKryoConverter implements KryoConverter {
 
     public static final String KRYO_NAME = "com.esotericsoftware.kryo.Kryo";

@@ -17,6 +17,7 @@ public interface DataToken {
     int NULL = -1;
     int FALSE = 0;
     int TRUE = 1;
+    int BOOLEAN = 1;
     int BYTE = 2;
     int SHORT = 3;
     int INTEGER = 4;
@@ -37,7 +38,7 @@ public interface DataToken {
 
     static int getToken(Class<?> cls) {
         if (cls == boolean.class || cls == Boolean.class) {
-            return TRUE;
+            return BOOLEAN;
         }
         if (cls == byte.class || cls == Byte.class) {
             return BYTE;

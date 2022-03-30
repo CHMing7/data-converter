@@ -267,16 +267,6 @@ public interface DataReader extends Closeable {
     /**
      * 读取下一个数据
      *
-     * @return 字段数据
-     * @throws IOException
-     */
-    default Object readAny() throws IOException {
-        return readAny(null);
-    }
-
-    /**
-     * 读取下一个数据
-     *
      * @param targetType 数据类型
      * @return 字段数据
      * @throws IOException
@@ -285,8 +275,7 @@ public interface DataReader extends Closeable {
         Class<?> cls = targetType.getRawType();
         int token = DataToken.getToken(cls);
         switch (token) {
-            case DataToken.FALSE:
-            case DataToken.TRUE:
+            case DataToken.BOOLEAN:
                 return readBoolean();
 
             case DataToken.BYTE:
@@ -300,6 +289,7 @@ public interface DataReader extends Closeable {
 
             case DataToken.LONG:
                 return readLong();
+
             case DataToken.BIG_INTEGER:
                 return readBigInteger();
 

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Type;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -61,12 +62,71 @@ public interface Converter<S> {
      * 将源数据转换为目标类型（Type）的java对象
      *
      * @param source     源数据
-     * @param targetType 目标类型 (Type对象)
+     * @param targetType 目标类型 (TypeToken对象)
      * @param <T>        目标类型泛型
      * @return 转换后的目标类型对象
      */
     default <T> T convertToJavaObject(S source, TypeToken<T> targetType) {
         return convertToJavaObject(source, targetType.getType());
+    }
+
+    /**
+     * 将源数据转换为List对象
+     *
+     * @param source     源数据
+     * @param targetType 目标类型 (Class对象)
+     * @param <T>        目标类型泛型
+     * @return 转换后的目标类型List对象
+     */
+    default <T> List<T> convertToList(S source, Class<T> targetType) {
+        TypeToken<List<T>> listType = TypeToken.getParameterized(List.class, targetType);
+        return convertToJavaObject(source, listType);
+    }
+
+    /**
+     * 将源数据转换为List对象
+     *
+     * @param source     源数据
+     * @param targetType 目标类型 (Type对象)
+     * @param <T>        目标类型泛型
+     * @return 转换后的目标类型List对象
+     */
+    default <T> List<T> convertToList(S source, Type targetType) {
+        TypeToken<List<T>> listType = TypeToken.getParameterized(List.class, targetType);
+        return convertToJavaObject(source, listType);
+    }
+
+    /**
+     * 将源数据转换为Map对象
+     *
+     * @param source 源数据
+     * @return 转换后的目标类型对象
+     */
+    default Map<String, Object> convertToMap(S source) {
+        TypeToken<Map<String, Object>> mapType = new TypeToken<Map<String, Object>>() {
+        };
+        return convertToJavaObject(source, mapType);
+    }
+
+    /**
+     * 将源对象转换为Map对象
+     *
+     * @param obj 源对象
+     * @return 转换后的Map对象
+     */
+    default Map<String, Object> convertObjectToMap(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+
+        JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(obj.getClass(), this.getClass());
+        Map<String, Object> resultMap = MapUtil.newHashMap(true);
+        List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
+        for (FieldInfo fieldInfo : sortedFieldList) {
+            resultMap.put(fieldInfo.getName(), fieldInfo.get(obj));
+        }
+
+        return resultMap;
     }
 
     /**
@@ -97,11 +157,7 @@ public interface Converter<S> {
      * @return
      */
     default Logger getLogger() {
-        if (!CONVERTER_LOGGER_MAP.containsKey(this)) {
-            Logger logger = LoggerFactory.getLogger(this.getClass());
-            CONVERTER_LOGGER_MAP.put(this, logger);
-        }
-        return CONVERTER_LOGGER_MAP.get(this);
+        return MapUtil.computeIfAbsent(CONVERTER_LOGGER_MAP, this, converter -> LoggerFactory.getLogger(converter.getClass()));
     }
 
     /**
@@ -110,11 +166,7 @@ public interface Converter<S> {
      * @return
      */
     default String getConverterName() {
-        if (!CONVERTER_NAME_MAP.containsKey(this)) {
-            String converterName = this.getClass().getName();
-            CONVERTER_NAME_MAP.put(this, converterName);
-        }
-        return CONVERTER_NAME_MAP.get(this);
+        return MapUtil.computeIfAbsent(CONVERTER_NAME_MAP, this, converter -> converter.getClass().getName());
     }
 
     /**
@@ -137,20 +189,13 @@ public interface Converter<S> {
      * @return
      */
     default boolean loadConverter() {
-        if (checkCanBeLoad()) {
-            logLoadSuccess();
-            return ConverterSelector.register(this);
-        } else {
-            logLoadFail();
-        }
-        return false;
+        return checkCanBeLoad() && ConverterSelector.register(this);
     }
 
     /**
      * 设置日期格式
      *
      * @param dateFormatPattern 日期格式化模板字符
-     * @return
      */
     default void setDateFormat(String dateFormatPattern) {
         CONVERTER_DATE_FORMAT_PATTERN_MAP.put(this, dateFormatPattern);
@@ -160,8 +205,7 @@ public interface Converter<S> {
     /**
      * 设置日期格式
      *
-     * @param dateFormatter 日期格式化模板字符
-     * @return
+     * @param dateFormatter 日期格式化模板
      */
     default void setDateFormat(DateTimeFormatter dateFormatter) {
         CONVERTER_DATE_FORMAT_PATTERN_MAP.remove(this);
@@ -171,7 +215,7 @@ public interface Converter<S> {
     /**
      * 获取日期格式
      *
-     * @return 日期格式化模板字符
+     * @return 日期格式化模板
      */
     default DateTimeFormatter getDateFormat() {
         DateTimeFormatter dateTimeFormatter = CONVERTER_DATE_TIME_FORMATTER_MAP.get(this);
@@ -186,8 +230,8 @@ public interface Converter<S> {
     /**
      * 生成日期格式化模版
      *
-     * @param dateFormatPattern
-     * @return
+     * @param dateFormatPattern 日期格式化模板字符
+     * @return 日期格式化模板
      */
     default DateTimeFormatter generateDateFormat(String dateFormatPattern) {
         DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
@@ -203,10 +247,7 @@ public interface Converter<S> {
      * @return
      */
     default TimeZone getTimeZone() {
-        if (!CONVERTER_TIME_ZONE_MAP.containsKey(this)) {
-            CONVERTER_TIME_ZONE_MAP.put(this, TimeZone.getDefault());
-        }
-        return CONVERTER_TIME_ZONE_MAP.get(this);
+        return MapUtil.computeIfAbsent(CONVERTER_TIME_ZONE_MAP, this, converter -> TimeZone.getDefault());
     }
 
     /**
@@ -224,10 +265,7 @@ public interface Converter<S> {
      * @return
      */
     default Locale getLocale() {
-        if (!CONVERTER_LOCALE_MAP.containsKey(this)) {
-            CONVERTER_LOCALE_MAP.put(this, Locale.getDefault());
-        }
-        return CONVERTER_LOCALE_MAP.get(this);
+        return MapUtil.computeIfAbsent(CONVERTER_LOCALE_MAP, this, converter -> Locale.getDefault());
     }
 
     /**
@@ -276,6 +314,11 @@ public interface Converter<S> {
         return this;
     }
 
+    /**
+     * 获取默认功能配置
+     *
+     * @return
+     */
     static int getDefaultFeature() {
         int flags = 0;
         Class<ConvertFeature> enumClass = ConvertFeature.class;

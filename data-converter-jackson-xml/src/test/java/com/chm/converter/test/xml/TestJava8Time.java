@@ -41,7 +41,7 @@ public class TestJava8Time {
 
     @Before
     public void before() {
-        jacksonXmlConverter = (JacksonXmlConverter) ConverterSelector.select(DataType.XML, JacksonXmlConverter.class);
+        jacksonXmlConverter = ConverterSelector.select(DataType.XML, JacksonXmlConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());

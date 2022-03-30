@@ -3,12 +3,14 @@ package com.chm.converter.hessian;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.hessian.factory.HessianConverterFactory;
 import com.chm.converter.hessian.factory.HessianDefaultDateConverterFactory;
 import com.chm.converter.hessian.factory.HessianEnumConverterFactory;
 import com.chm.converter.hessian.factory.HessianJava8TimeConverterFactory;
+import com.google.auto.service.AutoService;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,6 +25,7 @@ import java.lang.reflect.Type;
  * @version v1.0
  * @since 2021-09-17
  **/
+@AutoService(Converter.class)
 public class DefaultHessianConverter implements HessianConverter {
 
     public static final String[] HESSIAN_NAME_ARRAY = new String[]{"com.caucho.hessian.io.Hessian2Input",

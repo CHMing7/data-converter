@@ -11,6 +11,10 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     testCompile 'junit:junit:4.13.1'
 
+    testCompile 'ch.qos.logback:logback-access:1.2.6'
+    testCompile 'ch.qos.logback:logback-classic:1.2.6'
+    testCompile 'ch.qos.logback:logback-core:1.2.6'
+
     testCompile(libs.hutool_log)
     testCompile(libs.fastjson)
     testCompile(libs.jackson_core)
@@ -19,7 +23,7 @@ dependencies {
     testCompile(libs.jackson_xml)
     testCompile(libs.gson)
     testCompile(libs.avro)
-    testCompile(libs.jackson_avro)
+    testCompile(libs.cbor_jackson)
     testCompile(libs.hessian)
     testCompile(libs.kryo)
     testCompile(libs.protobuf_java)

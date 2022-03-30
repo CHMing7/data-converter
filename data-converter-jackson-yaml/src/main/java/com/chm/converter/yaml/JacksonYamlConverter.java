@@ -1,5 +1,6 @@
 package com.chm.converter.yaml;
 
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.auto.service.AutoService;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -27,11 +29,12 @@ import java.util.Map;
  * @version v1.0
  * @since 2022-01-13
  **/
+@AutoService(Converter.class)
 public class JacksonYamlConverter implements YamlConverter {
 
     public static final List<Class<? extends Annotation>> JACKSON_YAML_ANNOTATION_LIST = ListUtil.of(JsonProperty.class);
 
-    public static final String[] MSGPACK_NAME_ARRAY = new String[]{"com.fasterxml.jackson.dataformat.yaml.YAMLFactory",
+    public static final String[] YAML_NAME_ARRAY = new String[]{"com.fasterxml.jackson.dataformat.yaml.YAMLFactory",
             "com.fasterxml.jackson.databind.ObjectMapper"};
 
     protected ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
@@ -112,9 +115,9 @@ public class JacksonYamlConverter implements YamlConverter {
     @Override
     public boolean checkCanBeLoad() {
         try {
-            // 检测Jackson-Msgpack相关类型是否存在
-            for (String msgpackName : MSGPACK_NAME_ARRAY) {
-                Class.forName(msgpackName);
+            // 检测Jackson-Yaml相关类型是否存在
+            for (String yamlName : YAML_NAME_ARRAY) {
+                Class.forName(yamlName);
             }
             return true;
         } catch (Throwable ignored) {

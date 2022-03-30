@@ -27,6 +27,11 @@ allprojects {
         mavenLocal()
     }
 
+    dependencies {
+        annotationProcessor(libs.auto_service)
+    }
+
+
     plugins.withId("com.vanniktech.maven.publish") {
         group = project.group
         version = project.version

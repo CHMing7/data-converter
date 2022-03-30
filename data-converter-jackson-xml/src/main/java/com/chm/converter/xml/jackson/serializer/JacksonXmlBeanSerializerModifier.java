@@ -106,13 +106,13 @@ public class JacksonXmlBeanSerializerModifier extends XmlBeanSerializerModifier 
         Class<?> cls = propertyWriter.getType().getRawClass();
         Optional<Class<? extends TemporalAccessor>> jdk8TimeFirst = TimeConstant.TEMPORAL_ACCESSOR_SET.stream()
                 .filter(temporalAccessorClass -> temporalAccessorClass.isAssignableFrom(cls)).findFirst();
-        JsonSerializer<Object> serializer = jdk8TimeFirst.map(clazz -> new JacksonJava8TimeSerializer(cls, format, converter)).orElse(null);
+        JsonSerializer<Object> serializer = jdk8TimeFirst.map(clazz -> new JacksonJava8TimeSerializer(clazz, format, converter)).orElse(null);
         if (serializer != null) {
             return serializer;
         }
         Optional<Class<? extends Date>> defaultDateFirst = TimeConstant.DEFAULT_DATE_SET.stream()
                 .filter(dateClass -> dateClass.isAssignableFrom(cls)).findFirst();
-        return defaultDateFirst.map(clazz -> new JacksonDefaultDateTypeSerializer(format, converter)).orElse(null);
+        return defaultDateFirst.map(clazz -> new JacksonDefaultDateTypeSerializer(clazz, format, converter)).orElse(null);
     }
 
     @Override

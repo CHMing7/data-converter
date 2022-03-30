@@ -26,6 +26,7 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 |     data-converter-spearal     |    Spearal     |                                                                 org.spearal:spearal-java:version                                                                 |
 |     data-converter-thrift      |     Thrift     |                                                                 org.apache.thrift:thrift:version                                                                 |
 |  data-converter-jackson-yaml   |      Yaml      |                                                 com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:version                                                 |
+|  data-converter-jackson-cbor   |      Cbor      |                                                 com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:version                                                 |
 
 
 可以根据需求对每个模块单独引入，也可以通过引入`data-converter-all`方式引入所有模块。

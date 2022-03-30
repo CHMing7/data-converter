@@ -38,7 +38,7 @@ public class TestJava8Time {
 
     @Before
     public void before() {
-        converter = (JacksonYamlConverter) ConverterSelector.select(DataType.YAML, JacksonYamlConverter.class);
+        converter = ConverterSelector.select(DataType.YAML, JacksonYamlConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());

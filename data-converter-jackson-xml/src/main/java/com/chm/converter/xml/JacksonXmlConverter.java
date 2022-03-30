@@ -1,5 +1,6 @@
 package com.chm.converter.xml;
 
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
@@ -17,19 +18,18 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
+import com.google.auto.service.AutoService;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author caihongming
  * @version v1.0
  * @since 2021-09-08
  **/
-
+@AutoService(Converter.class)
 public class JacksonXmlConverter implements XmlConverter {
 
     public static final List<Class<? extends Annotation>> JACKSON_XML_ANNOTATION_LIST = ListUtil.of(JacksonXmlCData.class,
@@ -104,18 +104,6 @@ public class JacksonXmlConverter implements XmlConverter {
         } catch (Throwable e) {
             throw new ConvertException(getConverterName(), source.getClass().getName(), String.class.getName(), e);
         }
-    }
-
-    public Map<String, Object> convertObjectToMap(Object obj) {
-        if (obj == null) {
-            return null;
-        }
-        if (obj instanceof CharSequence) {
-            return convertToJavaObject(obj.toString(), LinkedHashMap.class);
-        }
-
-        JavaType javaType = mapper.getTypeFactory().constructMapType(LinkedHashMap.class, String.class, Object.class);
-        return mapper.convertValue(obj, javaType);
     }
 
     @Override

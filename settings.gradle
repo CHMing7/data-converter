@@ -37,6 +37,9 @@ include ':data-converter-thrift'
 include ':data-converter-yaml'
 include ':data-converter-jackson-yaml'
 
+include ':data-converter-cbor'
+include ':data-converter-jackson-cbor'
+
 
 project(':data-converter-all').projectDir = "$rootDir/data-converter-all" as File
 
@@ -75,4 +78,7 @@ project(':data-converter-thrift').projectDir = "$rootDir/data-converter-thrift" 
 
 project(':data-converter-yaml').projectDir = "$rootDir/data-converter-yaml" as File
 project(':data-converter-jackson-yaml').projectDir = "$rootDir/data-converter-jackson-yaml" as File
+
+project(':data-converter-cbor').projectDir = "$rootDir/data-converter-cbor" as File
+project(':data-converter-jackson-cbor').projectDir = "$rootDir/data-converter-jackson-cbor" as File
 

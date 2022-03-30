@@ -36,7 +36,7 @@ public class ConverterTest {
         userMap.put("user", user);
         userMap.put("user1", user);
 
-        JacksonMsgpackConverter converter = (JacksonMsgpackConverter) ConverterSelector.select(DataType.MSGPACK, JacksonMsgpackConverter.class);
+        JacksonMsgpackConverter converter = ConverterSelector.select(DataType.MSGPACK, JacksonMsgpackConverter.class);
         byte[] encode = converter.encode(userMap);
 
         TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {
