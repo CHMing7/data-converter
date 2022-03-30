@@ -43,6 +43,7 @@ public class JacksonDefaultDateTypeDeserializer<T extends Date> extends JsonDese
     public JacksonDefaultDateTypeDeserializer(Class<T> dateType, DateTimeFormatter dateFormatter, Converter<?> converter) {
         this.defaultDateCodec = new DefaultDateCodec<>(dateType, dateFormatter, converter);
     }
+
     public JacksonDefaultDateTypeDeserializer(DefaultDateCodec<T> defaultDateCodec) {
         this.defaultDateCodec = defaultDateCodec;
     }

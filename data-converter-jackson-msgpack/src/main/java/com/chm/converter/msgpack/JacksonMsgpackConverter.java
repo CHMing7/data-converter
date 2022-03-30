@@ -1,5 +1,6 @@
 package com.chm.converter.msgpack;
 
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.auto.service.AutoService;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 
 import java.lang.annotation.Annotation;
@@ -27,6 +29,7 @@ import java.util.Map;
  * @version v1.0
  * @since 2021-09-29
  **/
+@AutoService(Converter.class)
 public class JacksonMsgpackConverter implements MsgpackConverter {
 
     public static final List<Class<? extends Annotation>> JACKSON_MSGPACK_ANNOTATION_LIST = ListUtil.of(JsonProperty.class);

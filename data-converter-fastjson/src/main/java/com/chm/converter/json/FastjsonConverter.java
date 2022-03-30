@@ -9,6 +9,7 @@ import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ArrayUtil;
@@ -16,6 +17,7 @@ import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.json.fastjson.deserializer.FastjsonParserConfig;
 import com.chm.converter.json.fastjson.serializer.FastjsonSerializeConfig;
+import com.google.auto.service.AutoService;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -28,6 +30,7 @@ import java.util.List;
  * @version v1.0
  * @since 2021-08-16
  **/
+@AutoService(Converter.class)
 public class FastjsonConverter implements JsonConverter {
 
     public static final List<Class<? extends Annotation>> FASTJSON_ANNOTATION_LIST = ListUtil.of(JSONCreator.class,

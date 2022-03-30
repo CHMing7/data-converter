@@ -1,5 +1,6 @@
 package com.chm.converter.json;
 
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
@@ -7,6 +8,7 @@ import com.chm.converter.json.gson.GsonDefaultDateTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonEnumTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonJava8TimeTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonTypeAdapterFactory;
+import com.google.auto.service.AutoService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -38,6 +40,7 @@ import java.util.Set;
  * @version v1.0
  * @since 2021-01-04
  **/
+@AutoService(Converter.class)
 public class GsonConverter implements JsonConverter {
 
     public static final List<Class<? extends Annotation>> GSON_ANNOTATION_LIST = ListUtil.of(Expose.class,

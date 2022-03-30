@@ -1,5 +1,6 @@
 package com.chm.converter.json;
 
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
@@ -26,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.auto.service.AutoService;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -38,6 +40,7 @@ import java.util.List;
  * @version v1.0
  * @since 2021-01-04
  **/
+@AutoService(Converter.class)
 public class JacksonConverter implements JsonConverter {
 
     public static final List<Class<? extends Annotation>> JACKSON_ANNOTATION_LIST = ListUtil.of(JsonIgnore.class,

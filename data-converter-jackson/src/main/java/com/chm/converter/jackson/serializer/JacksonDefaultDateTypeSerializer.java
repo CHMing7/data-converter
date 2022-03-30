@@ -2,7 +2,6 @@ package com.chm.converter.jackson.serializer;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.codecs.DefaultDateCodec;
-import com.chm.converter.jackson.deserializer.JacksonDefaultDateTypeDeserializer;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -46,6 +45,7 @@ public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerial
     public JacksonDefaultDateTypeSerializer(Class<T> dateType, DateTimeFormatter dateFormatter, Converter<?> converter) {
         this.defaultDateCodec = new DefaultDateCodec<>(dateType, dateFormatter, converter);
     }
+
     public JacksonDefaultDateTypeSerializer(DefaultDateCodec<T> defaultDateCodec) {
         this.defaultDateCodec = defaultDateCodec;
     }

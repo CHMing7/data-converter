@@ -1,6 +1,7 @@
 package com.chm.converter.cbor;
 
 import com.chm.converter.cbor.jackson.JacksonCborModule;
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
+import com.google.auto.service.AutoService;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -21,12 +23,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Jackson msgpack数据转换器
+ * Jackson Cbor数据转换器
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-09-29
+ * @since 2022-03-08
  **/
+@AutoService(Converter.class)
 public class JacksonCborConverter implements CborConverter {
 
     public static final List<Class<? extends Annotation>> JACKSON_CBOR_ANNOTATION_LIST = ListUtil.of(JsonProperty.class);
@@ -114,7 +117,7 @@ public class JacksonCborConverter implements CborConverter {
     @Override
     public boolean checkCanBeLoad() {
         try {
-            // 检测Jackson-Msgpack相关类型是否存在
+            // 检测Jackson-Cbor相关类型是否存在
             for (String cbor : CBOR_NAME_ARRAY) {
                 Class.forName(cbor);
             }

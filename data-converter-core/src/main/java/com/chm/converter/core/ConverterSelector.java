@@ -1,17 +1,15 @@
 package com.chm.converter.core;
 
-import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.MapUtil;
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -30,18 +28,14 @@ public class ConverterSelector implements Serializable {
 
     static {
         // 加载数据转换器类
-        Reflections reflections = new Reflections(Scanners.SubTypes);
-        Set<Class<? extends Converter>> jsonConverterClasses = reflections.getSubTypesOf(Converter.class);
-        jsonConverterClasses.forEach(converterClass -> {
+
+        ServiceLoader<Converter> converters = ServiceLoader.load(Converter.class);
+        converters.forEach(converter -> {
             try {
-                if (converterClass.isInterface() || ClassUtil.isAbstract(converterClass)) {
-                    return;
-                }
-                Converter jsonConverter = converterClass.newInstance();
-                if (jsonConverter.loadConverter()) {
-                    jsonConverter.logLoadSuccess();
+                if (converter.loadConverter()) {
+                    converter.logLoadSuccess();
                 } else {
-                    jsonConverter.logLoadFail();
+                    converter.logLoadFail();
                 }
             } catch (Throwable e) {
                 if (logger.isErrorEnabled()) {

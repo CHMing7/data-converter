@@ -1,6 +1,8 @@
 package com.chm.converter.protostuff;
 
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.exception.ConvertException;
+import com.google.auto.service.AutoService;
 
 import java.lang.reflect.Type;
 
@@ -9,6 +11,7 @@ import java.lang.reflect.Type;
  * @version v1.0
  * @since 2021-09-15
  **/
+@AutoService(Converter.class)
 public class DefaultProtostuffConverter implements ProtostuffConverter {
 
     public static final String PROTOSTUFF_NAME = "io.protostuff.ProtostuffIOUtil";

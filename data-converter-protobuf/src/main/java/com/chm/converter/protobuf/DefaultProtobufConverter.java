@@ -1,6 +1,8 @@
 package com.chm.converter.protobuf;
 
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.exception.ConvertException;
+import com.google.auto.service.AutoService;
 
 import java.lang.reflect.Type;
 
@@ -11,6 +13,7 @@ import java.lang.reflect.Type;
  * @version v1.0
  * @since 2021-09-13
  **/
+@AutoService(Converter.class)
 public class DefaultProtobufConverter implements ProtobufConverter {
 
     public static final String PROTOBUF_NAME = "com.google.protobuf.Parser";

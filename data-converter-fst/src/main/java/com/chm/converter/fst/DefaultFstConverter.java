@@ -1,5 +1,6 @@
 package com.chm.converter.fst;
 
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.exception.ConvertException;
@@ -7,6 +8,7 @@ import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.fst.factory.FstFactory;
+import com.google.auto.service.AutoService;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 import org.nustaq.serialization.annotations.AnonymousTransient;
@@ -31,6 +33,7 @@ import java.util.List;
  * @version v1.0
  * @since 2021-09-27
  **/
+@AutoService(Converter.class)
 public class DefaultFstConverter implements FstConverter {
 
     public static final List<Class<? extends Annotation>> FST_ANNOTATION_LIST = ListUtil.of(AnonymousTransient.class,
