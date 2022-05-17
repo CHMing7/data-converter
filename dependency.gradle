@@ -21,6 +21,7 @@ ext {
             cbor_jackson : '2.12.3',
             ion_jackson  : '2.12.3',
             smile_jackson: '2.12.3',
+            csv_jackson  : '2.12.3',
     ]
 
     libs = [
@@ -49,6 +50,7 @@ ext {
             cbor_jackson       : "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:$versions.cbor_jackson",
             ion_jackson        : "com.fasterxml.jackson.dataformat:jackson-dataformat-ion:$versions.ion_jackson",
             smile_jackson      : "com.fasterxml.jackson.dataformat:jackson-dataformat-smile:$versions.smile_jackson",
+            csv_jackson        : "com.fasterxml.jackson.dataformat:jackson-dataformat-csv:$versions.csv_jackson",
     ]
 
 }
