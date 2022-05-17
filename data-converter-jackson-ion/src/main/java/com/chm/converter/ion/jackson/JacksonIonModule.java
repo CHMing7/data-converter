@@ -1,4 +1,4 @@
-package com.chm.converter.cbor.jackson;
+package com.chm.converter.ion.jackson;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.jackson.AbstractModule;
@@ -9,9 +9,9 @@ import com.fasterxml.jackson.core.json.PackageVersion;
  * @version v1.0
  * @since 2021-06-18
  **/
-public class JacksonCborModule extends AbstractModule {
+public class JacksonIonModule extends AbstractModule {
 
-    public JacksonCborModule(Converter<?> converter) {
-        super("JacksonCborModule", PackageVersion.VERSION, converter);
+    public JacksonIonModule(Converter<?> converter) {
+        super("JacksonIonModule", PackageVersion.VERSION, converter);
     }
 }

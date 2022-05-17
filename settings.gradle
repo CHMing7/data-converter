@@ -40,6 +40,12 @@ include ':data-converter-jackson-yaml'
 include ':data-converter-cbor'
 include ':data-converter-jackson-cbor'
 
+include ':data-converter-ion'
+include ':data-converter-jackson-ion'
+
+include ':data-converter-smile'
+include ':data-converter-jackson-smile'
+
 
 project(':data-converter-all').projectDir = "$rootDir/data-converter-all" as File
 
@@ -81,4 +87,10 @@ project(':data-converter-jackson-yaml').projectDir = "$rootDir/data-converter-ja
 
 project(':data-converter-cbor').projectDir = "$rootDir/data-converter-cbor" as File
 project(':data-converter-jackson-cbor').projectDir = "$rootDir/data-converter-jackson-cbor" as File
+
+project(':data-converter-ion').projectDir = "$rootDir/data-converter-ion" as File
+project(':data-converter-jackson-ion').projectDir = "$rootDir/data-converter-jackson-ion" as File
+
+project(':data-converter-smile').projectDir = "$rootDir/data-converter-smile" as File
+project(':data-converter-jackson-smile').projectDir = "$rootDir/data-converter-jackson-smile" as File
 

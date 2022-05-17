@@ -28,7 +28,6 @@ public class ConverterSelector implements Serializable {
 
     static {
         // 加载数据转换器类
-
         ServiceLoader<Converter> converters = ServiceLoader.load(Converter.class);
         converters.forEach(converter -> {
             try {

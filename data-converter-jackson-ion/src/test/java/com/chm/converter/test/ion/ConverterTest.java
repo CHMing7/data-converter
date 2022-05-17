@@ -1,13 +1,13 @@
-package com.chm.converter.test.json;
+package com.chm.converter.test.ion;
 
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
-import com.chm.converter.json.GsonConverter;
+import com.chm.converter.ion.JacksonIonConverter;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.Date;
 import java.util.Map;
 
@@ -18,27 +18,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @version v1.0
  * @since 2021-06-03
  **/
-public class JsonConverterTest {
+public class ConverterTest {
 
     @Test
-    public void testGson() {
+    public void testConverter() {
         Map<String, User> userMap = MapUtil.newHashMap(true);
         User user = new User();
+        User user1 = new User();
+        user1.setUserName("testName");
+        user.setUser(user1);
         user.setUserName("user");
         user.setPassword("password");
         user.setDate(new Date());
         user.setLocalDateTime(LocalDateTime.now());
-        // user.setYearMonth(YearMonth.now());
+        user.setYearMonth(YearMonth.now());
         userMap.put("user", user);
+        userMap.put("user1", user);
 
-        GsonConverter gsonConverter = ConverterSelector.select(DataType.JSON, GsonConverter.class);
-
-        String encodeToString = gsonConverter.encode(userMap);
+        JacksonIonConverter converter = ConverterSelector.select(JacksonIonConverter.class);
+        byte[] encode = converter.encode(userMap);
 
         TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {
         };
 
-        Map<String, User> newUserMap = gsonConverter.convertToJavaObject(encodeToString, typeRef0.getType());
+        Map<String, User> newUserMap = converter.convertToJavaObject(encode, typeRef0.getType());
 
         assertEquals(userMap, newUserMap);
     }

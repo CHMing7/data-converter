@@ -432,6 +432,10 @@ public class FieldInfo implements Comparable<FieldInfo> {
         return field;
     }
 
+    public int getOrdinal() {
+        return ordinal;
+    }
+
     public Member getMember() {
         return this.method != null ? this.method : this.field;
     }

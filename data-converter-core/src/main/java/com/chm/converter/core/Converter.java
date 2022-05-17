@@ -97,6 +97,19 @@ public interface Converter<S> {
     }
 
     /**
+     * 将源数据转换为List对象
+     *
+     * @param source     源数据
+     * @param targetType 目标类型 (TypeToken对象)
+     * @param <T>        目标类型泛型
+     * @return 转换后的目标类型List对象
+     */
+    default <T> List<T> convertToList(S source, TypeToken<T> targetType) {
+        TypeToken<List<T>> listType = TypeToken.getParameterized(List.class, targetType.getType());
+        return convertToJavaObject(source, listType);
+    }
+
+    /**
      * 将源数据转换为Map对象
      *
      * @param source 源数据

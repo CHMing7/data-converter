@@ -1,17 +1,17 @@
-package com.chm.converter.cbor;
+package com.chm.converter.ion;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 
 /**
- * cbor数据转换接口
+ * ion数据转换接口
  *
  * @author caihongming
  * @version v1.0
- * @since 2022-03-08
+ * @since 2022-05-17
  **/
-public interface CborConverter extends Converter<byte[]> {
+public interface IonConverter extends Converter<byte[]> {
 
     /**
      * 获取当前数据转换器转换类型
@@ -20,17 +20,16 @@ public interface CborConverter extends Converter<byte[]> {
      */
     @Override
     default DataType getDataType() {
-        return DataType.CBOR;
+        return DataType.ION;
     }
 
     /**
      * 选择数据转换器
      * <p>动态选择一个可用的数据转换器</p>
      *
-     * @return 数据转换器，{@link CborConverter}接口实例
+     * @return 数据转换器，{@link IonConverter}接口实例
      */
-    static CborConverter select() {
-        return (CborConverter) ConverterSelector.select(DataType.CBOR);
+    static IonConverter select() {
+        return (IonConverter) ConverterSelector.select(DataType.ION);
     }
 }
-

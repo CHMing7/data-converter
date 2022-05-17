@@ -1,11 +1,9 @@
-package com.chm.converter.test.json;
+package com.chm.converter.test.ion;
 
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
-import com.chm.converter.json.GsonConverter;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.ion.JacksonIonConverter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,13 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class TestJava8Time {
 
-    JsonConverter gsonConverter;
+    JacksonIonConverter converter;
 
     Java8Time java8Time;
 
     @Before
     public void before() {
-        gsonConverter = ConverterSelector.select(DataType.JSON, GsonConverter.class);
+        converter = ConverterSelector.select(JacksonIonConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -57,56 +55,20 @@ public class TestJava8Time {
         java8Time.setTimestamp(new Timestamp(new Date().getTime()));
     }
 
-
     @Test
-    public void testGson() {
-        String encodeToString = gsonConverter.encode(java8Time);
-        StaticLog.info(encodeToString);
-        StaticLog.info(gsonConverter.encode(LocalDateTime.now()));
-        StaticLog.info(gsonConverter.encode(MonthDay.now()));
-        StaticLog.info(gsonConverter.encode((MonthDay) null));
-        Java8Time java8Time = gsonConverter.convertToJavaObject(encodeToString, Java8Time.class);
+    public void testJava8Time() {
+        byte[] encode = converter.encode(java8Time);
+        StaticLog.info(new String(encode));
+        StaticLog.info(new String(converter.encode(LocalDateTime.now())));
+        StaticLog.info(new String(converter.encode(MonthDay.now())));
+        StaticLog.info(new String(converter.encode(null)));
+        Java8Time java8Time = converter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
-    }
-
-    @Test
-    public void testGsonCacheTypeAdapter() {
-        Java8Time1 java8Time1 = new Java8Time1();
-        java8Time1.setInstant1(Instant.now());
-        java8Time1.setInstant2(Instant.now());
-        StaticLog.info(gsonConverter.encode(java8Time1));
-        StaticLog.info(gsonConverter.encode(java8Time1));
-        gsonConverter.encode(java8Time1);
-    }
-
-    public static class Java8Time1 {
-
-        @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
-        private Instant instant1;
-
-        @FieldProperty(format = "HH:mm:ss.SSS")
-        private Instant instant2;
-
-        public Instant getInstant1() {
-            return instant1;
-        }
-
-        public void setInstant1(Instant instant1) {
-            this.instant1 = instant1;
-        }
-
-        public Instant getInstant2() {
-            return instant2;
-        }
-
-        public void setInstant2(Instant instant2) {
-            this.instant2 = instant2;
-        }
     }
 
     public static class Java8Time {
 
-        //@FieldProperty(name = "instant1", ordinal = 1)
+        @FieldProperty(name = "instant1", ordinal = 1)
         private Instant instant;
 
         //@FieldProperty(format = "yyyy-MM-dd")
@@ -139,7 +101,7 @@ public class TestJava8Time {
         //@FieldProperty(format = "ZZZZZ")
         private ZoneOffset zoneOffset;
 
-        // @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
+        @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
         private Date date;
 
         //@FieldProperty(format = "yyyy-MM-dd HH:mm:ss")

@@ -1,6 +1,7 @@
 package com.chm.converter.yaml;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 
 /**
@@ -20,5 +21,15 @@ public interface YamlConverter extends Converter<String> {
     @Override
     default DataType getDataType() {
         return DataType.YAML;
+    }
+
+    /**
+     * 选择数据转换器
+     * <p>动态选择一个可用的数据转换器</p>
+     *
+     * @return 数据转换器，{@link YamlConverter}接口实例
+     */
+    static YamlConverter select() {
+        return (YamlConverter) ConverterSelector.select(DataType.YAML);
     }
 }

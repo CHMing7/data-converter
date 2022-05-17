@@ -90,6 +90,16 @@ public class DataType {
     public final static DataType CBOR = DataType.createDataType("cbor");
 
     /**
+     * 数据类型： ION类型
+     */
+    public final static DataType ION = DataType.createDataType("ion");
+
+    /**
+     * 数据类型：SMILE类型
+     */
+    public final static DataType SMILE = DataType.createDataType("smile");
+
+    /**
      * 全局数据转换器表
      */
     private final static Map<DataType, Converter<?>> CONVERTER_MAP = new HashMap<>();

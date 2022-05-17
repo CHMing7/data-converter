@@ -2,6 +2,7 @@ package com.chm.converter.xml;
 
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import com.chm.converter.core.reflect.TypeToken;
 
@@ -40,5 +41,15 @@ public interface XmlConverter extends Converter<String> {
     @Override
     default DataType getDataType() {
         return DataType.XML;
+    }
+
+    /**
+     * 选择数据转换器
+     * <p>动态选择一个可用的数据转换器</p>
+     *
+     * @return 数据转换器，{@link XmlConverter}接口实例
+     */
+    static XmlConverter select() {
+        return (XmlConverter) ConverterSelector.select(DataType.XML);
     }
 }
