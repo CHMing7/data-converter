@@ -4,6 +4,7 @@ import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.io.Reader;
 import com.chm.converter.core.io.Writer;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.AnnotationUtil;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.MapUtil;
@@ -277,9 +278,9 @@ public class FieldInfo implements Comparable<FieldInfo> {
             this.isTransient = false;
         }
         this.expandProperty = new ConcurrentHashMap<>();
-        this.fieldAnnotationList = ListUtil.toList(field != null ? field.getAnnotations() : null);
+        this.fieldAnnotationList = ListUtil.toList(field != null ? AnnotationUtil.getAnnotations(field, true) : null);
         this.fieldAnnotationClassSet = this.fieldAnnotationList.stream().map(Annotation::annotationType).collect(Collectors.toSet());
-        this.methodAnnotationList = ListUtil.toList(method != null ? method.getAnnotations() : null);
+        this.methodAnnotationList = ListUtil.toList(method != null ? AnnotationUtil.getAnnotations(method, true) : null);
         this.methodAnnotationClassSet = this.methodAnnotationList.stream().map(Annotation::annotationType).collect(Collectors.toSet());
     }
 

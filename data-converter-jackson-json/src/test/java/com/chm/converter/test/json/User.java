@@ -1,6 +1,7 @@
 package com.chm.converter.test.json;
 
 import com.chm.converter.core.annotation.FieldProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -18,6 +19,7 @@ public class User {
      * 用户名
      */
     @FieldProperty(name = "userName1", ordinal = 1)
+    @JsonProperty("jacksonName")
     private String userName;
 
     /**

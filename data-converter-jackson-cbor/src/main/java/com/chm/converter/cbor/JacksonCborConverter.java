@@ -7,8 +7,8 @@ import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.jackson.deserializer.JacksonBeanDeserializerModifier;
 import com.chm.converter.jackson.serializer.JacksonBeanSerializerModifier;
+import com.fasterxml.jackson.annotation.JacksonAnnotation;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +32,7 @@ import java.util.Map;
 @AutoService(Converter.class)
 public class JacksonCborConverter implements CborConverter {
 
-    public static final List<Class<? extends Annotation>> JACKSON_CBOR_ANNOTATION_LIST = ListUtil.of(JsonProperty.class);
+    public static final List<Class<? extends Annotation>> JACKSON_CBOR_ANNOTATION_LIST = ListUtil.of(JacksonAnnotation.class);
 
     public static final String[] CBOR_NAME_ARRAY = new String[]{"com.fasterxml.jackson.dataformat.cbor.CBORFactory",
             "com.fasterxml.jackson.databind.ObjectMapper"};

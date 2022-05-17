@@ -33,7 +33,7 @@ public class JsonConverterTest {
         userMap.put("user", user);
 
 
-        JacksonConverter jsonConverter = (JacksonConverter) ConverterSelector.select(DataType.JSON, JacksonConverter.class);
+        JacksonConverter jsonConverter = ConverterSelector.select(DataType.JSON, JacksonConverter.class);
         // jsonConverter.getMapper().registerModule(new JavaTimeModule());
         // jsonConverter.setDateFormat("yyyy-MM-dd HH:mm");
         String encodeToString = jsonConverter.encode(userMap);
