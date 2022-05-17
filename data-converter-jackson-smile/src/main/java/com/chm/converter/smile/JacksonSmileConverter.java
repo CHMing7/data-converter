@@ -1,19 +1,19 @@
-package com.chm.converter.ion;
+package com.chm.converter.smile;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
-import com.chm.converter.ion.jackson.JacksonIonModule;
 import com.chm.converter.jackson.deserializer.JacksonBeanDeserializerModifier;
 import com.chm.converter.jackson.serializer.JacksonBeanSerializerModifier;
+import com.chm.converter.smile.jackson.JacksonSmileModule;
 import com.fasterxml.jackson.annotation.JacksonAnnotation;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.dataformat.ion.IonObjectMapper;
+import com.fasterxml.jackson.dataformat.smile.databind.SmileMapper;
 import com.google.auto.service.AutoService;
 
 import java.lang.annotation.Annotation;
@@ -23,25 +23,26 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Jackson Ion数据转换器
+ * Jackson Smile数据转换器
+ *
  * @author caihongming
  * @version v1.0
  * @since 2022-05-17
  **/
 @AutoService(Converter.class)
-public class JacksonIonConverter implements IonConverter {
+public class JacksonSmileConverter implements SmileConverter {
 
-    public static final List<Class<? extends Annotation>> JACKSON_ION_ANNOTATION_LIST = ListUtil.of(JacksonAnnotation.class);
+    public static final List<Class<? extends Annotation>> JACKSON_SMILE_ANNOTATION_LIST = ListUtil.of(JacksonAnnotation.class);
 
-    public static final String[] ION_NAME_ARRAY = new String[]{"com.fasterxml.jackson.dataformat.ion.IonFactory",
+    public static final String[] JACKSON_NAME_ARRAY = new String[]{"com.fasterxml.jackson.dataformat.smile.SmileFactory",
             "com.fasterxml.jackson.databind.ObjectMapper"};
 
-    protected ObjectMapper mapper = new IonObjectMapper();
+    protected ObjectMapper mapper = new SmileMapper();
 
     {
-        SimpleModule module = new JacksonIonModule(this);
-        module.setSerializerModifier(new JacksonBeanSerializerModifier(this, JacksonIonConverter::checkExistJacksonIonAnnotation));
-        module.setDeserializerModifier(new JacksonBeanDeserializerModifier(this, JacksonIonConverter::checkExistJacksonIonAnnotation));
+        SimpleModule module = new JacksonSmileModule(this);
+        module.setSerializerModifier(new JacksonBeanSerializerModifier(this, JacksonSmileConverter::checkExistJacksonSmileAnnotation));
+        module.setDeserializerModifier(new JacksonBeanDeserializerModifier(this, JacksonSmileConverter::checkExistJacksonSmileAnnotation));
         mapper.registerModule(module);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
@@ -116,9 +117,9 @@ public class JacksonIonConverter implements IonConverter {
     @Override
     public boolean checkCanBeLoad() {
         try {
-            // 检测Jackson-Ion相关类型是否存在
-            for (String cbor : ION_NAME_ARRAY) {
-                Class.forName(cbor);
+            // 检测Jackson相关类型是否存在
+            for (String jackson : JACKSON_NAME_ARRAY) {
+                Class.forName(jackson);
             }
             return true;
         } catch (Throwable ignored) {
@@ -126,7 +127,7 @@ public class JacksonIonConverter implements IonConverter {
         }
     }
 
-    public static boolean checkExistJacksonIonAnnotation(Class<?> cls) {
-        return JavaBeanInfo.checkExistAnnotation(cls, JACKSON_ION_ANNOTATION_LIST);
+    public static boolean checkExistJacksonSmileAnnotation(Class<?> cls) {
+        return JavaBeanInfo.checkExistAnnotation(cls, JACKSON_SMILE_ANNOTATION_LIST);
     }
 }

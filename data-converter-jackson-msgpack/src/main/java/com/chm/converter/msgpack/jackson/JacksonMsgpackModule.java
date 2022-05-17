@@ -14,5 +14,4 @@ public class JacksonMsgpackModule extends AbstractModule {
     public JacksonMsgpackModule(Converter<?> converter) {
         super("JacksonMsgpackModule", PackageVersion.VERSION, converter);
     }
-
 }
