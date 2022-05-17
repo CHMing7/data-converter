@@ -33,4 +33,7 @@ dependencies {
     testCompile(libs.spearal_java)
     testCompile(libs.thrift)
     testCompile(libs.yaml_jackson)
+    testCompile(libs.cbor_jackson)
+    testCompile(libs.ion_jackson)
+    testCompile(libs.smile_jackson)
 }
