@@ -2,6 +2,9 @@ dependencies {
     compile project(':data-converter-core')
 
     compileOnly(libs.avro)
+    compileOnly(libs.jackson_core)
+    compileOnly(libs.jackson_databind)
+    compileOnly(libs.jackson_annotations)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
@@ -14,4 +17,7 @@ dependencies {
 
     testCompile(libs.hutool_log)
     testCompile(libs.avro)
+    testCompile(libs.jackson_core)
+    testCompile(libs.jackson_databind)
+    testCompile(libs.jackson_annotations)
 }

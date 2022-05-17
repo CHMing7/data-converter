@@ -14,7 +14,7 @@ ext {
             protobuf     : '3.13.0',
             protostuff   : '1.7.4',
             fst          : '2.48',
-            msgpack      : '0.8.22',
+            msgpack      : '0.9.1',
             spearal      : '0.2.0',
             thrift       : '0.15.0',
             yaml_jackson : '2.12.3',
