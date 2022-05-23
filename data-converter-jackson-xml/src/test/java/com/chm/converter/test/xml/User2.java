@@ -1,6 +1,8 @@
-package com.chm.converter.test.json;
+package com.chm.converter.test.xml;
 
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.xml.annotation.XmlProperty;
+import com.chm.converter.xml.annotation.XmlRootElement;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -13,46 +15,55 @@ import java.util.StringJoiner;
  * @version v1.0
  * @since 2021-06-03
  **/
-public class User {
+@XmlRootElement(name = "testUser")
+public class User2 {
+
+    public User2() {
+    }
+
+    public User2(String userName) {
+        this.userName = userName;
+    }
 
     /**
      * 用户
      */
-    @FieldProperty(ordinal = 1)
-    public User user;
+    @FieldProperty(name = "user", ordinal = 1)
+    public User2 user;
 
     /**
      * 用户名
      */
-    @FieldProperty(ordinal = 2)
+    @FieldProperty(name = "userName", ordinal = 2)
+    //@JacksonXmlText
     public String userName;
 
     /**
      * 密码
      */
-    @FieldProperty(ordinal = 3)
+    @FieldProperty(name = "password", ordinal = 3)
     public String password;
 
     /**
      * 新型时间
      */
-    @FieldProperty(ordinal = 4)
+    @FieldProperty(name = "localDateTime", ordinal = 4)
     public LocalDateTime localDateTime;
 
     /**
      * date
      */
-    @FieldProperty(ordinal = 5, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(name = "date", ordinal = 5, format = "yyyy-MM-dd HH:mm:ss.SSSS")
     public Date date;
 
-    @FieldProperty(ordinal = 6, format = "yyyy-MM")
+    @FieldProperty(name = "yearMonth", ordinal = 6, format = "yyyy-MM")
     public YearMonth yearMonth;
 
-    public User getUser() {
+    public User2 getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(User2 user) {
         this.user = user;
     }
 
@@ -101,7 +112,7 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        User other = (User) o;
+        User2 other = (User2) o;
 
         if (!Objects.equals(this.user, other.user)) return false;
         if (!Objects.equals(this.userName, other.userName)) return false;
@@ -113,7 +124,7 @@ public class User {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", User.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", User2.class.getSimpleName() + "[", "]")
                 .add("user=" + user)
                 .add("userName='" + userName + "'")
                 .add("password='" + password + "'")
@@ -122,4 +133,5 @@ public class User {
                 .add("yearMonth=" + yearMonth)
                 .toString();
     }
+
 }

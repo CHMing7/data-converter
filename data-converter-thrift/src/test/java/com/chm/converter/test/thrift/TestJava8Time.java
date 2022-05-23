@@ -2,7 +2,6 @@ package com.chm.converter.test.thrift;
 
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.thrift.DefaultThriftConverter;
 import org.junit.Before;
@@ -38,7 +37,7 @@ public class TestJava8Time {
 
     @Before
     public void before() {
-        converter = (DefaultThriftConverter) ConverterSelector.select(DataType.THRIFT_BINARY, DefaultThriftConverter.class);
+        converter = ConverterSelector.select(DefaultThriftConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());

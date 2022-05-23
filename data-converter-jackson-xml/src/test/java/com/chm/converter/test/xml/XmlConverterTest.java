@@ -43,11 +43,7 @@ public class XmlConverterTest {
         user.setYearMonth(YearMonth.now());
         userMap.put("user", user);
 
-        JacksonXmlConverter xmlConverter = (JacksonXmlConverter) ConverterSelector.select(DataType.XML, JacksonXmlConverter.class);
-        // xmlConverter.getMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
-        xmlConverter.getMapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        xmlConverter.getMapper().configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false);
+        JacksonXmlConverter xmlConverter = ConverterSelector.select(JacksonXmlConverter.class);
         String encodeToString = xmlConverter.encode(userMap);
 
         TypeToken<Map<String, User>> typeRef0 = new TypeToken<Map<String, User>>() {
@@ -74,7 +70,7 @@ public class XmlConverterTest {
         userList.add(user);
         userList.add(user);
         userList.add(user);
-        JacksonXmlConverter xmlConverter = (JacksonXmlConverter) ConverterSelector.select(DataType.XML, JacksonXmlConverter.class);
+        JacksonXmlConverter xmlConverter = ConverterSelector.select(DataType.XML, JacksonXmlConverter.class);
         // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
         String encodeToString = xmlConverter.encode(userList);
 

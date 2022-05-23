@@ -1,11 +1,10 @@
-package com.chm.converter.test.cbor;
+package com.chm.converter.test.json;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
-import com.chm.converter.cbor.JacksonCborConverter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.reflect.TypeToken;
@@ -13,11 +12,11 @@ import com.chm.converter.jackson.deserializer.JacksonDefaultDateTypeDeserializer
 import com.chm.converter.jackson.deserializer.JacksonJava8TimeDeserializer;
 import com.chm.converter.jackson.serializer.JacksonDefaultDateTypeSerializer;
 import com.chm.converter.jackson.serializer.JacksonJava8TimeSerializer;
+import com.chm.converter.json.JacksonConverter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class ConverterTest {
 
-    JacksonCborConverter converter;
+    JacksonConverter converter;
 
     ObjectMapper mapper;
 
@@ -55,7 +54,7 @@ public class ConverterTest {
 
     @BeforeEach
     public void before() {
-        converter = ConverterSelector.select(JacksonCborConverter.class);
+        converter = ConverterSelector.select(JacksonConverter.class);
         user = new User();
         User user1 = new User();
         user1.setUserName("testName");
@@ -66,7 +65,7 @@ public class ConverterTest {
         user.setLocalDateTime(LocalDateTime.now());
         user.setYearMonth(YearMonth.now());
 
-        mapper = new ObjectMapper(new CBORFactory());
+        mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         // Java8 Time Serializer
         module.addSerializer(Instant.class, new JacksonJava8TimeSerializer<>(Instant.class, converter));
@@ -115,13 +114,13 @@ public class ConverterTest {
         Map<String, User> userMap = MapUtil.newHashMap(true);
         userMap.put("user", user);
         userMap.put("user1", user);
-        byte[] encode = converter.encode(userMap);
+        String encode = converter.encode(userMap);
         // original
-        byte[] encode2 = mapper.writeValueAsBytes(userMap);
+        String encode2 = mapper.writeValueAsString(userMap);
         StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
         StaticLog.info("testUser2:" + StrUtil.str(encode2, "utf-8"));
 
-        assertArrayEquals(encode, encode2);
+        assertEquals(encode, encode2);
 
         TypeToken<Map<String, User>> typeToken = new TypeToken<Map<String, User>>() {
         };
@@ -131,7 +130,7 @@ public class ConverterTest {
 
     @Test
     public void testUser() {
-        byte[] encode = converter.encode(user);
+        String encode = converter.encode(user);
         StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
 
         User newUser = converter.convertToJavaObject(encode, User.class);
@@ -144,7 +143,7 @@ public class ConverterTest {
     public void testMap() {
         Map<String, User> userMap = MapUtil.newHashMap(true);
         userMap.put("user", user);
-        byte[] encode = converter.encode(userMap);
+        String encode = converter.encode(userMap);
         StaticLog.info("testMap:" + StrUtil.str(encode, "utf-8"));
 
         TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {
@@ -162,7 +161,7 @@ public class ConverterTest {
         userCollection.add(user);
         userCollection.add(user);
 
-        byte[] encode = converter.encode(userCollection);
+        String encode = converter.encode(userCollection);
 
         StaticLog.info("testCollection:" + StrUtil.str(encode, "utf-8"));
 
@@ -181,7 +180,7 @@ public class ConverterTest {
         userArray[0] = user;
         userArray[1] = user;
         userArray[2] = user;
-        byte[] encode = converter.encode(userArray);
+        String encode = converter.encode(userArray);
         StaticLog.info("testArray:" + StrUtil.str(encode, "utf-8"));
 
         TypeReference<User[]> typeRef0 = new TypeReference<User[]>() {
@@ -195,8 +194,7 @@ public class ConverterTest {
 
     @Test
     public void testEnum() {
-
-        byte[] encode = converter.encode(Enum.ONE);
+        String encode = converter.encode(Enum.ONE);
         StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
 
         Enum newEnum = converter.convertToJavaObject(encode, Enum.class);

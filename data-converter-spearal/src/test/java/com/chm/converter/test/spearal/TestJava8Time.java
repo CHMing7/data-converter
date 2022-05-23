@@ -2,7 +2,6 @@ package com.chm.converter.test.spearal;
 
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.spearal.DefaultSpearalConverter;
 import org.junit.Before;
@@ -39,7 +38,7 @@ public class TestJava8Time {
 
     @Before
     public void before() {
-        converter = (DefaultSpearalConverter) ConverterSelector.select(DataType.SPEARAL, DefaultSpearalConverter.class);
+        converter = ConverterSelector.select(DefaultSpearalConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());

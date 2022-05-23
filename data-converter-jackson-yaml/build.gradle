@@ -3,6 +3,7 @@ dependencies {
     compile project(':data-converter-jackson')
 
     compileOnly(libs.yaml_jackson)
+    compileOnly(libs.csv_jackson)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
@@ -10,4 +11,5 @@ dependencies {
     testCompile 'junit:junit:4.13.1'
     testCompile(libs.hutool_log)
     testCompile(libs.yaml_jackson)
+    testCompile(libs.csv_jackson)
 }
