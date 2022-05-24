@@ -4,6 +4,7 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
+import com.chm.converter.core.utils.TypeUtil;
 import com.chm.converter.json.gson.GsonDefaultDateTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonEnumTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonJava8TimeTypeAdapterFactory;
@@ -82,7 +83,8 @@ public class GsonConverter implements JsonConverter {
                 Gson gson = createGson();
                 return gson.fromJson(source, targetType);
             }
-            return convertToJavaObject(source, (Class<? extends T>) targetType);
+            Class clazz = TypeUtil.getClass(targetType);
+            return (T) convertToJavaObject(source, clazz);
         } catch (Exception ex) {
             throw new ConvertException(getConverterName(), String.class.getName(), targetType.getTypeName(), ex);
         }

@@ -108,10 +108,7 @@ public class ConverterTest {
         Object encode = converter.encode(userArray);
         StaticLog.info("testArray:" + StrUtil.str(encode, "utf-8"));
 
-        TypeToken<User[]> typeRef0 = new TypeToken<User[]>() {
-        };
-
-        User[] newUserArray = (User[]) converter.convertToJavaObject(encode, typeRef0);
+        User[] newUserArray = (User[]) converter.convertToJavaObject(encode, User[].class);
 
         assertArrayEquals(userArray, newUserArray);
     }

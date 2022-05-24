@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Properties;
 
 import static com.chm.converter.core.reflect.ConverterPreconditions.checkArgument;
@@ -149,7 +150,7 @@ public final class ConverterTypes {
     }
 
     static boolean equal(Object a, Object b) {
-        return a == b || (a != null && a.equals(b));
+        return Objects.equals(a, b);
     }
 
     /**
@@ -450,8 +451,11 @@ public final class ConverterTypes {
     }
 
     private static final class ParameterizedTypeImpl implements ParameterizedType, Serializable {
+
         private final Type ownerType;
+
         private final Type rawType;
+
         private final Type[] typeArguments;
 
         public ParameterizedTypeImpl(Type ownerType, Type rawType, Type... typeArguments) {
@@ -515,11 +519,10 @@ public final class ConverterTypes {
             }
             return stringBuilder.append(">").toString();
         }
-
-        private static final long serialVersionUID = 0;
     }
 
     private static final class GenericArrayTypeImpl implements GenericArrayType, Serializable {
+
         private final Type componentType;
 
         public GenericArrayTypeImpl(Type componentType) {
@@ -546,8 +549,6 @@ public final class ConverterTypes {
         public String toString() {
             return typeToString(componentType) + "[]";
         }
-
-        private static final long serialVersionUID = 0;
     }
 
     /**
@@ -556,7 +557,9 @@ public final class ConverterTypes {
      * bound. If a lower bound is set, the upper bound must be Object.class.
      */
     private static final class WildcardTypeImpl implements WildcardType, Serializable {
+
         private final Type upperBound;
+
         private final Type lowerBound;
 
         public WildcardTypeImpl(Type[] upperBounds, Type[] lowerBounds) {
@@ -611,7 +614,5 @@ public final class ConverterTypes {
                 return "? extends " + typeToString(upperBound);
             }
         }
-
-        private static final long serialVersionUID = 0;
     }
 }
