@@ -80,24 +80,29 @@ public class DataType {
     public final static DataType THRIFT_BINARY = DataType.createDataType("thrift_binary");
 
     /**
-     * 数据类型： YAML类型
+     * 数据类型： yaml类型
      */
     public final static DataType YAML = DataType.createDataType("yaml");
 
     /**
-     * 数据类型： CBOR类型
+     * 数据类型： cbor类型
      */
     public final static DataType CBOR = DataType.createDataType("cbor");
 
     /**
-     * 数据类型： ION类型
+     * 数据类型： ion类型
      */
     public final static DataType ION = DataType.createDataType("ion");
 
     /**
-     * 数据类型：SMILE类型
+     * 数据类型：smile类型
      */
     public final static DataType SMILE = DataType.createDataType("smile");
+
+    /**
+     * 数据类型：toml类型
+     */
+    public final static DataType TOML = DataType.createDataType("toml");
 
     /**
      * 全局数据转换器表

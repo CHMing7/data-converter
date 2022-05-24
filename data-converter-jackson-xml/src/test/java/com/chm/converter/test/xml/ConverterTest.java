@@ -1,7 +1,6 @@
 package com.chm.converter.test.xml;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
@@ -148,10 +147,10 @@ public class ConverterTest {
         String encode = converter.encode(userMap);
         StaticLog.info("testMap:" + StrUtil.str(encode, "utf-8"));
 
-        TypeReference<Map<String, User2>> typeRef0 = new TypeReference<Map<String, User2>>() {
+        TypeToken<Map<String, User2>> typeRef0 = new TypeToken<Map<String, User2>>() {
         };
 
-        Map<String, User2> newUserMap = converter.convertToJavaObject(encode, typeRef0.getType());
+        Map<String, User2> newUserMap = converter.convertToJavaObject(encode, typeRef0);
 
         assertEquals(userMap, newUserMap);
     }
@@ -167,10 +166,10 @@ public class ConverterTest {
 
         StaticLog.info("testCollection:" + StrUtil.str(encode, "utf-8"));
 
-        TypeReference<Collection<User2>> typeRef0 = new TypeReference<Collection<User2>>() {
+        TypeToken<Collection<User2>> typeRef0 = new TypeToken<Collection<User2>>() {
         };
 
-        Collection<User2> newUserCollection = converter.convertToJavaObject(encode, typeRef0.getType());
+        Collection<User2> newUserCollection = converter.convertToJavaObject(encode, typeRef0);
 
         assertEquals(userCollection, newUserCollection);
     }
@@ -185,10 +184,10 @@ public class ConverterTest {
         String encode = converter.encode(userArray);
         StaticLog.info("testArray:" + StrUtil.str(encode, "utf-8"));
 
-        TypeReference<User2[]> typeRef0 = new TypeReference<User2[]>() {
+        TypeToken<User2[]> typeRef0 = new TypeToken<User2[]>() {
         };
 
-        User2[] newUserArray = converter.convertToJavaObject(encode, typeRef0.getType());
+        User2[] newUserArray = converter.convertToJavaObject(encode, typeRef0);
 
         assertArrayEquals(userArray, newUserArray);
     }
@@ -196,7 +195,6 @@ public class ConverterTest {
 
     @Test
     public void testEnum() {
-
         String encode = converter.encode(Enum.ONE);
         StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
 

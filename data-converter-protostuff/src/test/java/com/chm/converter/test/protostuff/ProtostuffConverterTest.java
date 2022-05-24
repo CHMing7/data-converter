@@ -1,7 +1,6 @@
 package com.chm.converter.test.protostuff;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
@@ -10,6 +9,7 @@ import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.creator.ConstructorFactory;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.DateUtil;
 import com.chm.converter.protostuff.DefaultProtostuffConverter;
 import io.protostuff.Input;
@@ -20,7 +20,6 @@ import io.protostuff.runtime.RuntimeSchema;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -104,7 +103,7 @@ public class ProtostuffConverterTest {
         byte[] encode = converter.encode(userMap);
         StaticLog.info("testMap:" + StrUtil.str(encode, "utf-8"));
 
-        TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {
+        TypeToken<Map<String, User>> typeRef0 = new TypeToken<Map<String, User>>() {
         };
 
         Map<String, User> newUserMap = converter.convertToJavaObject(encode, typeRef0.getType());
@@ -123,7 +122,7 @@ public class ProtostuffConverterTest {
 
         StaticLog.info("testCollection:" + StrUtil.str(encode, "utf-8"));
 
-        TypeReference<Collection<User>> typeRef0 = new TypeReference<Collection<User>>() {
+        TypeToken<Collection<User>> typeRef0 = new TypeToken<Collection<User>>() {
         };
 
         Collection<User> newUserCollection = converter.convertToJavaObject(encode, typeRef0.getType());
@@ -141,7 +140,7 @@ public class ProtostuffConverterTest {
         byte[] encode = converter.encode(userArray);
         StaticLog.info("testArray:" + StrUtil.str(encode, "utf-8"));
 
-        TypeReference<User[]> typeRef0 = new TypeReference<User[]>() {
+        TypeToken<User[]> typeRef0 = new TypeToken<User[]>() {
         };
 
         User[] newUserArray = converter.convertToJavaObject(encode, typeRef0.getType());
@@ -152,7 +151,6 @@ public class ProtostuffConverterTest {
 
     @Test
     public void testEnum() {
-
         byte[] encode = converter.encode(Enum.ONE);
         StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
 
