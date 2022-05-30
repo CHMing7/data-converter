@@ -4,9 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
-import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.reflect.TypeToken;
@@ -22,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -40,13 +37,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class ConverterTest {
 
-    Converter<byte[]> converter;
+    DefaultThriftConverter converter;
 
     User user;
 
     @BeforeEach
     public void before() {
-        converter = ConverterSelector.select(DataType.THRIFT_BINARY, DefaultThriftConverter.class);
+        converter = ConverterSelector.select(DefaultThriftConverter.class);
         user = new User();
         User user1 = new User();
         user1.setUserName("testName");

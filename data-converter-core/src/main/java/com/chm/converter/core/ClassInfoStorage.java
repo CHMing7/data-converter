@@ -32,6 +32,22 @@ public interface ClassInfoStorage {
         put(FIELD_NAME_FIELD_INFO_MAP, clazz, converterClass, javaBeanInfo.getFieldNameFieldInfoMap());
     }
 
+
+    /**
+     * 获取bean信息
+     *
+     * @param clazz
+     * @param converter
+     * @return
+     */
+    default <T> JavaBeanInfo<T> getJavaBeanInfo(Class<T> clazz, Converter converter) {
+        Class<? extends Converter> converterClass = converter != null ? converter.getClass() : null;
+        if (!contains(BEAN_INFO_MAP, clazz, converterClass) || !isInit(clazz, converterClass)) {
+            initClassInfo(clazz, converterClass);
+        }
+        return get(BEAN_INFO_MAP, clazz, converterClass);
+    }
+
     /**
      * 获取bean信息
      *

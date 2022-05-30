@@ -4,7 +4,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.avro.DefaultAvroConverter;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +38,7 @@ public class TestJava8Time {
 
     @Before
     public void before() {
-        avroConverter = (DefaultAvroConverter) ConverterSelector.select(DataType.AVRO_BINARY, DefaultAvroConverter.class);
+        avroConverter = ConverterSelector.select(DefaultAvroConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());

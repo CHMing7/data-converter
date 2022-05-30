@@ -12,6 +12,8 @@ import com.chm.converter.core.codecs.factory.MapCodecFactory;
 import com.chm.converter.core.codecs.factory.ObjectCodecFactory;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
+import com.chm.converter.core.utils.ListUtil;
+import com.chm.converter.core.utils.MapUtil;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,13 +46,23 @@ import java.util.regex.Pattern;
  **/
 public class DataCodecGenerate extends UniversalGenerate<Codec> {
 
+    public static final Map<Converter<?>, DataCodecGenerate> CONVERTER_DATA_CODEC_GENERATE_MAP = MapUtil.newConcurrentHashMap();
+
     private final Converter<?> converter;
 
-    public DataCodecGenerate() {
+    private DataCodecGenerate() {
         this(null, null);
     }
 
-    public DataCodecGenerate(List<UniversalFactory<Codec>> factories, Converter<?> converter) {
+    private DataCodecGenerate(List<UniversalFactory<Codec>> factories) {
+        this(factories, null);
+    }
+
+    private DataCodecGenerate(Converter<?> converter) {
+        this(null, converter);
+    }
+
+    private DataCodecGenerate(List<UniversalFactory<Codec>> factories, Converter<?> converter) {
         super(factories);
         this.converter = converter;
     }
@@ -64,7 +77,10 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
         factories.add(new DefaultDateCodecFactory(converter));
         factories.add(new Java8TimeCodecFactory(converter));
         factories.add(new ObjectCodecFactory());
-        DataCodecGenerate generate = new DataCodecGenerate(factories, converter);
+        DataCodecGenerate generate = DataCodecGenerateBuilder.dataCodecGenerate()
+                .withFactories(factories)
+                .withConverter(converter).build();
+
         generate.put(Boolean.class, Codecs.BOOLEAN);
         generate.put(boolean.class, Codecs.BOOLEAN);
         generate.put(Character.class, Codecs.CHARACTER);
@@ -130,6 +146,19 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
         return converter;
     }
 
+    public static DataCodecGenerate getDataCodecGenerate(Converter<?> converter) {
+        return MapUtil.computeIfAbsent(CONVERTER_DATA_CODEC_GENERATE_MAP, converter, DataCodecGenerate::newDefault);
+    }
+
+    public static void newDataCodecGenerate(List<UniversalFactory<Codec>> factories, Converter<?> converter) {
+        DataCodecGenerate dataCodecGenerate = new DataCodecGenerate(factories, converter);
+        CONVERTER_DATA_CODEC_GENERATE_MAP.put(converter, dataCodecGenerate);
+    }
+
+    public DataCodecGenerateBuilder builder() {
+        return new DataCodecGenerateBuilder(this);
+    }
+
     public static final class DataCodecGenerateBuilder {
 
         private List<UniversalFactory<Codec>> factories;
@@ -139,12 +168,28 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
         private DataCodecGenerateBuilder() {
         }
 
+        private DataCodecGenerateBuilder(DataCodecGenerate generate) {
+            this.factories = generate.factories;
+            this.converter = generate.converter;
+        }
+
         public static DataCodecGenerateBuilder dataCodecGenerate() {
             return new DataCodecGenerateBuilder();
         }
 
         public DataCodecGenerateBuilder withFactories(List<UniversalFactory<Codec>> factories) {
             this.factories = factories;
+            return this;
+        }
+
+        public DataCodecGenerateBuilder addFactories(UniversalFactory<Codec> factory) {
+            if (this.factories == null) {
+                this.factories = ListUtil.toLinkedList();
+            }
+            if (this.factories.contains(factory)) {
+                return this;
+            }
+            this.factories.add(factory);
             return this;
         }
 

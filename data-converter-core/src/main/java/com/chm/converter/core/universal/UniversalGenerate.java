@@ -17,7 +17,7 @@ public class UniversalGenerate<T extends UniversalInterface> {
 
     private final Map<TypeToken<?>, Entry> typeCache = new ConcurrentHashMap<>();
 
-    private final List<UniversalFactory<T>> factories;
+    protected final List<UniversalFactory<T>> factories;
 
     final class Entry {
         boolean forSubClasses = false;

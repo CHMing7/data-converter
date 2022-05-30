@@ -39,7 +39,7 @@ public interface Converter<S> {
     Map<Converter<?>, Integer> CONVERTER_FEATURES_MAP = new ConcurrentHashMap<>();
 
     /**
-     * 将源数据转换为目标类型（Class）的java对象
+     * 将源数据转换为目标类型{@link Class<T>}的java对象
      *
      * @param source     源数据
      * @param targetType 目标类型 (Class对象)
@@ -49,7 +49,7 @@ public interface Converter<S> {
     <T> T convertToJavaObject(S source, Class<T> targetType);
 
     /**
-     * 将源数据转换为目标类型（Type）的java对象
+     * 将源数据转换为目标类型{@link Type}的java对象
      *
      * @param source     源数据
      * @param targetType 目标类型 (Type对象)
@@ -59,7 +59,7 @@ public interface Converter<S> {
     <T> T convertToJavaObject(S source, Type targetType);
 
     /**
-     * 将源数据转换为目标类型（Type）的java对象
+     * 将源数据转换为目标类型{@link TypeToken<T>}的java对象
      *
      * @param source     源数据
      * @param targetType 目标类型 (TypeToken对象)
@@ -71,7 +71,7 @@ public interface Converter<S> {
     }
 
     /**
-     * 将源数据转换为List对象
+     * 将源数据转换为{@link List<T>}对象
      *
      * @param source     源数据
      * @param targetType 目标类型 (Class对象)
@@ -84,7 +84,7 @@ public interface Converter<S> {
     }
 
     /**
-     * 将源数据转换为List对象
+     * 将源数据转换为{@link List<T>}对象
      *
      * @param source     源数据
      * @param targetType 目标类型 (Type对象)
@@ -97,7 +97,7 @@ public interface Converter<S> {
     }
 
     /**
-     * 将源数据转换为List对象
+     * 将源数据转换为{@link List<T>}对象
      *
      * @param source     源数据
      * @param targetType 目标类型 (TypeToken对象)
@@ -110,7 +110,7 @@ public interface Converter<S> {
     }
 
     /**
-     * 将源数据转换为Map对象
+     * 将源数据转换为{@link Map<String, Object>}对象
      *
      * @param source 源数据
      * @return 转换后的目标类型对象
@@ -119,6 +119,30 @@ public interface Converter<S> {
         TypeToken<Map<String, Object>> mapType = new TypeToken<Map<String, Object>>() {
         };
         return convertToJavaObject(source, mapType);
+    }
+
+    /**
+     * 将源数据转换为{@link DataMapper}对象
+     *
+     * @param source 源数据
+     * @return 转换后的目标类型对象
+     */
+    default DataMapper convertToMapper(S source) {
+        Map<String, Object> map = convertToMap(source);
+        return new DataMapper(this, map);
+    }
+
+    /**
+     * 将源数据转换为{@link DataArray}对象
+     *
+     * @param source 源数据
+     * @return 转换后的目标类型对象
+     */
+    default DataArray convertToArray(S source) {
+        TypeToken<Map<String, Object>> mapType = new TypeToken<Map<String, Object>>() {
+        };
+        List<Map<String, Object>> list = convertToList(source, mapType);
+        return new DataArray(this, list);
     }
 
     /**
@@ -141,6 +165,7 @@ public interface Converter<S> {
 
         return resultMap;
     }
+
 
     /**
      * 将java对象进行编码

@@ -1,7 +1,6 @@
 package com.chm.converter.test.xml;
 
 import com.chm.converter.core.annotation.FieldProperty;
-import com.chm.converter.xml.annotation.XmlProperty;
 import com.chm.converter.xml.annotation.XmlRootElement;
 
 import java.time.LocalDateTime;

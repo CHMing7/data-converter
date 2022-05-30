@@ -47,12 +47,12 @@ public class ProtostuffCodecGenerate extends UniversalGenerate<ProtostuffCodec> 
         List<UniversalFactory<ProtostuffCodec>> factories = new ArrayList<>();
         factories.add(new JavaBeanCodecFactory(converter));
         factories.add(new CoreCodecFactory(DataCodecGenerate.newDefault(converter)));
-        factories.add(new EnumCodecFactory(converter));
-        factories.add(new MapCodecFactory());
-        factories.add(new CollectionCodecFactory());
-        factories.add(new ArrayCodecFactory());
-        factories.add(new DefaultDateCodecFactory(converter));
-        factories.add(new Java8TimeCodecFactory(converter));
+        // factories.add(new EnumCodecFactory(converter));
+        // factories.add(new MapCodecFactory());
+        // factories.add(new CollectionCodecFactory());
+        // factories.add(new ArrayCodecFactory());
+        // factories.add(new DefaultDateCodecFactory(converter));
+        // factories.add(new Java8TimeCodecFactory(converter));
         // factories.add(new ObjectCodecFactory());
         factories.add(ProtostuffCodecs.CHAR_FACTORY);
         factories.add(ProtostuffCodecs.SHORT_FACTORY);

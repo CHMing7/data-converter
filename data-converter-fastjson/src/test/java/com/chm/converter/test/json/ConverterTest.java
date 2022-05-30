@@ -9,6 +9,8 @@ import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.chm.converter.core.ConverterSelector;
+import com.chm.converter.core.DataArray;
+import com.chm.converter.core.DataMapper;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.json.FastjsonConverter;
@@ -202,5 +204,36 @@ public class ConverterTest {
     public enum Enum {
         @FieldProperty(name = "testOne")
         ONE, TWO
+    }
+
+
+    @Test
+    public void testMapper() {
+        String encode = converter.encode(user);
+        StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
+
+        DataMapper dataMapper = converter.convertToMapper(encode);
+
+        User newUser = dataMapper.toJavaBean(User.class);
+
+        assertEquals(user, newUser);
+    }
+
+
+    @Test
+    public void testDataArray() {
+        Collection<User> userCollection = CollUtil.newArrayList();
+        userCollection.add(user);
+        userCollection.add(user);
+        userCollection.add(user);
+
+        String encode = converter.encode(userCollection);
+        StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
+
+        DataArray dataArray = converter.convertToArray(encode);
+
+        Collection newUserCollection = dataArray.toJavaList(User.class);
+
+        assertEquals(userCollection, newUserCollection);
     }
 }

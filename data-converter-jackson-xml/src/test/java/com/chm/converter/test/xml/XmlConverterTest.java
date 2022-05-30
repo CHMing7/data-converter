@@ -3,14 +3,11 @@ package com.chm.converter.test.xml;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.xml.JacksonXmlConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.jupiter.api.Test;
 
@@ -70,7 +67,7 @@ public class XmlConverterTest {
         userList.add(user);
         userList.add(user);
         userList.add(user);
-        JacksonXmlConverter xmlConverter = ConverterSelector.select(DataType.XML, JacksonXmlConverter.class);
+        JacksonXmlConverter xmlConverter = ConverterSelector.select(JacksonXmlConverter.class);
         // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
         String encodeToString = xmlConverter.encode(userList);
 

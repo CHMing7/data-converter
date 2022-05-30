@@ -40,10 +40,6 @@ public class ThriftDataWriter implements DataWriter {
 
     protected final DataCodecGenerate dataCodecGenerate;
 
-    public ThriftDataWriter(OutputStream out) {
-        this(out, new DataCodecGenerate());
-    }
-
     public ThriftDataWriter(OutputStream out, DataCodecGenerate generate) {
         this.outputStream = out;
         TTransport transport;

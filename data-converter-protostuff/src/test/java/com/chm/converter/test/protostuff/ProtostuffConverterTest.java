@@ -4,9 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
-import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.reflect.TypeToken;
@@ -37,13 +35,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class ProtostuffConverterTest {
 
-    Converter<byte[]> converter;
+    DefaultProtostuffConverter converter;
 
     User user;
 
     @BeforeEach
     public void before() {
-        converter = ConverterSelector.select(DataType.PROTOSTUFF, DefaultProtostuffConverter.class);
+        converter = ConverterSelector.select(DefaultProtostuffConverter.class);
         user = new User();
         User user1 = new User();
         user1.setUserName("testName");
