@@ -3,14 +3,11 @@ package com.chm.converter.test.xml;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.xml.JacksonXmlConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.jupiter.api.Test;
 
@@ -43,11 +40,7 @@ public class XmlConverterTest {
         user.setYearMonth(YearMonth.now());
         userMap.put("user", user);
 
-        JacksonXmlConverter xmlConverter = (JacksonXmlConverter) ConverterSelector.select(DataType.XML, JacksonXmlConverter.class);
-        // xmlConverter.getMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
-        xmlConverter.getMapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        xmlConverter.getMapper().configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false);
+        JacksonXmlConverter xmlConverter = ConverterSelector.select(JacksonXmlConverter.class);
         String encodeToString = xmlConverter.encode(userMap);
 
         TypeToken<Map<String, User>> typeRef0 = new TypeToken<Map<String, User>>() {
@@ -74,7 +67,7 @@ public class XmlConverterTest {
         userList.add(user);
         userList.add(user);
         userList.add(user);
-        JacksonXmlConverter xmlConverter = (JacksonXmlConverter) ConverterSelector.select(DataType.XML, JacksonXmlConverter.class);
+        JacksonXmlConverter xmlConverter = ConverterSelector.select(JacksonXmlConverter.class);
         // jsonConverter.addSerializerFeature(SerializerFeature.WriteMapNullValue);
         String encodeToString = xmlConverter.encode(userList);
 

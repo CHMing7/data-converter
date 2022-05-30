@@ -1,7 +1,9 @@
 package com.chm.converter.core.utils;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -30,6 +32,9 @@ public class TypeUtil {
                 return (Class<?>) type;
             } else if (type instanceof ParameterizedType) {
                 return (Class<?>) ((ParameterizedType) type).getRawType();
+            } else if (type instanceof GenericArrayType) {
+                Type componentType = ((GenericArrayType) type).getGenericComponentType();
+                return Array.newInstance(getClass(componentType), 0).getClass();
             } else if (type instanceof TypeVariable) {
                 return (Class<?>) ((TypeVariable<?>) type).getBounds()[0];
             } else if (type instanceof WildcardType) {

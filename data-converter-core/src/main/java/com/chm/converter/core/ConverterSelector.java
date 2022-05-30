@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -28,7 +27,6 @@ public class ConverterSelector implements Serializable {
 
     static {
         // 加载数据转换器类
-
         ServiceLoader<Converter> converters = ServiceLoader.load(Converter.class);
         converters.forEach(converter -> {
             try {

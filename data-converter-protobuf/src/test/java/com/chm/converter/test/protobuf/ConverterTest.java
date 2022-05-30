@@ -1,20 +1,18 @@
 package com.chm.converter.test.protobuf;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.DateUtil;
 import com.chm.converter.protobuf.DefaultProtobufConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -38,7 +36,7 @@ public class ConverterTest {
 
     @BeforeEach
     public void before() {
-        converter = ConverterSelector.select(DataType.PROTOBUF_BINARY, DefaultProtobufConverter.class);
+        converter = ConverterSelector.select(DefaultProtobufConverter.class);
         user = new User();
         User user1 = new User();
         user1.setUserName("testName");
@@ -76,10 +74,10 @@ public class ConverterTest {
         assertEquals(testUser, newTestUser);
     }
 
-
     @Test
     public void testUser() {
         byte[] encode = converter.encode(user);
+        StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
 
         User newUser = converter.convertToJavaObject(encode, User.class);
 
@@ -92,17 +90,18 @@ public class ConverterTest {
         Map<String, User> userMap = MapUtil.newHashMap(true);
         userMap.put("user", user);
         byte[] encode = converter.encode(userMap);
+        StaticLog.info("testMap:" + StrUtil.str(encode, "utf-8"));
 
-        TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {
+        TypeToken<Map<String, User>> typeRef0 = new TypeToken<Map<String, User>>() {
         };
 
-        Map<String, User> newUserMap = converter.convertToJavaObject(encode, typeRef0.getType());
+        Map<String, User> newUserMap = converter.convertToJavaObject(encode, typeRef0);
 
         assertEquals(userMap, newUserMap);
     }
 
     @Test
-    public void testCollection() throws IOException {
+    public void testCollection() {
         Collection<User> userCollection = CollUtil.newArrayList();
         userCollection.add(user);
         userCollection.add(user);
@@ -110,36 +109,39 @@ public class ConverterTest {
 
         byte[] encode = converter.encode(userCollection);
 
-        TypeReference<Collection<User>> typeRef0 = new TypeReference<Collection<User>>() {
+        StaticLog.info("testCollection:" + StrUtil.str(encode, "utf-8"));
+
+        TypeToken<Collection<User>> typeRef0 = new TypeToken<Collection<User>>() {
         };
 
-        Collection<User> newUserCollection = converter.convertToJavaObject(encode, typeRef0.getType());
+        Collection<User> newUserCollection = converter.convertToJavaObject(encode, typeRef0);
 
         assertEquals(userCollection, newUserCollection);
     }
 
 
     @Test
-    public void testArray() throws IOException {
+    public void testArray() {
         User[] userArray = new User[3];
         userArray[0] = user;
         userArray[1] = user;
         userArray[2] = user;
         byte[] encode = converter.encode(userArray);
+        StaticLog.info("testArray:" + StrUtil.str(encode, "utf-8"));
 
-        TypeReference<User[]> typeRef0 = new TypeReference<User[]>() {
+        TypeToken<User[]> typeRef0 = new TypeToken<User[]>() {
         };
 
-        User[] newUserArray = converter.convertToJavaObject(encode, typeRef0.getType());
+        User[] newUserArray = converter.convertToJavaObject(encode, typeRef0);
 
         assertArrayEquals(userArray, newUserArray);
     }
 
 
     @Test
-    public void testEnum() throws IOException {
-
+    public void testEnum() {
         byte[] encode = converter.encode(Enum.ONE);
+        StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
 
         Enum newEnum = converter.convertToJavaObject(encode, Enum.class);
 
@@ -148,15 +150,6 @@ public class ConverterTest {
 
     public enum Enum {
         @FieldProperty(name = "testOne")
-        ONE("one"),
-
-        @FieldProperty(name = "testTwo")
-        TWO("two");
-
-        private String name;
-
-        Enum(String name) {
-            this.name = name;
-        }
+        ONE, TWO
     }
 }

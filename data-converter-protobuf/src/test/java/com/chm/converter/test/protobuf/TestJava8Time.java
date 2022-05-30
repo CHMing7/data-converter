@@ -2,12 +2,12 @@ package com.chm.converter.test.protobuf;
 
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.protobuf.DefaultProtobufConverter;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -32,13 +32,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class TestJava8Time {
 
-    DefaultProtobufConverter protobufConverter;
+    DefaultProtobufConverter converter;
 
     Java8Time java8Time;
 
     @Before
     public void before() {
-        protobufConverter = (DefaultProtobufConverter) ConverterSelector.select(DataType.PROTOBUF_BINARY, DefaultProtobufConverter.class);
+        converter = ConverterSelector.select(DefaultProtobufConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -57,17 +57,17 @@ public class TestJava8Time {
     }
 
     @Test
-    public void testProtobuf() {
-        byte[] encode = protobufConverter.encode(java8Time);
+    public void testJava8Time() {
+        byte[] encode = converter.encode(java8Time);
         StaticLog.info(new String(encode));
-        StaticLog.info(new String(protobufConverter.encode(LocalDateTime.now())));
-        StaticLog.info(new String(protobufConverter.encode(MonthDay.now())));
-        StaticLog.info(new String(protobufConverter.encode((MonthDay) null)));
-        Java8Time java8Time = protobufConverter.convertToJavaObject(encode, Java8Time.class);
+        StaticLog.info(new String(converter.encode(LocalDateTime.now())));
+        StaticLog.info(new String(converter.encode(MonthDay.now())));
+        StaticLog.info(new String(converter.encode(null)));
+        Java8Time java8Time = converter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }
 
-    public static class Java8Time {
+    public static class Java8Time implements Serializable {
 
         @FieldProperty(name = "instant1", ordinal = 1)
         private Instant instant;

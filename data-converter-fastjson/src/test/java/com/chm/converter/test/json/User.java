@@ -18,37 +18,43 @@ public class User {
     /**
      * 用户
      */
-    @FieldProperty(name = "user12", ordinal = 1)
+    @FieldProperty(ordinal = 4)
     public User user;
 
     /**
      * 用户名
      */
-    @FieldProperty(name = "userName1", ordinal = 2)
+    @FieldProperty(ordinal = 5)
     public String userName;
 
     /**
      * 密码
      */
-    @FieldProperty(name = "password2", ordinal = 3)
+    @FieldProperty(ordinal = 3)
     public String password;
 
     /**
      * 新型时间
      */
-    @FieldProperty(name = "localDateTime", ordinal = 4, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(ordinal = 2)
     public LocalDateTime localDateTime;
 
     /**
      * date
      */
-    @FieldProperty(name = "date", ordinal = 5, format = "yyyy-MM-dd HH:mm:ss.SSSS")
+    @FieldProperty(ordinal = 1, format = "yyyy-MM-dd HH:mm:ss.SSSS")
     public Date date;
 
-    @FieldProperty(name = "yearMonth", ordinal = 6, format = "yyyy-MM")
+    @FieldProperty(ordinal = 6, format = "yyyy-MM")
     public YearMonth yearMonth;
 
-    public transient String testStatic;
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public String getUserName() {
         return userName;
@@ -90,39 +96,19 @@ public class User {
         this.yearMonth = yearMonth;
     }
 
-    public String getTestStatic() {
-        return testStatic;
-    }
-
-    public void setTestStatic(String testStatic) {
-        this.testStatic = testStatic;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user1 = (User) o;
-        return Objects.equals(user, user1.user) &&
-                Objects.equals(userName, user1.userName) &&
-                Objects.equals(password, user1.password) &&
-                Objects.equals(localDateTime, user1.localDateTime) &&
-                Objects.equals(date, user1.date) &&
-                Objects.equals(yearMonth, user1.yearMonth) &&
-                Objects.equals(testStatic, user1.testStatic);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(user, userName, password, localDateTime, date, yearMonth, testStatic);
+        User other = (User) o;
+
+        if (!Objects.equals(this.user, other.user)) return false;
+        if (!Objects.equals(this.userName, other.userName)) return false;
+        if (!Objects.equals(this.password, other.password)) return false;
+        if (!Objects.equals(this.localDateTime, other.localDateTime)) return false;
+        if (!Objects.equals(this.date, other.date)) return false;
+        return Objects.equals(this.yearMonth, other.yearMonth);
     }
 
     @Override
@@ -134,7 +120,6 @@ public class User {
                 .add("localDateTime=" + localDateTime)
                 .add("date=" + date)
                 .add("yearMonth=" + yearMonth)
-                .add("testStatic='" + testStatic + "'")
                 .toString();
     }
 }

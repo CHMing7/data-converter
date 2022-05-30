@@ -1,11 +1,10 @@
 package com.chm.converter.test.json;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.json.JacksonConverter;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,13 +32,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class TestJava8Time {
 
-    JacksonConverter jacksonConverter;
+    JacksonConverter converter;
 
     Java8Time java8Time;
 
     @Before
     public void before() {
-        jacksonConverter = (JacksonConverter) ConverterSelector.select(DataType.JSON, JacksonConverter.class);
+        converter = ConverterSelector.select(JacksonConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -50,7 +49,7 @@ public class TestJava8Time {
         java8Time.setZonedDateTime(ZonedDateTime.now());
         java8Time.setMonthDay(MonthDay.now());
         java8Time.setYearMonth(YearMonth.now());
-        // java8Time.setYear(Year.now());
+        java8Time.setYear(Year.now());
         java8Time.setZoneOffset(ZoneOffset.MIN);
         java8Time.setDate(new Date());
         java8Time.setSqlDate(new java.sql.Date(new Date().getTime()));
@@ -58,53 +57,14 @@ public class TestJava8Time {
     }
 
     @Test
-    public void testJackson() {
-        //jacksonConverter.getMapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        //jacksonConverter.getMapper().configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false);
-        jacksonConverter.getMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        String encodeToString = jacksonConverter.encode(java8Time);
-        StaticLog.info(encodeToString);
-        StaticLog.info(jacksonConverter.encode(LocalDateTime.now()));
-        StaticLog.info(jacksonConverter.encode(MonthDay.now()));
-        StaticLog.info(jacksonConverter.encode((MonthDay) null));
-        Java8Time java8Time = jacksonConverter.convertToJavaObject(encodeToString, Java8Time.class);
+    public void testJava8Time() {
+        String encode = converter.encode(java8Time);
+        StaticLog.info(StrUtil.str(encode, "utf-8"));
+        StaticLog.info(StrUtil.str(converter.encode(LocalDateTime.now()), "utf-8"));
+        StaticLog.info(StrUtil.str(converter.encode(MonthDay.now()), "utf-8"));
+        StaticLog.info(StrUtil.str(converter.encode(null), "utf-8"));
+        Java8Time java8Time = converter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
-    }
-
-    @Test
-    public void testJacksonCacheSerializer() {
-        Java8Time1 java8Time1 = new Java8Time1();
-        java8Time1.setInstant1(Instant.now());
-        java8Time1.setInstant2(Instant.now());
-        StaticLog.info(jacksonConverter.encode(java8Time1));
-        StaticLog.info(jacksonConverter.encode(java8Time1));
-        StaticLog.info(jacksonConverter.encode(java8Time1));
-        jacksonConverter.encode(java8Time1);
-    }
-
-    public static class Java8Time1 {
-
-        @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
-        private Instant instant1;
-
-        @FieldProperty(format = "HH:mm:ss.SSS")
-        private Instant instant2;
-
-        public Instant getInstant1() {
-            return instant1;
-        }
-
-        public void setInstant1(Instant instant1) {
-            this.instant1 = instant1;
-        }
-
-        public Instant getInstant2() {
-            return instant2;
-        }
-
-        public void setInstant2(Instant instant2) {
-            this.instant2 = instant2;
-        }
     }
 
     public static class Java8Time {

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Date;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * @author caihongming
@@ -114,13 +115,26 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        User user = (User) o;
+        User other = (User) o;
 
-        if (!Objects.equals(userName, user.userName)) return false;
-        if (!Objects.equals(password, user.password)) return false;
-        if (!Objects.equals(localDateTime, user.localDateTime)) return false;
-        if (!Objects.equals(yearMonth, user.yearMonth)) return false;
-        return Objects.equals(date, user.date);
+        if (!Objects.equals(this.user, other.user)) return false;
+        if (!Objects.equals(this.userName, other.userName)) return false;
+        if (!Objects.equals(this.password, other.password)) return false;
+        if (!Objects.equals(this.localDateTime, other.localDateTime)) return false;
+        if (!Objects.equals(this.date, other.date)) return false;
+        return Objects.equals(this.yearMonth, other.yearMonth);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", User.class.getSimpleName() + "[", "]")
+                .add("user=" + user)
+                .add("userName='" + userName + "'")
+                .add("password='" + password + "'")
+                .add("localDateTime=" + localDateTime)
+                .add("date=" + date)
+                .add("yearMonth=" + yearMonth)
+                .toString();
     }
 
 }

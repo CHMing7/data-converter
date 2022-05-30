@@ -1,6 +1,7 @@
 package com.chm.converter.json;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import com.chm.converter.core.reflect.TypeToken;
 
@@ -39,5 +40,15 @@ public interface JsonConverter extends Converter<String> {
     @Override
     default DataType getDataType() {
         return DataType.JSON;
+    }
+
+    /**
+     * 选择数据转换器
+     * <p>动态选择一个可用的数据转换器</p>
+     *
+     * @return 数据转换器，{@link JsonConverter}接口实例
+     */
+    static JsonConverter select() {
+        return (JsonConverter) ConverterSelector.select(DataType.JSON);
     }
 }

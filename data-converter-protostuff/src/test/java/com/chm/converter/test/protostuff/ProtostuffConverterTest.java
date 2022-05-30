@@ -1,15 +1,13 @@
 package com.chm.converter.test.protostuff;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
-import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.creator.ConstructorFactory;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.DateUtil;
 import com.chm.converter.protostuff.DefaultProtostuffConverter;
 import io.protostuff.Input;
@@ -20,7 +18,6 @@ import io.protostuff.runtime.RuntimeSchema;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -38,13 +35,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class ProtostuffConverterTest {
 
-    Converter<byte[]> converter;
+    DefaultProtostuffConverter converter;
 
     User user;
 
     @BeforeEach
     public void before() {
-        converter = ConverterSelector.select(DataType.PROTOSTUFF, DefaultProtostuffConverter.class);
+        converter = ConverterSelector.select(DefaultProtostuffConverter.class);
         user = new User();
         User user1 = new User();
         user1.setUserName("testName");
@@ -89,6 +86,7 @@ public class ProtostuffConverterTest {
     @Test
     public void testUser() {
         byte[] encode = converter.encode(user);
+        StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
 
         User newUser = converter.convertToJavaObject(encode, User.class);
 
@@ -101,8 +99,9 @@ public class ProtostuffConverterTest {
         Map<String, User> userMap = MapUtil.newHashMap(true);
         userMap.put("user", user);
         byte[] encode = converter.encode(userMap);
+        StaticLog.info("testMap:" + StrUtil.str(encode, "utf-8"));
 
-        TypeReference<Map<String, User>> typeRef0 = new TypeReference<Map<String, User>>() {
+        TypeToken<Map<String, User>> typeRef0 = new TypeToken<Map<String, User>>() {
         };
 
         Map<String, User> newUserMap = converter.convertToJavaObject(encode, typeRef0.getType());
@@ -111,7 +110,7 @@ public class ProtostuffConverterTest {
     }
 
     @Test
-    public void testCollection() throws IOException {
+    public void testCollection() {
         Collection<User> userCollection = CollUtil.newArrayList();
         userCollection.add(user);
         userCollection.add(user);
@@ -119,7 +118,9 @@ public class ProtostuffConverterTest {
 
         byte[] encode = converter.encode(userCollection);
 
-        TypeReference<Collection<User>> typeRef0 = new TypeReference<Collection<User>>() {
+        StaticLog.info("testCollection:" + StrUtil.str(encode, "utf-8"));
+
+        TypeToken<Collection<User>> typeRef0 = new TypeToken<Collection<User>>() {
         };
 
         Collection<User> newUserCollection = converter.convertToJavaObject(encode, typeRef0.getType());
@@ -129,14 +130,15 @@ public class ProtostuffConverterTest {
 
 
     @Test
-    public void testArray() throws IOException {
+    public void testArray() {
         User[] userArray = new User[3];
         userArray[0] = user;
         userArray[1] = user;
         userArray[2] = user;
         byte[] encode = converter.encode(userArray);
+        StaticLog.info("testArray:" + StrUtil.str(encode, "utf-8"));
 
-        TypeReference<User[]> typeRef0 = new TypeReference<User[]>() {
+        TypeToken<User[]> typeRef0 = new TypeToken<User[]>() {
         };
 
         User[] newUserArray = converter.convertToJavaObject(encode, typeRef0.getType());
@@ -146,9 +148,9 @@ public class ProtostuffConverterTest {
 
 
     @Test
-    public void testEnum() throws IOException {
-
+    public void testEnum() {
         byte[] encode = converter.encode(Enum.ONE);
+        StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
 
         Enum newEnum = converter.convertToJavaObject(encode, Enum.class);
 

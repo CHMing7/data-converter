@@ -1,8 +1,8 @@
 package com.chm.converter.test.msgpack;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.msgpack.JacksonMsgpackConverter;
 import org.junit.Before;
@@ -38,7 +38,7 @@ public class TestJava8Time {
 
     @Before
     public void before() {
-        converter = ConverterSelector.select(DataType.MSGPACK, JacksonMsgpackConverter.class);
+        converter = ConverterSelector.select(JacksonMsgpackConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -59,10 +59,10 @@ public class TestJava8Time {
     @Test
     public void testJava8Time() {
         byte[] encode = converter.encode(java8Time);
-        StaticLog.info(new String(encode));
-        StaticLog.info(new String(converter.encode(LocalDateTime.now())));
-        StaticLog.info(new String(converter.encode(MonthDay.now())));
-        StaticLog.info(new String(converter.encode(null)));
+        StaticLog.info(StrUtil.str(encode, "utf-8"));
+        StaticLog.info(StrUtil.str(converter.encode(LocalDateTime.now()), "utf-8"));
+        StaticLog.info(StrUtil.str(converter.encode(MonthDay.now()), "utf-8"));
+        StaticLog.info(StrUtil.str(converter.encode(null), "utf-8"));
         Java8Time java8Time = converter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
     }

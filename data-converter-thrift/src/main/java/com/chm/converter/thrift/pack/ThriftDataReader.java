@@ -53,10 +53,6 @@ public class ThriftDataReader implements DataReader {
 
     private byte currentType;
 
-    public ThriftDataReader(InputStream in) {
-        this(in, new DataCodecGenerate());
-    }
-
     public ThriftDataReader(InputStream in, DataCodecGenerate generate) {
         this.inputStream = in;
         TTransport transport;

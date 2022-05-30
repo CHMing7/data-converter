@@ -11,5 +11,4 @@ dependencies {
 
     testCompile(libs.hutool_log)
     testCompile(libs.cbor_jackson)
-
 }

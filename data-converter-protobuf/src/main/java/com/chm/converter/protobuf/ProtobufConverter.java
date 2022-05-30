@@ -1,6 +1,7 @@
 package com.chm.converter.protobuf;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 
 /**
@@ -20,5 +21,15 @@ public interface ProtobufConverter extends Converter<byte[]> {
     @Override
     default DataType getDataType() {
         return DataType.PROTOBUF_BINARY;
+    }
+
+    /**
+     * 选择数据转换器
+     * <p>动态选择一个可用的数据转换器</p>
+     *
+     * @return 数据转换器，{@link ProtobufConverter}接口实例
+     */
+    static ProtobufConverter select() {
+        return (ProtobufConverter) ConverterSelector.select(DataType.PROTOBUF_BINARY);
     }
 }

@@ -145,7 +145,7 @@ public class JavaBeanInfo<T> {
      * @return
      */
     public static <T> boolean checkExistAnnotation(Class<T> cls, List<Class<? extends Annotation>> annotationList) {
-        JavaBeanInfo<T> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cls, null);
+        JavaBeanInfo<T> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cls, (Class<? extends Converter>) null);
         List<FieldInfo> fieldList = javaBeanInfo.getFieldList();
         Set<Class<? extends Annotation>> annotationClassSet = javaBeanInfo.getAnnotationClassSet();
         for (Class<? extends Annotation> annotation : annotationList) {

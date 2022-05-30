@@ -14,5 +14,4 @@ public class JacksonCborModule extends AbstractModule {
     public JacksonCborModule(Converter<?> converter) {
         super("JacksonCborModule", PackageVersion.VERSION, converter);
     }
-
 }

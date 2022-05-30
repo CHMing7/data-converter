@@ -7,25 +7,11 @@ import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.jackson.deserializer.JacksonBeanDeserializerModifier;
 import com.chm.converter.jackson.serializer.JacksonBeanSerializerModifier;
 import com.chm.converter.json.jackson.JacksonModule;
-import com.fasterxml.jackson.annotation.JacksonInject;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JacksonAnnotation;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.auto.service.AutoService;
 
@@ -43,11 +29,7 @@ import java.util.List;
 @AutoService(Converter.class)
 public class JacksonConverter implements JsonConverter {
 
-    public static final List<Class<? extends Annotation>> JACKSON_ANNOTATION_LIST = ListUtil.of(JsonIgnore.class,
-            JsonIgnoreProperties.class, JsonIgnoreType.class, JsonAutoDetect.class, JsonSetter.class,
-            JsonAnySetter.class, JsonCreator.class, JacksonInject.class, JsonDeserialize.class, JsonInclude.class,
-            JsonGetter.class, JsonAnyGetter.class, JsonPropertyOrder.class, JsonRawValue.class, JsonValue.class,
-            JsonSerialize.class);
+    public static final List<Class<? extends Annotation>> JACKSON_ANNOTATION_LIST = ListUtil.of(JacksonAnnotation.class);
 
     public static final String JACKSON_NAME = "com.fasterxml.jackson.databind.ObjectMapper";
 

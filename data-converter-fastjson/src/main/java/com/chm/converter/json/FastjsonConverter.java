@@ -117,7 +117,7 @@ public class FastjsonConverter implements JsonConverter {
     @Override
     public String encode(Object source) {
         if (source instanceof CharSequence) {
-            source.toString();
+            return source.toString();
         }
         try {
             return parseToString(source);

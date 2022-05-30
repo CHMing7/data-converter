@@ -1,6 +1,7 @@
 package com.chm.converter.cbor;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 
 /**
@@ -20,6 +21,16 @@ public interface CborConverter extends Converter<byte[]> {
     @Override
     default DataType getDataType() {
         return DataType.CBOR;
+    }
+
+    /**
+     * 选择数据转换器
+     * <p>动态选择一个可用的数据转换器</p>
+     *
+     * @return 数据转换器，{@link CborConverter}接口实例
+     */
+    static CborConverter select() {
+        return (CborConverter) ConverterSelector.select(DataType.CBOR);
     }
 }
 

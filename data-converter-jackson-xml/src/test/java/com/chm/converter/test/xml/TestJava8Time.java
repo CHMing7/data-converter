@@ -2,12 +2,8 @@ package com.chm.converter.test.xml;
 
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.xml.JacksonXmlConverter;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,13 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class TestJava8Time {
 
-    JacksonXmlConverter jacksonXmlConverter;
+    JacksonXmlConverter converter;
 
     Java8Time java8Time;
 
     @Before
     public void before() {
-        jacksonXmlConverter = ConverterSelector.select(DataType.XML, JacksonXmlConverter.class);
+        converter = ConverterSelector.select(JacksonXmlConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -52,7 +48,7 @@ public class TestJava8Time {
         java8Time.setZonedDateTime(ZonedDateTime.now());
         java8Time.setMonthDay(MonthDay.now());
         java8Time.setYearMonth(YearMonth.now());
-        // java8Time.setYear(Year.now());
+        java8Time.setYear(Year.now());
         java8Time.setZoneOffset(ZoneOffset.MIN);
         java8Time.setDate(new Date());
         java8Time.setSqlDate(new java.sql.Date(new Date().getTime()));
@@ -61,54 +57,13 @@ public class TestJava8Time {
 
     @Test
     public void testJacksonXml() {
-        //jacksonConverter.getMapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        //jacksonConverter.getMapper().configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false);
-        jacksonXmlConverter.getMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        jacksonXmlConverter.getMapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        jacksonXmlConverter.getMapper().configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false);
-        String encodeToString = jacksonXmlConverter.encode(java8Time);
+        String encodeToString = converter.encode(java8Time);
         StaticLog.info(encodeToString);
-        StaticLog.info(jacksonXmlConverter.encode(LocalDateTime.now()));
-        StaticLog.info(jacksonXmlConverter.encode(MonthDay.now()));
-        StaticLog.info(jacksonXmlConverter.encode((MonthDay) null));
-        Java8Time java8Time = jacksonXmlConverter.convertToJavaObject(encodeToString, Java8Time.class);
+        StaticLog.info(converter.encode(LocalDateTime.now()));
+        StaticLog.info(converter.encode(MonthDay.now()));
+        StaticLog.info(converter.encode(null));
+        Java8Time java8Time = converter.convertToJavaObject(encodeToString, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
-    }
-
-    @Test
-    public void testJacksonXmlCacheSerializer() {
-        Java8Time1 java8Time1 = new Java8Time1();
-        java8Time1.setInstant1(Instant.now());
-        java8Time1.setInstant2(Instant.now());
-        StaticLog.info(jacksonXmlConverter.encode(java8Time1));
-        StaticLog.info(jacksonXmlConverter.encode(java8Time1));
-        StaticLog.info(jacksonXmlConverter.encode(java8Time1));
-        jacksonXmlConverter.encode(java8Time1);
-    }
-
-    public static class Java8Time1 {
-
-        @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSSS")
-        private Instant instant1;
-
-        @FieldProperty(format = "HH:mm:ss.SSSS")
-        private Instant instant2;
-
-        public Instant getInstant1() {
-            return instant1;
-        }
-
-        public void setInstant1(Instant instant1) {
-            this.instant1 = instant1;
-        }
-
-        public Instant getInstant2() {
-            return instant2;
-        }
-
-        public void setInstant2(Instant instant2) {
-            this.instant2 = instant2;
-        }
     }
 
     public static class Java8Time {

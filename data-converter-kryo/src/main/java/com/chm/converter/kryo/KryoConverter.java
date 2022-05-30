@@ -1,6 +1,7 @@
 package com.chm.converter.kryo;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 
 /**
@@ -20,5 +21,15 @@ public interface KryoConverter extends Converter<byte[]> {
     @Override
     default DataType getDataType() {
         return DataType.KRYO;
+    }
+
+    /**
+     * 选择数据转换器
+     * <p>动态选择一个可用的数据转换器</p>
+     *
+     * @return 数据转换器，{@link KryoConverter}接口实例
+     */
+    static KryoConverter select() {
+        return (KryoConverter) ConverterSelector.select(DataType.KRYO);
     }
 }
