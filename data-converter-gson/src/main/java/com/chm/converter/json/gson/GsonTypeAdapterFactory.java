@@ -5,6 +5,7 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.io.Writer;
 import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.core.utils.ObjectUtil;
@@ -57,9 +58,9 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
         }
         return new TypeAdapter<T>() {
 
-            private final Map<FieldInfo, TypeAdapter<?>> FIELD_ADAPTER_MAP = new ConcurrentHashMap<>();
+            private final Map<FieldInfo, TypeAdapter<?>> FIELD_ADAPTER_MAP = MapUtil.newConcurrentHashMap();
 
-            JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(type.getRawType(), converterClass);
+            private final JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(type.getRawType(), converterClass);
 
             @Override
             public void write(JsonWriter out, T value) throws IOException {

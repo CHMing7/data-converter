@@ -692,6 +692,8 @@ public interface DataCast {
      *
      * @param value     指定对象
      * @param typeToken 指定{@link TypeToken}
+     * @param converter
+     * @param generate
      * @return T
      */
     static <T> T castType(Object value, TypeToken<T> typeToken, Converter<?> converter, DataCodecGenerate generate) {
@@ -743,11 +745,16 @@ public interface DataCast {
                 return dataMapper.toJavaBean(type);
             }
         }
+
         if (!typeToken.getRawType().isInstance(value)) {
             Codec codec = generate.get(typeToken.getRawType());
             if (codec != null) {
                 return (T) codec.decode(value);
             }
+        }
+
+        if (value != null) {
+            throw new TypeCastException("Can not cast '" + value.getClass() + "' to " + typeToken.getRawType());
         }
         return null;
     }

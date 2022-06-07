@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
@@ -570,5 +571,22 @@ public class FieldInfo implements Comparable<FieldInfo> {
 
     public boolean isStop() {
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FieldInfo fieldInfo = (FieldInfo) o;
+        return Objects.equals(name, fieldInfo.name) && Objects.equals(method, fieldInfo.method) && Objects.equals(field, fieldInfo.field) && Objects.equals(fieldClass, fieldInfo.fieldClass) && Objects.equals(declaringClass, fieldInfo.declaringClass);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, method, field, fieldClass, declaringClass);
     }
 }

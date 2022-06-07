@@ -19,6 +19,18 @@ public interface ClassInfoStorage {
 
     ClassInfoStorage INSTANCE = (clazz, converterClass) -> contains(BEAN_INFO_MAP, clazz, converterClass);
 
+
+    /**
+     * 初始化class信息
+     *
+     * @param clazz
+     * @param converter
+     */
+    default <T> void initClassInfo(Class<T> clazz, Converter converter) {
+        Class<? extends Converter> converterClass = converter != null ? converter.getClass() : null;
+        initClassInfo(clazz, converterClass);
+    }
+
     /**
      * 初始化class信息
      *

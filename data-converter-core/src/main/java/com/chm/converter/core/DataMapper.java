@@ -1,6 +1,9 @@
 package com.chm.converter.core;
 
+import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
+import com.chm.converter.core.codecs.DefaultDateCodec;
+import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.exception.TypeCastException;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ArrayUtil;
@@ -26,7 +29,7 @@ public class DataMapper extends LinkedHashMap<String, Object> {
 
     private final Converter<?> converter;
 
-    private final DataCodecGenerate dataCodecGenerate;
+    private final DataCodecGenerate codecGenerate;
 
     /**
      * 默认构造方法
@@ -41,32 +44,32 @@ public class DataMapper extends LinkedHashMap<String, Object> {
     public DataMapper(Converter<?> converter) {
         super();
         this.converter = converter;
-        this.dataCodecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
+        this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     public DataMapper(Converter<?> converter, int initialCapacity) {
         super(initialCapacity);
         this.converter = converter;
-        this.dataCodecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
+        this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     public DataMapper(Converter<?> converter, int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
         this.converter = converter;
-        this.dataCodecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
+        this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     public DataMapper(Converter<?> converter, int initialCapacity, float loadFactor, boolean accessOrder) {
         super(initialCapacity, loadFactor, accessOrder);
         this.converter = converter;
-        this.dataCodecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
+        this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     @SuppressWarnings("unchecked")
     public DataMapper(Converter<?> converter, Map map) {
         super(map);
         this.converter = converter;
-        this.dataCodecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
+        this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     /**
@@ -424,7 +427,7 @@ public class DataMapper extends LinkedHashMap<String, Object> {
     public Date getDate(String key) {
         Object value = super.get(key);
 
-        return DataCast.castDate(value, this.dataCodecGenerate);
+        return DataCast.castDate(value, this.codecGenerate);
     }
 
     /**
@@ -438,7 +441,7 @@ public class DataMapper extends LinkedHashMap<String, Object> {
     public Instant getInstant(String key) {
         Object value = super.get(key);
 
-        return DataCast.castInstant(value, this.dataCodecGenerate);
+        return DataCast.castInstant(value, this.codecGenerate);
     }
 
 
@@ -489,6 +492,17 @@ public class DataMapper extends LinkedHashMap<String, Object> {
             if (fieldInfo == null) {
                 continue;
             }
+            Codec codec = codecGenerate.get(fieldInfo.getFieldType());
+            if (codec instanceof DefaultDateCodec) {
+                String str = getObject(fieldInfo.getName(), String.class);
+                fieldInfo.set(construct, ((DefaultDateCodec<?>) codec).decode(str, fieldInfo.getFormat()));
+                continue;
+            }
+            if (codec instanceof Java8TimeCodec) {
+                String str = getObject(fieldInfo.getName(), String.class);
+                fieldInfo.set(construct, ((Java8TimeCodec<?>) codec).decode(str, fieldInfo.getFormat()));
+                continue;
+            }
             fieldInfo.set(construct, getObject(fieldInfo.getName(), fieldInfo.getFieldType()));
         }
         return (T) construct;
@@ -520,7 +534,7 @@ public class DataMapper extends LinkedHashMap<String, Object> {
     public <T> T getObject(String key, Type type) {
         Object value = get(key);
 
-        return DataCast.castType(value, TypeToken.get(type), this.converter, this.dataCodecGenerate);
+        return DataCast.castType(value, TypeToken.get(type), this.converter, this.codecGenerate);
     }
 
     /**

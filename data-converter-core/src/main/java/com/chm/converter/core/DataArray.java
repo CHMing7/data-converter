@@ -23,7 +23,7 @@ public class DataArray extends ArrayList<Object> {
 
     private final Converter<?> converter;
 
-    private final DataCodecGenerate dataCodecGenerate;
+    private final DataCodecGenerate codecGenerate;
 
     public DataArray() {
         this(null);
@@ -31,7 +31,7 @@ public class DataArray extends ArrayList<Object> {
 
     public DataArray(Converter<?> converter) {
         this.converter = converter;
-        this.dataCodecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
+        this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     public DataArray(Converter<?> converter, Object... items) {
@@ -40,13 +40,13 @@ public class DataArray extends ArrayList<Object> {
         for (Object item : items) {
             add(item);
         }
-        this.dataCodecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
+        this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     public DataArray(Converter<?> converter, Collection<?> collection) {
         super(collection);
         this.converter = converter;
-        this.dataCodecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
+        this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     /**
@@ -339,7 +339,7 @@ public class DataArray extends ArrayList<Object> {
     public Date getDate(int index) {
         Object value = get(index);
 
-        return DataCast.castDate(value, this.dataCodecGenerate);
+        return DataCast.castDate(value, this.codecGenerate);
     }
 
     /**
@@ -353,7 +353,7 @@ public class DataArray extends ArrayList<Object> {
     public Instant getInstant(int index) {
         Object value = get(index);
 
-        return DataCast.castInstant(value, this.dataCodecGenerate);
+        return DataCast.castInstant(value, this.codecGenerate);
     }
 
     /**
@@ -404,7 +404,7 @@ public class DataArray extends ArrayList<Object> {
     private Object getValue(int index, Type type) {
         Object value = get(index);
 
-        return DataCast.castType(value, TypeToken.get(type), this.converter, this.dataCodecGenerate);
+        return DataCast.castType(value, TypeToken.get(type), this.converter, this.codecGenerate);
     }
 
     /**

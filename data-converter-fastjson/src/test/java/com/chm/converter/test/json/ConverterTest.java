@@ -210,7 +210,7 @@ public class ConverterTest {
     @Test
     public void testMapper() {
         String encode = converter.encode(user);
-        StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("encode:" + StrUtil.str(encode, "utf-8"));
 
         DataMapper dataMapper = converter.convertToMapper(encode);
 
@@ -228,7 +228,7 @@ public class ConverterTest {
         userCollection.add(user);
 
         String encode = converter.encode(userCollection);
-        StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("encode:" + StrUtil.str(encode, "utf-8"));
 
         DataArray dataArray = converter.convertToArray(encode);
 

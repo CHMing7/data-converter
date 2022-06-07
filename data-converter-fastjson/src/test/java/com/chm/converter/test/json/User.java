@@ -36,7 +36,7 @@ public class User {
     /**
      * 新型时间
      */
-    @FieldProperty(ordinal = 2)
+    @FieldProperty(ordinal = 2,  format = "yyyy-MM-dd HH:mm:ss.SSSS")
     public LocalDateTime localDateTime;
 
     /**
