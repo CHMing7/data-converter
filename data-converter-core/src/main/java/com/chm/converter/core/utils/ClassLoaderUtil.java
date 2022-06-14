@@ -9,7 +9,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@link ClassLoader}工具类
@@ -46,7 +45,8 @@ public class ClassLoaderUtil {
     /**
      * 原始类型名和其class对应表，例如：int =》 int.class
      */
-    private static final Map<String, Class<?>> PRIMITIVE_TYPE_NAME_MAP = new ConcurrentHashMap<>(32);
+    private static final Map<String, Class<?>> PRIMITIVE_TYPE_NAME_MAP = MapUtil.newConcurrentHashMap(32);
+
     private static final SimpleCache<String, Class<?>> CLASS_CACHE = new SimpleCache<>();
 
     static {

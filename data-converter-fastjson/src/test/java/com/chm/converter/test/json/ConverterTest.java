@@ -9,8 +9,6 @@ import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.DataArray;
-import com.chm.converter.core.DataMapper;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.json.FastjsonConverter;
@@ -60,6 +58,7 @@ public class ConverterTest {
         user = new User();
         User user1 = new User();
         user1.setUserName("testName");
+        user1.setPassword("password2");
         user.setUser(user1);
         user.setUserName("user");
         user.setPassword("password");
@@ -115,8 +114,8 @@ public class ConverterTest {
         String encode = converter.encode(userMap);
         // original
         String encode2 = JSON.toJSONString(userMap, serializeConfig, SerializerFeature.DisableCircularReferenceDetect);
-        StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
-        StaticLog.info("testUser2:" + StrUtil.str(encode2, "utf-8"));
+        StaticLog.info("testUser:{}", StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testUser2:{}", StrUtil.str(encode2, "utf-8"));
 
         assertEquals(encode, encode2);
 
@@ -130,7 +129,7 @@ public class ConverterTest {
     @Test
     public void testUser() {
         String encode = converter.encode(user);
-        StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testUser:{}", StrUtil.str(encode, "utf-8"));
 
         User newUser = converter.convertToJavaObject(encode, User.class);
 
@@ -143,7 +142,7 @@ public class ConverterTest {
         Map<String, User> userMap = MapUtil.newHashMap(true);
         userMap.put("user", user);
         String encode = converter.encode(userMap);
-        StaticLog.info("testMap:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testMap:{}", StrUtil.str(encode, "utf-8"));
 
         TypeToken<Map<String, User>> typeRef0 = new TypeToken<Map<String, User>>() {
         };
@@ -162,7 +161,7 @@ public class ConverterTest {
 
         String encode = converter.encode(userCollection);
 
-        StaticLog.info("testCollection:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testCollection:{}", StrUtil.str(encode, "utf-8"));
 
         TypeToken<Collection<User>> typeRef0 = new TypeToken<Collection<User>>() {
         };
@@ -180,7 +179,7 @@ public class ConverterTest {
         userArray[1] = user;
         userArray[2] = user;
         String encode = converter.encode(userArray);
-        StaticLog.info("testArray:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testArray:{}", StrUtil.str(encode, "utf-8"));
 
         TypeToken<User[]> typeRef0 = new TypeToken<User[]>() {
         };
@@ -194,7 +193,7 @@ public class ConverterTest {
     @Test
     public void testEnum() {
         String encode = converter.encode(Enum.ONE);
-        StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testEnum:{}", StrUtil.str(encode, "utf-8"));
 
         Enum newEnum = converter.convertToJavaObject(encode, Enum.class);
 
@@ -204,36 +203,5 @@ public class ConverterTest {
     public enum Enum {
         @FieldProperty(name = "testOne")
         ONE, TWO
-    }
-
-
-    @Test
-    public void testMapper() {
-        String encode = converter.encode(user);
-        StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
-
-        DataMapper dataMapper = converter.convertToMapper(encode);
-
-        User newUser = dataMapper.toJavaBean(User.class);
-
-        assertEquals(user, newUser);
-    }
-
-
-    @Test
-    public void testDataArray() {
-        Collection<User> userCollection = CollUtil.newArrayList();
-        userCollection.add(user);
-        userCollection.add(user);
-        userCollection.add(user);
-
-        String encode = converter.encode(userCollection);
-        StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
-
-        DataArray dataArray = converter.convertToArray(encode);
-
-        Collection newUserCollection = dataArray.toJavaList(User.class);
-
-        assertEquals(userCollection, newUserCollection);
     }
 }

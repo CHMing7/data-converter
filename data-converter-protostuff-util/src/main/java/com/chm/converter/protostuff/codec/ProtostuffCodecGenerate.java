@@ -23,24 +23,15 @@ import java.util.List;
  **/
 public class ProtostuffCodecGenerate extends UniversalGenerate<ProtostuffCodec> {
 
-    private static ProtostuffCodecGenerate DEFAULT;
+    private final Converter<?> converter;
 
-    public ProtostuffCodecGenerate() {
+    private ProtostuffCodecGenerate(List<UniversalFactory<ProtostuffCodec>> factories, Converter<?> converter) {
+        super(factories);
+        this.converter = converter;
     }
 
-    public ProtostuffCodecGenerate(List<UniversalFactory<ProtostuffCodec>> protostuffCodecFactories) {
-        super(protostuffCodecFactories);
-    }
-
-    public static ProtostuffCodecGenerate getDefault() {
-        if (DEFAULT == null) {
-            DEFAULT = newDefault();
-        }
-        return DEFAULT;
-    }
-
-    public static ProtostuffCodecGenerate newDefault() {
-        return newDefault(null);
+    public Converter<?> getConverter() {
+        return this.converter;
     }
 
     public static ProtostuffCodecGenerate newDefault(Converter<?> converter) {
@@ -67,6 +58,6 @@ public class ProtostuffCodecGenerate extends UniversalGenerate<ProtostuffCodec> 
         factories.add(ProtostuffCodecs.BYTES_FACTORY);
         factories.add(ProtostuffCodecs.BIG_DECIMAL_FACTORY);
         factories.add(ProtostuffCodecs.BIG_INTEGER_FACTORY);
-        return new ProtostuffCodecGenerate(factories);
+        return new ProtostuffCodecGenerate(factories, converter);
     }
 }

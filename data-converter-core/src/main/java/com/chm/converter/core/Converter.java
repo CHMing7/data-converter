@@ -2,6 +2,7 @@ package com.chm.converter.core;
 
 import com.chm.converter.core.cfg.ConvertFeature;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.MapUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Type;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 数据转换器
@@ -24,19 +25,47 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 public interface Converter<S> {
 
-    Map<Converter<?>, Logger> CONVERTER_LOGGER_MAP = new ConcurrentHashMap<>();
+    Converter<Object> DEFAULT = new Converter<Object>() {
 
-    Map<Converter<?>, String> CONVERTER_NAME_MAP = new ConcurrentHashMap<>();
+        @Override
+        public Object encode(Object source) {
+            return source;
+        }
 
-    Map<Converter<?>, String> CONVERTER_DATE_FORMAT_PATTERN_MAP = new ConcurrentHashMap<>();
+        @Override
+        public DataType getDataType() {
+            return DataType.createDataType("default");
+        }
 
-    Map<Converter<?>, DateTimeFormatter> CONVERTER_DATE_TIME_FORMATTER_MAP = new ConcurrentHashMap<>();
+        @Override
+        public boolean checkCanBeLoad() {
+            return true;
+        }
 
-    Map<Converter<?>, TimeZone> CONVERTER_TIME_ZONE_MAP = new ConcurrentHashMap<>();
+        @Override
+        public Object convertToJavaObject(Object source, Type targetType) {
+            return source;
+        }
 
-    Map<Converter<?>, Locale> CONVERTER_LOCALE_MAP = new ConcurrentHashMap<>();
+        @Override
+        public Object convertToJavaObject(Object source, Class targetType) {
+            return source;
+        }
+    };
 
-    Map<Converter<?>, Integer> CONVERTER_FEATURES_MAP = new ConcurrentHashMap<>();
+    Map<Converter<?>, Logger> CONVERTER_LOGGER_MAP = MapUtil.newConcurrentHashMap();
+
+    Map<Converter<?>, String> CONVERTER_NAME_MAP = MapUtil.newConcurrentHashMap();
+
+    Map<Converter<?>, String> CONVERTER_DATE_FORMAT_PATTERN_MAP = MapUtil.newConcurrentHashMap();
+
+    Map<Converter<?>, DateTimeFormatter> CONVERTER_DATE_TIME_FORMATTER_MAP = MapUtil.newConcurrentHashMap();
+
+    Map<Converter<?>, TimeZone> CONVERTER_TIME_ZONE_MAP = MapUtil.newConcurrentHashMap();
+
+    Map<Converter<?>, Locale> CONVERTER_LOCALE_MAP = MapUtil.newConcurrentHashMap();
+
+    Map<Converter<?>, Integer> CONVERTER_FEATURES_MAP = MapUtil.newConcurrentHashMap();
 
     /**
      * 将源数据转换为目标类型{@link Class<T>}的java对象
@@ -129,7 +158,7 @@ public interface Converter<S> {
      */
     default DataMapper convertToMapper(S source) {
         Map<String, Object> map = convertToMap(source);
-        return new DataMapper(this, map);
+        return DataMapper.of(this, map);
     }
 
     /**
@@ -142,30 +171,99 @@ public interface Converter<S> {
         TypeToken<Map<String, Object>> mapType = new TypeToken<Map<String, Object>>() {
         };
         List<Map<String, Object>> list = convertToList(source, mapType);
-        return new DataArray(this, list);
+        return DataArray.of(this, list);
     }
 
     /**
-     * 将源对象转换为Map对象
+     * 将指定对象转成{@link DataMapper}
      *
-     * @param obj 源对象
-     * @return 转换后的Map对象
+     * @param obj 指定对象
+     * @return {@link DataMapper}
      */
-    default Map<String, Object> convertObjectToMap(Object obj) {
-        if (obj == null) {
+    default DataMapper toMapper(Object obj) {
+        if (obj == null || ClassUtil.isSimpleTypeOrArray(obj.getClass())) {
             return null;
         }
 
-        JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(obj.getClass(), this.getClass());
-        Map<String, Object> resultMap = MapUtil.newHashMap(true);
-        List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
-        for (FieldInfo fieldInfo : sortedFieldList) {
-            resultMap.put(fieldInfo.getName(), fieldInfo.get(obj));
+        if (obj instanceof DataMapper) {
+            return (DataMapper) obj;
         }
 
-        return resultMap;
+        if (obj instanceof Map) {
+            return (DataMapper) toData(this, obj);
+        }
+
+        JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(obj.getClass(), this);
+        List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
+        DataMapper dataMapper = DataMapper.of(this);
+        for (FieldInfo fieldInfo : sortedFieldList) {
+            Object val = fieldInfo.get(obj);
+            if (val == null) {
+                continue;
+            }
+            dataMapper.put(fieldInfo.getName(), toData(this, val));
+        }
+        return dataMapper;
     }
 
+    /**
+     * 将指定对象转成{@link DataArray}
+     *
+     * @param obj 指定对象
+     * @return {@link DataArray}
+     */
+    default DataArray toArray(Object obj) {
+        if (obj == null || ClassUtil.isSimpleValueType(obj.getClass())) {
+            return null;
+        }
+
+        if (obj instanceof DataArray) {
+            return (DataArray) obj;
+        }
+
+        if (obj instanceof Collection) {
+            return (DataArray) toData(this, obj);
+        }
+
+        if (obj.getClass().isArray()) {
+            return DataArray.of(this, (Object[]) obj);
+        }
+
+        JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(obj.getClass(), this);
+        List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
+        DataArray dataArray = DataArray.of(this);
+        for (FieldInfo fieldInfo : sortedFieldList) {
+            Object val = fieldInfo.get(obj);
+            if (val == null) {
+                continue;
+            }
+            dataArray.add(toData(this, val));
+        }
+        return dataArray;
+    }
+
+    /**
+     * 将指定对象转为{@link DataMapper} or {@link DataArray} or 原类型
+     *
+     * @param converter
+     * @param obj       指定对象
+     * @return
+     */
+    static Object toData(Converter<?> converter, Object obj) {
+        if (obj instanceof Map) {
+            return DataMapper.of(converter, (Map<?, ?>) obj);
+        }
+
+        if (obj instanceof Collection) {
+            return DataArray.of(converter, (Collection<?>) obj);
+        }
+
+        if (obj != null && obj.getClass().isArray()) {
+            return DataArray.of(converter, (Object[]) obj);
+        }
+
+        return obj;
+    }
 
     /**
      * 将java对象进行编码

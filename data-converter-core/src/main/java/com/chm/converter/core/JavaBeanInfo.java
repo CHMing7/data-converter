@@ -7,6 +7,7 @@ import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.CollStreamUtil;
 import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
+import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.core.utils.StringUtil;
 import com.chm.converter.core.utils.TypeUtil;
 
@@ -18,7 +19,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -80,7 +80,7 @@ public class JavaBeanInfo<T> {
         this.nameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getName, Function.identity());
         this.fieldNameFieldInfoMap = CollStreamUtil.toMap(fieldList, FieldInfo::getFieldName, Function.identity());
         this.fieldNameAliasMap = CollStreamUtil.toMap(fieldList, FieldInfo::getFieldName, FieldInfo::getName);
-        this.expandProperty = new ConcurrentHashMap<>();
+        this.expandProperty = MapUtil.newConcurrentHashMap();
         this.annotationList = ListUtil.toList(clazz.getAnnotations());
         this.annotationClassSet = this.annotationList.stream().map(Annotation::annotationType).collect(Collectors.toSet());
     }

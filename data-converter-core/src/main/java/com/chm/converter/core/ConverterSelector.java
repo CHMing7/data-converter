@@ -5,11 +5,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.StreamSupport;
 
 /**
  * @author caihongming
@@ -20,27 +25,41 @@ public class ConverterSelector implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(ConverterSelector.class);
 
-    private static final Map<DataType, Map<Class<? extends Converter>, Converter>> CONVERTER_MAP = new ConcurrentHashMap<>();
+    private static final Map<DataType, Map<Class<? extends Converter>, Converter>> CONVERTER_MAP = MapUtil.newConcurrentHashMap();
 
     protected ConverterSelector() {
     }
 
     static {
         // 加载数据转换器类
-        ServiceLoader<Converter> converters = ServiceLoader.load(Converter.class);
-        converters.forEach(converter -> {
-            try {
-                if (converter.loadConverter()) {
-                    converter.logLoadSuccess();
-                } else {
-                    converter.logLoadFail();
-                }
-            } catch (Throwable e) {
-                if (logger.isErrorEnabled()) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        });
+        ServiceLoader<Converter> converters = secureGetServiceLoader(Converter.class, null);
+        // 按名称排序
+        StreamSupport.stream(Spliterators.spliteratorUnknownSize(converters.iterator(), Spliterator.ORDERED), false)
+                .sorted(Comparator.comparing(Converter::getConverterName)).forEach(
+                        converter -> {
+                            try {
+                                if (converter.loadConverter()) {
+                                    converter.logLoadSuccess();
+                                } else {
+                                    converter.logLoadFail();
+                                }
+                            } catch (Throwable e) {
+                                if (logger.isErrorEnabled()) {
+                                    logger.error(e.getMessage(), e);
+                                }
+                            }
+                        }
+                );
+    }
+
+    private static <T> ServiceLoader<T> secureGetServiceLoader(final Class<T> clazz, final ClassLoader classLoader) {
+        final SecurityManager sm = System.getSecurityManager();
+        if (sm == null) {
+            return (classLoader == null) ?
+                    ServiceLoader.load(clazz) : ServiceLoader.load(clazz, classLoader);
+        }
+        return AccessController.doPrivileged((PrivilegedAction<ServiceLoader<T>>) () -> (classLoader == null) ?
+                ServiceLoader.load(clazz) : ServiceLoader.load(clazz, classLoader));
     }
 
     /**
@@ -87,7 +106,7 @@ public class ConverterSelector implements Serializable {
      *
      * @return 数据转换器，{@link Converter}接口实例
      */
-    public static Converter select(DataType dataType) {
+    public synchronized static Converter select(DataType dataType) {
         Map<Class<? extends Converter>, Converter> classConverterMap = CONVERTER_MAP.get(dataType);
         return MapUtil.isNotEmpty(classConverterMap) ? classConverterMap.values().stream().findFirst().orElse(null) : null;
     }
@@ -98,7 +117,7 @@ public class ConverterSelector implements Serializable {
      *
      * @return 数据转换器，{@link Converter}接口实例
      */
-    public static <T extends Converter> T select(Class<T> cls) {
+    public synchronized static <T extends Converter> T select(Class<T> cls) {
         for (DataType dataType : CONVERTER_MAP.keySet()) {
             T converter = select(dataType, cls);
             if (converter != null) {
@@ -114,7 +133,7 @@ public class ConverterSelector implements Serializable {
      *
      * @return 数据转换器，{@link Converter}接口实例
      */
-    public static <T extends Converter> T select(DataType dataType, Class<T> cls) {
+    public synchronized static <T extends Converter> T select(DataType dataType, Class<T> cls) {
         Map<Class<? extends Converter>, Converter> classConverterMap = CONVERTER_MAP.get(dataType);
         if (MapUtil.isNotEmpty(classConverterMap)) {
             Converter converter = classConverterMap.get(cls);
@@ -137,13 +156,9 @@ public class ConverterSelector implements Serializable {
      * @param converter
      * @return
      */
-    public static boolean register(Class<? extends Converter> cls, Converter converter) {
+    public synchronized static boolean register(Class<? extends Converter> cls, Converter converter) {
         DataType dataType = converter.getDataType();
-        Map<Class<? extends Converter>, Converter> classConverterMap = CONVERTER_MAP.get(dataType);
-        if (classConverterMap == null) {
-            classConverterMap = new ConcurrentHashMap<>();
-            CONVERTER_MAP.put(dataType, classConverterMap);
-        }
+        Map<Class<? extends Converter>, Converter> classConverterMap = MapUtil.computeIfAbsent(CONVERTER_MAP, dataType, d -> MapUtil.newHashMap(true));
         classConverterMap.put(cls, converter);
         return true;
     }
@@ -154,7 +169,7 @@ public class ConverterSelector implements Serializable {
      * @param converter
      * @return
      */
-    public static boolean register(Converter converter) {
+    public synchronized static boolean register(Converter converter) {
         if (converter == null) {
             return false;
         }

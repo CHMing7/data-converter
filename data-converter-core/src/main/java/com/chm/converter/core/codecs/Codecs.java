@@ -8,6 +8,7 @@ import com.chm.converter.core.utils.StringUtil;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -17,6 +18,7 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Currency;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -103,6 +105,21 @@ public interface Codecs {
                 } catch (UnknownHostException e) {
                     throw new CodecException("unknown host: " + host);
                 }
+            }, DataReader::readString);
+
+    SimpleToStringCodec<InetSocketAddress> INET_SOCKET_ADDRESS = SimpleToStringCodec.create(TypeToken.get(InetSocketAddress.class),
+            (s, dw) -> dw.writeString(s), str -> {
+                List<String> splitTrim = StringUtil.splitTrim(str, ":");
+                String host = splitTrim.get(0);
+                String portStr = splitTrim.get(1);
+                InetAddress inetAddress;
+                try {
+                    inetAddress = InetAddress.getByName(host);
+                } catch (UnknownHostException e) {
+                    throw new CodecException("unknown host: " + host);
+                }
+                Integer port = Integer.parseInt(portStr);
+                return new InetSocketAddress(inetAddress, port);
             }, DataReader::readString);
 
     SimpleToStringCodec<StringBuffer> STRING_BUFFER = SimpleToStringCodec.create(TypeToken.get(StringBuffer.class),

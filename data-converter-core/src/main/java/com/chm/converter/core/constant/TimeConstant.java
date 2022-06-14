@@ -112,6 +112,11 @@ public interface TimeConstant {
     @FunctionalInterface
     interface TemporalCreate<R extends TemporalAccessor> {
 
+        /**
+         * TemporalAccessor创建方法
+         *
+         * @return TemporalAccessor
+         */
         R create();
     }
 }

@@ -24,7 +24,6 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author caihongming
@@ -57,9 +56,9 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
         }
         return new TypeAdapter<T>() {
 
-            private final Map<FieldInfo, TypeAdapter<?>> FIELD_ADAPTER_MAP = new ConcurrentHashMap<>();
+            private final Map<FieldInfo, TypeAdapter<?>> FIELD_ADAPTER_MAP = MapUtil.newConcurrentHashMap();
 
-            JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(type.getRawType(), converterClass);
+            private final JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(type.getRawType(), converterClass);
 
             @Override
             public void write(JsonWriter out, T value) throws IOException {

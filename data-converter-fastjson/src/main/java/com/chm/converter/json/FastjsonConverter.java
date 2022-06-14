@@ -6,6 +6,7 @@ import com.alibaba.fastjson.annotation.JSONCreator;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONPOJOBuilder;
 import com.alibaba.fastjson.annotation.JSONType;
+import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -13,7 +14,6 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ArrayUtil;
-import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.json.fastjson.deserializer.FastjsonParserConfig;
 import com.chm.converter.json.fastjson.serializer.FastjsonSerializeConfig;
@@ -43,27 +43,21 @@ public class FastjsonConverter implements JsonConverter {
     /**
      * Fastjson序列化方式
      */
-    private final String serializerFeatureName = "DisableCircularReferenceDetect";
+    private final String disableCircularReferenceDetect = "DisableCircularReferenceDetect";
 
-    private List<SerializerFeature> serializerFeatureList;
+    private final String customMapDeserializer = "CustomMapDeserializer";
 
     private SerializerFeature[] serializerFeatureArray;
+
+    private Feature[] featureArray;
 
     protected SerializeConfig serializeConfig = new FastjsonSerializeConfig(this, FastjsonConverter::checkExistFastjsonAnnotation);
 
     protected ParserConfig parserConfig = new FastjsonParserConfig(this, FastjsonConverter::checkExistFastjsonAnnotation);
 
-    /**
-     * 获取FastJson的序列化特性对象
-     *
-     * @return FastJson的序列化特性对象，{@link SerializerFeature}枚举实例
-     */
-    public List<SerializerFeature> getSerializerFeatureList() {
-        return serializerFeatureList;
-    }
-
     public FastjsonConverter() {
-        addSerializerFeature(SerializerFeature.valueOf(serializerFeatureName));
+        addSerializerFeature(SerializerFeature.valueOf(disableCircularReferenceDetect));
+        addFeature(Feature.valueOf(customMapDeserializer));
     }
 
     /**
@@ -72,43 +66,46 @@ public class FastjsonConverter implements JsonConverter {
      * @param serializerFeature FastJson的序列化特性对象，{@link SerializerFeature}枚举实例
      */
     public void addSerializerFeature(SerializerFeature serializerFeature) {
-        if (serializerFeatureList == null) {
-            this.serializerFeatureList = ListUtil.list(true);
-        }
-        this.serializerFeatureList.add(serializerFeature);
-        this.serializerFeatureArray = ArrayUtil.toArray(this.serializerFeatureList, SerializerFeature.class);
+        this.serializerFeatureArray = ArrayUtil.append(this.serializerFeatureArray, serializerFeature);
+    }
+
+    /**
+     * 设置FastJson的序列化特性对象
+     *
+     * @param feature FastJson的反序列化特性对象，{@link Feature}枚举实例
+     */
+    public void addFeature(Feature feature) {
+        this.featureArray = ArrayUtil.append(this.featureArray, feature);
     }
 
     @Override
     public <T> T convertToJavaObject(String source, Class<T> targetType) {
-        try {
-            return JSON.parseObject(source, targetType, parserConfig);
-        } catch (Throwable th) {
-            throw new ConvertException(getConverterName(), String.class.getName(), targetType.getName(), th);
-        }
+        return privateConvertToJavaObject(source, targetType);
     }
 
     @Override
     public <T> T convertToJavaObject(String source, Type targetType) {
-        try {
-            return JSON.parseObject(source, targetType, parserConfig);
-        } catch (Throwable th) {
-            throw new ConvertException(getConverterName(), String.class.getName(), targetType.getTypeName(), th);
-        }
-
+        return privateConvertToJavaObject(source, targetType);
     }
 
     public <T> T convertToJavaObject(String source, TypeReference<T> typeReference) {
-        try {
-            return JSON.parseObject(source, typeReference.getType(), parserConfig);
-        } catch (Throwable th) {
-            throw new ConvertException(getConverterName(), String.class.getName(), typeReference.getType().getTypeName(), th);
-        }
+        return privateConvertToJavaObject(source, typeReference.getType());
+    }
 
+    private <T> T privateConvertToJavaObject(String source, Type targetType) {
+        try {
+            if (ArrayUtil.isEmpty(featureArray)) {
+                return JSON.parseObject(source, targetType, parserConfig);
+            } else {
+                return JSON.parseObject(source, targetType, parserConfig, featureArray);
+            }
+        } catch (Throwable th) {
+            throw new ConvertException(getConverterName(), String.class.getName(), targetType.getTypeName(), th);
+        }
     }
 
     private String parseToString(Object obj) {
-        if (CollUtil.isEmpty(serializerFeatureList)) {
+        if (ArrayUtil.isEmpty(serializerFeatureArray)) {
             return JSON.toJSONString(obj, serializeConfig);
         }
         return JSON.toJSONString(obj, serializeConfig, serializerFeatureArray);

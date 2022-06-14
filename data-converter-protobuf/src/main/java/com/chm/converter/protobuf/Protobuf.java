@@ -2,6 +2,7 @@ package com.chm.converter.protobuf;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.utils.ClassUtil;
+import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.protostuff.codec.ByteArrayInput;
 import com.chm.converter.protostuff.codec.ProtostuffCodec;
 import com.chm.converter.protostuff.codec.ProtostuffCodecGenerate;
@@ -25,7 +26,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentMap;
  **/
 public class Protobuf {
 
-    private final ConcurrentMap<Type, MessageMarshaller> marshallers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Type, MessageMarshaller> marshallers = MapUtil.newConcurrentHashMap();
 
     private final ExtensionRegistryLite globalRegistry = ExtensionRegistryLite.getEmptyRegistry();
 

@@ -1,7 +1,6 @@
 package com.chm.converter.core.utils;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 基本变量类型的枚举<br>
@@ -16,11 +15,11 @@ public enum BasicType {
     /**
      * 包装类型为Key，原始类型为Value，例如： Integer.class =》 int.class.
      */
-    public static final Map<Class<?>, Class<?>> WRAPPER_PRIMITIVE_MAP = new ConcurrentHashMap<>(8);
+    public static final Map<Class<?>, Class<?>> WRAPPER_PRIMITIVE_MAP = MapUtil.newConcurrentHashMap(8);
     /**
      * 原始类型为Key，包装类型为Value，例如： int.class =》 Integer.class.
      */
-    public static final Map<Class<?>, Class<?>> PRIMITIVE_WRAPPER_MAP = new ConcurrentHashMap<>(8);
+    public static final Map<Class<?>, Class<?>> PRIMITIVE_WRAPPER_MAP = MapUtil.newConcurrentHashMap(8);
 
     static {
         WRAPPER_PRIMITIVE_MAP.put(Boolean.class, boolean.class);

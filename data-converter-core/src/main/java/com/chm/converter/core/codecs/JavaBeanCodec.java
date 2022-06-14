@@ -14,7 +14,6 @@ import com.chm.converter.core.utils.MapUtil;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author caihongming
@@ -32,7 +31,7 @@ public class JavaBeanCodec<T> implements Codec<T, T> {
     public JavaBeanCodec(Class<T> clazz, UniversalGenerate<Codec> codecGenerate, Converter<?> converter) {
         this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converter != null ? converter.getClass() : null);
         this.codecGenerate = codecGenerate;
-        this.fieldInfoCodecMap = new ConcurrentHashMap<>();
+        this.fieldInfoCodecMap = MapUtil.newConcurrentHashMap();
     }
 
     @Override

@@ -118,8 +118,8 @@ public class ConverterTest {
         String encode = converter.encode(userMap);
         // original
         String encode2 = mapper.writeValueAsString(userMap);
-        StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
-        StaticLog.info("testUser2:" + StrUtil.str(encode2, "utf-8"));
+        StaticLog.info("testUser:{}", StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testUser2:{}", StrUtil.str(encode2, "utf-8"));
 
         assertEquals(encode, encode2);
 
@@ -132,7 +132,7 @@ public class ConverterTest {
     @Test
     public void testUser() {
         String encode = converter.encode(user);
-        StaticLog.info("testUser:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testUser:{}", StrUtil.str(encode, "utf-8"));
 
         User2 newUser = converter.convertToJavaObject(encode, User2.class);
 
@@ -145,7 +145,7 @@ public class ConverterTest {
         Map<String, User2> userMap = MapUtil.newHashMap(true);
         userMap.put("user", user);
         String encode = converter.encode(userMap);
-        StaticLog.info("testMap:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testMap:{}", StrUtil.str(encode, "utf-8"));
 
         TypeToken<Map<String, User2>> typeRef0 = new TypeToken<Map<String, User2>>() {
         };
@@ -164,7 +164,7 @@ public class ConverterTest {
 
         String encode = converter.encode(userCollection);
 
-        StaticLog.info("testCollection:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testCollection:{}", StrUtil.str(encode, "utf-8"));
 
         TypeToken<Collection<User2>> typeRef0 = new TypeToken<Collection<User2>>() {
         };
@@ -182,7 +182,7 @@ public class ConverterTest {
         userArray[1] = user;
         userArray[2] = user;
         String encode = converter.encode(userArray);
-        StaticLog.info("testArray:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testArray:{}", StrUtil.str(encode, "utf-8"));
 
         TypeToken<User2[]> typeRef0 = new TypeToken<User2[]>() {
         };
@@ -196,7 +196,7 @@ public class ConverterTest {
     @Test
     public void testEnum() {
         String encode = converter.encode(Enum.ONE);
-        StaticLog.info("testEnum:" + StrUtil.str(encode, "utf-8"));
+        StaticLog.info("testEnum:{}", StrUtil.str(encode, "utf-8"));
 
         Enum newEnum = converter.convertToJavaObject(encode, Enum.class);
 
