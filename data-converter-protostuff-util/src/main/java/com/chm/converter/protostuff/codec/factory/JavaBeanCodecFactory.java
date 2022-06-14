@@ -16,7 +16,6 @@ import io.protostuff.Output;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 通用java bean 编解码
@@ -53,7 +52,7 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
             super(clazz);
             this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converter != null ? converter.getClass() : null);
             this.codecGenerate = codecGenerate;
-            this.fieldInfoProtostuffCodecMap = new ConcurrentHashMap<>();
+            this.fieldInfoProtostuffCodecMap = MapUtil.newConcurrentHashMap();
             this.converter = converter;
         }
 

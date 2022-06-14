@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -278,7 +277,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
         } else {
             this.isTransient = false;
         }
-        this.expandProperty = new ConcurrentHashMap<>();
+        this.expandProperty = MapUtil.newConcurrentHashMap();
         this.fieldAnnotationList = ListUtil.toList(field != null ? AnnotationUtil.getAnnotations(field, true) : null);
         this.fieldAnnotationClassSet = this.fieldAnnotationList.stream().map(Annotation::annotationType).collect(Collectors.toSet());
         this.methodAnnotationList = ListUtil.toList(method != null ? AnnotationUtil.getAnnotations(method, true) : null);

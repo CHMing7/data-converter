@@ -47,7 +47,7 @@ public class ThriftDataReader implements DataReader {
 
     protected final TProtocol oprot;
 
-    protected final DataCodecGenerate dataCodecGenerate;
+    protected final DataCodecGenerate codecGenerate;
 
     protected final Class<? extends Converter> converterClass;
 
@@ -62,7 +62,7 @@ public class ThriftDataReader implements DataReader {
             throw new CodecException(e);
         }
         this.oprot = new TBinaryProtocol(transport);
-        this.dataCodecGenerate = generate;
+        this.codecGenerate = generate;
         Converter<?> converter = generate.getConverter();
         this.converterClass = converter != null ? converter.getClass() : null;
     }
@@ -310,13 +310,13 @@ public class ThriftDataReader implements DataReader {
 
     @Override
     public <E extends Enum<E>> Enum<E> readEnum(TypeToken<Enum<E>> targetType) throws IOException {
-        Codec enumCodec = dataCodecGenerate.get(targetType);
+        Codec enumCodec = codecGenerate.get(targetType);
         return (Enum<E>) enumCodec.read(this);
     }
 
     @Override
     public <T> Class<T> readClass() throws IOException {
-        Codec enumCodec = dataCodecGenerate.get(Class.class);
+        Codec enumCodec = codecGenerate.get(Class.class);
         return (Class<T>) enumCodec.read(this);
     }
 
@@ -331,7 +331,7 @@ public class ThriftDataReader implements DataReader {
                 throw new CodecException(e);
             }
         }
-        Codec beanCodec = dataCodecGenerate.get(targetType);
+        Codec beanCodec = codecGenerate.get(targetType);
         return (T) beanCodec.read(this);
     }
 

@@ -12,7 +12,6 @@ import com.chm.converter.core.codecs.factory.MapCodecFactory;
 import com.chm.converter.core.codecs.factory.ObjectCodecFactory;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
-import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.MapUtil;
 
 import java.math.BigDecimal;
@@ -20,6 +19,7 @@ import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -50,21 +50,13 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
 
     private final Converter<?> converter;
 
-    private DataCodecGenerate() {
-        this(null, null);
-    }
-
-    private DataCodecGenerate(List<UniversalFactory<Codec>> factories) {
-        this(factories, null);
-    }
-
-    private DataCodecGenerate(Converter<?> converter) {
-        this(null, converter);
-    }
-
     private DataCodecGenerate(List<UniversalFactory<Codec>> factories, Converter<?> converter) {
         super(factories);
         this.converter = converter;
+    }
+
+    public Converter<?> getConverter() {
+        return this.converter;
     }
 
     public static DataCodecGenerate newDefault(Converter<?> converter) {
@@ -77,129 +69,79 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
         factories.add(new DefaultDateCodecFactory(converter));
         factories.add(new Java8TimeCodecFactory(converter));
         factories.add(new ObjectCodecFactory());
-        DataCodecGenerate generate = DataCodecGenerateBuilder.dataCodecGenerate()
-                .withFactories(factories)
-                .withConverter(converter).build();
+        DataCodecGenerate codecGenerate = new DataCodecGenerate(factories, converter);
+        // init codecs
+        initCodecs(codecGenerate);
 
-        generate.put(Boolean.class, Codecs.BOOLEAN);
-        generate.put(boolean.class, Codecs.BOOLEAN);
-        generate.put(Character.class, Codecs.CHARACTER);
-        generate.put(char.class, Codecs.CHARACTER);
-        generate.put(Byte.class, Codecs.BYTE);
-        generate.put(byte.class, Codecs.BYTE);
-        generate.put(Short.class, Codecs.SHORT);
-        generate.put(short.class, Codecs.SHORT);
-        generate.put(Integer.class, Codecs.INTEGER);
-        generate.put(int.class, Codecs.INTEGER);
-        generate.put(Long.class, Codecs.LONG);
-        generate.put(long.class, Codecs.LONG);
-        generate.put(Float.class, Codecs.FLOAT);
-        generate.put(float.class, Codecs.FLOAT);
-        generate.put(Double.class, Codecs.DOUBLE);
-        generate.put(double.class, Codecs.DOUBLE);
-        generate.put(BigDecimal.class, Codecs.BIG_DECIMAL);
-        generate.put(BigInteger.class, Codecs.BIG_INTEGER);
-        generate.put(CharSequence.class, Codecs.STRING);
-        generate.put(String.class, Codecs.STRING);
-
-        generate.put(byte[].class, Codecs.BYTE_ARRAY);
-        generate.put(Byte[].class, Codecs.BYTE_ARRAY);
-
-        generate.put(ByteBuffer.class, Codecs.BYTE_BUFFER);
-
-        generate.put(Class.class, Codecs.CLASS);
-
-        generate.put(SimpleDateFormat.class, Codecs.SIMPLE_DATE_FORMAT);
-        generate.put(Currency.class, Codecs.CURRENCY);
-        generate.put(TimeZone.class, Codecs.TIME_ZONE);
-        generate.put(InetAddress.class, Codecs.INET_ADDRESS);
-        generate.put(Inet4Address.class, Codecs.INET_ADDRESS);
-        generate.put(Inet6Address.class, Codecs.INET_ADDRESS);
-        // put(InetSocketAddress.class, MiscCodec.instance);
-        generate.put(Appendable.class, Codecs.STRING_BUFFER);
-        generate.put(StringBuffer.class, Codecs.STRING_BUFFER);
-        generate.put(StringBuilder.class, Codecs.STRING_BUILDER);
-        generate.put(Charset.class, Codecs.CHARSET);
-        generate.put(Pattern.class, Codecs.PATTERN);
-        generate.put(Locale.class, Codecs.LOCALE);
-        generate.put(URI.class, Codecs.URI_);
-        generate.put(URL.class, Codecs.URL);
-        generate.put(UUID.class, Codecs.UUID_);
-
-        // atomic
-        generate.put(AtomicBoolean.class, Codecs.ATOMIC_BOOLEAN);
-        generate.put(AtomicInteger.class, Codecs.ATOMIC_INTEGER);
-        generate.put(AtomicLong.class, Codecs.ATOMIC_LONG);
-     /*   put(AtomicReference.class, SimpleToStringCodec.create(str ->
-                new AtomicReference<>(Long.decode(str))
-        ));*/
-        generate.put(AtomicIntegerArray.class, Codecs.ATOMIC_INTEGER_ARRAY);
-        generate.put(AtomicLongArray.class, Codecs.ATOMIC_LONG_ARRAY);
-
-        /*put(WeakReference.class, SimpleToStringCodec.create(WeakReference::new));
-        put(SoftReference.class, SimpleToStringCodec.create(SoftReference::new));*/
-
-        return generate;
+        return codecGenerate;
     }
 
-    public Converter<?> getConverter() {
-        return converter;
+    public static void newDefault(List<UniversalFactory<Codec>> factories, Converter<?> converter) {
+        DataCodecGenerate codecGenerate = new DataCodecGenerate(factories, converter);
+        initCodecs(codecGenerate);
+        CONVERTER_DATA_CODEC_GENERATE_MAP.put(converter, codecGenerate);
+    }
+
+    private static void initCodecs(DataCodecGenerate codecGenerate) {
+        codecGenerate.put(Boolean.class, Codecs.BOOLEAN);
+        codecGenerate.put(boolean.class, Codecs.BOOLEAN);
+        codecGenerate.put(Character.class, Codecs.CHARACTER);
+        codecGenerate.put(char.class, Codecs.CHARACTER);
+        codecGenerate.put(Byte.class, Codecs.BYTE);
+        codecGenerate.put(byte.class, Codecs.BYTE);
+        codecGenerate.put(Short.class, Codecs.SHORT);
+        codecGenerate.put(short.class, Codecs.SHORT);
+        codecGenerate.put(Integer.class, Codecs.INTEGER);
+        codecGenerate.put(int.class, Codecs.INTEGER);
+        codecGenerate.put(Long.class, Codecs.LONG);
+        codecGenerate.put(long.class, Codecs.LONG);
+        codecGenerate.put(Float.class, Codecs.FLOAT);
+        codecGenerate.put(float.class, Codecs.FLOAT);
+        codecGenerate.put(Double.class, Codecs.DOUBLE);
+        codecGenerate.put(double.class, Codecs.DOUBLE);
+        codecGenerate.put(BigDecimal.class, Codecs.BIG_DECIMAL);
+        codecGenerate.put(BigInteger.class, Codecs.BIG_INTEGER);
+        codecGenerate.put(CharSequence.class, Codecs.STRING);
+        codecGenerate.put(String.class, Codecs.STRING);
+
+        codecGenerate.put(byte[].class, Codecs.BYTE_ARRAY);
+        codecGenerate.put(Byte[].class, Codecs.BYTE_ARRAY);
+
+        codecGenerate.put(ByteBuffer.class, Codecs.BYTE_BUFFER);
+
+        codecGenerate.put(Class.class, Codecs.CLASS);
+
+        codecGenerate.put(SimpleDateFormat.class, Codecs.SIMPLE_DATE_FORMAT);
+        codecGenerate.put(Currency.class, Codecs.CURRENCY);
+        codecGenerate.put(TimeZone.class, Codecs.TIME_ZONE);
+        codecGenerate.put(InetAddress.class, Codecs.INET_ADDRESS);
+        codecGenerate.put(Inet4Address.class, Codecs.INET_ADDRESS);
+        codecGenerate.put(Inet6Address.class, Codecs.INET_ADDRESS);
+        codecGenerate.put(InetSocketAddress.class, Codecs.INET_SOCKET_ADDRESS);
+        codecGenerate.put(Appendable.class, Codecs.STRING_BUFFER);
+        codecGenerate.put(StringBuffer.class, Codecs.STRING_BUFFER);
+        codecGenerate.put(StringBuilder.class, Codecs.STRING_BUILDER);
+        codecGenerate.put(Charset.class, Codecs.CHARSET);
+        codecGenerate.put(Pattern.class, Codecs.PATTERN);
+        codecGenerate.put(Locale.class, Codecs.LOCALE);
+        codecGenerate.put(URI.class, Codecs.URI_);
+        codecGenerate.put(URL.class, Codecs.URL);
+        codecGenerate.put(UUID.class, Codecs.UUID_);
+
+        // atomic
+        codecGenerate.put(AtomicBoolean.class, Codecs.ATOMIC_BOOLEAN);
+        codecGenerate.put(AtomicInteger.class, Codecs.ATOMIC_INTEGER);
+        codecGenerate.put(AtomicLong.class, Codecs.ATOMIC_LONG);
+        codecGenerate.put(AtomicIntegerArray.class, Codecs.ATOMIC_INTEGER_ARRAY);
+        codecGenerate.put(AtomicLongArray.class, Codecs.ATOMIC_LONG_ARRAY);
+    }
+
+    public static void newDataCodecGenerate(List<UniversalFactory<Codec>> factories, Converter<?> converter) {
+        DataCodecGenerate codecGenerate = new DataCodecGenerate(factories, converter);
+        CONVERTER_DATA_CODEC_GENERATE_MAP.put(converter, codecGenerate);
     }
 
     public static DataCodecGenerate getDataCodecGenerate(Converter<?> converter) {
         return MapUtil.computeIfAbsent(CONVERTER_DATA_CODEC_GENERATE_MAP, converter, DataCodecGenerate::newDefault);
-    }
-
-    public static void newDataCodecGenerate(List<UniversalFactory<Codec>> factories, Converter<?> converter) {
-        DataCodecGenerate dataCodecGenerate = new DataCodecGenerate(factories, converter);
-        CONVERTER_DATA_CODEC_GENERATE_MAP.put(converter, dataCodecGenerate);
-    }
-
-    public DataCodecGenerateBuilder builder() {
-        return new DataCodecGenerateBuilder(this);
-    }
-
-    public static final class DataCodecGenerateBuilder {
-
-        private List<UniversalFactory<Codec>> factories;
-
-        private Converter<?> converter;
-
-        private DataCodecGenerateBuilder() {
-        }
-
-        private DataCodecGenerateBuilder(DataCodecGenerate generate) {
-            this.factories = generate.factories;
-            this.converter = generate.converter;
-        }
-
-        public static DataCodecGenerateBuilder dataCodecGenerate() {
-            return new DataCodecGenerateBuilder();
-        }
-
-        public DataCodecGenerateBuilder withFactories(List<UniversalFactory<Codec>> factories) {
-            this.factories = factories;
-            return this;
-        }
-
-        public DataCodecGenerateBuilder addFactories(UniversalFactory<Codec> factory) {
-            if (this.factories == null) {
-                this.factories = ListUtil.toLinkedList();
-            }
-            if (this.factories.contains(factory)) {
-                return this;
-            }
-            this.factories.add(factory);
-            return this;
-        }
-
-        public DataCodecGenerateBuilder withConverter(Converter<?> converter) {
-            this.converter = converter;
-            return this;
-        }
-
-        public DataCodecGenerate build() {
-            return new DataCodecGenerate(factories, converter);
-        }
     }
 }

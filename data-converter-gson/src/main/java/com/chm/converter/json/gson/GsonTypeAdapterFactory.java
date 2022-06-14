@@ -5,7 +5,6 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
-import com.chm.converter.core.io.Writer;
 import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.core.utils.ObjectUtil;
@@ -25,7 +24,6 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author caihongming

@@ -5,6 +5,7 @@ import com.chm.converter.core.codec.DataCodecGenerate;
 import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.exception.TypeCastException;
+import com.chm.converter.core.reflect.ConverterPreconditions;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ArrayUtil;
 import com.chm.converter.core.utils.TypeUtil;
@@ -34,33 +35,29 @@ public class DataMapper extends LinkedHashMap<String, Object> {
     /**
      * 默认构造方法
      */
-    public DataMapper() {
-        this(null);
-    }
-
-    /**
-     * 默认构造方法
-     */
     public DataMapper(Converter<?> converter) {
-        super();
+        ConverterPreconditions.checkNotNull(converter, "param converter cannot be null");
         this.converter = converter;
         this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     public DataMapper(Converter<?> converter, int initialCapacity) {
         super(initialCapacity);
+        ConverterPreconditions.checkNotNull(converter, "param converter cannot be null");
         this.converter = converter;
         this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     public DataMapper(Converter<?> converter, int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
+        ConverterPreconditions.checkNotNull(converter, "param converter cannot be null");
         this.converter = converter;
         this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     public DataMapper(Converter<?> converter, int initialCapacity, float loadFactor, boolean accessOrder) {
         super(initialCapacity, loadFactor, accessOrder);
+        ConverterPreconditions.checkNotNull(converter, "param converter cannot be null");
         this.converter = converter;
         this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
@@ -68,8 +65,13 @@ public class DataMapper extends LinkedHashMap<String, Object> {
     @SuppressWarnings("unchecked")
     public DataMapper(Converter<?> converter, Map map) {
         super(map);
+        ConverterPreconditions.checkNotNull(converter, "param converter cannot be null");
         this.converter = converter;
         this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
+    }
+
+    public Converter<?> getConverter() {
+        return converter;
     }
 
     /**
@@ -468,6 +470,9 @@ public class DataMapper extends LinkedHashMap<String, Object> {
      */
     @SuppressWarnings("unchecked")
     public <T> T toJavaBean(Type type) {
+        if (type == DataMapper.class) {
+            return (T) this;
+        }
         Type[] typeArgs = null;
         if (type instanceof ParameterizedType) {
             typeArgs = ((ParameterizedType) type).getActualTypeArguments();
@@ -490,6 +495,11 @@ public class DataMapper extends LinkedHashMap<String, Object> {
         for (String key : keySet()) {
             FieldInfo fieldInfo = nameFieldInfoMap.get(key);
             if (fieldInfo == null) {
+                continue;
+            }
+            Object val = get(fieldInfo.getName());
+            if (fieldInfo.getFieldClass().isInstance(val)) {
+                fieldInfo.set(construct, val);
                 continue;
             }
             Codec codec = codecGenerate.get(fieldInfo.getFieldType());
@@ -521,6 +531,21 @@ public class DataMapper extends LinkedHashMap<String, Object> {
         return toJavaBean(typeToken.getType());
     }
 
+
+    /**
+     * 返回此{@link DataMapper}中key键映射的{@link Type}
+     * <p>
+     * {@code User user = mapper.getObject("user", User.class);}
+     *
+     * @param key   键名
+     * @param clazz 指定要转换的{@link Class<T>}
+     * @return {@code <T>} or null
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public <T> T getObject(String key, Class<T> clazz) {
+        return getObject(key, TypeToken.get(clazz));
+    }
+
     /**
      * 返回此{@link DataMapper}中key键映射的{@link Type}
      * <p>
@@ -532,16 +557,30 @@ public class DataMapper extends LinkedHashMap<String, Object> {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public <T> T getObject(String key, Type type) {
+        return getObject(key, TypeToken.get(type));
+    }
+
+    /**
+     * 返回此{@link DataMapper}中key键映射的{@link Type}
+     * <p>
+     * {@code User user = mapper.getObject("user", User.class);}
+     *
+     * @param key       键名
+     * @param typeToken 指定要转换的{@link TypeToken}
+     * @return {@code <T>} or null
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public <T> T getObject(String key, TypeToken<T> typeToken) {
         Object value = get(key);
 
-        return DataCast.castType(value, TypeToken.get(type), this.converter, this.codecGenerate);
+        return DataCast.castType(value, typeToken, this.converter, this.codecGenerate);
     }
 
     /**
      * 元素的链式添加
      *
      * <pre>
-     * Mapper mapper = new Mapper().fluentPut("a", 1).fluentPut("b", 2).fluentPut("c", 3);
+     * DataMapper mapper = DataMapper.of(converter).fluentPut("a", 1).fluentPut("b", 2).fluentPut("c", 3);
      * </pre>
      *
      * @param key   键名
@@ -554,18 +593,27 @@ public class DataMapper extends LinkedHashMap<String, Object> {
     }
 
     /**
+     * 新建一个{@link DataMapper}
+     *
+     * @return {@link DataMapper}
+     */
+    public static DataMapper of(Converter<?> converter) {
+        return new DataMapper(converter);
+    }
+
+    /**
      * 将一对键值打包为{@link DataMapper}
      *
      * <pre>
-     * Mapper mapper = Mapper.of("name", "fastjson2");
+     * DataMapper mapper = DataMapper.of("name", "dataMapper");
      * </pre>
      *
      * @param key   键名
      * @param value 与指定键关联的值
      * @return {@link DataMapper}
      */
-    public static DataMapper of(String key, Object value) {
-        DataMapper dataMapper = new DataMapper(null, 2);
+    public static DataMapper of(Converter<?> converter, String key, Object value) {
+        DataMapper dataMapper = new DataMapper(converter, 2);
         dataMapper.put(key, value);
         return dataMapper;
     }
@@ -574,7 +622,7 @@ public class DataMapper extends LinkedHashMap<String, Object> {
      * 将两个键值对打包为{@link DataMapper}
      *
      * <pre>
-     * Mapper mapper = Mapper.of("key1", "value1", "key2", "value2");
+     * DataMapper mapper = DataMapper.of(converter, "key1", "value1", "key2", "value2");
      * </pre>
      *
      * @param k1 第一个键名
@@ -583,18 +631,18 @@ public class DataMapper extends LinkedHashMap<String, Object> {
      * @param v2 第二个值
      * @return {@link DataMapper}
      */
-    public static DataMapper of(String k1, Object v1, String k2, Object v2) {
-        DataMapper dataMapper = new DataMapper(null);
+    public static DataMapper of(Converter<?> converter, String k1, Object v1, String k2, Object v2) {
+        DataMapper dataMapper = new DataMapper(converter, 4);
         dataMapper.put(k1, v1);
         dataMapper.put(k2, v2);
         return dataMapper;
     }
 
     /**
-     * 将三个键值对打包为 {@link DataMapper}
+     * 将三个键值对打包为{@link DataMapper}
      *
      * <pre>
-     * Mapper mapper = Mapper.of("key1", "value1", "key2", "value2", "key3", "value3");
+     * DataMapper mapper = DataMapper.of(converter, "key1", "value1", "key2", "value2", "key3", "value3");
      * </pre>
      *
      * @param k1 第一个键名
@@ -605,11 +653,27 @@ public class DataMapper extends LinkedHashMap<String, Object> {
      * @param v3 第三个值
      * @return {@link DataMapper}
      */
-    public static DataMapper of(String k1, Object v1, String k2, Object v2, String k3, Object v3) {
-        DataMapper dataMapper = new DataMapper(null, 5);
+    public static DataMapper of(Converter<?> converter, String k1, Object v1, String k2, Object v2, String k3, Object v3) {
+        DataMapper dataMapper = new DataMapper(converter, 5);
         dataMapper.put(k1, v1);
         dataMapper.put(k2, v2);
         dataMapper.put(k3, v3);
         return dataMapper;
     }
+
+
+    /**
+     * 将键值对打包为{@link DataMapper}
+     *
+     * <pre>
+     * DataMapper mapper = DataMapper.of(converter, map);
+     * </pre>
+     *
+     * @param map 键值对
+     * @return {@link DataMapper}
+     */
+    public static DataMapper of(Converter<?> converter, Map<?, ?> map) {
+        return new DataMapper(converter, map);
+    }
+
 }

@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author caihongming
@@ -75,7 +74,7 @@ public class HessianConverterFactory extends BeanSerializerFactory {
             super(cl, loader);
             introspectWriteReplace(cl, loader);
             this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cl, converterClass);
-            this.fieldInfoSerializerMap = new ConcurrentHashMap<>();
+            this.fieldInfoSerializerMap = MapUtil.newConcurrentHashMap();
             this.serializerFactory = serializerFactory;
         }
 
@@ -209,7 +208,7 @@ public class HessianConverterFactory extends BeanSerializerFactory {
             super(cl);
             _readResolve = getReadResolve(cl);
             this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cl, converterClass);
-            this.fieldInfoDeserializerMap = new ConcurrentHashMap<>();
+            this.fieldInfoDeserializerMap = MapUtil.newConcurrentHashMap();
             this.serializerFactory = serializerFactory;
         }
 

@@ -2,6 +2,7 @@ package com.chm.converter.core;
 
 import com.chm.converter.core.codec.DataCodecGenerate;
 import com.chm.converter.core.exception.TypeCastException;
+import com.chm.converter.core.reflect.ConverterPreconditions;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ListUtil;
 
@@ -25,17 +26,15 @@ public class DataArray extends ArrayList<Object> {
 
     private final DataCodecGenerate codecGenerate;
 
-    public DataArray() {
-        this(null);
-    }
-
     public DataArray(Converter<?> converter) {
+        ConverterPreconditions.checkNotNull(converter, "param converter cannot be null");
         this.converter = converter;
         this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     public DataArray(Converter<?> converter, Object... items) {
         super(items.length);
+        ConverterPreconditions.checkNotNull(converter, "param converter cannot be null");
         this.converter = converter;
         for (Object item : items) {
             add(item);
@@ -45,8 +44,13 @@ public class DataArray extends ArrayList<Object> {
 
     public DataArray(Converter<?> converter, Collection<?> collection) {
         super(collection);
+        ConverterPreconditions.checkNotNull(converter, "param converter cannot be null");
         this.converter = converter;
         this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
+    }
+
+    public Converter<?> getConverter() {
+        return converter;
     }
 
     /**
@@ -411,7 +415,7 @@ public class DataArray extends ArrayList<Object> {
      * 元素的链式添加
      *
      * <pre>
-     * Array array = new Array().fluentAdd(1).fluentAdd(2).fluentAdd(3);
+     * DataArray array = new DataArray(converter).fluentAdd(1).fluentAdd(2).fluentAdd(3);
      * </pre>
      *
      * @param element 要附加到此列表的元素
@@ -425,26 +429,26 @@ public class DataArray extends ArrayList<Object> {
      * 将多个元素打包为{@link DataArray}
      *
      * <pre>
-     * Array array = Array.of(1, 2, "3", 4F, 5L, 6D, true);
+     * DataArray array = DataArray.of(converter, 1, 2, "3", 4F, 5L, 6D, true);
      * </pre>
      *
      * @param items 元素集
      */
-    public static DataArray of(Object... items) {
-        return new DataArray(null, items);
+    public static DataArray of(Converter<?> converter, Object... items) {
+        return new DataArray(converter, items);
     }
 
     /**
      * 将元素打包为{@link DataArray}
      *
      * <pre>
-     * Array array = Array.of("fastjson");
+     * DataArray array = DataArray.of(converter, "dataArray");
      * </pre>
      *
      * @param item 目标元素
      */
-    public static DataArray of(Object item) {
-        DataArray dataArray = new DataArray(null);
+    public static DataArray of(Converter<?> converter, Object item) {
+        DataArray dataArray = new DataArray(converter);
         dataArray.add(item);
         return dataArray;
     }
@@ -453,14 +457,14 @@ public class DataArray extends ArrayList<Object> {
      * 将两个元素打包为{@link DataArray}
      *
      * <pre>
-     * Array array = Array.of("fastjson", 2);
+     * DataArray array = DataArray.of(converter, "dataArray", 2);
      * </pre>
      *
      * @param first  第一个元素
      * @param second 第二个元素
      */
-    public static DataArray of(Object first, Object second) {
-        DataArray dataArray = new DataArray(null);
+    public static DataArray of(Converter<?> converter, Object first, Object second) {
+        DataArray dataArray = new DataArray(converter);
         dataArray.add(first);
         dataArray.add(second);
         return dataArray;
@@ -470,18 +474,31 @@ public class DataArray extends ArrayList<Object> {
      * 将三个元素打包为{@link DataArray}
      *
      * <pre>
-     * Array array = Array.of("fastjson", 2, true);
+     * DataArray array = DataArray.of(converter, "dataArray", 2, true);
      * </pre>
      *
      * @param first  第一个元素
      * @param second 第二个元素
      * @param third  第三个元素
      */
-    public static DataArray of(Object first, Object second, Object third) {
-        DataArray dataArray = new DataArray(null);
+    public static DataArray of(Converter<?> converter, Object first, Object second, Object third) {
+        DataArray dataArray = new DataArray(converter);
         dataArray.add(first);
         dataArray.add(second);
         dataArray.add(third);
         return dataArray;
+    }
+
+    /**
+     * 将元素集打包为{@link DataArray}
+     *
+     * <pre>
+     * DataArray array = DataArray.of(converter, collection);
+     * </pre>
+     *
+     * @param collection 元素集
+     */
+    public static DataArray of(Converter<?> converter, Collection<?> collection) {
+        return new DataArray(converter, collection);
     }
 }

@@ -36,16 +36,16 @@ public final class ConstructorFactory {
 
     public final static ConstructorFactory INSTANCE = new ConstructorFactory(MapUtil.empty());
 
-    private final Map<Type, InstanceCreator<?>> instanceCreators;
+    private final Map<Type, InstanceCreator<?>> instanceCreatorMap;
 
     private final ReflectionAccessor accessor = ReflectionAccessor.getInstance();
 
     public ConstructorFactory() {
-        this.instanceCreators = MapUtil.empty();
+        this.instanceCreatorMap = MapUtil.empty();
     }
 
-    public ConstructorFactory(Map<Type, InstanceCreator<?>> instanceCreators) {
-        this.instanceCreators = instanceCreators;
+    public ConstructorFactory(Map<Type, InstanceCreator<?>> instanceCreatorMap) {
+        this.instanceCreatorMap = instanceCreatorMap;
     }
 
     public <T> ObjectConstructor<T> get(Class<T> cls) {
@@ -63,14 +63,14 @@ public final class ConstructorFactory {
         // 尝试一个实例创建者
 
         // 类型必须一致
-        final InstanceCreator<T> typeCreator = (InstanceCreator<T>) instanceCreators.get(type);
+        final InstanceCreator<T> typeCreator = (InstanceCreator<T>) instanceCreatorMap.get(type);
         if (typeCreator != null) {
             return () -> typeCreator.createInstance(type);
         }
 
         // 接下来尝试实例创建者的原始类型匹配
         // 类型必须一致
-        final InstanceCreator<T> rawTypeCreator = (InstanceCreator<T>) instanceCreators.get(rawType);
+        final InstanceCreator<T> rawTypeCreator = (InstanceCreator<T>) instanceCreatorMap.get(rawType);
         if (rawTypeCreator != null) {
             return () -> rawTypeCreator.createInstance(type);
         }
@@ -186,6 +186,6 @@ public final class ConstructorFactory {
 
     @Override
     public String toString() {
-        return instanceCreators.toString();
+        return instanceCreatorMap.toString();
     }
 }

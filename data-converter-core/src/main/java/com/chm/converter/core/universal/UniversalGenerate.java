@@ -1,12 +1,12 @@
 package com.chm.converter.core.universal;
 
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.MapUtil;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author caihongming
@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 public class UniversalGenerate<T extends UniversalInterface> {
 
-    private final Map<TypeToken<?>, Entry> typeCache = new ConcurrentHashMap<>();
+    private final Map<TypeToken<?>, Entry> typeCache = MapUtil.newConcurrentHashMap();
 
     protected final List<UniversalFactory<T>> factories;
 
