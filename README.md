@@ -74,6 +74,8 @@ gradle install
 
 ## 📝简单示例
 ```java
+JsonConverter converter = (JsonConverter) ConverterSelector.select(DataType.JSON);
+// 或者
 JsonConverter converter = JsonConverter.select();
 // 序列化
 String encode = converter.encode(user);
