@@ -30,7 +30,7 @@ public interface CborConverter extends Converter<byte[]> {
      * @return 数据转换器，{@link CborConverter}接口实例
      */
     static CborConverter select() {
-        return (CborConverter) ConverterSelector.select(DataType.CBOR);
+        return ConverterSelector.select(CborConverter.class);
     }
 }
 

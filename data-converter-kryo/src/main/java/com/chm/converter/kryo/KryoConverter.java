@@ -30,6 +30,6 @@ public interface KryoConverter extends Converter<byte[]> {
      * @return 数据转换器，{@link KryoConverter}接口实例
      */
     static KryoConverter select() {
-        return (KryoConverter) ConverterSelector.select(DataType.KRYO);
+        return ConverterSelector.select(KryoConverter.class);
     }
 }

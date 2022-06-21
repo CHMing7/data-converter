@@ -30,6 +30,6 @@ public interface SmileConverter extends Converter<byte[]> {
      * @return 数据转换器，{@link SmileConverter}接口实例
      */
     static SmileConverter select() {
-        return (SmileConverter) ConverterSelector.select(DataType.SMILE);
+        return ConverterSelector.select(SmileConverter.class);
     }
 }

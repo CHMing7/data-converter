@@ -65,7 +65,7 @@ public class ConverterSelector implements Serializable {
     /**
      * 获取所有数据类型
      *
-     * @return 数据类型
+     * @return 数据类型数据
      */
     public static DataType[] getDateTypes() {
         return CONVERTER_MAP.keySet().toArray(new DataType[0]);
@@ -74,7 +74,7 @@ public class ConverterSelector implements Serializable {
     /**
      * 获取所有数据类型
      *
-     * @return 数据类型
+     * @return 数据类型列表
      */
     public static List<DataType> getDateTypeList() {
         return new ArrayList<>(CONVERTER_MAP.keySet());
@@ -104,6 +104,7 @@ public class ConverterSelector implements Serializable {
      * 选择数据转换器
      * <p>动态选择一个可用的数据转换器</p>
      *
+     * @param dataType 数据类型
      * @return 数据转换器，{@link Converter}接口实例
      */
     public synchronized static Converter select(DataType dataType) {
@@ -115,6 +116,7 @@ public class ConverterSelector implements Serializable {
      * 选择数据转换器
      * <p>动态选择一个可用的数据转换器</p>
      *
+     * @param cls 转换器类型
      * @return 数据转换器，{@link Converter}接口实例
      */
     public synchronized static <T extends Converter> T select(Class<T> cls) {
@@ -131,6 +133,8 @@ public class ConverterSelector implements Serializable {
      * 选择数据转换器
      * <p>动态选择一个可用的数据转换器</p>
      *
+     * @param dataType 数据类型
+     * @param cls      转换器类型
      * @return 数据转换器，{@link Converter}接口实例
      */
     public synchronized static <T extends Converter> T select(DataType dataType, Class<T> cls) {
@@ -152,8 +156,8 @@ public class ConverterSelector implements Serializable {
     /**
      * 注册数据转换器
      *
-     * @param cls
-     * @param converter
+     * @param cls       转换器类
+     * @param converter 转换器
      * @return
      */
     public synchronized static boolean register(Class<? extends Converter> cls, Converter converter) {
@@ -166,7 +170,7 @@ public class ConverterSelector implements Serializable {
     /**
      * 注册数据转换器
      *
-     * @param converter
+     * @param converter 转换器
      * @return
      */
     public synchronized static boolean register(Converter converter) {

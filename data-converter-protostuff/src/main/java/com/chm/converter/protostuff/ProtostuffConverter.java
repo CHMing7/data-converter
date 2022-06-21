@@ -30,6 +30,6 @@ public interface ProtostuffConverter extends Converter<byte[]> {
      * @return 数据转换器，{@link ProtostuffConverter}接口实例
      */
     static ProtostuffConverter select() {
-        return (ProtostuffConverter) ConverterSelector.select(DataType.PROTOSTUFF);
+        return ConverterSelector.select(ProtostuffConverter.class);
     }
 }

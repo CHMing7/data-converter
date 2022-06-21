@@ -30,6 +30,6 @@ public interface AvroConverter extends Converter<byte[]> {
      * @return Avro数据转换器，{@link AvroConverter}接口实例
      */
     static AvroConverter select() {
-        return (AvroConverter) ConverterSelector.select(DataType.AVRO_BINARY);
+        return ConverterSelector.select(AvroConverter.class);
     }
 }

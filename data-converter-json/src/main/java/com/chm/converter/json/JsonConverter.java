@@ -30,6 +30,6 @@ public interface JsonConverter extends Converter<String> {
      * @return 数据转换器，{@link JsonConverter}接口实例
      */
     static JsonConverter select() {
-        return (JsonConverter) ConverterSelector.select(DataType.JSON);
+        return ConverterSelector.select(JsonConverter.class);
     }
 }
