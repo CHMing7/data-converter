@@ -30,6 +30,6 @@ public interface MsgpackConverter extends Converter<byte[]> {
      * @return 数据转换器，{@link MsgpackConverter}接口实例
      */
     static MsgpackConverter select() {
-        return (MsgpackConverter) ConverterSelector.select(DataType.MSGPACK);
+        return ConverterSelector.select(MsgpackConverter.class);
     }
 }

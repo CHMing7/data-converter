@@ -30,6 +30,6 @@ public interface IonConverter extends Converter<byte[]> {
      * @return 数据转换器，{@link IonConverter}接口实例
      */
     static IonConverter select() {
-        return (IonConverter) ConverterSelector.select(DataType.ION);
+        return ConverterSelector.select(IonConverter.class);
     }
 }

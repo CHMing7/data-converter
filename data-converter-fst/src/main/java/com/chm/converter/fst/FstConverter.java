@@ -31,6 +31,6 @@ public interface FstConverter extends Converter<byte[]> {
      * @return 数据转换器，{@link FstConverter}接口实例
      */
     static FstConverter select() {
-        return (FstConverter) ConverterSelector.select(DataType.FST);
+        return ConverterSelector.select(FstConverter.class);
     }
 }

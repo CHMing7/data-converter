@@ -4,6 +4,7 @@ import com.chm.converter.core.cfg.ConvertFeature;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.MapUtil;
+import com.chm.converter.core.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -334,7 +335,11 @@ public interface Converter<S> {
      * @param dateFormatPattern 日期格式化模板字符
      */
     default void setDateFormat(String dateFormatPattern) {
-        CONVERTER_DATE_FORMAT_PATTERN_MAP.put(this, dateFormatPattern);
+        if (StringUtil.isBlank(dateFormatPattern)) {
+            CONVERTER_DATE_FORMAT_PATTERN_MAP.remove(this);
+        } else {
+            CONVERTER_DATE_FORMAT_PATTERN_MAP.put(this, dateFormatPattern);
+        }
         CONVERTER_DATE_TIME_FORMATTER_MAP.remove(this);
     }
 
@@ -344,8 +349,12 @@ public interface Converter<S> {
      * @param dateFormatter 日期格式化模板
      */
     default void setDateFormat(DateTimeFormatter dateFormatter) {
+        if (dateFormatter == null) {
+            CONVERTER_DATE_TIME_FORMATTER_MAP.remove(this);
+        } else {
+            CONVERTER_DATE_TIME_FORMATTER_MAP.put(this, dateFormatter);
+        }
         CONVERTER_DATE_FORMAT_PATTERN_MAP.remove(this);
-        CONVERTER_DATE_TIME_FORMATTER_MAP.put(this, dateFormatter);
     }
 
     /**

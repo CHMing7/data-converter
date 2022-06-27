@@ -30,6 +30,6 @@ public interface SpearalConverter extends Converter<byte[]> {
      * @return 数据转换器，{@link SpearalConverter}接口实例
      */
     static SpearalConverter select() {
-        return (SpearalConverter) ConverterSelector.select(DataType.SPEARAL);
+        return ConverterSelector.select(SpearalConverter.class);
     }
 }

@@ -30,6 +30,6 @@ public interface YamlConverter extends Converter<String> {
      * @return 数据转换器，{@link YamlConverter}接口实例
      */
     static YamlConverter select() {
-        return (YamlConverter) ConverterSelector.select(DataType.YAML);
+        return ConverterSelector.select(YamlConverter.class);
     }
 }

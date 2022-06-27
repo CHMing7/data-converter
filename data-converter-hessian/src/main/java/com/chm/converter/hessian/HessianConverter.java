@@ -30,6 +30,6 @@ public interface HessianConverter extends Converter<byte[]> {
      * @return 数据转换器，{@link HessianConverter}接口实例
      */
     static HessianConverter select() {
-        return (HessianConverter) ConverterSelector.select(DataType.HESSIAN);
+        return ConverterSelector.select(HessianConverter.class);
     }
 }

@@ -31,6 +31,6 @@ public interface XmlConverter extends Converter<String> {
      * @return 数据转换器，{@link XmlConverter}接口实例
      */
     static XmlConverter select() {
-        return (XmlConverter) ConverterSelector.select(DataType.XML);
+        return ConverterSelector.select(XmlConverter.class);
     }
 }

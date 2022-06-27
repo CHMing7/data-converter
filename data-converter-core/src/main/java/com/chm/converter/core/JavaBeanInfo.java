@@ -432,57 +432,58 @@ public class JavaBeanInfo<T> {
             computeEnumFields(fieldList, fields, scope);
         } else {
             computeFields(fieldList, fields, scope);
-        }
 
-        for (Method method : clazz.getMethods()) {
-            // getter methods
-            String methodName = method.getName();
-            if (methodName.length() < 4) {
-                continue;
-            }
-
-            if (Modifier.isStatic(method.getModifiers())) {
-                continue;
-            }
-
-            if (methodName.startsWith("get") && Character.isUpperCase(methodName.charAt(3))) {
-                if (method.getParameterTypes().length != 0) {
+            for (Method method : clazz.getMethods()) {
+                // getter methods
+                String methodName = method.getName();
+                if (methodName.length() < 4) {
                     continue;
                 }
 
-                if (Collection.class.isAssignableFrom(method.getReturnType())
-                        || Map.class.isAssignableFrom(method.getReturnType())
-                        || AtomicBoolean.class == method.getReturnType()
-                        || AtomicInteger.class == method.getReturnType()
-                        || AtomicLong.class == method.getReturnType()) {
-                    String propertyName;
-                    Field collectionField = null;
+                if (Modifier.isStatic(method.getModifiers())) {
+                    continue;
+                }
 
-                    FieldProperty annotation = checkScope(TypeUtil.getAnnotation(method, FieldProperty.class), scope);
-
-                    if (annotation != null && annotation.name().length() > 0) {
-                        propertyName = annotation.name();
-                    } else {
-                        propertyName = StringUtil.getGeneralField(methodName);
-
-                        Field field = TypeUtil.getField(clazz, propertyName);
-                        if (field != null) {
-                            if (Collection.class.isAssignableFrom(method.getReturnType())
-                                    || Map.class.isAssignableFrom(method.getReturnType())) {
-                                collectionField = field;
-                            }
-                        }
-                    }
-
-                    FieldInfo fieldInfo = getField(fieldList, propertyName);
-                    if (fieldInfo != null) {
+                if (methodName.startsWith("get") && Character.isUpperCase(methodName.charAt(3))) {
+                    if (method.getParameterTypes().length != 0) {
                         continue;
                     }
 
-                    add(fieldList, new FieldInfo(propertyName, method, collectionField, 0, null, annotation));
+                    if (Collection.class.isAssignableFrom(method.getReturnType())
+                            || Map.class.isAssignableFrom(method.getReturnType())
+                            || AtomicBoolean.class == method.getReturnType()
+                            || AtomicInteger.class == method.getReturnType()
+                            || AtomicLong.class == method.getReturnType()) {
+                        String propertyName;
+                        Field collectionField = null;
+
+                        FieldProperty annotation = checkScope(TypeUtil.getAnnotation(method, FieldProperty.class), scope);
+
+                        if (annotation != null && annotation.name().length() > 0) {
+                            propertyName = annotation.name();
+                        } else {
+                            propertyName = StringUtil.getGeneralField(methodName);
+
+                            Field field = TypeUtil.getField(clazz, propertyName);
+                            if (field != null) {
+                                if (Collection.class.isAssignableFrom(method.getReturnType())
+                                        || Map.class.isAssignableFrom(method.getReturnType())) {
+                                    collectionField = field;
+                                }
+                            }
+                        }
+
+                        FieldInfo fieldInfo = getField(fieldList, propertyName);
+                        if (fieldInfo != null) {
+                            continue;
+                        }
+
+                        add(fieldList, new FieldInfo(propertyName, method, collectionField, 0, null, annotation));
+                    }
                 }
             }
         }
+
         return new JavaBeanInfo<>(clazz, fieldList);
     }
 }
