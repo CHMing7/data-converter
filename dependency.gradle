@@ -4,7 +4,7 @@ ext {
             slf4j        : '1.7.32',
             hutool       : '5.6.5',
             fastjson     : '1.2.76',
-            fastjson2    : '2.0.2',
+            fastjson2    : '2.0.8',
             jackson      : '2.12.3',
             gson         : '2.8.6',
             avro         : '1.9.2',

@@ -78,6 +78,10 @@ public class TypeToken<T> {
         return type;
     }
 
+    public final boolean isInstance(Object obj) {
+        return rawType.isInstance(obj);
+    }
+
     /**
      * 检查给定类型是否为本类型的子类型
      *

@@ -5,6 +5,7 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.core.utils.ObjectUtil;
@@ -124,10 +125,10 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
                     String gsonFormat = (String) ReflectUtil.getFieldValue(gson, "datePattern");
                     typeAdapter = ((GsonJava8TimeAdapter<?>) typeAdapter).withDatePattern(ObjectUtil.defaultIfBlank(format, gsonFormat));
                 }
-                if (typeAdapter instanceof GsonDefaultDateTypeAdapter) {
+                if (typeAdapter instanceof WithFormat) {
                     String format = fieldInfo.getFormat();
                     String gsonFormat = (String) ReflectUtil.getFieldValue(gson, "datePattern");
-                    typeAdapter = ((GsonDefaultDateTypeAdapter<?>) typeAdapter).withDatePattern(ObjectUtil.defaultIfBlank(format, gsonFormat));
+                    typeAdapter = (TypeAdapter<?>) ((WithFormat) typeAdapter).withDatePattern(ObjectUtil.defaultIfBlank(format, gsonFormat));
                 }
                 if (typeAdapter != null) {
                     FIELD_ADAPTER_MAP.put(fieldInfo, typeAdapter);

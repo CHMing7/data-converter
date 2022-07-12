@@ -6,10 +6,16 @@ include ':data-converter-core'
 
 include ':data-converter-jackson'
 
+include ':data-converter-fastjson2'
+
 include ':data-converter-json'
 include ':data-converter-fastjson'
+include ':data-converter-fastjson2-json'
 include ':data-converter-jackson-json'
 include ':data-converter-gson'
+
+include ':data-converter-jsonb'
+include ':data-converter-fastjson2-jsonb'
 
 include ':data-converter-xml'
 include ':data-converter-jackson-xml'
@@ -52,11 +58,16 @@ project(':data-converter-all').projectDir = "$rootDir/data-converter-all" as Fil
 project(':data-converter-core').projectDir = "$rootDir/data-converter-core" as File
 
 project(':data-converter-jackson').projectDir = "$rootDir/data-converter-jackson" as File
+project(':data-converter-fastjson2').projectDir = "$rootDir/data-converter-fastjson2" as File
 
 project(':data-converter-json').projectDir = "$rootDir/data-converter-json" as File
 project(':data-converter-fastjson').projectDir = "$rootDir/data-converter-fastjson" as File
+project(':data-converter-fastjson2-json').projectDir = "$rootDir/data-converter-fastjson2-json" as File
 project(':data-converter-jackson-json').projectDir = "$rootDir/data-converter-jackson-json" as File
 project(':data-converter-gson').projectDir = "$rootDir/data-converter-gson" as File
+
+project(':data-converter-jsonb').projectDir = "$rootDir/data-converter-jsonb" as File
+project(':data-converter-fastjson2-jsonb').projectDir = "$rootDir/data-converter-fastjson2-jsonb" as File
 
 project(':data-converter-xml').projectDir = "$rootDir/data-converter-xml" as File
 project(':data-converter-jackson-xml').projectDir = "$rootDir/data-converter-jackson-xml" as File
@@ -93,4 +104,6 @@ project(':data-converter-jackson-ion').projectDir = "$rootDir/data-converter-jac
 
 project(':data-converter-smile').projectDir = "$rootDir/data-converter-smile" as File
 project(':data-converter-jackson-smile').projectDir = "$rootDir/data-converter-jackson-smile" as File
+include 'data-converter-fastjson2-json'
+include 'data-converter-fastjson2-jsonb'
 

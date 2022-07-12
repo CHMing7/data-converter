@@ -20,7 +20,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * 使用Jackson实现的消息转折实现类
+ * 使用Jackson实现的数据转换器实现类
  *
  * @author caihongming
  * @version v1.0

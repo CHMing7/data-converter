@@ -53,8 +53,8 @@ public class ConverterTest {
         user.setYearMonth(YearMonth.now());
 
         factory = new DefaultSpearalFactory();
-        factory.getContext().configure(new DefaultDateCoder(Date.class, converter));
-        factory.getContext().configure(new Java8TimeCoder(LocalDateTime.class, converter));
+        factory.getContext().configure(new DefaultDateCoder<>(Date.class, converter));
+        factory.getContext().configure(new Java8TimeCoder<>(LocalDateTime.class, converter));
     }
 
     @Test

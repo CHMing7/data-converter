@@ -56,8 +56,8 @@ public class JacksonDefaultDateTypeDeserializer<T extends Date> extends JsonDese
         return new JacksonDefaultDateTypeDeserializer<>(this.defaultDateCodec.withDatePattern(datePattern));
     }
 
-    public JacksonDefaultDateTypeDeserializer<T> withDateFormat(DateTimeFormatter dateFormatter) {
-        return new JacksonDefaultDateTypeDeserializer<>(this.defaultDateCodec.withDateFormat(dateFormatter));
+    public JacksonDefaultDateTypeDeserializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
+        return new JacksonDefaultDateTypeDeserializer<>(this.defaultDateCodec.withDateFormatter(dateFormatter));
     }
 
     @Override

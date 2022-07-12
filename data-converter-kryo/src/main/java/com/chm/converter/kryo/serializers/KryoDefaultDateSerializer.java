@@ -1,6 +1,7 @@
 package com.chm.converter.kryo.serializers;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
@@ -15,7 +16,7 @@ import java.util.Date;
  * @version v1.0
  * @since 2021-10-22
  **/
-public class KryoDefaultDateSerializer<T extends Date> extends Serializer<T> implements CustomizeSerializer {
+public class KryoDefaultDateSerializer<T extends Date> extends Serializer<T> implements CustomizeSerializer, WithFormat {
 
     private final DefaultDateCodec<T> defaultDateCodec;
 
@@ -31,10 +32,12 @@ public class KryoDefaultDateSerializer<T extends Date> extends Serializer<T> imp
         return new KryoDefaultDateSerializer<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter());
     }
 
+    @Override
     public KryoDefaultDateSerializer<T> withDatePattern(String datePattern) {
         return new KryoDefaultDateSerializer<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter());
     }
 
+    @Override
     public KryoDefaultDateSerializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new KryoDefaultDateSerializer<>(this.defaultDateCodec.getDateType(), dateFormatter, this.defaultDateCodec.getConverter());
     }

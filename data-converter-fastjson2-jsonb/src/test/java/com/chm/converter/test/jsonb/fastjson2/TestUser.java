@@ -1,30 +1,27 @@
-package com.chm.converter.test.json;
+package com.chm.converter.test.jsonb.fastjson2;
 
 import com.chm.converter.core.annotation.FieldProperty;
 
-import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.util.Date;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-06-03
+ * @since 2022-07-07
  **/
-public class User {
+public class TestUser {
 
     /**
      * 用户
      */
-    @FieldProperty(ordinal = 1)
-    public User user;
+    @FieldProperty(ordinal = 4)
+    public TestUser user;
 
     /**
      * 用户名
      */
-    @FieldProperty(ordinal = 2)
+    @FieldProperty(ordinal = 5)
     public String userName;
 
     /**
@@ -36,23 +33,23 @@ public class User {
     /**
      * 新型时间
      */
-    @FieldProperty(ordinal = 4)
-    public LocalDateTime localDateTime;
+    @FieldProperty(ordinal = 2)
+    public String localDateTime;
 
     /**
      * date
      */
-    @FieldProperty(ordinal = 5, format = "yyyy-MM-dd HH:mm:ss.SSSS")
-    public Date date;
+    @FieldProperty(ordinal = 1)
+    public String date;
 
-    @FieldProperty(ordinal = 6, format = "yyyy-MM")
-    public YearMonth yearMonth;
+    @FieldProperty(ordinal = 6)
+    public String yearMonth;
 
-    public User getUser() {
+    public TestUser getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(TestUser user) {
         this.user = user;
     }
 
@@ -72,27 +69,27 @@ public class User {
         this.password = password;
     }
 
-    public LocalDateTime getLocalDateTime() {
+    public String getLocalDateTime() {
         return localDateTime;
     }
 
-    public void setLocalDateTime(LocalDateTime localDateTime) {
+    public void setLocalDateTime(String localDateTime) {
         this.localDateTime = localDateTime;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
-    public YearMonth getYearMonth() {
+    public String getYearMonth() {
         return yearMonth;
     }
 
-    public void setYearMonth(YearMonth yearMonth) {
+    public void setYearMonth(String yearMonth) {
         this.yearMonth = yearMonth;
     }
 
@@ -101,7 +98,7 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        User other = (User) o;
+        TestUser other = (TestUser) o;
 
         if (!Objects.equals(this.user, other.user)) return false;
         if (!Objects.equals(this.userName, other.userName)) return false;

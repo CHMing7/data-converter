@@ -1,6 +1,7 @@
 package com.chm.converter.avro.factorys;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import org.apache.avro.Conversion;
 import org.apache.avro.LogicalType;
@@ -16,7 +17,7 @@ import java.time.temporal.TemporalAccessor;
  * @version v1.0
  * @since 2021-09-17
  **/
-public class AvroJava8TimeConversion<T extends TemporalAccessor> extends Conversion<T> {
+public class AvroJava8TimeConversion<T extends TemporalAccessor> extends Conversion<T> implements WithFormat {
 
     private final Java8TimeCodec<T> java8TimeCodec;
 
@@ -40,10 +41,12 @@ public class AvroJava8TimeConversion<T extends TemporalAccessor> extends Convers
         return new AvroJava8TimeConversion<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter(), this.logicalType.getName());
     }
 
+    @Override
     public AvroJava8TimeConversion<T> withDatePattern(String datePattern) {
         return new AvroJava8TimeConversion<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter(), this.logicalType.getName());
     }
 
+    @Override
     public AvroJava8TimeConversion<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new AvroJava8TimeConversion<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter(), this.logicalType.getName());
     }

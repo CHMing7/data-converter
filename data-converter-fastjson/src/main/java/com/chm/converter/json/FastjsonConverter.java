@@ -24,7 +24,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * 使用Fastjson实现的消息转换实现类
+ * 使用Fastjson实现的数据转换器实现类
  *
  * @author caihongming
  * @version v1.0
@@ -137,5 +137,6 @@ public class FastjsonConverter implements JsonConverter {
     public static boolean checkExistFastjsonAnnotation(Class<?> cls) {
         return JavaBeanInfo.checkExistAnnotation(cls, FASTJSON_ANNOTATION_LIST);
     }
+
 }
 

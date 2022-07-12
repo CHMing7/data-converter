@@ -1,4 +1,4 @@
-package com.chm.converter.test.json;
+package com.chm.converter.test.json.gson;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;

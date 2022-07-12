@@ -1,5 +1,6 @@
 package com.chm.converter.test.spearal;
 
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.utils.ClassUtil;
@@ -19,7 +20,7 @@ import java.util.Optional;
  * @version v1.0
  * @since 2022-01-27
  **/
-public class DefaultDateCoder<T extends Date> implements CoderProvider, CoderProvider.Coder, ConverterProvider, ConverterProvider.Converter {
+public class DefaultDateCoder<T extends Date> implements CoderProvider, CoderProvider.Coder, ConverterProvider, ConverterProvider.Converter<T>, WithFormat {
 
     private final DefaultDateCodec<T> defaultDateCodec;
 
@@ -51,10 +52,12 @@ public class DefaultDateCoder<T extends Date> implements CoderProvider, CoderPro
         return new DefaultDateCoder<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter());
     }
 
+    @Override
     public DefaultDateCoder<T> withDatePattern(String datePattern) {
         return new DefaultDateCoder<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter());
     }
 
+    @Override
     public DefaultDateCoder<T> withDateFormatter(DateTimeFormatter dateFormat) {
         return new DefaultDateCoder<>(this.defaultDateCodec.getDateType(), dateFormat, this.defaultDateCodec.getConverter());
     }
@@ -79,7 +82,7 @@ public class DefaultDateCoder<T extends Date> implements CoderProvider, CoderPro
     }
 
     @Override
-    public Object convert(SpearalContext context, Object value, Type targetType) {
+    public T convert(SpearalContext context, Object value, Type targetType) {
         return this.defaultDateCodec.decode((String) value);
     }
 }

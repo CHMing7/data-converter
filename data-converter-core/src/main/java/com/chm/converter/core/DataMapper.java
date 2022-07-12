@@ -503,11 +503,6 @@ public class DataMapper extends LinkedHashMap<String, Object> {
                 continue;
             }
             Codec codec = codecGenerate.get(fieldInfo.getFieldType());
-            if (codec instanceof DefaultDateCodec) {
-                String str = getObject(fieldInfo.getName(), String.class);
-                fieldInfo.set(construct, ((DefaultDateCodec<?>) codec).decode(str, fieldInfo.getFormat()));
-                continue;
-            }
             if (codec instanceof Java8TimeCodec) {
                 String str = getObject(fieldInfo.getName(), String.class);
                 fieldInfo.set(construct, ((Java8TimeCodec<?>) codec).decode(str, fieldInfo.getFormat()));

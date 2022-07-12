@@ -5,11 +5,11 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.ReflectUtil;
-import com.chm.converter.fst.serializers.DefaultDateSerializer;
-import com.chm.converter.fst.serializers.Java8TimeSerializer;
 import org.nustaq.serialization.FSTClazzInfo;
 import org.nustaq.serialization.FSTClazzInfoRegistry;
 import org.nustaq.serialization.FSTConfiguration;
@@ -109,13 +109,9 @@ public class FstClazzInfoRegistry extends FSTClazzInfoRegistry {
 
     private FSTObjectSerializer getFieldSerializer(FieldInfo fieldInfo) {
         FSTObjectSerializer ser = serializerRegistry.getSerializer(fieldInfo.getFieldClass());
-        if (ser instanceof DefaultDateSerializer) {
-            ser = ((DefaultDateSerializer) ser).withDatePattern(fieldInfo.getFormat());
+        if (ser instanceof WithFormat) {
+            ser = (FSTObjectSerializer) ((WithFormat) ser).withDatePattern(fieldInfo.getFormat());
         }
-        if (ser instanceof Java8TimeSerializer) {
-            ser = ((Java8TimeSerializer) ser).withDatePattern(fieldInfo.getFormat());
-        }
-
         return ser;
     }
 

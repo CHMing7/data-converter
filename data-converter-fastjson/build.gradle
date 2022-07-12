@@ -1,5 +1,6 @@
 dependencies {
     compileOnly(libs.fastjson)
+    compileOnly(libs.fastjson2)
 
     compile project(':data-converter-json')
 
@@ -9,4 +10,5 @@ dependencies {
     testCompile 'junit:junit:4.13.1'
     testCompile(libs.hutool_log)
     testCompile(libs.fastjson)
+    testCompile(libs.fastjson2)
 }

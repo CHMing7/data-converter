@@ -1,6 +1,7 @@
 package com.chm.converter.jackson.serializer;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JavaType;
@@ -18,7 +19,7 @@ import java.time.temporal.TemporalAccessor;
  * @version v1.0
  * @since 2021-06-11
  **/
-public class JacksonJava8TimeSerializer<T extends TemporalAccessor> extends JsonSerializer<T> {
+public class JacksonJava8TimeSerializer<T extends TemporalAccessor> extends JsonSerializer<T> implements WithFormat {
 
     private final Java8TimeCodec<T> java8TimeCodec;
 
@@ -54,10 +55,12 @@ public class JacksonJava8TimeSerializer<T extends TemporalAccessor> extends Json
         return new JacksonJava8TimeSerializer<>(this.java8TimeCodec.withClass(clazz));
     }
 
+    @Override
     public JacksonJava8TimeSerializer<T> withDatePattern(String datePattern) {
         return new JacksonJava8TimeSerializer<>(this.java8TimeCodec.withDatePattern(datePattern));
     }
 
+    @Override
     public JacksonJava8TimeSerializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new JacksonJava8TimeSerializer<>(this.java8TimeCodec.withDateFormatter(dateFormatter));
     }

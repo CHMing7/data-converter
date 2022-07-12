@@ -203,7 +203,7 @@ public class JavaBeanInfo<T> {
         return null;
     }
 
-    private static void computeFields(List<FieldInfo> fieldList, Field[] fields, Class<? extends Converter> scope) {
+    private static <T> void computeFields(Class<T> clazz, List<FieldInfo> fieldList, Field[] fields, Class<? extends Converter> scope) {
         for (Field field : fields) {
             // public static fields
             int modifiers = field.getModifiers();
@@ -225,9 +225,15 @@ public class JavaBeanInfo<T> {
 
             boolean contains = false;
             for (FieldInfo item : fieldList) {
-                if (item.name.equals(field.getName())) {
+                if (item.getName().equals(field.getName())) {
                     contains = true;
-                    break; // 已经是 contains = true，无需继续遍历
+                    // 已经是 contains = true，无需继续遍历
+                    break;
+                }
+                if (item.getField().getName().equals(field.getName())) {
+                    contains = true;
+                    // 已经是 contains = true，无需继续遍历
+                    break;
                 }
             }
 
@@ -248,7 +254,9 @@ public class JavaBeanInfo<T> {
                 }
             }
 
-            add(fieldList, new FieldInfo(propertyName, null, field, ordinal, fieldAnnotation, null));
+            Method method = TypeUtil.getMethod(clazz, field.getName());
+
+            add(fieldList, new FieldInfo(propertyName, method, field, ordinal, fieldAnnotation, null));
         }
     }
 
@@ -256,7 +264,7 @@ public class JavaBeanInfo<T> {
         for (Field field : fields) {
             boolean contains = false;
             for (FieldInfo item : fieldList) {
-                if (item.name.equals(field.getName())) {
+                if (item.getName().equals(field.getName())) {
                     contains = true;
                     // 已经是 contains = true，无需继续遍历
                     break;
@@ -431,7 +439,7 @@ public class JavaBeanInfo<T> {
         if (clazz.isEnum()) {
             computeEnumFields(fieldList, fields, scope);
         } else {
-            computeFields(fieldList, fields, scope);
+            computeFields(clazz, fieldList, fields, scope);
 
             for (Method method : clazz.getMethods()) {
                 // getter methods

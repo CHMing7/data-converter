@@ -1,4 +1,4 @@
-package com.chm.converter.test.json;
+package com.chm.converter.test.json.jackson;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;

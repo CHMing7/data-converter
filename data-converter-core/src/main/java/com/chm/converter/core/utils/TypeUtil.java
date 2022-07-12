@@ -145,6 +145,36 @@ public class TypeUtil {
         return null;
     }
 
+
+    /**
+     * 从当前类中获取方法，如果获取不到就递归从父类中获取
+     *
+     * @param clazz
+     * @param fieldName
+     * @return
+     */
+    public static Method getMethod(Class<?> clazz, String fieldName) {
+        for (Method method : clazz.getDeclaredMethods()) {
+            String itemName = StringUtil.getGeneralField(method.getName());
+            if (fieldName.equals(itemName)) {
+                return method;
+            }
+
+            char c0, c1;
+            if (fieldName.length() > 2
+                    && (c0 = fieldName.charAt(0)) >= 'a' && c0 <= 'z'
+                    && (c1 = fieldName.charAt(1)) >= 'A' && c1 <= 'Z'
+                    && fieldName.equalsIgnoreCase(itemName)) {
+                return method;
+            }
+        }
+        Class<?> superClass = clazz.getSuperclass();
+        if (superClass != null && superClass != Object.class) {
+            return getMethod(superClass, fieldName);
+        }
+        return null;
+    }
+
     /**
      * 从当前类的接口类中的同方法中获取注解，如果获取不到再从父类的接口类的同方法中获取
      *

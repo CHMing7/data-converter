@@ -1,6 +1,7 @@
 package com.chm.converter.fst.serializers;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.DefaultDateCodec;
 import org.nustaq.serialization.FSTClazzInfo;
 import org.nustaq.serialization.FSTObjectInput;
@@ -15,7 +16,7 @@ import java.util.Date;
  * @version v1.0
  * @since 2021-11-30
  **/
-public class DefaultDateSerializer<T extends Date> extends FstSerializer {
+public class DefaultDateSerializer<T extends Date> extends FstSerializer implements WithFormat {
 
     private final DefaultDateCodec<T> defaultDateCodec;
 
@@ -43,11 +44,13 @@ public class DefaultDateSerializer<T extends Date> extends FstSerializer {
         this.defaultDateCodec = new DefaultDateCodec(Date.class, dateFormat, converter);
     }
 
+    @Override
     public DefaultDateSerializer<T> withDatePattern(String datePattern) {
         return new DefaultDateSerializer<>(datePattern, this.defaultDateCodec.getConverter());
     }
 
-    public DefaultDateSerializer<T> withDateFormat(DateTimeFormatter dateFormatter) {
+    @Override
+    public DefaultDateSerializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new DefaultDateSerializer<>(dateFormatter, this.defaultDateCodec.getConverter());
     }
 

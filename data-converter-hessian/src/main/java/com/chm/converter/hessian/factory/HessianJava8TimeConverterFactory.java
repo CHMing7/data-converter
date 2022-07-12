@@ -8,6 +8,7 @@ import com.caucho.hessian.io.Deserializer;
 import com.caucho.hessian.io.HessianProtocolException;
 import com.caucho.hessian.io.Serializer;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.hessian.UseDeserializer;
@@ -47,7 +48,7 @@ public class HessianJava8TimeConverterFactory extends AbstractSerializerFactory 
         return null;
     }
 
-    public static class HessianJava8TimeConverter<T extends TemporalAccessor> extends AbstractDeserializer implements Serializer, UseDeserializer {
+    public static class HessianJava8TimeConverter<T extends TemporalAccessor> extends AbstractDeserializer implements Serializer, UseDeserializer, WithFormat {
 
         private final Java8TimeCodec<T> java8TimeCodec;
 
@@ -63,10 +64,12 @@ public class HessianJava8TimeConverterFactory extends AbstractSerializerFactory 
             return new HessianJava8TimeConverter<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
         }
 
+        @Override
         public HessianJava8TimeConverter<T> withDatePattern(String datePattern) {
             return new HessianJava8TimeConverter<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
         }
 
+        @Override
         public HessianJava8TimeConverter<T> withDateFormatter(DateTimeFormatter dateFormatter) {
             return new HessianJava8TimeConverter<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
         }

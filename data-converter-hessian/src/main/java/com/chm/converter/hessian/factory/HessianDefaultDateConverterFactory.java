@@ -8,6 +8,7 @@ import com.caucho.hessian.io.Deserializer;
 import com.caucho.hessian.io.HessianProtocolException;
 import com.caucho.hessian.io.Serializer;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.hessian.UseDeserializer;
@@ -45,7 +46,7 @@ public class HessianDefaultDateConverterFactory extends AbstractSerializerFactor
         return null;
     }
 
-    public static class HessianDefaultDateConverter<T extends Date> extends AbstractDeserializer implements Serializer, UseDeserializer {
+    public static class HessianDefaultDateConverter<T extends Date> extends AbstractDeserializer implements Serializer, UseDeserializer , WithFormat{
 
         private final DefaultDateCodec<T> defaultDateCodec;
 
@@ -61,10 +62,12 @@ public class HessianDefaultDateConverterFactory extends AbstractSerializerFactor
             return new HessianDefaultDateConverter<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter());
         }
 
+        @Override
         public HessianDefaultDateConverter<T> withDatePattern(String datePattern) {
             return new HessianDefaultDateConverter<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter());
         }
 
+        @Override
         public HessianDefaultDateConverter<T> withDateFormatter(DateTimeFormatter dateFormatter) {
             return new HessianDefaultDateConverter<>(this.defaultDateCodec.getDateType(), dateFormatter, this.defaultDateCodec.getConverter());
         }

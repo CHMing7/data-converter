@@ -7,6 +7,7 @@ import com.alibaba.fastjson.serializer.DateCodec;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.chm.converter.core.utils.StringUtil;
 
@@ -20,7 +21,7 @@ import java.util.Date;
  * @version v1.0
  * @since 2021-06-21
  **/
-public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
+public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec implements WithFormat {
 
     private final DefaultDateCodec<T> defaultDateCodec;
 
@@ -52,11 +53,13 @@ public class FastjsonDefaultDateCodec<T extends Date> extends DateCodec {
         return new FastjsonDefaultDateCodec<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter());
     }
 
+    @Override
     public FastjsonDefaultDateCodec<T> withDatePattern(String datePattern) {
         return new FastjsonDefaultDateCodec<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter());
     }
 
-    public FastjsonDefaultDateCodec<T> withDateFormat(DateTimeFormatter dateFormat) {
+    @Override
+    public FastjsonDefaultDateCodec<T> withDateFormatter(DateTimeFormatter dateFormat) {
         return new FastjsonDefaultDateCodec<>(this.defaultDateCodec.getDateType(), dateFormat, this.defaultDateCodec.getConverter());
     }
 
