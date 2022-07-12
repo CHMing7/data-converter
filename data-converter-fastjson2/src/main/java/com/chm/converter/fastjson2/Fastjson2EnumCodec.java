@@ -1,7 +1,6 @@
 package com.chm.converter.fastjson2;
 
 import com.alibaba.fastjson2.JSONB;
-import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONReader;
 import com.alibaba.fastjson2.JSONWriter;
 import com.alibaba.fastjson2.reader.ObjectReader;
@@ -17,8 +16,6 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.alibaba.fastjson2.JSONB.Constants.BC_TYPED_ANY;
 
 /**
  * @author caihongming

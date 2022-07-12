@@ -12,6 +12,6 @@ public interface JsonbCoder {
     }
 
     static JSONReader ofJsonbReader(JSONReader.Context readContext, byte[] jsonbBytes) {
-        return new JSONReaderJSONB( readContext,jsonbBytes, 0, jsonbBytes.length, null);
+        return new JSONReaderJSONB(readContext, jsonbBytes, 0, jsonbBytes.length, null);
     }
 }

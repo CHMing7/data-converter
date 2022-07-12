@@ -6,7 +6,6 @@ import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
 import com.chm.converter.core.codec.WithFormat;
-import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.ReflectUtil;

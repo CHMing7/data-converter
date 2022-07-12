@@ -3,7 +3,6 @@ package com.chm.converter.fastjson2.reader;
 import com.alibaba.fastjson2.codec.BeanInfo;
 import com.alibaba.fastjson2.modules.ObjectReaderModule;
 import com.alibaba.fastjson2.reader.FieldReader;
-import com.alibaba.fastjson2.reader.ObjectReader;
 import com.alibaba.fastjson2.reader.ObjectReaderCreator;
 import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;

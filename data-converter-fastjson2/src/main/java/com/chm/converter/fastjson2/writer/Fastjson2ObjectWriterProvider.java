@@ -1,14 +1,11 @@
 package com.chm.converter.fastjson2.writer;
 
-import com.alibaba.fastjson2.writer.ObjectWriter;
 import com.alibaba.fastjson2.writer.ObjectWriterProvider;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.UseOriginalJudge;
 import com.chm.converter.fastjson2.Fastjson2DefaultDateCodec;
-import com.chm.converter.fastjson2.Fastjson2EnumCodec;
 import com.chm.converter.fastjson2.Fastjson2Jdk8DateCodec;
 
-import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -30,13 +27,7 @@ import java.util.Date;
  **/
 public class Fastjson2ObjectWriterProvider extends ObjectWriterProvider {
 
-    private final Converter<?> converter;
-
-    private final UseOriginalJudge useOriginalJudge;
-
     public Fastjson2ObjectWriterProvider(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
-        this.converter = converter;
-        this.useOriginalJudge = useOriginalJudge;
         // Java8 Time Deserializer
         this.register(Instant.class, new Fastjson2Jdk8DateCodec<>(Instant.class, converter));
         this.register(LocalDate.class, new Fastjson2Jdk8DateCodec<>(LocalDate.class, converter));
@@ -59,18 +50,4 @@ public class Fastjson2ObjectWriterProvider extends ObjectWriterProvider {
         this.register(new Fastjson2ObjectWriterModule(converter, useOriginalJudge));
     }
 
-    @Override
-    public ObjectWriter getObjectWriter(Type objectType, Class objectClass, boolean fieldBased) {
-        // 使用原始实现
-        if (useOriginalJudge.useOriginalImpl(objectClass)) {
-            return super.getObjectWriter(objectType, objectClass, fieldBased);
-        }
-        if (Enum.class.isAssignableFrom(objectClass) && objectClass != Enum.class) {
-            if (!objectClass.isEnum()) {
-                objectClass = objectClass.getSuperclass();
-            }
-            return new Fastjson2EnumCodec(objectClass, converter);
-        }
-        return super.getObjectWriter(objectType, objectClass, fieldBased);
-    }
 }

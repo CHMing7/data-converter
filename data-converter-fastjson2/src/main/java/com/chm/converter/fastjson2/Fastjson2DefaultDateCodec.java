@@ -10,7 +10,6 @@ import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.chm.converter.core.utils.StringUtil;
 
 import java.lang.reflect.Type;
-import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 

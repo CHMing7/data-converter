@@ -1,15 +1,12 @@
 package com.chm.converter.fastjson2.reader;
 
-import com.alibaba.fastjson2.reader.ObjectReader;
 import com.alibaba.fastjson2.reader.ObjectReaderCreator;
 import com.alibaba.fastjson2.reader.ObjectReaderProvider;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.UseOriginalJudge;
 import com.chm.converter.fastjson2.Fastjson2DefaultDateCodec;
-import com.chm.converter.fastjson2.Fastjson2EnumCodec;
 import com.chm.converter.fastjson2.Fastjson2Jdk8DateCodec;
 
-import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -55,6 +52,9 @@ public class Fastjson2ObjectReaderProvider extends ObjectReaderProvider {
         this.register(java.sql.Date.class, new Fastjson2DefaultDateCodec<>(java.sql.Date.class, converter));
         this.register(Timestamp.class, new Fastjson2DefaultDateCodec<>(Timestamp.class, converter));
         this.register(Date.class, new Fastjson2DefaultDateCodec<>(Date.class, converter));
+
+        // register module
+        this.register(new Fastjson2ObjectReaderModule(this, converter, useOriginalJudge));
     }
 
     @Override
@@ -63,22 +63,4 @@ public class Fastjson2ObjectReaderProvider extends ObjectReaderProvider {
         return new Fastjson2ObjectReaderCreator(creator, converter, useOriginalJudge);
     }
 
-
-    @Override
-    public ObjectReader getObjectReader(Type objectType, boolean fieldBased) {
-        if (objectType instanceof Class<?>) {
-            Class<?> clazz = (Class<?>) objectType;
-            // 使用原始实现
-            if (useOriginalJudge.useOriginalImpl(clazz)) {
-                return super.getObjectReader(objectType);
-            }
-            if (Enum.class.isAssignableFrom(clazz) && clazz != Enum.class) {
-                if (!clazz.isEnum()) {
-                    clazz = clazz.getSuperclass();
-                }
-                return new Fastjson2EnumCodec(clazz, converter);
-            }
-        }
-        return super.getObjectReader(objectType, fieldBased);
-    }
 }

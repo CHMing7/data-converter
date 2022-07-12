@@ -46,7 +46,7 @@ public class HessianDefaultDateConverterFactory extends AbstractSerializerFactor
         return null;
     }
 
-    public static class HessianDefaultDateConverter<T extends Date> extends AbstractDeserializer implements Serializer, UseDeserializer , WithFormat{
+    public static class HessianDefaultDateConverter<T extends Date> extends AbstractDeserializer implements Serializer, UseDeserializer, WithFormat {
 
         private final DefaultDateCodec<T> defaultDateCodec;
 
