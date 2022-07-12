@@ -15,6 +15,7 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.hessian.UseDeserializer;
 import org.slf4j.Logger;
@@ -177,11 +178,8 @@ public class HessianConverterFactory extends BeanSerializerFactory {
             return MapUtil.computeIfAbsent(fieldInfoSerializerMap, fieldInfo, info -> {
                 try {
                     Serializer serializer = serializerFactory.getSerializer(info.getFieldClass());
-                    if (serializer instanceof HessianJava8TimeConverterFactory.HessianJava8TimeConverter) {
-                        return ((HessianJava8TimeConverterFactory.HessianJava8TimeConverter<?>) serializer).withDatePattern(fieldInfo.getFormat());
-                    }
-                    if (serializer instanceof HessianDefaultDateConverterFactory.HessianDefaultDateConverter) {
-                        return ((HessianDefaultDateConverterFactory.HessianDefaultDateConverter<?>) serializer).withDatePattern(fieldInfo.getFormat());
+                    if (serializer instanceof WithFormat) {
+                        return (Serializer) ((WithFormat) serializer).withDatePattern(fieldInfo.getFormat());
                     }
                     return serializer;
                 } catch (HessianProtocolException e) {
@@ -327,11 +325,8 @@ public class HessianConverterFactory extends BeanSerializerFactory {
             return MapUtil.computeIfAbsent(fieldInfoDeserializerMap, fieldInfo, info -> {
                 try {
                     Deserializer deserializer = serializerFactory.getDeserializer(info.getFieldClass());
-                    if (deserializer instanceof HessianJava8TimeConverterFactory.HessianJava8TimeConverter) {
-                        return ((HessianJava8TimeConverterFactory.HessianJava8TimeConverter<?>) deserializer).withDatePattern(fieldInfo.getFormat());
-                    }
-                    if (deserializer instanceof HessianDefaultDateConverterFactory.HessianDefaultDateConverter) {
-                        return ((HessianDefaultDateConverterFactory.HessianDefaultDateConverter<?>) deserializer).withDatePattern(fieldInfo.getFormat());
+                    if (deserializer instanceof WithFormat) {
+                        return (Deserializer) ((WithFormat) deserializer).withDatePattern(fieldInfo.getFormat());
                     }
                     return deserializer;
                 } catch (HessianProtocolException e) {

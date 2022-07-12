@@ -1,6 +1,7 @@
 package com.chm.converter.json.gson;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -16,7 +17,7 @@ import java.util.Date;
  * @version v1.0
  * @since 2021-06-10
  **/
-public class GsonDefaultDateTypeAdapter<T extends Date> extends TypeAdapter<T> {
+public class GsonDefaultDateTypeAdapter<T extends Date> extends TypeAdapter<T> implements WithFormat {
 
     private final DefaultDateCodec<T> defaultDateCodec;
 
@@ -48,10 +49,12 @@ public class GsonDefaultDateTypeAdapter<T extends Date> extends TypeAdapter<T> {
         return new GsonDefaultDateTypeAdapter<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter());
     }
 
+    @Override
     public GsonDefaultDateTypeAdapter<T> withDatePattern(String datePattern) {
         return new GsonDefaultDateTypeAdapter<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter());
     }
 
+    @Override
     public GsonDefaultDateTypeAdapter<T> withDateFormatter(DateTimeFormatter dateFormat) {
         return new GsonDefaultDateTypeAdapter<>(this.defaultDateCodec.getDateType(), dateFormat, this.defaultDateCodec.getConverter());
     }

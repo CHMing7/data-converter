@@ -1,6 +1,7 @@
 package com.chm.converter.protostuff.codec.factory;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalFactory;
@@ -37,7 +38,7 @@ public class Java8TimeCodecFactory implements UniversalFactory<ProtostuffCodec> 
         return null;
     }
 
-    public static class Java8TimeCodec<T extends TemporalAccessor> extends BaseProtostuffCodec<T> {
+    public static class Java8TimeCodec<T extends TemporalAccessor> extends BaseProtostuffCodec<T> implements WithFormat {
 
         private final com.chm.converter.core.codecs.Java8TimeCodec<T> java8TimeCodec;
 
@@ -55,10 +56,12 @@ public class Java8TimeCodecFactory implements UniversalFactory<ProtostuffCodec> 
             return new Java8TimeCodec<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
         }
 
+        @Override
         public Java8TimeCodec<T> withDatePattern(String datePattern) {
             return new Java8TimeCodec<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
         }
 
+        @Override
         public Java8TimeCodec<T> withDateFormatter(DateTimeFormatter dateFormatter) {
             return new Java8TimeCodec<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
         }

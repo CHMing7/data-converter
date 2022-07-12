@@ -2,6 +2,7 @@ package com.chm.converter.core.codecs;
 
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.codec.Codec;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.pack.DataReader;
 import com.chm.converter.core.pack.DataWriter;
@@ -24,7 +25,7 @@ import java.util.TimeZone;
  * @version v1.0
  * @since 2021-09-02
  **/
-public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, String> {
+public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, String>, WithFormat {
 
     private final Class<T> clazz;
 
@@ -87,10 +88,12 @@ public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, Stri
         return new Java8TimeCodec<>(clazz, this.dateFormatter, this.converter);
     }
 
+    @Override
     public Java8TimeCodec<T> withDatePattern(String datePattern) {
         return new Java8TimeCodec<>(this.clazz, datePattern, this.converter);
     }
 
+    @Override
     public Java8TimeCodec<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new Java8TimeCodec<>(this.clazz, dateFormatter, this.converter);
     }

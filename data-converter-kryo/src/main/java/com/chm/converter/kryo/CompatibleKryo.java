@@ -4,6 +4,7 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
@@ -12,9 +13,7 @@ import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.core.utils.ReflectUtil;
 import com.chm.converter.kryo.serializers.CustomizeSerializer;
-import com.chm.converter.kryo.serializers.KryoDefaultDateSerializer;
 import com.chm.converter.kryo.serializers.KryoEnumSerializer;
-import com.chm.converter.kryo.serializers.KryoJava8TimeSerializer;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Registration;
 import com.esotericsoftware.kryo.Serializer;
@@ -111,11 +110,8 @@ public class CompatibleKryo extends Kryo {
 
     private Serializer<?> getFieldSerializer(Kryo kryo, FieldInfo fieldInfo) {
         Serializer<?> serializer = kryo.getSerializer(fieldInfo.getFieldClass());
-        if (serializer instanceof KryoJava8TimeSerializer) {
-            return ((KryoJava8TimeSerializer<?>) serializer).withDatePattern(fieldInfo.getFormat());
-        }
-        if (serializer instanceof KryoDefaultDateSerializer) {
-            return ((KryoDefaultDateSerializer<?>) serializer).withDatePattern(fieldInfo.getFormat());
+        if (serializer instanceof WithFormat) {
+            return (Serializer<?>) ((WithFormat) serializer).withDatePattern(fieldInfo.getFormat());
         }
         return serializer;
 

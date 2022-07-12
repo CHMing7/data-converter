@@ -58,8 +58,8 @@ public class JacksonDefaultDateTypeSerializer<T extends Date> extends JsonSerial
         return new JacksonDefaultDateTypeSerializer<>(this.defaultDateCodec.withDatePattern(datePattern));
     }
 
-    public JacksonDefaultDateTypeSerializer<T> withDateFormat(DateTimeFormatter dateFormatter) {
-        return new JacksonDefaultDateTypeSerializer<>(this.defaultDateCodec.withDateFormat(dateFormatter));
+    public JacksonDefaultDateTypeSerializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
+        return new JacksonDefaultDateTypeSerializer<>(this.defaultDateCodec.withDateFormatter(dateFormatter));
     }
 
     @Override

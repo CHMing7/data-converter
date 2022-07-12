@@ -4,6 +4,7 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
@@ -122,11 +123,8 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
         private ProtostuffCodec<?> getFieldProtostuffCodec(FieldInfo fieldInfo) {
             return MapUtil.computeIfAbsent(fieldInfoProtostuffCodecMap, fieldInfo, info -> {
                 ProtostuffCodec<?> codec = codecGenerate.get(fieldInfo.getTypeToken());
-                if (codec instanceof Java8TimeCodecFactory.Java8TimeCodec) {
-                    codec = ((Java8TimeCodecFactory.Java8TimeCodec<?>) codec).withDatePattern(fieldInfo.getFormat());
-                }
-                if (codec instanceof DefaultDateCodecFactory.DefaultDateCodec) {
-                    codec = ((DefaultDateCodecFactory.DefaultDateCodec<?>) codec).withDatePattern(fieldInfo.getFormat());
+                if (codec instanceof WithFormat) {
+                    codec = (ProtostuffCodec<?>) ((WithFormat) codec).withDatePattern(fieldInfo.getFormat());
                 }
                 return codec.withFieldNumber(fieldInfo.getSortedNumber() + 1);
             });

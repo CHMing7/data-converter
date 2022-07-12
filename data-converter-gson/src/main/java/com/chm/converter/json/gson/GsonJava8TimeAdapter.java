@@ -1,6 +1,7 @@
 package com.chm.converter.json.gson;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.utils.StringUtil;
 import com.google.gson.TypeAdapter;
@@ -17,7 +18,7 @@ import java.time.temporal.TemporalAccessor;
  * @version v1.0
  * @since 2021-06-09
  **/
-public class GsonJava8TimeAdapter<T extends TemporalAccessor> extends TypeAdapter<T> {
+public class GsonJava8TimeAdapter<T extends TemporalAccessor> extends TypeAdapter<T> implements WithFormat {
 
     private final Java8TimeCodec<T> java8TimeCodec;
 
@@ -45,10 +46,12 @@ public class GsonJava8TimeAdapter<T extends TemporalAccessor> extends TypeAdapte
         this.java8TimeCodec = new Java8TimeCodec<>(clazz, dateFormatter, converter);
     }
 
+    @Override
     public GsonJava8TimeAdapter<T> withDatePattern(String datePattern) {
         return new GsonJava8TimeAdapter<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
     }
 
+    @Override
     public GsonJava8TimeAdapter<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new GsonJava8TimeAdapter<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
     }

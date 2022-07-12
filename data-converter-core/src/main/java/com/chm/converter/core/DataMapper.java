@@ -2,7 +2,6 @@ package com.chm.converter.core;
 
 import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
-import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.exception.TypeCastException;
 import com.chm.converter.core.reflect.ConverterPreconditions;
@@ -503,11 +502,6 @@ public class DataMapper extends LinkedHashMap<String, Object> {
                 continue;
             }
             Codec codec = codecGenerate.get(fieldInfo.getFieldType());
-            if (codec instanceof DefaultDateCodec) {
-                String str = getObject(fieldInfo.getName(), String.class);
-                fieldInfo.set(construct, ((DefaultDateCodec<?>) codec).decode(str, fieldInfo.getFormat()));
-                continue;
-            }
             if (codec instanceof Java8TimeCodec) {
                 String str = getObject(fieldInfo.getName(), String.class);
                 fieldInfo.set(construct, ((Java8TimeCodec<?>) codec).decode(str, fieldInfo.getFormat()));

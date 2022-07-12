@@ -164,6 +164,7 @@ public class User implements Serializable {
                 .add("yearMonth=" + yearMonth)
                 .add("userList=" + userList)
                 .add("userMap=" + userMap)
+                .add("one=" + one)
                 .toString();
     }
 

@@ -3,8 +3,7 @@ package com.chm.converter.spearal.impl.property;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
-import com.chm.converter.core.codecs.DefaultDateCodec;
-import com.chm.converter.core.codecs.Java8TimeCodec;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.spearal.coders.CodecProvider;
 import org.spearal.SpearalContext;
 import org.spearal.configuration.CoderProvider;
@@ -146,11 +145,8 @@ public class PropertyDelegate implements Property {
         if (coder instanceof CodecProvider) {
             DataCodecGenerate dataCodec = ((CodecProvider) coder).getDataCodec();
             codec = dataCodec.get(fieldInfo.getFieldClass());
-            if (codec instanceof DefaultDateCodec) {
-                codec = ((DefaultDateCodec<?>) codec).withDatePattern(fieldInfo.getFormat());
-            }
-            if (codec instanceof Java8TimeCodec) {
-                codec = ((Java8TimeCodec<?>) codec).withDatePattern(fieldInfo.getFormat());
+            if (codec instanceof WithFormat) {
+                codec = (Codec) ((WithFormat) codec).withDatePattern(fieldInfo.getFormat());
             }
             return codec;
         }

@@ -1,5 +1,6 @@
 package com.chm.converter.test.spearal;
 
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.utils.ClassUtil;
@@ -19,7 +20,7 @@ import java.util.Optional;
  * @version v1.0
  * @since 2022-01-27
  **/
-public class Java8TimeCoder<T extends TemporalAccessor> implements CoderProvider, CoderProvider.Coder, ConverterProvider, ConverterProvider.Converter {
+public class Java8TimeCoder<T extends TemporalAccessor> implements CoderProvider, CoderProvider.Coder, ConverterProvider, ConverterProvider.Converter<T>, WithFormat {
 
     private final Java8TimeCodec<T> java8TimeCodec;
 
@@ -47,10 +48,12 @@ public class Java8TimeCoder<T extends TemporalAccessor> implements CoderProvider
         this.java8TimeCodec = new Java8TimeCodec<>(clazz, dateFormatter, converter);
     }
 
+    @Override
     public Java8TimeCoder<T> withDatePattern(String datePattern) {
         return new Java8TimeCoder<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
     }
 
+    @Override
     public Java8TimeCoder<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new Java8TimeCoder<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
     }
@@ -79,7 +82,7 @@ public class Java8TimeCoder<T extends TemporalAccessor> implements CoderProvider
     }
 
     @Override
-    public Object convert(SpearalContext context, Object value, Type targetType) {
+    public T convert(SpearalContext context, Object value, Type targetType) {
         return this.java8TimeCodec.decode((String) value);
     }
 }

@@ -13,6 +13,8 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 |              模块              |    协议    |                                                                             引用模块                                                                             |
 | :----------------------------: | :--------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 |    data-converter-fastjson     |    JSON    |                                                                   com.alibaba:fastjson:version                                                                   |
+| data-converter-fastjson2-json  |    JSON    |                                                             com.alibaba.fastjson2:fastjson2:version                                                              |
+| data-converter-fastjson2-jsonb |   JSONB    |                                                             com.alibaba.fastjson2:fastjson2:version                                                              |
 |      data-converter-gson       |    JSON    |                                                                com.google.code.gson:gson:version                                                                 |
 |  data-converter-jackson-json   |    JSON    | com.fasterxml.jackson.core:jackson-core:version<br>com.fasterxml.jackson.core:jackson-databind:version<br>com.fasterxml.jackson.core:jackson-annotations:version |
 |   data-converter-jackson-xml   |    Xml     |                                                 com.fasterxml.jackson.dataformat:jackson-dataformat-xml:version                                                  |

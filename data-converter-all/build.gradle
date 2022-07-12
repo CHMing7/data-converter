@@ -36,4 +36,5 @@ dependencies {
     testCompile(libs.cbor_jackson)
     testCompile(libs.ion_jackson)
     testCompile(libs.smile_jackson)
+    testCompile(libs.fastjson2)
 }

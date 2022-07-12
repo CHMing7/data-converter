@@ -8,6 +8,7 @@ import com.alibaba.fastjson.serializer.BeanContext;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.utils.StringUtil;
 
@@ -21,7 +22,7 @@ import java.time.temporal.TemporalAccessor;
  * @version v1.0
  * @since 2021-06-21
  **/
-public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateCodec {
+public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateCodec implements WithFormat {
 
     private final Java8TimeCodec<T> java8TimeCodec;
 
@@ -53,10 +54,12 @@ public class FastjsonJdk8DateCodec<T extends TemporalAccessor> extends Jdk8DateC
         return new FastjsonJdk8DateCodec<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
     }
 
+    @Override
     public FastjsonJdk8DateCodec<T> withDatePattern(String datePattern) {
         return new FastjsonJdk8DateCodec<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
     }
 
+    @Override
     public FastjsonJdk8DateCodec<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new FastjsonJdk8DateCodec<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
     }

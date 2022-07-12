@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 使用Gson实现的消息转换实现类
+ * 使用Gson实现的数据转换器实现类
  *
  * @author caihongming
  * @version v1.0

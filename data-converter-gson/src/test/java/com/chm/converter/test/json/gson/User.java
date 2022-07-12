@@ -1,4 +1,4 @@
-package com.chm.converter.test.json;
+package com.chm.converter.test.json.gson;
 
 import com.chm.converter.core.annotation.FieldProperty;
 

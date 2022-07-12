@@ -1,6 +1,7 @@
 package com.chm.converter.avro.factorys;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.DefaultDateCodec;
 import org.apache.avro.Conversion;
 import org.apache.avro.LogicalType;
@@ -16,7 +17,7 @@ import java.util.Date;
  * @version v1.0
  * @since 2021-09-17
  **/
-public class AvroDefaultDateConversion<T extends Date> extends Conversion<T> {
+public class AvroDefaultDateConversion<T extends Date> extends Conversion<T> implements WithFormat {
 
     private final DefaultDateCodec<T> defaultDateCodec;
 
@@ -40,11 +41,13 @@ public class AvroDefaultDateConversion<T extends Date> extends Conversion<T> {
         return new AvroDefaultDateConversion<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter(), this.logicalType.getName());
     }
 
+    @Override
     public AvroDefaultDateConversion<T> withDatePattern(String datePattern) {
         return new AvroDefaultDateConversion<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter(), this.logicalType.getName());
     }
 
-    public AvroDefaultDateConversion<T> withDateFormat(DateTimeFormatter dateFormat) {
+    @Override
+    public AvroDefaultDateConversion<T> withDateFormatter(DateTimeFormatter dateFormat) {
         return new AvroDefaultDateConversion<>(this.defaultDateCodec.getDateType(), dateFormat, this.defaultDateCodec.getConverter(), this.logicalType.getName());
     }
 

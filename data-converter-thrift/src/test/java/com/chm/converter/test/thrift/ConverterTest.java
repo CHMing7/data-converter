@@ -58,7 +58,6 @@ public class ConverterTest {
     @Test
     public void testOriginal() throws Exception {
         // new
-
         byte[] encode = converter.encode(user);
         // original
         TestUser testUser = new TestUser();

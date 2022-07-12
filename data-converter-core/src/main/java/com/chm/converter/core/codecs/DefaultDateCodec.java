@@ -3,6 +3,7 @@ package com.chm.converter.core.codecs;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.cfg.ConvertFeature;
 import com.chm.converter.core.codec.Codec;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.pack.DataReader;
 import com.chm.converter.core.pack.DataWriter;
 import com.chm.converter.core.reflect.TypeToken;
@@ -22,7 +23,7 @@ import java.util.Date;
  * @version v1.0
  * @since 2021-09-02
  **/
-public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
+public class DefaultDateCodec<T extends Date> implements Codec<T, String>, WithFormat {
 
     private final Class<T> dateType;
 
@@ -81,12 +82,14 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String> {
         return new DefaultDateCodec<>(dateType, this.dateFormatter, this.converter);
     }
 
+    @Override
     public DefaultDateCodec<T> withDatePattern(String datePattern) {
         return new DefaultDateCodec<>(this.dateType, datePattern, this.converter);
     }
 
-    public DefaultDateCodec<T> withDateFormat(DateTimeFormatter dateFormat) {
-        return new DefaultDateCodec<>(this.dateType, dateFormat, this.converter);
+    @Override
+    public DefaultDateCodec<T> withDateFormatter(DateTimeFormatter dateFormatter) {
+        return new DefaultDateCodec<>(this.dateType, dateFormatter, this.converter);
     }
 
     public Class<T> getDateType() {

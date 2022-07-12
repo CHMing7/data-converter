@@ -5,6 +5,7 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.codec.Codec;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.pack.DataReader;
 import com.chm.converter.core.pack.DataWriter;
 import com.chm.converter.core.reflect.TypeToken;
@@ -99,11 +100,8 @@ public class JavaBeanCodec<T> implements Codec<T, T> {
     private Codec getFieldCodec(FieldInfo fieldInfo) {
         return MapUtil.computeIfAbsent(fieldInfoCodecMap, fieldInfo, info -> {
             Codec codec = codecGenerate.get(fieldInfo.getTypeToken());
-            if (codec instanceof Java8TimeCodec) {
-                codec = ((Java8TimeCodec<?>) codec).withDatePattern(fieldInfo.getFormat());
-            }
-            if (codec instanceof DefaultDateCodec) {
-                codec = ((DefaultDateCodec<?>) codec).withDatePattern(fieldInfo.getFormat());
+            if (codec instanceof WithFormat) {
+                codec = (Codec) ((WithFormat) codec).withDatePattern(fieldInfo.getFormat());
             }
             return codec;
         });

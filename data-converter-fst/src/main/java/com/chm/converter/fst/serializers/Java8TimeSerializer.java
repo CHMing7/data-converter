@@ -1,6 +1,7 @@
 package com.chm.converter.fst.serializers;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import org.nustaq.serialization.FSTClazzInfo;
 import org.nustaq.serialization.FSTObjectInput;
@@ -15,7 +16,7 @@ import java.time.temporal.TemporalAccessor;
  * @version v1.0
  * @since 2021-11-30
  **/
-public class Java8TimeSerializer<T extends TemporalAccessor> extends FstSerializer {
+public class Java8TimeSerializer<T extends TemporalAccessor> extends FstSerializer implements WithFormat {
 
     private final Java8TimeCodec<T> java8TimeCodec;
 
@@ -47,10 +48,12 @@ public class Java8TimeSerializer<T extends TemporalAccessor> extends FstSerializ
         return new Java8TimeSerializer<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
     }
 
+    @Override
     public Java8TimeSerializer<T> withDatePattern(String datePattern) {
         return new Java8TimeSerializer<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
     }
 
+    @Override
     public Java8TimeSerializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new Java8TimeSerializer<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
     }

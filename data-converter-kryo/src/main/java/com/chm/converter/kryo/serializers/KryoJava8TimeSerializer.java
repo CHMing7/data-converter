@@ -1,6 +1,7 @@
 package com.chm.converter.kryo.serializers;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
@@ -15,7 +16,7 @@ import java.time.temporal.TemporalAccessor;
  * @version v1.0
  * @since 2021-10-22
  **/
-public class KryoJava8TimeSerializer<T extends TemporalAccessor> extends Serializer<T> implements CustomizeSerializer {
+public class KryoJava8TimeSerializer<T extends TemporalAccessor> extends Serializer<T> implements CustomizeSerializer, WithFormat {
 
     private final Java8TimeCodec<T> java8TimeCodec;
 
@@ -31,10 +32,12 @@ public class KryoJava8TimeSerializer<T extends TemporalAccessor> extends Seriali
         return new KryoJava8TimeSerializer<>(clazz, this.java8TimeCodec.getDateFormatter(), this.java8TimeCodec.getConverter());
     }
 
+    @Override
     public KryoJava8TimeSerializer<T> withDatePattern(String datePattern) {
         return new KryoJava8TimeSerializer<>(this.java8TimeCodec.getClazz(), datePattern, this.java8TimeCodec.getConverter());
     }
 
+    @Override
     public KryoJava8TimeSerializer<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new KryoJava8TimeSerializer<>(this.java8TimeCodec.getClazz(), dateFormatter, this.java8TimeCodec.getConverter());
     }

@@ -9,6 +9,7 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.utils.ArrayUtil;
 import com.chm.converter.core.utils.CollStreamUtil;
 import com.chm.converter.core.utils.CollUtil;
@@ -142,16 +143,10 @@ public class FastjsonParserConfig extends ParserConfig {
 
         private ObjectDeserializer getFieldDeserializer(FieldInfo fieldInfo) {
             ObjectDeserializer objectDeserializer = FastjsonParserConfig.this.getDeserializer(fieldInfo.getFieldClass());
-
-            if (objectDeserializer instanceof FastjsonJdk8DateCodec) {
+            if (objectDeserializer instanceof WithFormat) {
                 String format = fieldInfo.getFormat();
-                objectDeserializer = ((FastjsonJdk8DateCodec<?>) objectDeserializer).withDatePattern(format);
+                objectDeserializer = (ObjectDeserializer) ((WithFormat) objectDeserializer).withDatePattern(format);
             }
-            if (objectDeserializer instanceof FastjsonDefaultDateCodec) {
-                String format = fieldInfo.getFormat();
-                objectDeserializer = ((FastjsonDefaultDateCodec<?>) objectDeserializer).withDatePattern(format);
-            }
-
             return objectDeserializer;
         }
 

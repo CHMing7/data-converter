@@ -11,6 +11,7 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.utils.ArrayUtil;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.CollStreamUtil;
@@ -146,16 +147,10 @@ public class FastjsonSerializeConfig extends SerializeConfig {
 
         private ObjectSerializer getFieldSerializer(FieldInfo fieldInfo) {
             ObjectSerializer objectSerializer = FastjsonSerializeConfig.this.getObjectWriter(fieldInfo.getFieldClass());
-
-            if (objectSerializer instanceof FastjsonJdk8DateCodec) {
+            if (objectSerializer instanceof WithFormat) {
                 String format = fieldInfo.getFormat();
-                objectSerializer = ((FastjsonJdk8DateCodec<?>) objectSerializer).withDatePattern(format);
+                objectSerializer = (ObjectSerializer) ((WithFormat) objectSerializer).withDatePattern(format);
             }
-            if (objectSerializer instanceof FastjsonDefaultDateCodec) {
-                String format = fieldInfo.getFormat();
-                objectSerializer = ((FastjsonDefaultDateCodec<?>) objectSerializer).withDatePattern(format);
-            }
-
             return objectSerializer;
         }
     }

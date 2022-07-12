@@ -438,7 +438,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
     }
 
     public Member getMember() {
-        return this.method != null ? this.method : this.field;
+        return this.getter != null ? this.getter : (this.setter != null ? this.setter : this.field);
     }
 
     public int getSortedNumber() {

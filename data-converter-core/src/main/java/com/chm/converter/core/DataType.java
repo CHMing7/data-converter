@@ -30,6 +30,11 @@ public class DataType {
     public final static DataType JSON = DataType.createDataType("json");
 
     /**
+     * 数据类型： JSONB类型
+     */
+    public final static DataType JSONB = DataType.createDataType("jsonb");
+
+    /**
      * 数据类型： XML类型
      */
     public final static DataType XML = DataType.createDataType("xml");

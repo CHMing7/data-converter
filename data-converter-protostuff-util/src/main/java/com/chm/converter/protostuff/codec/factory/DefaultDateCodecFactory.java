@@ -1,6 +1,7 @@
 package com.chm.converter.protostuff.codec.factory;
 
 import com.chm.converter.core.Converter;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.constant.TimeConstant;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalFactory;
@@ -38,7 +39,7 @@ public class DefaultDateCodecFactory implements UniversalFactory<ProtostuffCodec
         return null;
     }
 
-    public static final class DefaultDateCodec<T extends Date> extends BaseProtostuffCodec<T> {
+    public static final class DefaultDateCodec<T extends Date> extends BaseProtostuffCodec<T> implements WithFormat {
 
         private final com.chm.converter.core.codecs.DefaultDateCodec<T> defaultDateCodec;
 
@@ -56,10 +57,12 @@ public class DefaultDateCodecFactory implements UniversalFactory<ProtostuffCodec
             return new DefaultDateCodec<>(dateType, this.defaultDateCodec.getDateFormatter(), this.defaultDateCodec.getConverter());
         }
 
+        @Override
         public DefaultDateCodec<T> withDatePattern(String datePattern) {
             return new DefaultDateCodec<>(this.defaultDateCodec.getDateType(), datePattern, this.defaultDateCodec.getConverter());
         }
 
+        @Override
         public DefaultDateCodec<T> withDateFormatter(DateTimeFormatter dateFormatter) {
             return new DefaultDateCodec<>(this.defaultDateCodec.getDateType(), dateFormatter, this.defaultDateCodec.getConverter());
         }
