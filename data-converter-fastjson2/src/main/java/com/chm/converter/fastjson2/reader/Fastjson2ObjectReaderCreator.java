@@ -38,11 +38,6 @@ public class Fastjson2ObjectReaderCreator extends ObjectReaderCreator {
         this.useOriginalJudge = useOriginalJudge;
     }
 
-    /*@Override
-    public <T> ObjectReader<T> createObjectReader(Class<T> objectClass, Type objectType, boolean fieldBased, List<ObjectReaderModule> modules) {
-        return this.creator.createObjectReader(objectClass, objectType, fieldBased, modules);
-    }*/
-
     @Override
     public <T> FieldReader[] createFieldReaders(Class<T> objectClass, Type objectType, BeanInfo beanInfo, boolean fieldBased, List<ObjectReaderModule> modules) {
         FieldReader[] fieldReaders = this.creator.createFieldReaders(objectClass, objectType);
