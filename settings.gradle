@@ -104,6 +104,4 @@ project(':data-converter-jackson-ion').projectDir = "$rootDir/data-converter-jac
 
 project(':data-converter-smile').projectDir = "$rootDir/data-converter-smile" as File
 project(':data-converter-jackson-smile').projectDir = "$rootDir/data-converter-jackson-smile" as File
-include 'data-converter-fastjson2-json'
-include 'data-converter-fastjson2-jsonb'
 
