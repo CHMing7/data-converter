@@ -20,7 +20,7 @@ import com.chm.converter.core.utils.DateUtil;
 import com.chm.converter.fastjson2.Fastjson2DefaultDateCodec;
 import com.chm.converter.fastjson2.Fastjson2Jdk8DateCodec;
 import com.chm.converter.jsonb.JsonbConverter;
-import com.chm.converter.jsonb.fastjson2.Fastjson2JsonbConverter;
+import com.chm.converter.jsonb.Fastjson2JsonbConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

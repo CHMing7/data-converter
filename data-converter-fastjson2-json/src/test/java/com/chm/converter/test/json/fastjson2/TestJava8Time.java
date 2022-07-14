@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.annotation.FieldProperty;
-import com.chm.converter.json.fastjson2.Fastjson2Converter;
+import com.chm.converter.json.Fastjson2Converter;
 import org.junit.Before;
 import org.junit.Test;
 

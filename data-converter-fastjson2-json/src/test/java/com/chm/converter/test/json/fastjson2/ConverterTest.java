@@ -17,7 +17,7 @@ import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.fastjson2.Fastjson2DefaultDateCodec;
 import com.chm.converter.fastjson2.Fastjson2Jdk8DateCodec;
 import com.chm.converter.json.JsonConverter;
-import com.chm.converter.json.fastjson2.Fastjson2Converter;
+import com.chm.converter.json.Fastjson2Converter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
