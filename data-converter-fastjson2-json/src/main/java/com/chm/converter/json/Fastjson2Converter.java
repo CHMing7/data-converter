@@ -1,9 +1,8 @@
-package com.chm.converter.jsonb.fastjson2;
+package com.chm.converter.json;
 
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONReader;
 import com.alibaba.fastjson2.JSONWriter;
-import com.alibaba.fastjson2.JsonbCoder;
 import com.alibaba.fastjson2.TypeReference;
 import com.alibaba.fastjson2.annotation.JSONBuilder;
 import com.alibaba.fastjson2.annotation.JSONCreator;
@@ -20,7 +19,6 @@ import com.chm.converter.core.utils.ArrayUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.fastjson2.reader.Fastjson2ObjectReaderProvider;
 import com.chm.converter.fastjson2.writer.Fastjson2ObjectWriterProvider;
-import com.chm.converter.jsonb.JsonbConverter;
 import com.google.auto.service.AutoService;
 
 import java.lang.annotation.Annotation;
@@ -28,21 +26,21 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 /**
- * 使用Fastjson2-jsonb实现的数据转换器实现类
+ * 使用Fastjson2实现的数据转换器实现类
  *
  * @author caihongming
  * @version v1.0
- * @since 2022-07-06
+ * @since 2022-06-29
  **/
 @AutoService(Converter.class)
-public class Fastjson2JsonbConverter implements JsonbConverter {
+public class Fastjson2Converter implements JsonConverter {
 
     public static final List<Class<? extends Annotation>> FASTJSON_ANNOTATION_LIST = ListUtil.of(JSONCreator.class,
             JSONField.class,
             JSONBuilder.class,
             JSONType.class);
 
-    public static final String FAST_JSON2_NAME = "com.alibaba.fastjson2.JSONB";
+    public static final String FAST_JSON2_NAME = "com.alibaba.fastjson2.JSON";
 
     private JSONWriter.Feature[] writerFeatureArray = new JSONWriter.Feature[0];
 
@@ -52,9 +50,9 @@ public class Fastjson2JsonbConverter implements JsonbConverter {
 
     private final ObjectReaderProvider readerProvider;
 
-    public Fastjson2JsonbConverter() {
-        writerProvider = new Fastjson2ObjectWriterProvider(this, Fastjson2JsonbConverter::checkExistFastjson2Annotation);
-        readerProvider = new Fastjson2ObjectReaderProvider(this, Fastjson2JsonbConverter::checkExistFastjson2Annotation);
+    public Fastjson2Converter() {
+        writerProvider = new Fastjson2ObjectWriterProvider(this, Fastjson2Converter::checkExistFastjson2Annotation);
+        readerProvider = new Fastjson2ObjectReaderProvider(this, Fastjson2Converter::checkExistFastjson2Annotation);
     }
 
     /**
@@ -76,37 +74,37 @@ public class Fastjson2JsonbConverter implements JsonbConverter {
     }
 
     @Override
-    public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
+    public <T> T convertToJavaObject(String source, Class<T> targetType) {
         return privateConvertToJavaObject(source, targetType);
     }
 
     @Override
-    public <T> T convertToJavaObject(byte[] source, Type targetType) {
+    public <T> T convertToJavaObject(String source, Type targetType) {
         return privateConvertToJavaObject(source, targetType);
     }
 
-    public <T> T convertToJavaObject(byte[] source, TypeReference<T> typeReference) {
+    public <T> T convertToJavaObject(String source, TypeReference<T> typeReference) {
         return privateConvertToJavaObject(source, typeReference.getType());
     }
 
-    private <T> T privateConvertToJavaObject(byte[] source, Type targetType) {
-        if (ArrayUtil.isEmpty(source)) {
+    private <T> T privateConvertToJavaObject(String source, Type targetType) {
+        if (source == null || source.isEmpty()) {
             return null;
         }
         JSONReader.Context readContext = new JSONReader.Context(readerProvider);
-        try (JSONReader reader = JsonbCoder.ofJsonbReader(readContext, source)) {
+        try (JSONReader reader = JSONReader.of(readContext, source)) {
             readContext.config(this.readerFeatureArray);
             ObjectReader<T> objectReader = readContext.getProvider().getObjectReader(targetType);
 
-            T object = objectReader.readJSONBObject(reader, 0);
+            T object = objectReader.readObject(reader, 0);
             reader.handleResolveTasks(object);
             return object;
         }
     }
 
-    private byte[] parseToBytes(Object obj) {
+    private String parseToString(Object obj) {
         JSONWriter.Context writeContext = new JSONWriter.Context(writerProvider, this.writerFeatureArray);
-        try (JSONWriter writer = JsonbCoder.ofJsonbWriter(writeContext)) {
+        try (JSONWriter writer = JSONWriter.of(writeContext)) {
             if (obj == null) {
                 writer.writeNull();
             } else {
@@ -114,19 +112,19 @@ public class Fastjson2JsonbConverter implements JsonbConverter {
                 ObjectWriter<?> objectWriter = writer.getObjectWriter(valueClass, valueClass);
                 objectWriter.write(writer, obj, null, null, 0);
             }
-            return writer.getBytes();
+            return writer.toString();
         } catch (NullPointerException | NumberFormatException ex) {
             throw new JSONException("toJSONString error", ex);
         }
     }
 
     @Override
-    public byte[] encode(Object source) {
-        if (source == null) {
-            return new byte[0];
+    public String encode(Object source) {
+        if (source instanceof CharSequence) {
+            return source.toString();
         }
         try {
-            return parseToBytes(source);
+            return parseToString(source);
         } catch (Throwable th) {
             throw new ConvertException(getConverterName(), source.getClass().getName(), String.class.getName(), th);
         }
