@@ -100,6 +100,8 @@ public class Fastjson2JsonbConverter implements JsonbConverter {
             T object = objectReader.readJSONBObject(reader, 0);
             reader.handleResolveTasks(object);
             return object;
+        } catch (Throwable th) {
+            throw new ConvertException(getConverterName(), String.class.getName(), targetType.getTypeName(), th);
         }
     }
 

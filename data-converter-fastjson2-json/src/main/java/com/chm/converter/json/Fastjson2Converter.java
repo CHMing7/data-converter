@@ -99,6 +99,8 @@ public class Fastjson2Converter implements JsonConverter {
             T object = objectReader.readObject(reader, 0);
             reader.handleResolveTasks(object);
             return object;
+        } catch (Throwable th) {
+            throw new ConvertException(getConverterName(), String.class.getName(), targetType.getTypeName(), th);
         }
     }
 
