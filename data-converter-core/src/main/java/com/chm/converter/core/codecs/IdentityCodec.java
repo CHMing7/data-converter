@@ -24,8 +24,8 @@ public class IdentityCodec<T> implements Codec<T, T> {
 
     private IdentityCodec(TypeToken<T> codecType, WriteData<T> writeData, ReadData<T> readData) {
         this.codecType = codecType;
-        this.simpleCodecReadData = readData;
         this.simpleCodecWriteData = writeData;
+        this.simpleCodecReadData = readData;
     }
 
     public static <T> IdentityCodec<T> create(TypeToken<T> codecType, WriteData<T> writeData, ReadData<T> readData) {
@@ -39,7 +39,7 @@ public class IdentityCodec<T> implements Codec<T, T> {
     }
 
     @Override
-    public TypeToken getEncodeType() {
+    public TypeToken<T> getEncodeType() {
         return codecType;
     }
 

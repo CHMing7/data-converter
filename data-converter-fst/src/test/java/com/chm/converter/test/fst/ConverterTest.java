@@ -6,15 +6,18 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.codecs.DefaultDateCodec;
+import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.fst.DefaultFstConverter;
-import com.chm.converter.fst.serializers.DefaultDateSerializer;
-import com.chm.converter.fst.serializers.Java8TimeSerializer;
+import com.chm.converter.fst.serializers.FstCoreCodecSerializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.nustaq.serialization.FSTBasicObjectSerializer;
 import org.nustaq.serialization.FSTConfiguration;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
+import org.nustaq.serialization.serializers.FSTStringSerializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -64,22 +67,24 @@ public class ConverterTest {
         user.setLocalDateTime(LocalDateTime.now());
         user.setYearMonth(YearMonth.now());
         conf = FSTConfiguration.getDefaultConfiguration();
-        conf.registerSerializer(java.sql.Date.class, new DefaultDateSerializer<>(converter), false);
-        conf.registerSerializer(Timestamp.class, new DefaultDateSerializer<>(converter), false);
-        conf.registerSerializer(Date.class, new DefaultDateSerializer<>(converter), false);
-
         // Java8 Time Serializer
-        conf.registerSerializer(Instant.class, new Java8TimeSerializer<>(Instant.class, converter), false);
-        conf.registerSerializer(LocalDate.class, new Java8TimeSerializer<>(LocalDate.class, converter), false);
-        conf.registerSerializer(LocalDateTime.class, new Java8TimeSerializer<>(LocalDateTime.class, converter), false);
-        conf.registerSerializer(LocalTime.class, new Java8TimeSerializer<>(LocalTime.class, converter), false);
-        conf.registerSerializer(OffsetDateTime.class, new Java8TimeSerializer<>(OffsetDateTime.class, converter), false);
-        conf.registerSerializer(OffsetTime.class, new Java8TimeSerializer<>(OffsetTime.class, converter), false);
-        conf.registerSerializer(ZonedDateTime.class, new Java8TimeSerializer<>(ZonedDateTime.class, converter), false);
-        conf.registerSerializer(MonthDay.class, new Java8TimeSerializer<>(MonthDay.class, converter), false);
-        conf.registerSerializer(YearMonth.class, new Java8TimeSerializer<>(YearMonth.class, converter), false);
-        conf.registerSerializer(Year.class, new Java8TimeSerializer<>(Year.class, converter), false);
-        conf.registerSerializer(ZoneOffset.class, new Java8TimeSerializer<>(ZoneOffset.class, converter), false);
+        FSTBasicObjectSerializer stringSerializer = FSTStringSerializer.Instance;
+        conf.registerSerializer(Instant.class, new FstCoreCodecSerializer(converter, Java8TimeCodec.INSTANT_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(LocalDate.class, new FstCoreCodecSerializer(converter, Java8TimeCodec.LOCAL_DATE_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(LocalDateTime.class, new FstCoreCodecSerializer(converter, Java8TimeCodec.LOCAL_DATE_TIME_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(LocalTime.class, new FstCoreCodecSerializer(converter, Java8TimeCodec.LOCAL_TIME_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(OffsetDateTime.class, new FstCoreCodecSerializer(converter, Java8TimeCodec.OFFSET_DATE_TIME_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(OffsetTime.class, new FstCoreCodecSerializer(converter, Java8TimeCodec.OFFSET_TIME_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(ZonedDateTime.class, new FstCoreCodecSerializer(converter, Java8TimeCodec.ZONED_DATE_TIME_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(MonthDay.class, new FstCoreCodecSerializer(converter, Java8TimeCodec.MONTH_DAY_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(YearMonth.class, new FstCoreCodecSerializer(converter, Java8TimeCodec.YEAR_MONTH_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(Year.class, new FstCoreCodecSerializer(converter, Java8TimeCodec.YEAR_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(ZoneOffset.class, new FstCoreCodecSerializer(converter, Java8TimeCodec.ZONE_OFFSET_CODEC.withConverter(converter), stringSerializer), false);
+
+        // Default Date Serializer
+        conf.registerSerializer(java.sql.Date.class, new FstCoreCodecSerializer(converter, DefaultDateCodec.SQL_DATE_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(Timestamp.class, new FstCoreCodecSerializer(converter, DefaultDateCodec.TIMESTAMP_CODEC.withConverter(converter), stringSerializer), false);
+        conf.registerSerializer(Date.class, new FstCoreCodecSerializer(converter, DefaultDateCodec.DATE_CODEC.withConverter(converter), stringSerializer), false);
     }
 
     @Test

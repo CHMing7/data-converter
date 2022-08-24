@@ -21,6 +21,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -243,5 +244,24 @@ public class TestJava8Time {
             return Objects.equals(zoneOffset, java8Time.zoneOffset);
         }
 
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", Java8Time.class.getSimpleName() + "[", "]")
+                    .add("instant=" + instant)
+                    .add("localDate=" + localDate)
+                    .add("localDateTime=" + localDateTime)
+                    .add("localTime=" + localTime)
+                    .add("offsetDateTime=" + offsetDateTime)
+                    .add("offsetTime=" + offsetTime)
+                    .add("zonedDateTime=" + zonedDateTime)
+                    .add("monthDay=" + monthDay)
+                    .add("yearMonth=" + yearMonth)
+                    .add("year=" + year)
+                    .add("zoneOffset=" + zoneOffset)
+                    .add("date=" + date)
+                    .add("sqlDate=" + sqlDate)
+                    .add("timestamp=" + timestamp)
+                    .toString();
+        }
     }
 }

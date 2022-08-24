@@ -5,10 +5,11 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.avro.DefaultAvroConverter;
-import com.chm.converter.avro.factorys.AvroDefaultDateConversion;
-import com.chm.converter.avro.factorys.AvroJava8TimeConversion;
+import com.chm.converter.avro.factorys.CoreCodecConversion;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.codecs.DefaultDateCodec;
+import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.reflect.TypeToken;
 import org.apache.avro.Conversion;
 import org.apache.avro.Schema;
@@ -72,22 +73,63 @@ public class ConverterTest {
         user.setYearMonth(YearMonth.now());
         reflectData = ReflectData.AllowNull.get();
         // java8Time Conversion
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(Instant.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(LocalDate.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(LocalDateTime.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(LocalTime.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(OffsetDateTime.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(OffsetTime.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(ZonedDateTime.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(MonthDay.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(YearMonth.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(Year.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(ZoneOffset.class, converter));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, Instant.class,
+                Java8TimeCodec.INSTANT_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                Instant.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, LocalDate.class,
+                Java8TimeCodec.LOCAL_DATE_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                LocalDate.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, LocalDateTime.class,
+                Java8TimeCodec.LOCAL_DATE_TIME_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                LocalDateTime.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, LocalTime.class,
+                Java8TimeCodec.LOCAL_TIME_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                LocalTime.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, OffsetDateTime.class,
+                Java8TimeCodec.OFFSET_DATE_TIME_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                OffsetDateTime.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, OffsetTime.class,
+                Java8TimeCodec.OFFSET_TIME_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                OffsetTime.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, ZonedDateTime.class,
+                Java8TimeCodec.ZONED_DATE_TIME_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                ZonedDateTime.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, MonthDay.class,
+                Java8TimeCodec.MONTH_DAY_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                MonthDay.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, YearMonth.class,
+                Java8TimeCodec.YEAR_MONTH_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                YearMonth.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, Year.class,
+                Java8TimeCodec.YEAR_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                Year.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, ZoneOffset.class,
+                Java8TimeCodec.ZONE_OFFSET_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                ZoneOffset.class.getName()));
 
         // DefaultDate Conversion
-        reflectData.addLogicalTypeConversion(new AvroDefaultDateConversion<>(java.sql.Date.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroDefaultDateConversion<>(Timestamp.class, converter));
-        reflectData.addLogicalTypeConversion(new AvroDefaultDateConversion<>(Date.class, converter));
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, Date.class,
+                DefaultDateCodec.DATE_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                Date.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, Timestamp.class,
+                DefaultDateCodec.TIMESTAMP_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                Timestamp.class.getName()));
+
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, java.sql.Date.class,
+                DefaultDateCodec.SQL_DATE_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
+                java.sql.Date.class.getName()));
     }
 
     @Test

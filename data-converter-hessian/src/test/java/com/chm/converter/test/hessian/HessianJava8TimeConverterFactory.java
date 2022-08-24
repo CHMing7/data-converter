@@ -1,4 +1,4 @@
-package com.chm.converter.hessian.factory;
+package com.chm.converter.test.hessian;
 
 import com.caucho.hessian.io.AbstractDeserializer;
 import com.caucho.hessian.io.AbstractHessianInput;
@@ -34,7 +34,7 @@ public class HessianJava8TimeConverterFactory extends AbstractSerializerFactory 
 
     @Override
     public Serializer getSerializer(Class cl) throws HessianProtocolException {
-        if (TimeConstant.TEMPORAL_ACCESSOR_SET.contains(cl)) {
+        if (TimeConstant.isJava8Time(cl)) {
             return new HessianJava8TimeConverter(cl, (String) null, converter);
         }
         return null;
@@ -42,7 +42,7 @@ public class HessianJava8TimeConverterFactory extends AbstractSerializerFactory 
 
     @Override
     public Deserializer getDeserializer(Class cl) throws HessianProtocolException {
-        if (TimeConstant.TEMPORAL_ACCESSOR_SET.contains(cl)) {
+        if (TimeConstant.isJava8Time(cl)) {
             return new HessianJava8TimeConverter(cl, (String) null, converter);
         }
         return null;

@@ -6,12 +6,15 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.codecs.DefaultDateCodec;
+import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.json.GsonConverter;
-import com.chm.converter.json.gson.GsonDefaultDateTypeAdapter;
-import com.chm.converter.json.gson.GsonJava8TimeAdapter;
+import com.chm.converter.json.gson.GsonCoreCodecAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.internal.bind.TypeAdapters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -63,22 +66,23 @@ public class ConverterTest {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         // Java8 Time Serializer
-        gsonBuilder.registerTypeAdapter(Instant.class, new GsonJava8TimeAdapter<>(Instant.class, converter));
-        gsonBuilder.registerTypeAdapter(LocalDate.class, new GsonJava8TimeAdapter<>(LocalDate.class, converter));
-        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new GsonJava8TimeAdapter<>(LocalDateTime.class, converter));
-        gsonBuilder.registerTypeAdapter(LocalTime.class, new GsonJava8TimeAdapter<>(LocalTime.class, converter));
-        gsonBuilder.registerTypeAdapter(OffsetDateTime.class, new GsonJava8TimeAdapter<>(OffsetDateTime.class, converter));
-        gsonBuilder.registerTypeAdapter(OffsetTime.class, new GsonJava8TimeAdapter<>(OffsetTime.class, converter));
-        gsonBuilder.registerTypeAdapter(ZonedDateTime.class, new GsonJava8TimeAdapter<>(ZonedDateTime.class, converter));
-        gsonBuilder.registerTypeAdapter(MonthDay.class, new GsonJava8TimeAdapter<>(MonthDay.class, converter));
-        gsonBuilder.registerTypeAdapter(YearMonth.class, new GsonJava8TimeAdapter<>(YearMonth.class, converter));
-        gsonBuilder.registerTypeAdapter(Year.class, new GsonJava8TimeAdapter<>(Year.class, converter));
-        gsonBuilder.registerTypeAdapter(ZoneOffset.class, new GsonJava8TimeAdapter<>(ZoneOffset.class, converter));
+        TypeAdapter<String> stringTypeAdapter = TypeAdapters.STRING;
+        gsonBuilder.registerTypeAdapter(Instant.class, new GsonCoreCodecAdapter<>(Java8TimeCodec.INSTANT_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(LocalDate.class, new GsonCoreCodecAdapter<>(Java8TimeCodec.LOCAL_DATE_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new GsonCoreCodecAdapter<>(Java8TimeCodec.LOCAL_DATE_TIME_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(LocalTime.class, new GsonCoreCodecAdapter<>(Java8TimeCodec.LOCAL_TIME_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(OffsetDateTime.class, new GsonCoreCodecAdapter<>(Java8TimeCodec.OFFSET_DATE_TIME_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(OffsetTime.class, new GsonCoreCodecAdapter<>(Java8TimeCodec.OFFSET_TIME_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(ZonedDateTime.class, new GsonCoreCodecAdapter<>(Java8TimeCodec.ZONED_DATE_TIME_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(MonthDay.class, new GsonCoreCodecAdapter<>(Java8TimeCodec.MONTH_DAY_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(YearMonth.class, new GsonCoreCodecAdapter<>(Java8TimeCodec.YEAR_MONTH_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(Year.class, new GsonCoreCodecAdapter<>(Java8TimeCodec.YEAR_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(ZoneOffset.class, new GsonCoreCodecAdapter<>(Java8TimeCodec.ZONE_OFFSET_CODEC.withConverter(converter), stringTypeAdapter));
 
         // Default Date Serializer
-        gsonBuilder.registerTypeAdapter(java.sql.Date.class, new GsonDefaultDateTypeAdapter<>(java.sql.Date.class, converter));
-        gsonBuilder.registerTypeAdapter(Timestamp.class, new GsonDefaultDateTypeAdapter<>(Timestamp.class, converter));
-        gsonBuilder.registerTypeAdapter(Date.class, new GsonDefaultDateTypeAdapter<>(Date.class, converter));
+        gsonBuilder.registerTypeAdapter(java.sql.Date.class, new GsonCoreCodecAdapter<>(DefaultDateCodec.SQL_DATE_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(Timestamp.class, new GsonCoreCodecAdapter<>(DefaultDateCodec.TIMESTAMP_CODEC.withConverter(converter), stringTypeAdapter));
+        gsonBuilder.registerTypeAdapter(Date.class, new GsonCoreCodecAdapter<>(DefaultDateCodec.DATE_CODEC.withConverter(converter), stringTypeAdapter));
 
         gson = gsonBuilder.create();
     }
@@ -181,5 +185,14 @@ public class ConverterTest {
     public enum Enum {
         @FieldProperty(name = "testOne")
         ONE, TWO
+    }
+
+    @Test
+    public void test123() {
+        Map<String, Object> testMap = MapUtil.newHashMap();
+        testMap.put("date", new Date());
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").serializeNulls().create();
+        String str = gson.toJson(testMap);
+        StaticLog.info("testMap:{}", StrUtil.str(str, "utf-8"));
     }
 }

@@ -6,13 +6,16 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.codecs.DefaultDateCodec;
+import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.kryo.DefaultKryoConverter;
-import com.chm.converter.kryo.serializers.KryoDefaultDateSerializer;
-import com.chm.converter.kryo.serializers.KryoJava8TimeSerializer;
+import com.chm.converter.kryo.serializers.KryoCoreCodecSerializer;
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.DefaultSerializers;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,18 +34,10 @@ import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,36 +75,24 @@ public class ConverterTest {
 
         kryo.addDefaultSerializer(Throwable.class, new JavaSerializer());
 
-        // now just added some very common classes
-        kryo.register(HashMap.class);
-        kryo.register(ArrayList.class);
-        kryo.register(LinkedList.class);
-        kryo.register(HashSet.class);
-        kryo.register(Hashtable.class);
-        kryo.register(ConcurrentHashMap.class);
-        kryo.register(SimpleDateFormat.class);
-        kryo.register(GregorianCalendar.class);
-        kryo.register(Vector.class);
-        kryo.register(BitSet.class);
-        kryo.register(Object.class);
         // Java8 Time Serializer
-        kryo.register(Instant.class, new KryoJava8TimeSerializer<>(Instant.class, (String) null, converter));
-        kryo.register(LocalDate.class, new KryoJava8TimeSerializer<>(LocalDate.class, (String) null, converter));
-        kryo.register(LocalDateTime.class, new KryoJava8TimeSerializer<>(LocalDateTime.class, (String) null, converter));
-        kryo.register(LocalTime.class, new KryoJava8TimeSerializer<>(LocalTime.class, (String) null, converter));
-        kryo.register(OffsetDateTime.class, new KryoJava8TimeSerializer<>(OffsetDateTime.class, (String) null, converter));
-        kryo.register(OffsetTime.class, new KryoJava8TimeSerializer<>(OffsetTime.class, (String) null, converter));
-        kryo.register(ZonedDateTime.class, new KryoJava8TimeSerializer<>(ZonedDateTime.class, (String) null, converter));
-        kryo.register(MonthDay.class, new KryoJava8TimeSerializer<>(MonthDay.class, (String) null, converter));
-        kryo.register(YearMonth.class, new KryoJava8TimeSerializer<>(YearMonth.class, (String) null, converter));
-        kryo.register(Year.class, new KryoJava8TimeSerializer<>(Year.class, (String) null, converter));
-        kryo.register(ZoneOffset.class, new KryoJava8TimeSerializer<>(ZoneOffset.class, (String) null, converter));
+        Serializer<String> stringSerializer = new DefaultSerializers.StringSerializer();
+        kryo.addDefaultSerializer(Instant.class, new KryoCoreCodecSerializer<>(Java8TimeCodec.INSTANT_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(LocalDate.class, new KryoCoreCodecSerializer<>(Java8TimeCodec.LOCAL_DATE_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(LocalDateTime.class, new KryoCoreCodecSerializer<>(Java8TimeCodec.LOCAL_DATE_TIME_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(LocalTime.class, new KryoCoreCodecSerializer<>(Java8TimeCodec.LOCAL_TIME_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(OffsetDateTime.class, new KryoCoreCodecSerializer<>(Java8TimeCodec.OFFSET_DATE_TIME_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(OffsetTime.class, new KryoCoreCodecSerializer<>(Java8TimeCodec.OFFSET_TIME_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(ZonedDateTime.class, new KryoCoreCodecSerializer<>(Java8TimeCodec.ZONED_DATE_TIME_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(MonthDay.class, new KryoCoreCodecSerializer<>(Java8TimeCodec.MONTH_DAY_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(YearMonth.class, new KryoCoreCodecSerializer<>(Java8TimeCodec.YEAR_MONTH_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(Year.class, new KryoCoreCodecSerializer<>(Java8TimeCodec.YEAR_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(ZoneOffset.class, new KryoCoreCodecSerializer<>(Java8TimeCodec.ZONE_OFFSET_CODEC.withConverter(converter), stringSerializer));
 
         // Default Date Serializer
-        kryo.register(java.sql.Date.class, new KryoDefaultDateSerializer<>(java.sql.Date.class, (String) null, converter));
-        kryo.register(Timestamp.class, new KryoDefaultDateSerializer<>(Timestamp.class, (String) null, converter));
-        kryo.register(Date.class, new KryoDefaultDateSerializer<>(Date.class, (String) null, converter));
-
+        kryo.addDefaultSerializer(java.sql.Date.class, new KryoCoreCodecSerializer<>(DefaultDateCodec.SQL_DATE_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(Timestamp.class, new KryoCoreCodecSerializer<>(DefaultDateCodec.TIMESTAMP_CODEC.withConverter(converter), stringSerializer));
+        kryo.addDefaultSerializer(Date.class, new KryoCoreCodecSerializer<>(DefaultDateCodec.DATE_CODEC.withConverter(converter), stringSerializer));
     }
 
     @Test

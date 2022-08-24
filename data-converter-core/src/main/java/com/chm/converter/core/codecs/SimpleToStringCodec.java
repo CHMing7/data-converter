@@ -23,15 +23,70 @@ public class SimpleToStringCodec<T> extends ToStringCodec<T> {
 
     private final ReadData<String> simpleCodecReadData;
 
-    private SimpleToStringCodec(TypeToken<T> decodeType, WriteData<String> writeData, Decode<T, String> decode, ReadData<String> readData) {
+    private final boolean isPriorityUse;
+
+    private SimpleToStringCodec(TypeToken<T> decodeType,
+                                WriteData<String> writeData,
+                                Decode<T, String> decode,
+                                ReadData<String> readData,
+                                boolean isPriorityUse) {
         this.decodeType = decodeType;
+        this.simpleCodecWriteData = writeData;
         this.simpleCodecDecode = decode;
         this.simpleCodecReadData = readData;
-        this.simpleCodecWriteData = writeData;
+        this.isPriorityUse = isPriorityUse;
     }
 
-    public static <T> SimpleToStringCodec<T> create(TypeToken<T> decodeType, WriteData<String> writeData, Decode<T, String> decode, ReadData<String> readData) {
-        return new SimpleToStringCodec<>(decodeType, writeData, decode, readData);
+    public static <T> SimpleToStringCodec<T> create(TypeToken<T> decodeType,
+                                                    Decode<T, String> decode) {
+        return new SimpleToStringCodec<>(decodeType, (s, dw) -> dw.writeString(s), decode, DataReader::readString, false);
+    }
+
+    public static <T> SimpleToStringCodec<T> create(TypeToken<T> decodeType,
+                                                    Decode<T, String> decode,
+                                                    boolean isPriorityUse) {
+        return new SimpleToStringCodec<>(decodeType, (s, dw) -> dw.writeString(s), decode, DataReader::readString, isPriorityUse);
+    }
+
+    public static <T> SimpleToStringCodec<T> create(TypeToken<T> decodeType,
+                                                    Decode<T, String> decode,
+                                                    ReadData<String> readData) {
+        return new SimpleToStringCodec<>(decodeType, (s, dw) -> dw.writeString(s), decode, readData, false);
+    }
+
+    public static <T> SimpleToStringCodec<T> create(TypeToken<T> decodeType,
+                                                    Decode<T, String> decode,
+                                                    ReadData<String> readData,
+                                                    boolean isPriorityUse) {
+        return new SimpleToStringCodec<>(decodeType, (s, dw) -> dw.writeString(s), decode, readData, isPriorityUse);
+    }
+
+    public static <T> SimpleToStringCodec<T> create(TypeToken<T> decodeType,
+                                                    WriteData<String> writeData,
+                                                    Decode<T, String> decode) {
+        return new SimpleToStringCodec<>(decodeType, writeData, decode, DataReader::readString, false);
+    }
+
+    public static <T> SimpleToStringCodec<T> create(TypeToken<T> decodeType,
+                                                    WriteData<String> writeData,
+                                                    Decode<T, String> decode,
+                                                    boolean isPriorityUse) {
+        return new SimpleToStringCodec<>(decodeType, writeData, decode, DataReader::readString, isPriorityUse);
+    }
+
+    public static <T> SimpleToStringCodec<T> create(TypeToken<T> decodeType,
+                                                    WriteData<String> writeData,
+                                                    Decode<T, String> decode,
+                                                    ReadData<String> readData) {
+        return new SimpleToStringCodec<>(decodeType, writeData, decode, readData, false);
+    }
+
+    public static <T> SimpleToStringCodec<T> create(TypeToken<T> decodeType,
+                                                    WriteData<String> writeData,
+                                                    Decode<T, String> decode,
+                                                    ReadData<String> readData,
+                                                    boolean isPriorityUse) {
+        return new SimpleToStringCodec<>(decodeType, writeData, decode, readData, isPriorityUse);
     }
 
     @Override
@@ -61,5 +116,10 @@ public class SimpleToStringCodec<T> extends ToStringCodec<T> {
     @Override
     public String readData(DataReader dr) throws IOException {
         return simpleCodecReadData.readData(dr);
+    }
+
+    @Override
+    public boolean isPriorityUse() {
+        return isPriorityUse;
     }
 }

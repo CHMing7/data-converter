@@ -9,7 +9,6 @@ package com.chm.converter.protostuff.codec;
  **/
 public interface ProtostuffConstants {
 
-
     /**
      * 1-15 is encoded as 1 byte on protobuf
      */

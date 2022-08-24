@@ -1,8 +1,8 @@
 package com.chm.converter.protostuff.codec.factory;
 
 import com.chm.converter.core.codec.Codec;
-import com.chm.converter.core.codec.DataCodecGenerate;
-import com.chm.converter.core.codecs.JavaBeanCodec;
+import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
+import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
@@ -11,6 +11,7 @@ import io.protostuff.Input;
 import io.protostuff.Output;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author caihongming
@@ -19,36 +20,29 @@ import java.io.IOException;
  **/
 public class CoreCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
-    private final DataCodecGenerate generate;
+    private final UniversalGenerate<Codec> generate;
 
-    public CoreCodecFactory(DataCodecGenerate generate) {
+    public CoreCodecFactory(UniversalGenerate<Codec> generate) {
         this.generate = generate;
     }
 
     @Override
     public ProtostuffCodec create(UniversalGenerate<ProtostuffCodec> generate, TypeToken<?> typeToken) {
-        if (typeToken.getRawType() == Object.class) {
-            return null;
-        }
-        Codec codec = this.generate.get(typeToken);
-        if (codec != null && !(codec instanceof JavaBeanCodec)) {
-            return new CoreCodec(typeToken.getRawType(), generate, codec);
-        }
-        return null;
+        return UniversalCodecAdapterCreator.create(this.generate, typeToken, (type, codec) -> {
+            ProtostuffCodec encodeCodec = generate.get(codec.getEncodeType());
+            return new CoreCodec(typeToken.getRawType(), codec, encodeCodec);
+        });
     }
 
-    public static class CoreCodec extends ProtostuffCodec {
-
-        private final UniversalGenerate<ProtostuffCodec> generate;
-
-        private final ProtostuffCodec encodeCodec;
+    public static class CoreCodec extends ProtostuffCodec implements WithFormat {
 
         private final Codec codec;
 
-        protected CoreCodec(Class clazz, UniversalGenerate<ProtostuffCodec> generate, Codec codec) {
+        private final ProtostuffCodec encodeCodec;
+
+        protected CoreCodec(Class clazz, Codec codec, ProtostuffCodec encodeCodec) {
             super(clazz);
-            this.encodeCodec = generate.get(codec.getEncodeType());
-            this.generate = generate;
+            this.encodeCodec = encodeCodec;
             this.codec = codec;
         }
 
@@ -78,7 +72,35 @@ public class CoreCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         @Override
         public CoreCodec newInstance() {
-            return new CoreCodec(this.clazz, this.generate, codec);
+            return new CoreCodec(this.clazz, codec, this.encodeCodec.newInstance());
+        }
+
+        @Override
+        public CoreCodec withFieldNumber(int fieldNumber) {
+            CoreCodec newInstance = newInstance();
+            newInstance.encodeCodec.setFieldNumber(fieldNumber);
+            newInstance.encodeCodec.setField(true);
+            newInstance.setFieldNumber(fieldNumber);
+            newInstance.setField(true);
+            return newInstance;
+        }
+
+        @Override
+        public CoreCodec withDatePattern(String datePattern) {
+            if (codec instanceof WithFormat) {
+                Codec withCodec = (Codec) ((WithFormat) codec).withDatePattern(datePattern);
+                return new CoreCodec(this.clazz, withCodec, this.encodeCodec);
+            }
+            return new CoreCodec(this.clazz, this.codec, this.encodeCodec);
+        }
+
+        @Override
+        public CoreCodec withDateFormatter(DateTimeFormatter dateFormatter) {
+            if (codec instanceof WithFormat) {
+                Codec withCodec = (Codec) ((WithFormat) codec).withDateFormatter(dateFormatter);
+                return new CoreCodec(this.clazz, withCodec, this.encodeCodec);
+            }
+            return new CoreCodec(this.clazz, this.codec, this.encodeCodec);
         }
     }
 }

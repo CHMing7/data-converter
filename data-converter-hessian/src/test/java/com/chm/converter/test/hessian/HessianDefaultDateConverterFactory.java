@@ -1,4 +1,4 @@
-package com.chm.converter.hessian.factory;
+package com.chm.converter.test.hessian;
 
 import com.caucho.hessian.io.AbstractDeserializer;
 import com.caucho.hessian.io.AbstractHessianInput;

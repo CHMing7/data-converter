@@ -12,6 +12,16 @@ import com.chm.converter.core.utils.StringUtil;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQuery;
@@ -26,6 +36,28 @@ import java.util.TimeZone;
  * @since 2021-09-02
  **/
 public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, String>, WithFormat {
+
+    public static final Java8TimeCodec<Instant> INSTANT_CODEC = new Java8TimeCodec<>(Instant.class);
+
+    public static final Java8TimeCodec<LocalDate> LOCAL_DATE_CODEC = new Java8TimeCodec<>(LocalDate.class);
+
+    public static final Java8TimeCodec<LocalDateTime> LOCAL_DATE_TIME_CODEC = new Java8TimeCodec<>(LocalDateTime.class);
+
+    public static final Java8TimeCodec<LocalTime> LOCAL_TIME_CODEC = new Java8TimeCodec<>(LocalTime.class);
+
+    public static final Java8TimeCodec<OffsetDateTime> OFFSET_DATE_TIME_CODEC = new Java8TimeCodec<>(OffsetDateTime.class);
+
+    public static final Java8TimeCodec<OffsetTime> OFFSET_TIME_CODEC = new Java8TimeCodec<>(OffsetTime.class);
+
+    public static final Java8TimeCodec<ZonedDateTime> ZONED_DATE_TIME_CODEC = new Java8TimeCodec<>(ZonedDateTime.class);
+
+    public static final Java8TimeCodec<MonthDay> MONTH_DAY_CODEC = new Java8TimeCodec<>(MonthDay.class);
+
+    public static final Java8TimeCodec<YearMonth> YEAR_MONTH_CODEC = new Java8TimeCodec<>(YearMonth.class);
+
+    public static final Java8TimeCodec<Year> YEAR_CODEC = new Java8TimeCodec<>(Year.class);
+
+    public static final Java8TimeCodec<ZoneOffset> ZONE_OFFSET_CODEC = new Java8TimeCodec<>(ZoneOffset.class);
 
     private final Class<T> clazz;
 
@@ -96,6 +128,10 @@ public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, Stri
     @Override
     public Java8TimeCodec<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new Java8TimeCodec<>(this.clazz, dateFormatter, this.converter);
+    }
+
+    public Java8TimeCodec<T> withConverter(Converter<?> converter) {
+        return new Java8TimeCodec<>(this.clazz, this.dateFormatter, converter);
     }
 
     public Class<T> getClazz() {
@@ -187,7 +223,11 @@ public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, Stri
         }
 
         DateTimeFormatter dtf = getCodecDateFormatter(format);
-        return dtf.parse(timeStr, temporalQuery);
+        try {
+            return dtf.parse(timeStr, temporalQuery);
+        } catch (Throwable cause) {
+            return DateUtil.parse(timeStr, temporalQuery);
+        }
     }
 
     private DateTimeFormatter getCodecDateFormatter(String otherFormat) {
@@ -198,7 +238,7 @@ public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, Stri
         if (dtf == null) {
             dtf = this.dateFormatter;
         }
-        if (this.converter != null && dtf == null) {
+        if (dtf == null && this.converter != null) {
             dtf = this.converter.getDateFormat();
         }
         if (dtf == null) {
@@ -213,4 +253,8 @@ public class Java8TimeCodec<T extends TemporalAccessor> implements Codec<T, Stri
         return dtf;
     }
 
+    @Override
+    public boolean isPriorityUse() {
+        return true;
+    }
 }

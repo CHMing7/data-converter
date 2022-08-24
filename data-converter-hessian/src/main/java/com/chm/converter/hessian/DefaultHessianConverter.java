@@ -7,9 +7,6 @@ import com.chm.converter.core.Converter;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.hessian.factory.HessianConverterFactory;
-import com.chm.converter.hessian.factory.HessianDefaultDateConverterFactory;
-import com.chm.converter.hessian.factory.HessianEnumConverterFactory;
-import com.chm.converter.hessian.factory.HessianJava8TimeConverterFactory;
 import com.google.auto.service.AutoService;
 
 import java.io.ByteArrayInputStream;
@@ -32,12 +29,6 @@ public class DefaultHessianConverter implements HessianConverter {
             "com.caucho.hessian.io.Hessian2Output"};
 
     private final SerializerFactory serializerFactory = new HessianConverterFactory(this);
-
-    {
-        serializerFactory.addFactory(new HessianJava8TimeConverterFactory(this));
-        serializerFactory.addFactory(new HessianDefaultDateConverterFactory(this));
-        serializerFactory.addFactory(new HessianEnumConverterFactory(this));
-    }
 
     public SerializerFactory getSerializerFactory() {
         return serializerFactory;

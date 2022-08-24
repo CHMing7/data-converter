@@ -4,7 +4,7 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.UseRawJudge;
 import com.chm.converter.spearal.impl.property.PropertyDelegate;
 import org.spearal.SpearalContext;
 import org.spearal.configuration.PropertyFactory.Property;
@@ -20,16 +20,13 @@ import static org.spearal.configuration.PropertyFactory.ZERO_PROPERTIES;
  **/
 public class IntrospectorImpl extends org.spearal.impl.introspector.IntrospectorImpl {
 
-    private final Converter<?> converter;
-
     private final Class<? extends Converter> converterClass;
 
-    private final UseOriginalJudge useOriginalJudge;
+    private final UseRawJudge useRawJudge;
 
-    public IntrospectorImpl(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
-        this.converter = converter;
+    public IntrospectorImpl(Converter<?> converter, UseRawJudge useRawJudge) {
         this.converterClass = converter != null ? converter.getClass() : null;
-        this.useOriginalJudge = useOriginalJudge;
+        this.useRawJudge = useRawJudge;
     }
 
     @Override
@@ -43,7 +40,7 @@ public class IntrospectorImpl extends org.spearal.impl.introspector.Introspector
     }
 
     private Property[] introspectProperties(SpearalContext context, Class<?> cls, boolean isAddSuperClass) {
-        if (useOriginalJudge.useOriginalImpl(cls)) {
+        if (useRawJudge.useRawImpl(cls)) {
             return super.introspectBeanProperties(context, cls);
         }
         if (cls == Object.class || cls == null) {

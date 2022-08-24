@@ -4,13 +4,13 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
+import com.chm.converter.avro.DefaultAvroConverter;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ListUtil;
-import com.chm.converter.json.Fastjson2Converter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +23,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author caihongming
@@ -124,6 +125,51 @@ public class ConverterTest {
         assertEquals(Enum.ONE, newEnum);
     }
 
+    private void testIgnore() {
+        TestIgnore testIgnore = new TestIgnore();
+        testIgnore.setUserName("tetetname");
+        testIgnore.setPassword("papapapasword");
+        Object encode = converter.encode(testIgnore);
+        StaticLog.info("testIgnore:{}", StrUtil.str(encode, "utf-8"));
+
+        TestIgnore newTestIgnore = (TestIgnore) converter.convertToJavaObject(encode, TestIgnore.class);
+
+        assertNull(newTestIgnore.userName);
+        assertNull(newTestIgnore.password);
+    }
+
+    public static class TestIgnore {
+
+        /**
+         * 用户名
+         */
+        @FieldProperty(name = "userName3", ordinal = 2, serialize = false)
+        private String userName;
+
+        /**
+         * 用户名
+         */
+        @FieldProperty(name = "password2", ordinal = 3, deserialize = false)
+        private String password;
+
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+    }
+
     public enum Enum {
         @FieldProperty(name = "testOne")
         ONE, TWO
@@ -133,14 +179,14 @@ public class ConverterTest {
     public void testAny() {
         ConverterTest converterTest = new ConverterTest();
         converterTest.before();
-        this.converter = ConverterSelector.select(Fastjson2Converter.class);
+        this.converter = ConverterSelector.select(DefaultAvroConverter.class);
         // converter.disable(ConvertFeature.ENUMS_USING_TO_STRING);
         StaticLog.info(this.converter.getConverterName());
         this.testUser();
-        /*this.testMap();
+        this.testMap();
         this.testCollection();
         this.testArray();
-        this.testEnum();*/
+        this.testEnum();
     }
 
     @Test
@@ -158,6 +204,7 @@ public class ConverterTest {
                 this.testCollection();
                 this.testArray();
                 this.testEnum();
+                this.testIgnore();
             }
         }
     }

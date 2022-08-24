@@ -1,7 +1,5 @@
 package com.chm.converter.avro;
 
-import com.chm.converter.avro.factorys.AvroDefaultDateConversion;
-import com.chm.converter.avro.factorys.AvroJava8TimeConversion;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
@@ -31,19 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.MonthDay;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -66,27 +51,7 @@ public class DefaultAvroConverter implements AvroConverter {
 
     private static final DecoderFactory DECODER_FACTORY = DecoderFactory.get();
 
-    protected ReflectData reflectData = new AvroReflectData(DefaultAvroConverter::checkExistAvroAnnotation, this);
-
-    {
-        // java8Time Conversion
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(Instant.class, this));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(LocalDate.class, this));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(LocalDateTime.class, this));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(LocalTime.class, this));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(OffsetDateTime.class, this));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(OffsetTime.class, this));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(ZonedDateTime.class, this));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(MonthDay.class, this));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(YearMonth.class, this));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(Year.class, this));
-        reflectData.addLogicalTypeConversion(new AvroJava8TimeConversion<>(ZoneOffset.class, this));
-
-        // DefaultDate Conversion
-        reflectData.addLogicalTypeConversion(new AvroDefaultDateConversion<>(java.sql.Date.class, this));
-        reflectData.addLogicalTypeConversion(new AvroDefaultDateConversion<>(Timestamp.class, this));
-        reflectData.addLogicalTypeConversion(new AvroDefaultDateConversion<>(Date.class, this));
-    }
+    protected ReflectData reflectData = new AvroReflectData(this, DefaultAvroConverter::checkExistAvroAnnotation);
 
     public ReflectData getReflectData() {
         return reflectData;

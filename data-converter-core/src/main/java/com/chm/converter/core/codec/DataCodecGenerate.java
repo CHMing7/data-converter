@@ -10,8 +10,10 @@ import com.chm.converter.core.codecs.factory.Java8TimeCodecFactory;
 import com.chm.converter.core.codecs.factory.JavaBeanCodecFactory;
 import com.chm.converter.core.codecs.factory.MapCodecFactory;
 import com.chm.converter.core.codecs.factory.ObjectCodecFactory;
+import com.chm.converter.core.codecs.factory.OptionalCodecFactory;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
+import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.MapUtil;
 
 import java.math.BigDecimal;
@@ -25,7 +27,8 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.time.Duration;
+import java.time.Period;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -60,15 +63,16 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
     }
 
     public static DataCodecGenerate newDefault(Converter<?> converter) {
-        List<UniversalFactory<Codec>> factories = new ArrayList<>();
-        factories.add(new JavaBeanCodecFactory(converter));
-        factories.add(new EnumCodecFactory(converter));
-        factories.add(new MapCodecFactory());
-        factories.add(new CollectionCodecFactory());
-        factories.add(new ArrayCodecFactory());
-        factories.add(new DefaultDateCodecFactory(converter));
-        factories.add(new Java8TimeCodecFactory(converter));
+        List<UniversalFactory<Codec>> factories = ListUtil.list(true);
         factories.add(new ObjectCodecFactory());
+        factories.add(new OptionalCodecFactory());
+        factories.add(new Java8TimeCodecFactory(converter));
+        factories.add(new DefaultDateCodecFactory(converter));
+        factories.add(new ArrayCodecFactory());
+        factories.add(new CollectionCodecFactory());
+        factories.add(new MapCodecFactory());
+        factories.add(new EnumCodecFactory(converter));
+        factories.add(new JavaBeanCodecFactory(converter));
         DataCodecGenerate codecGenerate = new DataCodecGenerate(factories, converter);
         // init codecs
         initCodecs(codecGenerate);
@@ -134,6 +138,9 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
         codecGenerate.put(AtomicLong.class, Codecs.ATOMIC_LONG);
         codecGenerate.put(AtomicIntegerArray.class, Codecs.ATOMIC_INTEGER_ARRAY);
         codecGenerate.put(AtomicLongArray.class, Codecs.ATOMIC_LONG_ARRAY);
+        // other java8 time
+        codecGenerate.put(Duration.class, Codecs.DURATION);
+        codecGenerate.put(Period.class, Codecs.PERIOD);
     }
 
     public static void newDataCodecGenerate(List<UniversalFactory<Codec>> factories, Converter<?> converter) {

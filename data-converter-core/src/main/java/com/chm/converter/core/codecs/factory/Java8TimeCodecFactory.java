@@ -25,7 +25,7 @@ public class Java8TimeCodecFactory implements UniversalFactory<Codec> {
 
     @Override
     public Codec create(UniversalGenerate<Codec> generate, TypeToken<?> typeToken) {
-        if (TimeConstant.TEMPORAL_ACCESSOR_SET.contains(typeToken.getRawType())) {
+        if (TimeConstant.isJava8Time(typeToken.getRawType())) {
             return new Java8TimeCodec(typeToken.getRawType(), (String) null, converter);
         }
         return null;

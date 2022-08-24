@@ -1,14 +1,17 @@
 package com.chm.converter.test.all;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
+import com.alibaba.fastjson.JSON;
+import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
-import com.chm.converter.core.annotation.FieldProperty;
-import com.chm.converter.json.GsonConverter;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.core.DataType;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,12 +19,15 @@ import java.time.LocalTime;
 import java.time.MonthDay;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.Period;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,13 +38,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  **/
 public class TestJava8Time {
 
-    JsonConverter gsonConverter;
+    Converter converter;
 
     Java8Time java8Time;
 
     @Before
     public void before() {
-        gsonConverter = ConverterSelector.select(GsonConverter.class);
         java8Time = new Java8Time();
         java8Time.setInstant(Instant.now());
         java8Time.setLocalDate(LocalDate.now());
@@ -51,59 +56,41 @@ public class TestJava8Time {
         java8Time.setYearMonth(YearMonth.now());
         java8Time.setYear(Year.now());
         java8Time.setZoneOffset(ZoneOffset.MIN);
+        java8Time.setDuration(Duration.ofHours(3));
+        java8Time.setPeriod(Period.ofDays(3));
         java8Time.setDate(new Date());
         java8Time.setSqlDate(new java.sql.Date(new Date().getTime()));
         java8Time.setTimestamp(new Timestamp(new Date().getTime()));
     }
 
 
-    @Test
-    public void testGson() {
-        String encodeToString = gsonConverter.encode(java8Time);
-        StaticLog.info(encodeToString);
-        StaticLog.info(gsonConverter.encode(LocalDateTime.now()));
-        StaticLog.info(gsonConverter.encode(MonthDay.now()));
-        StaticLog.info(gsonConverter.encode((MonthDay) null));
-        Java8Time java8Time = gsonConverter.convertToJavaObject(encodeToString, Java8Time.class);
+    public void testJava8Time() {
+        Object encode = converter.encode(java8Time);
+        StaticLog.info(StrUtil.str(encode, "utf-8"));
+        StaticLog.info(StrUtil.str(converter.encode(LocalDateTime.now()), "utf-8"));
+        StaticLog.info(StrUtil.str(converter.encode(MonthDay.now()), "utf-8"));
+        StaticLog.info(StrUtil.str(converter.encode(null), "utf-8"));
+        Java8Time java8Time = (Java8Time) converter.convertToJavaObject(encode, Java8Time.class);
         assertEquals(java8Time, this.java8Time);
+        StaticLog.info(StrUtil.str(JSON.toJSONString(Duration.ZERO), "utf-8"));
     }
 
     @Test
-    public void testGsonCacheTypeAdapter() {
-        Java8Time1 java8Time1 = new Java8Time1();
-        java8Time1.setInstant1(Instant.now());
-        java8Time1.setInstant2(Instant.now());
-        StaticLog.info(gsonConverter.encode(java8Time1));
-        StaticLog.info(gsonConverter.encode(java8Time1));
-        gsonConverter.encode(java8Time1);
-    }
-
-    public static class Java8Time1 {
-
-        @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
-        private Instant instant1;
-
-        @FieldProperty(format = "HH:mm:ss.SSS")
-        private Instant instant2;
-
-        public Instant getInstant1() {
-            return instant1;
-        }
-
-        public void setInstant1(Instant instant1) {
-            this.instant1 = instant1;
-        }
-
-        public Instant getInstant2() {
-            return instant2;
-        }
-
-        public void setInstant2(Instant instant2) {
-            this.instant2 = instant2;
+    public void testAll() {
+        TestJava8Time converterTest = new TestJava8Time();
+        converterTest.before();
+        List<DataType> dateTypeList = ConverterSelector.getDateTypeList();
+        for (DataType dataType : dateTypeList) {
+            List<Converter> converterList = ConverterSelector.getConverterListByDateType(dataType);
+            for (Converter converter : converterList) {
+                this.converter = converter;
+                StaticLog.info(this.converter.getConverterName());
+                this.testJava8Time();
+            }
         }
     }
 
-    public static class Java8Time {
+    public static class Java8Time implements Serializable {
 
         //@FieldProperty(name = "instant1", ordinal = 1)
         private Instant instant;
@@ -137,6 +124,10 @@ public class TestJava8Time {
 
         //@FieldProperty(format = "ZZZZZ")
         private ZoneOffset zoneOffset;
+
+        private Duration duration;
+
+        private Period period;
 
         // @FieldProperty(format = "yyyy-MM-dd HH:mm:ss.SSS")
         private Date date;
@@ -236,6 +227,22 @@ public class TestJava8Time {
             this.zoneOffset = zoneOffset;
         }
 
+        public Duration getDuration() {
+            return duration;
+        }
+
+        public void setDuration(Duration duration) {
+            this.duration = duration;
+        }
+
+        public Period getPeriod() {
+            return period;
+        }
+
+        public void setPeriod(Period period) {
+            this.period = period;
+        }
+
         public Date getDate() {
             return date;
         }
@@ -264,21 +271,50 @@ public class TestJava8Time {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-
             Java8Time java8Time = (Java8Time) o;
-
-            if (!Objects.equals(instant, java8Time.instant)) return false;
-            if (!Objects.equals(localDate, java8Time.localDate)) return false;
-            if (!Objects.equals(localDateTime, java8Time.localDateTime)) return false;
-            if (!Objects.equals(localTime, java8Time.localTime)) return false;
-            if (!Objects.equals(offsetDateTime, java8Time.offsetDateTime)) return false;
-            if (!Objects.equals(offsetTime, java8Time.offsetTime)) return false;
-            if (!Objects.equals(zonedDateTime, java8Time.zonedDateTime)) return false;
-            if (!Objects.equals(monthDay, java8Time.monthDay)) return false;
-            if (!Objects.equals(yearMonth, java8Time.yearMonth)) return false;
-            if (!Objects.equals(year, java8Time.year)) return false;
-            return Objects.equals(zoneOffset, java8Time.zoneOffset);
+            return Objects.equals(instant, java8Time.instant) &&
+                    Objects.equals(localDate, java8Time.localDate) &&
+                    Objects.equals(localDateTime, java8Time.localDateTime) &&
+                    Objects.equals(localTime, java8Time.localTime) &&
+                    Objects.equals(offsetDateTime, java8Time.offsetDateTime) &&
+                    Objects.equals(offsetTime, java8Time.offsetTime) &&
+                    Objects.equals(zonedDateTime, java8Time.zonedDateTime) &&
+                    Objects.equals(monthDay, java8Time.monthDay) &&
+                    Objects.equals(yearMonth, java8Time.yearMonth) &&
+                    Objects.equals(year, java8Time.year) &&
+                    Objects.equals(zoneOffset, java8Time.zoneOffset) &&
+                    Objects.equals(duration, java8Time.duration) &&
+                    Objects.equals(period, java8Time.period) &&
+                    Objects.equals(date, java8Time.date) &&
+                    Objects.equals(sqlDate, java8Time.sqlDate) &&
+                    Objects.equals(timestamp, java8Time.timestamp);
         }
 
+        @Override
+        public int hashCode() {
+            return Objects.hash(instant, localDate, localDateTime, localTime, offsetDateTime, offsetTime, zonedDateTime, monthDay, yearMonth, year, zoneOffset, duration, period, date, sqlDate, timestamp);
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", Java8Time.class.getSimpleName() + "[", "]")
+                    .add("instant=" + instant)
+                    .add("localDate=" + localDate)
+                    .add("localDateTime=" + localDateTime)
+                    .add("localTime=" + localTime)
+                    .add("offsetDateTime=" + offsetDateTime)
+                    .add("offsetTime=" + offsetTime)
+                    .add("zonedDateTime=" + zonedDateTime)
+                    .add("monthDay=" + monthDay)
+                    .add("yearMonth=" + yearMonth)
+                    .add("year=" + year)
+                    .add("zoneOffset=" + zoneOffset)
+                    .add("duration=" + duration)
+                    .add("period=" + period)
+                    .add("date=" + date)
+                    .add("sqlDate=" + sqlDate)
+                    .add("timestamp=" + timestamp)
+                    .toString();
+        }
     }
 }

@@ -13,11 +13,12 @@ import com.alibaba.fastjson2.writer.ObjectWriter;
 import com.alibaba.fastjson2.writer.ObjectWriterProvider;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.codecs.DefaultDateCodec;
+import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.reflect.TypeToken;
-import com.chm.converter.fastjson2.Fastjson2DefaultDateCodec;
-import com.chm.converter.fastjson2.Fastjson2Jdk8DateCodec;
-import com.chm.converter.json.JsonConverter;
+import com.chm.converter.fastjson2.Fastjson2CoreCodec;
 import com.chm.converter.json.Fastjson2Converter;
+import com.chm.converter.json.JsonConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -72,41 +73,40 @@ public class ConverterTest {
         writerProvider = new ObjectWriterProvider();
         readerProvider = new ObjectReaderProvider();
         // Java8 Time Serializer
-        writerProvider.register(Instant.class, new Fastjson2Jdk8DateCodec<>(Instant.class, converter));
-        writerProvider.register(LocalDate.class, new Fastjson2Jdk8DateCodec<>(LocalDate.class, converter));
-        writerProvider.register(LocalDateTime.class, new Fastjson2Jdk8DateCodec<>(LocalDateTime.class, converter));
-        writerProvider.register(LocalTime.class, new Fastjson2Jdk8DateCodec<>(LocalTime.class, converter));
-        writerProvider.register(OffsetDateTime.class, new Fastjson2Jdk8DateCodec<>(OffsetDateTime.class, converter));
-        writerProvider.register(OffsetTime.class, new Fastjson2Jdk8DateCodec<>(OffsetTime.class, converter));
-        writerProvider.register(ZonedDateTime.class, new Fastjson2Jdk8DateCodec<>(ZonedDateTime.class, converter));
-        writerProvider.register(MonthDay.class, new Fastjson2Jdk8DateCodec<>(MonthDay.class, converter));
-        writerProvider.register(YearMonth.class, new Fastjson2Jdk8DateCodec<>(YearMonth.class, converter));
-        writerProvider.register(Year.class, new Fastjson2Jdk8DateCodec<>(Year.class, converter));
-        writerProvider.register(ZoneOffset.class, new Fastjson2Jdk8DateCodec<>(ZoneOffset.class, converter));
+        writerProvider.register(Instant.class, new Fastjson2CoreCodec<>(Java8TimeCodec.INSTANT_CODEC.withConverter(converter)));
+        writerProvider.register(LocalDate.class, new Fastjson2CoreCodec<>(Java8TimeCodec.LOCAL_DATE_CODEC.withConverter(converter)));
+        writerProvider.register(LocalDateTime.class, new Fastjson2CoreCodec<>(Java8TimeCodec.LOCAL_DATE_TIME_CODEC.withConverter(converter)));
+        writerProvider.register(LocalTime.class, new Fastjson2CoreCodec<>(Java8TimeCodec.LOCAL_TIME_CODEC.withConverter(converter)));
+        writerProvider.register(OffsetDateTime.class, new Fastjson2CoreCodec<>(Java8TimeCodec.OFFSET_DATE_TIME_CODEC.withConverter(converter)));
+        writerProvider.register(OffsetTime.class, new Fastjson2CoreCodec<>(Java8TimeCodec.OFFSET_TIME_CODEC.withConverter(converter)));
+        writerProvider.register(ZonedDateTime.class, new Fastjson2CoreCodec<>(Java8TimeCodec.ZONED_DATE_TIME_CODEC.withConverter(converter)));
+        writerProvider.register(MonthDay.class, new Fastjson2CoreCodec<>(Java8TimeCodec.MONTH_DAY_CODEC.withConverter(converter)));
+        writerProvider.register(YearMonth.class, new Fastjson2CoreCodec<>(Java8TimeCodec.YEAR_MONTH_CODEC.withConverter(converter)));
+        writerProvider.register(Year.class, new Fastjson2CoreCodec<>(Java8TimeCodec.YEAR_CODEC.withConverter(converter)));
+        writerProvider.register(ZoneOffset.class, new Fastjson2CoreCodec<>(Java8TimeCodec.ZONE_OFFSET_CODEC.withConverter(converter)));
 
         // Default Date Serializer
-        writerProvider.register(java.sql.Date.class, new Fastjson2DefaultDateCodec<>(java.sql.Date.class, converter));
-        writerProvider.register(Timestamp.class, new Fastjson2DefaultDateCodec<>(Timestamp.class, converter));
-        writerProvider.register(Date.class, new Fastjson2DefaultDateCodec<>(Date.class, converter));
+        writerProvider.register(java.sql.Date.class, new Fastjson2CoreCodec<>(DefaultDateCodec.SQL_DATE_CODEC.withConverter(converter)));
+        writerProvider.register(Timestamp.class, new Fastjson2CoreCodec<>(DefaultDateCodec.TIMESTAMP_CODEC.withConverter(converter)));
+        writerProvider.register(Date.class, new Fastjson2CoreCodec<>(DefaultDateCodec.DATE_CODEC.withConverter(converter)));
 
         // Java8 Time Serializer
-        readerProvider.register(Instant.class, new Fastjson2Jdk8DateCodec<>(Instant.class, converter));
-        readerProvider.register(LocalDate.class, new Fastjson2Jdk8DateCodec<>(LocalDate.class, converter));
-        // readerProvider.register(LocalDateTime.class, new Fastjson2Jdk8DateCodec<>(LocalDateTime.class, converter));
-        readerProvider.register(LocalTime.class, new Fastjson2Jdk8DateCodec<>(LocalTime.class, converter));
-        readerProvider.register(OffsetDateTime.class, new Fastjson2Jdk8DateCodec<>(OffsetDateTime.class, converter));
-        readerProvider.register(OffsetTime.class, new Fastjson2Jdk8DateCodec<>(OffsetTime.class, converter));
-        readerProvider.register(ZonedDateTime.class, new Fastjson2Jdk8DateCodec<>(ZonedDateTime.class, converter));
-        readerProvider.register(MonthDay.class, new Fastjson2Jdk8DateCodec<>(MonthDay.class, converter));
-        readerProvider.register(YearMonth.class, new Fastjson2Jdk8DateCodec<>(YearMonth.class, converter));
-        readerProvider.register(Year.class, new Fastjson2Jdk8DateCodec<>(Year.class, converter));
-        readerProvider.register(ZoneOffset.class, new Fastjson2Jdk8DateCodec<>(ZoneOffset.class, converter));
+        readerProvider.register(Instant.class, new Fastjson2CoreCodec<>(Java8TimeCodec.INSTANT_CODEC.withConverter(converter)));
+        readerProvider.register(LocalDate.class, new Fastjson2CoreCodec<>(Java8TimeCodec.LOCAL_DATE_CODEC.withConverter(converter)));
+        // readerProvider.register(LocalDateTime.class, new Fastjson2CoreCodec<>(Java8TimeCodec.LOCAL_DATE_TIME_CODEC.withConverter(converter)));
+        readerProvider.register(LocalTime.class, new Fastjson2CoreCodec<>(Java8TimeCodec.LOCAL_TIME_CODEC.withConverter(converter)));
+        readerProvider.register(OffsetDateTime.class, new Fastjson2CoreCodec<>(Java8TimeCodec.OFFSET_DATE_TIME_CODEC.withConverter(converter)));
+        readerProvider.register(OffsetTime.class, new Fastjson2CoreCodec<>(Java8TimeCodec.OFFSET_TIME_CODEC.withConverter(converter)));
+        readerProvider.register(ZonedDateTime.class, new Fastjson2CoreCodec<>(Java8TimeCodec.ZONED_DATE_TIME_CODEC.withConverter(converter)));
+        readerProvider.register(MonthDay.class, new Fastjson2CoreCodec<>(Java8TimeCodec.MONTH_DAY_CODEC.withConverter(converter)));
+        readerProvider.register(YearMonth.class, new Fastjson2CoreCodec<>(Java8TimeCodec.YEAR_MONTH_CODEC.withConverter(converter)));
+        readerProvider.register(Year.class, new Fastjson2CoreCodec<>(Java8TimeCodec.YEAR_CODEC.withConverter(converter)));
+        readerProvider.register(ZoneOffset.class, new Fastjson2CoreCodec<>(Java8TimeCodec.ZONE_OFFSET_CODEC.withConverter(converter)));
 
         // Default Date Serializer
-        readerProvider.register(java.sql.Date.class, new Fastjson2DefaultDateCodec<>(java.sql.Date.class, converter));
-        readerProvider.register(Timestamp.class, new Fastjson2DefaultDateCodec<>(Timestamp.class, converter));
-        readerProvider.register(Date.class, new Fastjson2DefaultDateCodec<>(Date.class, converter));
-
+        readerProvider.register(java.sql.Date.class, new Fastjson2CoreCodec<>(DefaultDateCodec.SQL_DATE_CODEC.withConverter(converter)));
+        readerProvider.register(Timestamp.class, new Fastjson2CoreCodec<>(DefaultDateCodec.TIMESTAMP_CODEC.withConverter(converter)));
+        readerProvider.register(Date.class, new Fastjson2CoreCodec<>(DefaultDateCodec.DATE_CODEC.withConverter(converter)));
     }
 
     @Test

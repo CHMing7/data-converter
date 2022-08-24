@@ -4,20 +4,24 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
+import com.chm.converter.core.codec.Codec;
+import com.chm.converter.core.codec.DataCodecGenerate;
+import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
 import com.chm.converter.core.codec.WithFormat;
 import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.core.utils.ReflectUtil;
 import com.chm.converter.kryo.serializers.CustomizeSerializer;
-import com.chm.converter.kryo.serializers.KryoEnumSerializer;
+import com.chm.converter.kryo.serializers.JavaBeanSerializer;
+import com.chm.converter.kryo.serializers.KryoCoreCodecSerializer;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Registration;
 import com.esotericsoftware.kryo.Serializer;
-import com.esotericsoftware.kryo.serializers.DefaultSerializers;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import org.objenesis.instantiator.ObjectInstantiator;
@@ -36,11 +40,18 @@ public class CompatibleKryo extends Kryo {
 
     private final Class<? extends Converter> converterClass;
 
+    private final UniversalGenerate<Codec> generate;
+
     protected Map<Class, Serializer> serializerMap = MapUtil.newConcurrentHashMap();
 
     public CompatibleKryo(Converter<?> converter) {
+        this(converter, null);
+    }
+
+    public CompatibleKryo(Converter<?> converter, UniversalGenerate<Codec> generate) {
         this.converter = converter;
         this.converterClass = converter != null ? converter.getClass() : null;
+        this.generate = generate != null ? generate : DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     @Override
@@ -49,6 +60,15 @@ public class CompatibleKryo extends Kryo {
             throw new IllegalArgumentException("type cannot be null.");
         }
 
+        KryoCoreCodecSerializer codecSerializer = UniversalCodecAdapterCreator.create(generate, clazz, (t, codec) -> {
+            Serializer encodeAdapter = getSerializer(codec.getEncodeType().getRawType());
+            return new KryoCoreCodecSerializer<>(codec, encodeAdapter);
+        });
+
+        if (codecSerializer != null && codecSerializer.isPriorityUse()) {
+            serializerMap.put(clazz, codecSerializer);
+            return codecSerializer;
+        }
         /**
          * Kryo requires every class to provide a zero argument constructor. For any class does not match this condition, kryo have two ways:
          * 1. Use JavaSerializer,
@@ -66,33 +86,35 @@ public class CompatibleKryo extends Kryo {
             return res;
         }
         Serializer defaultSerializer = super.getDefaultSerializer(clazz);
-        if (defaultSerializer instanceof DefaultSerializers.EnumSerializer) {
-            return new KryoEnumSerializer(clazz, converter);
-        }
-
-
         if (defaultSerializer instanceof FieldSerializer) {
+            // 优先使用codec
+            if (codecSerializer != null) {
+                serializerMap.put(clazz, codecSerializer);
+                return codecSerializer;
+            }
+
             serializerMap.put(clazz, defaultSerializer);
             JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
             Map<String, FieldInfo> fieldNameFieldInfoMap = javaBeanInfo.getFieldNameFieldInfoMap();
             if (fieldNameFieldInfoMap.isEmpty()) {
                 return defaultSerializer;
             }
+            FieldSerializer<?> fieldSerializer = (FieldSerializer<?>) defaultSerializer;
             // init fieldInfo[]
-            FieldSerializer.CachedField[] fields = ((FieldSerializer<?>) defaultSerializer).getFields();
+            FieldSerializer.CachedField<?>[] fields = fieldSerializer.getFields();
             if (fields.length != fieldNameFieldInfoMap.size()) {
-                return defaultSerializer;
+                return fieldSerializer;
             }
-            List<FieldSerializer.CachedField> cachedFieldList = ListUtil.toList(fields);
+            List<FieldSerializer.CachedField<?>> cachedFieldList = ListUtil.toList(fields);
             // 设置ser
-            for (FieldSerializer.CachedField cachedField : cachedFieldList) {
+            for (FieldSerializer.CachedField<?> cachedField : cachedFieldList) {
                 FieldInfo fieldInfo = fieldNameFieldInfoMap.get(cachedField.getField().getName());
                 if (fieldInfo == null) {
                     continue;
                 }
-                Serializer fieldSerializer = getFieldSerializer(this, fieldInfo);
-                if (fieldSerializer instanceof CustomizeSerializer) {
-                    cachedField.setSerializer(fieldSerializer);
+                Serializer<?> fieldInfoSerializer = getFieldSerializer(this, fieldInfo);
+                if (fieldInfoSerializer instanceof CustomizeSerializer) {
+                    cachedField.setSerializer(fieldInfoSerializer);
                 }
             }
             // 排序
@@ -101,9 +123,9 @@ public class CompatibleKryo extends Kryo {
                 FieldInfo fieldInfo2 = fieldNameFieldInfoMap.get(o2.getField().getName());
                 return FieldInfo.FIELD_INFO_COMPARATOR.compare(fieldInfo1, fieldInfo2);
             });
-            ReflectUtil.setFieldValue(defaultSerializer, "fields", cachedFieldList.toArray(new FieldSerializer.CachedField[0]));
+            ReflectUtil.setFieldValue(fieldSerializer, "fields", cachedFieldList.toArray(new FieldSerializer.CachedField[0]));
 
-            return defaultSerializer;
+            return new JavaBeanSerializer<>(converter, fieldSerializer);
         }
         return defaultSerializer;
     }

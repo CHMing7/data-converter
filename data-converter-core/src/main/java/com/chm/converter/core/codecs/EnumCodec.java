@@ -108,4 +108,9 @@ public class EnumCodec<E extends Enum<E>> implements Codec<E, String> {
     protected String index(E e) {
         return (e == null) ? "" : String.valueOf(e.ordinal());
     }
+
+    @Override
+    public boolean isPriorityUse() {
+        return true;
+    }
 }

@@ -8,31 +8,21 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.UseRawJudge;
+import com.chm.converter.core.codec.Codec;
+import com.chm.converter.core.codec.DataCodecGenerate;
+import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
 import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.ArrayUtil;
+import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.CollStreamUtil;
 import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.ReflectUtil;
-import com.chm.converter.json.fastjson.FastjsonDefaultDateCodec;
-import com.chm.converter.json.fastjson.FastjsonEnumCodec;
-import com.chm.converter.json.fastjson.FastjsonJdk8DateCodec;
+import com.chm.converter.json.fastjson.FastjsonCoreCodec;
 
 import java.lang.reflect.Type;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.MonthDay;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -49,63 +39,71 @@ public class FastjsonParserConfig extends ParserConfig {
 
     private final Class<? extends Converter> converterClass;
 
-    private final UseOriginalJudge useOriginalJudge;
+    private final UniversalGenerate<Codec> generate;
 
-    public FastjsonParserConfig(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
-        super();
+    private final UseRawJudge useRawJudge;
+
+    public FastjsonParserConfig(Converter<?> converter, UseRawJudge useRawJudge) {
+        this(converter, null, useRawJudge);
+    }
+
+    public FastjsonParserConfig(Converter<?> converter, UniversalGenerate<Codec> generate, UseRawJudge useRawJudge) {
         this.converter = converter;
         this.converterClass = converter != null ? converter.getClass() : null;
-        this.useOriginalJudge = useOriginalJudge;
-        // Java8 Time Deserializer
-        putDeserializer(Instant.class, new FastjsonJdk8DateCodec<>(Instant.class, converter));
-        putDeserializer(LocalDate.class, new FastjsonJdk8DateCodec<>(LocalDate.class, converter));
-        putDeserializer(LocalDateTime.class, new FastjsonJdk8DateCodec<>(LocalDateTime.class, converter));
-        putDeserializer(LocalTime.class, new FastjsonJdk8DateCodec<>(LocalTime.class, converter));
-        putDeserializer(OffsetDateTime.class, new FastjsonJdk8DateCodec<>(OffsetDateTime.class, converter));
-        putDeserializer(OffsetTime.class, new FastjsonJdk8DateCodec<>(OffsetTime.class, converter));
-        putDeserializer(ZonedDateTime.class, new FastjsonJdk8DateCodec<>(ZonedDateTime.class, converter));
-        putDeserializer(MonthDay.class, new FastjsonJdk8DateCodec<>(MonthDay.class, converter));
-        putDeserializer(YearMonth.class, new FastjsonJdk8DateCodec<>(YearMonth.class, converter));
-        putDeserializer(Year.class, new FastjsonJdk8DateCodec<>(Year.class, converter));
-        putDeserializer(ZoneOffset.class, new FastjsonJdk8DateCodec<>(ZoneOffset.class, converter));
-
-        // Default Date Deserializer
-        putDeserializer(java.sql.Date.class, new FastjsonDefaultDateCodec<>(java.sql.Date.class, converter));
-        putDeserializer(Timestamp.class, new FastjsonDefaultDateCodec<>(Timestamp.class, converter));
-        putDeserializer(Date.class, new FastjsonDefaultDateCodec<>(Date.class, converter));
+        this.generate = generate != null ? generate : DataCodecGenerate.getDataCodecGenerate(converter);
+        this.useRawJudge = useRawJudge;
     }
 
     @Override
     public ObjectDeserializer getDeserializer(Type type) {
+        Class<?> clazz = ClassUtil.getClassByType(type);
+        // 校验制定类或其父类集中是否存在Fastjson框架注解
+        if (useRawJudge.useRawImpl(clazz)) {
+            return super.getDeserializer(type);
+        }
+        FastjsonCoreCodec priorityUse = UniversalCodecAdapterCreator.createPriorityUse(this.generate, type, (t, codec) -> {
+            ObjectDeserializer cacheDeserializer = get(t.getType());
+            if (cacheDeserializer instanceof FastjsonCoreCodec) {
+                return (FastjsonCoreCodec) cacheDeserializer;
+            }
+            FastjsonCoreCodec coreCodec = new FastjsonCoreCodec(codec);
+            putDeserializer(clazz, coreCodec);
+            return coreCodec;
+        });
+        if (priorityUse != null) {
+            return priorityUse;
+        }
+
         ObjectDeserializer deserializer = super.getDeserializer(type);
-        if (deserializer instanceof FastjsonJavaBeanDeserializer) {
+        if (deserializer instanceof FastjsonJavaBeanDeserializer ||
+                deserializer instanceof FastjsonCoreCodec) {
             return deserializer;
         }
-        if (type instanceof Class<?>) {
-            Class<?> clazz = (Class<?>) type;
-            // 校验制定类或其父类集中是否存在Fastjson框架注解
-            if (useOriginalJudge.useOriginalImpl(clazz)) {
-                return deserializer;
-            }
 
-            if (Enum.class.isAssignableFrom(clazz) && clazz != Enum.class) {
-                if (!clazz.isEnum()) {
-                    clazz = clazz.getSuperclass();
-                }
-                return new FastjsonEnumCodec(clazz, converter);
-            }
-
-            if (deserializer instanceof JavaBeanDeserializer) {
-                JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
-                if (CollUtil.isNotEmpty(javaBeanInfo.getSortedFieldList())) {
-                    putDeserializer(clazz, deserializer = new FastjsonJavaBeanDeserializer(this, clazz));
-                    ((FastjsonJavaBeanDeserializer) deserializer).init(this, clazz);
-                    return deserializer;
-                }
-            }
+        ObjectDeserializer suitableDeserializer = getSuitableDeserializer(clazz, deserializer);
+        if (suitableDeserializer != null) {
+            return suitableDeserializer;
         }
 
         return deserializer;
+    }
+
+    private ObjectDeserializer getSuitableDeserializer(Class clazz, ObjectDeserializer rawDeserializer) {
+        JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
+        return UniversalCodecAdapterCreator.createSuitable(this.generate, clazz,
+                (type, codec) -> {
+                    FastjsonCoreCodec coreCodec = new FastjsonCoreCodec(codec);
+                    putDeserializer(clazz, coreCodec);
+                    return coreCodec;
+                },
+                rawDeserializer instanceof JavaBeanDeserializer &&
+                        CollUtil.isNotEmpty(javaBeanInfo.getSortedFieldList()),
+                (type, codec) -> {
+                    FastjsonJavaBeanDeserializer beanDeserializer = new FastjsonJavaBeanDeserializer(this, clazz);
+                    putDeserializer(clazz, beanDeserializer);
+                    beanDeserializer.init(this, clazz);
+                    return beanDeserializer;
+                });
     }
 
     private class FastjsonJavaBeanDeserializer extends JavaBeanDeserializer {
