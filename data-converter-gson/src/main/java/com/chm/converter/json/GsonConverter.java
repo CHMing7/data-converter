@@ -5,9 +5,6 @@ import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.TypeUtil;
-import com.chm.converter.json.gson.GsonDefaultDateTypeAdapterFactory;
-import com.chm.converter.json.gson.GsonEnumTypeAdapterFactory;
-import com.chm.converter.json.gson.GsonJava8TimeTypeAdapterFactory;
 import com.chm.converter.json.gson.GsonTypeAdapterFactory;
 import com.google.auto.service.AutoService;
 import com.google.gson.Gson;
@@ -51,10 +48,7 @@ public class GsonConverter implements JsonConverter {
             Until.class);
 
     private final List<TypeAdapterFactory> factories = ListUtil.toLinkedList(
-            new GsonTypeAdapterFactory(this, GsonConverter::checkExistGsonAnnotation),
-            new GsonJava8TimeTypeAdapterFactory(this),
-            new GsonDefaultDateTypeAdapterFactory(this),
-            new GsonEnumTypeAdapterFactory(this));
+            new GsonTypeAdapterFactory(this, GsonConverter::checkExistGsonAnnotation));
 
     public static final String GSON_NAME = "com.google.gson.JsonParser";
 

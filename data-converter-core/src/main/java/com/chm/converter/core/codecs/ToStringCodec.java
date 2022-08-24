@@ -15,5 +15,4 @@ public abstract class ToStringCodec<T> implements Codec<T, String> {
     public String encode(T t) {
         return t != null ? t.toString() : null;
     }
-
 }

@@ -18,61 +18,6 @@ import java.util.Map;
  **/
 public class ProtostuffCodecs {
 
-    // protostuff format
-    int ID_OBJECT = 16, ID_ARRAY_MAPPED = 17, ID_CLASS = 18,
-            ID_CLASS_MAPPED = 19, ID_CLASS_ARRAY = 20,
-            ID_CLASS_ARRAY_MAPPED = 21,
-
-    ID_ENUM_SET = 22, ID_ENUM_MAP = 23, ID_ENUM = 24,
-            ID_COLLECTION = 25, ID_MAP = 26,
-
-    ID_POLYMORPHIC_COLLECTION = 28, ID_POLYMORPHIC_MAP = 29,
-            ID_DELEGATE = 30,
-
-    ID_ARRAY_DELEGATE = 32, ID_ARRAY_SCALAR = 33, ID_ARRAY_ENUM = 34,
-            ID_ARRAY_POJO = 35,
-
-    ID_THROWABLE = 52,
-
-    // pojo fields limited to 126 if not explicitly using @Tag
-    // annotations
-    ID_POJO = 127;
-
-    public static final int ID_SCHEMAS_ARRAY_LEN = 1, ID_SCHEMAS_ARRAY_DATA = 2, ID_SCHEMAS_ARRAY_NULLCOUNT = 3;
-
-    public static final int ID_ARRAY_LEN = 3;
-    public static final int ID_ARRAY_DIMENSION = 2;
-    public static final int ID_ARRAY_VALUE = 1;
-
-    public static final int ID_MAP_ENTRY = 1;
-    public static final int ID_MAP_KEY = 1;
-    public static final int ID_MAP_VALUE = 2;
-
-    public static final int ID_ENUM_VALUE = 1;
-
-    public static final String STR_BOOL = "a", STR_BYTE = "b", STR_CHAR = "c",
-            STR_SHORT = "d", STR_INT32 = "e", STR_INT64 = "f", STR_FLOAT = "g",
-            STR_DOUBLE = "h", STR_STRING = "i", STR_BYTES = "j",
-            STR_BYTE_ARRAY = "k", STR_BIGDECIMAL = "l", STR_BIGINTEGER = "m",
-            STR_DATE = "n", STR_ARRAY = "o", STR_OBJECT = "p",
-            STR_ARRAY_MAPPED = "q", STR_CLASS = "r", STR_CLASS_MAPPED = "s",
-            STR_CLASS_ARRAY = "t", STR_CLASS_ARRAY_MAPPED = "u",
-
-    STR_ENUM_SET = "v", STR_ENUM_MAP = "w", STR_ENUM = "x",
-            STR_COLLECTION = "y", STR_MAP = "z",
-
-    STR_POLYMORPHIC_COLLECTION = "B", STR_POLYMOPRHIC_MAP = "C",
-            STR_DELEGATE = "D",
-
-    STR_ARRAY_DELEGATE = "F", STR_ARRAY_SCALAR = "G",
-            STR_ARRAY_ENUM = "H", STR_ARRAY_POJO = "I",
-
-    STR_THROWABLE = "Z",
-
-    // pojo fields limited to 126 if not explicitly using @Tag
-    // annotations
-    STR_POJO = "_";
-
     private static final Map<Integer, FieldWriteTo<?>> WRITE_MAP = MapUtil.newHashMap();
 
     private static final Map<Integer, FieldMergeFrom<?>> MERGE_FROM_MAP = MapUtil.newHashMap();
@@ -504,5 +449,4 @@ public class ProtostuffCodecs {
     private static final BigIntegerCodec BIG_INTEGER = new BigIntegerCodec();
 
     public static final UniversalFactory<ProtostuffCodec> BIG_INTEGER_FACTORY = UniversalFactory.newFactory(BigInteger.class, BIG_INTEGER);
-
 }

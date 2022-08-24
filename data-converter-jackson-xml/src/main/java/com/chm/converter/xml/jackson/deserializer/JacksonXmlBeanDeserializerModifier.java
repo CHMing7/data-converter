@@ -3,12 +3,15 @@ package com.chm.converter.xml.jackson.deserializer;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.core.UseOriginalJudge;
-import com.chm.converter.core.constant.TimeConstant;
+import com.chm.converter.core.UseRawJudge;
+import com.chm.converter.core.codec.Codec;
+import com.chm.converter.core.codec.DataCodecGenerate;
+import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
+import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.CollUtil;
-import com.chm.converter.jackson.deserializer.JacksonDefaultDateTypeDeserializer;
-import com.chm.converter.jackson.deserializer.JacksonEnumDeserializer;
-import com.chm.converter.jackson.deserializer.JacksonJava8TimeDeserializer;
+import com.chm.converter.core.utils.StringUtil;
+import com.chm.converter.jackson.deserializer.JacksonCoreCodecDeserializer;
 import com.chm.converter.xml.XmlClassInfoStorage;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.DeserializationConfig;
@@ -19,19 +22,17 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializerBase;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 import com.fasterxml.jackson.databind.deser.ValueInstantiator;
+import com.fasterxml.jackson.databind.deser.impl.UnsupportedTypeDeserializer;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.dataformat.xml.deser.WrapperHandlingDeserializer;
 import com.fasterxml.jackson.dataformat.xml.deser.XmlBeanDeserializerModifier;
 import com.fasterxml.jackson.dataformat.xml.deser.XmlTextDeserializer;
 
-import java.time.temporal.TemporalAccessor;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author caihongming
@@ -40,22 +41,26 @@ import java.util.Optional;
  **/
 public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModifier {
 
-    private final Converter<?> converter;
-
     private final Class<? extends Converter> converterClass;
 
-    private final UseOriginalJudge useOriginalJudge;
+    private final UniversalGenerate<Codec> generate;
 
-    public JacksonXmlBeanDeserializerModifier(String nameForTextValue, Converter<?> converter, UseOriginalJudge useOriginalJudge) {
+    private final UseRawJudge useRawJudge;
+
+    public JacksonXmlBeanDeserializerModifier(String nameForTextValue, Converter<?> converter, UseRawJudge useRawJudge) {
+        this(nameForTextValue, converter, null, useRawJudge);
+    }
+
+    public JacksonXmlBeanDeserializerModifier(String nameForTextValue, Converter<?> converter, UniversalGenerate<Codec> generate, UseRawJudge useRawJudge) {
         super(nameForTextValue);
-        this.converter = converter;
         this.converterClass = converter != null ? converter.getClass() : null;
-        this.useOriginalJudge = useOriginalJudge;
+        this.generate = generate != null ? generate : DataCodecGenerate.getDataCodecGenerate(converter);
+        this.useRawJudge = useRawJudge;
     }
 
     @Override
     public List<BeanPropertyDefinition> updateProperties(DeserializationConfig config, BeanDescription beanDesc, List<BeanPropertyDefinition> propDefs) {
-        if (useOriginalJudge.useOriginalImpl(beanDesc.getBeanClass())) {
+        if (useRawJudge.useRawImpl(beanDesc.getBeanClass())) {
             return super.updateProperties(config, beanDesc, propDefs);
         }
         List<BeanPropertyDefinition> resultList = new LinkedList<>();
@@ -79,15 +84,15 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
 
     @Override
     public BeanDeserializerBuilder updateBuilder(DeserializationConfig config, BeanDescription beanDesc, BeanDeserializerBuilder builder) {
-        if (useOriginalJudge.useOriginalImpl(beanDesc.getBeanClass())) {
+        if (useRawJudge.useRawImpl(beanDesc.getBeanClass())) {
             return super.updateBuilder(config, beanDesc, builder);
         }
         Iterator<SettableBeanProperty> properties = builder.getProperties();
-        Map<String, FieldInfo> fieldInfoMap = XmlClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass(), converterClass);
+        Map<String, FieldInfo> fieldInfoMap = XmlClassInfoStorage.INSTANCE.getNameFieldInfoMap(beanDesc.getBeanClass(), converterClass);
         CollUtil.forEach(properties, (property, index) -> {
             FieldInfo fieldInfo = fieldInfoMap.get(property.getName());
             // 修改时间类型反序列化类
-            JsonDeserializer<Object> dateTimeDeserializer = createDateTimeDeserializer(property, fieldInfo);
+            JsonDeserializer<Object> dateTimeDeserializer = createCoreCodecSerializer(fieldInfo);
             if (dateTimeDeserializer != null) {
                 SettableBeanProperty newProperty = property.withValueDeserializer(dateTimeDeserializer);
                 builder.addOrReplaceProperty(newProperty, true);
@@ -96,28 +101,45 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
         return builder;
     }
 
-    private JsonDeserializer<Object> createDateTimeDeserializer(SettableBeanProperty property, FieldInfo fieldInfo) {
-        // java8时间类型需设置format
-        String format = fieldInfo != null ? fieldInfo.getFormat() : null;
-        Class<?> cls = property.getType().getRawClass();
-        Optional<Class<? extends TemporalAccessor>> jdk8TimeFirst = TimeConstant.TEMPORAL_ACCESSOR_SET.stream()
-                .filter(temporalAccessorClass -> temporalAccessorClass.isAssignableFrom(cls)).findFirst();
-        JsonDeserializer<Object> serializer = jdk8TimeFirst.map(clazz -> new JacksonJava8TimeDeserializer(clazz, format, converter)).orElse(null);
-        if (serializer != null) {
-            return serializer;
+    private JsonDeserializer<Object> createCoreCodecSerializer(FieldInfo fieldInfo) {
+        if (fieldInfo == null) {
+            return null;
         }
-        Optional<Class<? extends Date>> defaultDateFirst = TimeConstant.DEFAULT_DATE_SET.stream()
-                .filter(dateClass -> dateClass.isAssignableFrom(cls)).findFirst();
-        return defaultDateFirst.map(clazz -> new JacksonDefaultDateTypeDeserializer(clazz, format, converter)).orElse(null);
+        // 时间类型需设置format
+        String format = fieldInfo.getFormat();
+        JacksonCoreCodecDeserializer coreCodecDeserializer = UniversalCodecAdapterCreator.createPriorityUse(this.generate,
+                fieldInfo.getFieldType(), (type, codec) -> {
+                    if (codec instanceof WithFormat && StringUtil.isNotBlank(format)) {
+                        return new JacksonCoreCodecDeserializer<>((Codec) ((WithFormat) codec).withDatePattern(format));
+                    }
+                    return new JacksonCoreCodecDeserializer<>(codec);
+                });
+
+        return coreCodecDeserializer;
     }
 
     @Override
     public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deser0) {
-        if (useOriginalJudge.useOriginalImpl(beanDesc.getBeanClass())) {
+        Class<?> beanClass = beanDesc.getBeanClass();
+        if (beanClass == Object.class
+                || useRawJudge.useRawImpl(beanClass)
+                || deser0 instanceof JacksonCoreCodecDeserializer) {
             return super.modifyDeserializer(config, beanDesc, deser0);
         }
+
+        JsonDeserializer<?> returnDeserializer = deser0;
+        JacksonCoreCodecDeserializer coreCodecDeserializer = UniversalCodecAdapterCreator.create(this.generate, beanClass,
+                (type, codec) -> new JacksonCoreCodecDeserializer<>(codec));
+
+        if (coreCodecDeserializer != null) {
+            if (coreCodecDeserializer.getCodec().isPriorityUse() ||
+                    deser0 instanceof UnsupportedTypeDeserializer) {
+                returnDeserializer = coreCodecDeserializer;
+            }
+        }
+
         if (!(deser0 instanceof BeanDeserializerBase)) {
-            return deser0;
+            return returnDeserializer;
         }
         /* 17-Aug-2013, tatu: One important special case first: if we have one "XML Text"
          * property, it may be exposed as VALUE_STRING token (depending on whether any attribute
@@ -177,6 +199,10 @@ public class JacksonXmlBeanDeserializerModifier extends XmlBeanDeserializerModif
 
     @Override
     public JsonDeserializer<?> modifyEnumDeserializer(DeserializationConfig config, JavaType type, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
-        return new JacksonEnumDeserializer(type.getRawClass(), converter);
+        if (deserializer instanceof JacksonCoreCodecDeserializer) {
+            return deserializer;
+        }
+        Codec codec = this.generate.get(type.getRawClass());
+        return new JacksonCoreCodecDeserializer<>(codec);
     }
 }

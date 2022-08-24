@@ -335,4 +335,12 @@ public interface Codec<D, E> extends UniversalInterface {
         T read() throws IOException;
     }
 
+    /**
+     * 优先使用此codec
+     *
+     * @return
+     */
+    default boolean isPriorityUse() {
+        return false;
+    }
 }

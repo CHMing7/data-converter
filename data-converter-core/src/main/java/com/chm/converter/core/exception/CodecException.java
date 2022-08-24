@@ -5,7 +5,7 @@ package com.chm.converter.core.exception;
  * @version v1.0
  * @since 2021-09-02
  **/
-public class CodecException extends RuntimeException {
+public class CodecException extends AbstractRuntimeException {
 
     public CodecException() {
         super();
@@ -15,11 +15,19 @@ public class CodecException extends RuntimeException {
         super(message);
     }
 
+    public CodecException(String messageTemplate, Object... params) {
+        super(messageTemplate, params);
+    }
+
     public CodecException(Throwable cause) {
         super(cause);
     }
 
     public CodecException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public CodecException(Throwable throwable, String messageTemplate, Object... params) {
+        super(throwable, messageTemplate, params);
     }
 }

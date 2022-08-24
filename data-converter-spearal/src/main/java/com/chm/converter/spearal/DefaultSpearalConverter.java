@@ -14,6 +14,7 @@ import org.spearal.SpearalEncoder;
 import org.spearal.SpearalFactory;
 import org.spearal.annotation.Exclude;
 import org.spearal.annotation.Include;
+import org.spearal.configuration.Securizer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,11 +36,20 @@ public class DefaultSpearalConverter implements SpearalConverter {
 
     SpearalFactory factory = new DefaultSpearalFactory();
 
-    private final DataCodecGenerate dataCodec = DataCodecGenerate.newDefault(this);
+    private final DataCodecGenerate dataCodec = DataCodecGenerate.getDataCodecGenerate(this);
 
     {
         factory.getContext().configure(new CodecProvider(dataCodec));
         factory.getContext().configure(new IntrospectorImpl(this, DefaultSpearalConverter::checkExistSpearalAnnotation));
+        factory.getContext().configure(new Securizer() {
+            @Override
+            public void checkDecodable(Type type) throws SecurityException {
+            }
+
+            @Override
+            public void checkEncodable(Class<?> cls) throws SecurityException {
+            }
+        });
     }
 
     @Override

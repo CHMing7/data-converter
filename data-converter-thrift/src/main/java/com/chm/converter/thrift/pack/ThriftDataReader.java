@@ -10,6 +10,7 @@ import com.chm.converter.core.exception.CodecException;
 import com.chm.converter.core.pack.DataReader;
 import com.chm.converter.core.reflect.ConverterTypes;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.thrift.ThriftClassInfoStorage;
 import com.chm.converter.thrift.utils.Thrift;
 import org.apache.thrift.TBase;
@@ -47,7 +48,7 @@ public class ThriftDataReader implements DataReader {
 
     protected final TProtocol oprot;
 
-    protected final DataCodecGenerate codecGenerate;
+    protected final UniversalGenerate<Codec> codecGenerate;
 
     protected final Class<? extends Converter> converterClass;
 
@@ -316,8 +317,8 @@ public class ThriftDataReader implements DataReader {
 
     @Override
     public <T> Class<T> readClass() throws IOException {
-        Codec enumCodec = codecGenerate.get(Class.class);
-        return (Class<T>) enumCodec.read(this);
+        Codec ClassCodec = codecGenerate.get(Class.class);
+        return (Class<T>) ClassCodec.read(this);
     }
 
     @Override

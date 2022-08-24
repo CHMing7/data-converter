@@ -4,17 +4,13 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
-import com.chm.converter.core.UseOriginalJudge;
-import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.UseRawJudge;
 import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.ReflectUtil;
 import org.nustaq.serialization.FSTClazzInfo;
 import org.nustaq.serialization.FSTClazzInfoRegistry;
 import org.nustaq.serialization.FSTConfiguration;
-import org.nustaq.serialization.FSTObjectSerializer;
-import org.nustaq.serialization.FSTSerializerRegistry;
-import org.nustaq.serialization.FSTSerializerRegistryDelegate;
 import org.nustaq.serialization.util.FSTMap;
 
 import java.util.List;
@@ -27,27 +23,25 @@ import java.util.Map;
  **/
 public class FstClazzInfoRegistry extends FSTClazzInfoRegistry {
 
-    protected FstSerializerRegistry serializerRegistry = new FstSerializerRegistry();
-
     protected FSTMap mInfos = new FSTMap(97);
 
     private final Class<? extends Converter> converterClass;
 
-    private final UseOriginalJudge useOriginalJudge;
+    private final UseRawJudge useRawJudge;
 
-    public FstClazzInfoRegistry(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
+    public FstClazzInfoRegistry(Converter<?> converter, UseRawJudge useRawJudge) {
         this.converterClass = converter != null ? converter.getClass() : null;
-        this.useOriginalJudge = useOriginalJudge;
+        this.useRawJudge = useRawJudge;
     }
 
     @Override
     public FSTClazzInfo getCLInfo(Class c, FSTConfiguration conf) {
         FSTClazzInfo clInfo = super.getCLInfo(c, conf);
-        if (useOriginalJudge != null && useOriginalJudge.useOriginalImpl(c)) {
+        if (useRawJudge.useRawImpl(c)) {
             return clInfo;
         }
 
-        if (serializerRegistry.getSerializer(c) != null) {
+        if (getSerializerRegistry().getSerializer(c) != null) {
             return clInfo;
         }
 
@@ -73,19 +67,6 @@ public class FstClazzInfoRegistry extends FSTClazzInfoRegistry {
         if (fieldInfos.length != fieldNameFieldInfoMap.size()) {
             return newClInfo;
         }
-        // 设置ser
-        for (FSTClazzInfo.FSTFieldInfo fstFieldInfo : fstFieldInfoList) {
-            FieldInfo fieldInfo = fieldNameFieldInfoMap.get(fstFieldInfo.getName());
-            if (fieldInfo == null) {
-                continue;
-            }
-            FSTObjectSerializer fieldSerializer = getFieldSerializer(fieldInfo);
-            if (fieldSerializer != null) {
-                FSTClazzInfo fieldClInfo = getCLInfo(fieldInfo.getFieldClass(), conf);
-                ReflectUtil.setFieldValue(fieldClInfo, "ser", fieldSerializer);
-                fstFieldInfo.setLastInfo(fieldClInfo);
-            }
-        }
         // 排序
         CollUtil.sort(fstFieldInfoList, (o1, o2) -> {
             FieldInfo fieldInfo1 = fieldNameFieldInfoMap.get(o1.getName());
@@ -96,7 +77,6 @@ public class FstClazzInfoRegistry extends FSTClazzInfoRegistry {
 
         // init fieldMap
         FSTMap<String, FSTClazzInfo.FSTFieldInfo> fieldMap = new FSTMap<>(fstFieldInfoList.size());
-        newClInfo.getFieldInfo(c.getSimpleName(), c);
         for (FSTClazzInfo.FSTFieldInfo fstFieldInfo : fstFieldInfoList) {
             FieldInfo fieldInfo = fieldNameFieldInfoMap.get(fstFieldInfo.getName());
             fieldMap.put(fieldInfo.getDeclaredClass().getName() + "#" + fieldInfo.getName(), fstFieldInfo);
@@ -104,29 +84,6 @@ public class FstClazzInfoRegistry extends FSTClazzInfoRegistry {
         }
         ReflectUtil.setFieldValue(newClInfo, "fieldMap", fieldMap);
         return newClInfo;
-    }
-
-    private FSTObjectSerializer getFieldSerializer(FieldInfo fieldInfo) {
-        FSTObjectSerializer ser = serializerRegistry.getSerializer(fieldInfo.getFieldClass());
-        if (ser instanceof WithFormat) {
-            ser = (FSTObjectSerializer) ((WithFormat) ser).withDatePattern(fieldInfo.getFormat());
-        }
-        return ser;
-    }
-
-    @Override
-    public FSTSerializerRegistry getSerializerRegistry() {
-        return serializerRegistry;
-    }
-
-    @Override
-    public void setSerializerRegistryDelegate(FSTSerializerRegistryDelegate delegate) {
-        serializerRegistry.setDelegate(delegate);
-    }
-
-    @Override
-    public FSTSerializerRegistryDelegate getSerializerRegistryDelegate() {
-        return serializerRegistry.getDelegate();
     }
 
 }

@@ -3,9 +3,14 @@ package com.chm.converter.jackson.deserializer;
 import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
-import com.chm.converter.core.UseOriginalJudge;
-import com.chm.converter.core.constant.TimeConstant;
+import com.chm.converter.core.UseRawJudge;
+import com.chm.converter.core.codec.Codec;
+import com.chm.converter.core.codec.DataCodecGenerate;
+import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
+import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.CollUtil;
+import com.chm.converter.core.utils.StringUtil;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.JavaType;
@@ -13,15 +18,13 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
+import com.fasterxml.jackson.databind.deser.impl.UnsupportedTypeDeserializer;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 
-import java.time.temporal.TemporalAccessor;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author caihongming
@@ -30,21 +33,25 @@ import java.util.Optional;
  **/
 public class JacksonBeanDeserializerModifier extends BeanDeserializerModifier {
 
-    private final Converter<?> converter;
-
     private final Class<? extends Converter> converterClass;
 
-    private final UseOriginalJudge useOriginalJudge;
+    private final UniversalGenerate<Codec> generate;
 
-    public JacksonBeanDeserializerModifier(Converter<?> converter, UseOriginalJudge useOriginalJudge) {
-        this.converter = converter;
+    private final UseRawJudge useRawJudge;
+
+    public JacksonBeanDeserializerModifier(Converter<?> converter, UseRawJudge useRawJudge) {
+        this(converter, null, useRawJudge);
+    }
+
+    public JacksonBeanDeserializerModifier(Converter<?> converter, UniversalGenerate<Codec> generate, UseRawJudge useRawJudge) {
         this.converterClass = converter != null ? converter.getClass() : null;
-        this.useOriginalJudge = useOriginalJudge;
+        this.generate = generate != null ? generate : DataCodecGenerate.getDataCodecGenerate(converter);
+        this.useRawJudge = useRawJudge;
     }
 
     @Override
     public List<BeanPropertyDefinition> updateProperties(DeserializationConfig config, BeanDescription beanDesc, List<BeanPropertyDefinition> propDefs) {
-        if (useOriginalJudge.useOriginalImpl(beanDesc.getBeanClass())) {
+        if (useRawJudge.useRawImpl(beanDesc.getBeanClass())) {
             return super.updateProperties(config, beanDesc, propDefs);
         }
         List<BeanPropertyDefinition> resultList = new LinkedList<>();
@@ -66,15 +73,15 @@ public class JacksonBeanDeserializerModifier extends BeanDeserializerModifier {
 
     @Override
     public BeanDeserializerBuilder updateBuilder(DeserializationConfig config, BeanDescription beanDesc, BeanDeserializerBuilder builder) {
-        if (useOriginalJudge.useOriginalImpl(beanDesc.getBeanClass())) {
+        if (useRawJudge.useRawImpl(beanDesc.getBeanClass())) {
             return super.updateBuilder(config, beanDesc, builder);
         }
         Iterator<SettableBeanProperty> properties = builder.getProperties();
-        Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass(), converterClass);
+        Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getNameFieldInfoMap(beanDesc.getBeanClass(), converterClass);
         CollUtil.forEach(properties, (property, index) -> {
             FieldInfo fieldInfo = fieldInfoMap.get(property.getName());
             // 修改时间类型反序列化类
-            JsonDeserializer<Object> dateTimeDeserializer = createDateTimeDeserializer(property, fieldInfo);
+            JsonDeserializer<Object> dateTimeDeserializer = createCoreCodecSerializer(fieldInfo);
 
             if (dateTimeDeserializer != null) {
                 SettableBeanProperty newProperty = property.withValueDeserializer(dateTimeDeserializer);
@@ -84,23 +91,52 @@ public class JacksonBeanDeserializerModifier extends BeanDeserializerModifier {
         return builder;
     }
 
-    private JsonDeserializer<Object> createDateTimeDeserializer(SettableBeanProperty property, FieldInfo fieldInfo) {
-        // java8时间类型需设置format
-        String format = fieldInfo != null ? fieldInfo.getFormat() : null;
-        Class<?> cls = property.getType().getRawClass();
-        Optional<Class<? extends TemporalAccessor>> jdk8TimeFirst = TimeConstant.TEMPORAL_ACCESSOR_SET.stream()
-                .filter(temporalAccessorClass -> temporalAccessorClass.isAssignableFrom(cls)).findFirst();
-        JsonDeserializer<Object> serializer = jdk8TimeFirst.map(clazz -> new JacksonJava8TimeDeserializer(clazz, format, converter)).orElse(null);
-        if (serializer != null) {
-            return serializer;
+    private JsonDeserializer<Object> createCoreCodecSerializer(FieldInfo fieldInfo) {
+        if (fieldInfo == null) {
+            return null;
         }
-        Optional<Class<? extends Date>> defaultDateFirst = TimeConstant.DEFAULT_DATE_SET.stream()
-                .filter(dateClass -> dateClass.isAssignableFrom(cls)).findFirst();
-        return defaultDateFirst.map(clazz -> new JacksonDefaultDateTypeDeserializer(clazz, format, converter)).orElse(null);
+        // 时间类型需设置format
+        String format = fieldInfo.getFormat();
+        JacksonCoreCodecDeserializer coreCodecDeserializer = UniversalCodecAdapterCreator.createPriorityUse(this.generate,
+                fieldInfo.getFieldType(), (type, codec) -> {
+                    if (codec instanceof WithFormat && StringUtil.isNotBlank(format)) {
+                        return new JacksonCoreCodecDeserializer<>((Codec) ((WithFormat) codec).withDatePattern(format));
+                    }
+                    return new JacksonCoreCodecDeserializer<>(codec);
+                });
+
+        return coreCodecDeserializer;
+    }
+
+    @Override
+    public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+        Class<?> beanClass = beanDesc.getBeanClass();
+        JsonDeserializer<?> jsonDeserializer = super.modifyDeserializer(config, beanDesc, deserializer);
+        if (beanClass == Object.class
+                || useRawJudge.useRawImpl(beanClass)
+                || jsonDeserializer instanceof JacksonCoreCodecDeserializer) {
+            return jsonDeserializer;
+        }
+
+        JacksonCoreCodecDeserializer coreCodecDeserializer = UniversalCodecAdapterCreator.create(this.generate, beanClass,
+                (type, codec) -> new JacksonCoreCodecDeserializer<>(codec));
+
+        if (coreCodecDeserializer != null) {
+            if (coreCodecDeserializer.getCodec().isPriorityUse() ||
+                    deserializer instanceof UnsupportedTypeDeserializer) {
+                return coreCodecDeserializer;
+            }
+        }
+
+        return jsonDeserializer;
     }
 
     @Override
     public JsonDeserializer<?> modifyEnumDeserializer(DeserializationConfig config, JavaType type, BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
-        return new JacksonEnumDeserializer(type.getRawClass(), converter);
+        if (deserializer instanceof JacksonCoreCodecDeserializer) {
+            return deserializer;
+        }
+        Codec codec = this.generate.get(type.getRawClass());
+        return new JacksonCoreCodecDeserializer<>(codec);
     }
 }

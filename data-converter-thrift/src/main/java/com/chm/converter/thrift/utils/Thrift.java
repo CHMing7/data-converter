@@ -24,7 +24,7 @@ public class Thrift {
     private final DataCodecGenerate dataCodec;
 
     public Thrift(Converter<?> converter) {
-        this.dataCodec = DataCodecGenerate.newDefault(converter);
+        this.dataCodec = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
     public static boolean isSupported(Type type) {

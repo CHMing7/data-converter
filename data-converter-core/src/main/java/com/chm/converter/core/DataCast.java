@@ -20,6 +20,7 @@ import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
 import com.chm.converter.core.exception.TypeCastException;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.MapUtil;
 
 import java.lang.reflect.ParameterizedType;
@@ -387,7 +388,7 @@ public abstract class DataCast {
      * @return {@link Date} or null
      * @throws TypeCastException 类型不支持转化为{@link Date}
      */
-    public static Date castDate(Object value, DataCodecGenerate generate) {
+    public static Date castDate(Object value, UniversalGenerate<Codec> generate) {
         if (value == null) {
             return null;
         }
@@ -425,7 +426,7 @@ public abstract class DataCast {
      * @return {@link Instant} or null
      * @throws TypeCastException 类型不支持转化为{@link Instant}
      */
-    public static Instant castInstant(Object value, DataCodecGenerate generate) {
+    public static Instant castInstant(Object value, UniversalGenerate<Codec> generate) {
         if (value == null) {
             return null;
         }

@@ -15,9 +15,14 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
+import com.chm.converter.core.codec.Codec;
+import com.chm.converter.core.codec.DataCodecGenerate;
+import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
 import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.hessian.UseDeserializer;
+import com.chm.converter.hessian.factory.codec.HessianCoreCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,26 +40,83 @@ public class HessianConverterFactory extends BeanSerializerFactory {
 
     private final Class<? extends Converter> converterClass;
 
+    private final UniversalGenerate<Codec> generate;
+
     public HessianConverterFactory(Converter<?> converter) {
-        this.converterClass = converter != null ? converter.getClass() : null;
+        this(converter, null);
     }
+
+    public HessianConverterFactory(Converter<?> converter, UniversalGenerate<Codec> generate) {
+        this.converterClass = converter != null ? converter.getClass() : null;
+        this.generate = generate != null ? generate : DataCodecGenerate.getDataCodecGenerate(converter);
+    }
+
 
     @Override
     public Serializer loadSerializer(Class cl) throws HessianProtocolException {
         Serializer serializer = super.loadSerializer(cl);
-        if (serializer instanceof BeanSerializer) {
-            return new HessianBeanSerializer(cl, getClassLoader(), converterClass, this);
+
+        Serializer suitableSerializer = UniversalCodecAdapterCreator.createSuitable(this.generate, cl,
+                (type, codec) -> new HessianCoreCodec(codec),
+                serializer instanceof BeanSerializer,
+                (type, codec) -> new HessianBeanSerializer(cl, getClassLoader(), converterClass, this));
+
+        if (suitableSerializer != null) {
+            return suitableSerializer;
         }
+
         return serializer;
+        /*
+        Serializer hessianCoreCodec = this.hessianCoreCodecFactory.getSerializer(cl);
+
+        // 优先使用CoreCodec
+        if (hessianCoreCodec instanceof HessianCoreCodecFactory.HessianCoreCodec
+                && ((HessianCoreCodecFactory.HessianCoreCodec) hessianCoreCodec).isPriorityUse()) {
+            return hessianCoreCodec;
+        }
+
+        if (!(serializer instanceof BeanSerializer)) {
+            return serializer;
+        }
+
+        if (hessianCoreCodec != null) {
+            return hessianCoreCodec;
+        }
+
+        return new HessianBeanSerializer(cl, getClassLoader(), converterClass, this);*/
     }
 
     @Override
     public Deserializer loadDeserializer(Class cl) throws HessianProtocolException {
         Deserializer deserializer = super.loadDeserializer(cl);
-        if (deserializer instanceof BeanDeserializer) {
-            return new HessianBeanDeserializer(cl, converterClass, this);
+        Deserializer suitableDeserializer = UniversalCodecAdapterCreator.createSuitable(this.generate, cl,
+                (type, codec) -> new HessianCoreCodec(codec),
+                deserializer instanceof BeanDeserializer,
+                (type, codec) -> new HessianBeanDeserializer(cl, converterClass, this));
+
+        if (suitableDeserializer != null) {
+            return suitableDeserializer;
         }
+
         return deserializer;
+        /*
+        Deserializer hessianCoreCodec = this.hessianCoreCodecFactory.getDeserializer(cl);
+
+        // 优先使用CoreCodec
+        if (hessianCoreCodec instanceof HessianCoreCodecFactory.HessianCoreCodec
+                && ((HessianCoreCodecFactory.HessianCoreCodec) hessianCoreCodec).isPriorityUse()) {
+            return hessianCoreCodec;
+        }
+
+        if (!(deserializer instanceof BeanDeserializer)) {
+            return deserializer;
+        }
+
+        if (hessianCoreCodec != null) {
+            return hessianCoreCodec;
+        }
+
+        return new HessianBeanDeserializer(cl, converterClass, this);*/
     }
 
     public static class HessianBeanSerializer<T> extends BeanSerializer {

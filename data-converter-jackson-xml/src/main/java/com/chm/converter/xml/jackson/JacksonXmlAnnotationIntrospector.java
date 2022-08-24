@@ -1,6 +1,6 @@
 package com.chm.converter.xml.jackson;
 
-import com.chm.converter.core.UseOriginalJudge;
+import com.chm.converter.core.UseRawJudge;
 import com.chm.converter.xml.annotation.XmlRootElement;
 import com.fasterxml.jackson.databind.PropertyName;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
@@ -12,17 +12,17 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
  **/
 public class JacksonXmlAnnotationIntrospector extends com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector {
 
-    private final UseOriginalJudge useOriginalJudge;
+    private final UseRawJudge useRawJudge;
 
-    public JacksonXmlAnnotationIntrospector(boolean defaultUseWrapper, UseOriginalJudge useOriginalJudge) {
+    public JacksonXmlAnnotationIntrospector(boolean defaultUseWrapper, UseRawJudge useRawJudge) {
         super(defaultUseWrapper);
-        this.useOriginalJudge = useOriginalJudge;
+        this.useRawJudge = useRawJudge;
     }
 
     @Override
     public PropertyName findRootName(AnnotatedClass ac) {
         Class<?> rawClass = ac.getRawType();
-        if (useOriginalJudge.useOriginalImpl(rawClass)) {
+        if (useRawJudge.useRawImpl(rawClass)) {
             return super.findRootName(ac);
         }
 

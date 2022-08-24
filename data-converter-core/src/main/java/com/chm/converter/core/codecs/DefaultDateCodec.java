@@ -25,6 +25,12 @@ import java.util.Date;
  **/
 public class DefaultDateCodec<T extends Date> implements Codec<T, String>, WithFormat {
 
+    public static final DefaultDateCodec<Date> DATE_CODEC = new DefaultDateCodec<>(Date.class);
+
+    public static final DefaultDateCodec<java.sql.Date> SQL_DATE_CODEC = new DefaultDateCodec<>(java.sql.Date.class);
+
+    public static final DefaultDateCodec<Timestamp> TIMESTAMP_CODEC = new DefaultDateCodec<>(Timestamp.class);
+
     private final Class<T> dateType;
 
     private final DateTimeFormatter dateFormatter;
@@ -90,6 +96,10 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String>, WithF
     @Override
     public DefaultDateCodec<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         return new DefaultDateCodec<>(this.dateType, dateFormatter, this.converter);
+    }
+
+    public DefaultDateCodec<T> withConverter(Converter<?> converter) {
+        return new DefaultDateCodec<>(this.dateType, this.dateFormatter, converter);
     }
 
     public Class<T> getDateType() {
@@ -183,7 +193,7 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String>, WithF
         if (dtf == null) {
             dtf = this.dateFormatter;
         }
-        if (this.converter != null && dtf == null) {
+        if (dtf == null && this.converter != null) {
             dtf = this.converter.getDateFormat();
         }
 
@@ -201,5 +211,10 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String>, WithF
 
     protected String timestamp(Date value) {
         return (value == null) ? "" : String.valueOf(value.getTime());
+    }
+
+    @Override
+    public boolean isPriorityUse() {
+        return true;
     }
 }

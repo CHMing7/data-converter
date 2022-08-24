@@ -6,11 +6,11 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.annotation.FieldProperty;
+import com.chm.converter.core.codecs.DefaultDateCodec;
+import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.reflect.TypeToken;
-import com.chm.converter.jackson.deserializer.JacksonDefaultDateTypeDeserializer;
-import com.chm.converter.jackson.deserializer.JacksonJava8TimeDeserializer;
-import com.chm.converter.jackson.serializer.JacksonDefaultDateTypeSerializer;
-import com.chm.converter.jackson.serializer.JacksonJava8TimeSerializer;
+import com.chm.converter.jackson.deserializer.JacksonCoreCodecDeserializer;
+import com.chm.converter.jackson.serializer.JacksonCoreCodecSerializer;
 import com.chm.converter.smile.JacksonSmileConverter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -68,40 +68,40 @@ public class ConverterTest {
         mapper = new ObjectMapper(new SmileFactory());
         SimpleModule module = new SimpleModule();
         // Java8 Time Serializer
-        module.addSerializer(Instant.class, new JacksonJava8TimeSerializer<>(Instant.class, converter));
-        module.addSerializer(LocalDate.class, new JacksonJava8TimeSerializer<>(LocalDate.class, converter));
-        module.addSerializer(LocalDateTime.class, new JacksonJava8TimeSerializer<>(LocalDateTime.class, converter));
-        module.addSerializer(LocalTime.class, new JacksonJava8TimeSerializer<>(LocalTime.class, converter));
-        module.addSerializer(OffsetDateTime.class, new JacksonJava8TimeSerializer<>(OffsetDateTime.class, converter));
-        module.addSerializer(OffsetTime.class, new JacksonJava8TimeSerializer<>(OffsetTime.class, converter));
-        module.addSerializer(ZonedDateTime.class, new JacksonJava8TimeSerializer<>(ZonedDateTime.class, converter));
-        module.addSerializer(MonthDay.class, new JacksonJava8TimeSerializer<>(MonthDay.class, converter));
-        module.addSerializer(YearMonth.class, new JacksonJava8TimeSerializer<>(YearMonth.class, converter));
-        module.addSerializer(Year.class, new JacksonJava8TimeSerializer<>(Year.class, converter));
-        module.addSerializer(ZoneOffset.class, new JacksonJava8TimeSerializer<>(ZoneOffset.class, converter));
+        module.addSerializer(Instant.class, new JacksonCoreCodecSerializer<>(Java8TimeCodec.INSTANT_CODEC.withConverter(converter)));
+        module.addSerializer(LocalDate.class, new JacksonCoreCodecSerializer<>(Java8TimeCodec.LOCAL_DATE_CODEC.withConverter(converter)));
+        module.addSerializer(LocalDateTime.class, new JacksonCoreCodecSerializer<>(Java8TimeCodec.LOCAL_DATE_TIME_CODEC.withConverter(converter)));
+        module.addSerializer(LocalTime.class, new JacksonCoreCodecSerializer<>(Java8TimeCodec.LOCAL_TIME_CODEC.withConverter(converter)));
+        module.addSerializer(OffsetDateTime.class, new JacksonCoreCodecSerializer<>(Java8TimeCodec.OFFSET_DATE_TIME_CODEC.withConverter(converter)));
+        module.addSerializer(OffsetTime.class, new JacksonCoreCodecSerializer<>(Java8TimeCodec.OFFSET_TIME_CODEC.withConverter(converter)));
+        module.addSerializer(ZonedDateTime.class, new JacksonCoreCodecSerializer<>(Java8TimeCodec.ZONED_DATE_TIME_CODEC.withConverter(converter)));
+        module.addSerializer(MonthDay.class, new JacksonCoreCodecSerializer<>(Java8TimeCodec.MONTH_DAY_CODEC.withConverter(converter)));
+        module.addSerializer(YearMonth.class, new JacksonCoreCodecSerializer<>(Java8TimeCodec.YEAR_MONTH_CODEC.withConverter(converter)));
+        module.addSerializer(Year.class, new JacksonCoreCodecSerializer<>(Java8TimeCodec.YEAR_CODEC.withConverter(converter)));
+        module.addSerializer(ZoneOffset.class, new JacksonCoreCodecSerializer<>(Java8TimeCodec.ZONE_OFFSET_CODEC.withConverter(converter)));
 
         // Default Date Serializer
-        module.addSerializer(java.sql.Date.class, new JacksonDefaultDateTypeSerializer<>(java.sql.Date.class, converter));
-        module.addSerializer(Timestamp.class, new JacksonDefaultDateTypeSerializer<>(Timestamp.class, converter));
-        module.addSerializer(Date.class, new JacksonDefaultDateTypeSerializer<>(Date.class, converter));
+        module.addSerializer(java.sql.Date.class, new JacksonCoreCodecSerializer<>(DefaultDateCodec.SQL_DATE_CODEC.withConverter(converter)));
+        module.addSerializer(Timestamp.class, new JacksonCoreCodecSerializer<>(DefaultDateCodec.TIMESTAMP_CODEC.withConverter(converter)));
+        module.addSerializer(Date.class, new JacksonCoreCodecSerializer<>(DefaultDateCodec.DATE_CODEC.withConverter(converter)));
 
         // Java8 Time Deserializer
-        module.addDeserializer(Instant.class, new JacksonJava8TimeDeserializer<>(Instant.class, converter));
-        module.addDeserializer(LocalDate.class, new JacksonJava8TimeDeserializer<>(LocalDate.class, converter));
-        module.addDeserializer(LocalDateTime.class, new JacksonJava8TimeDeserializer<>(LocalDateTime.class, converter));
-        module.addDeserializer(LocalTime.class, new JacksonJava8TimeDeserializer<>(LocalTime.class, converter));
-        module.addDeserializer(OffsetDateTime.class, new JacksonJava8TimeDeserializer<>(OffsetDateTime.class, converter));
-        module.addDeserializer(OffsetTime.class, new JacksonJava8TimeDeserializer<>(OffsetTime.class, converter));
-        module.addDeserializer(ZonedDateTime.class, new JacksonJava8TimeDeserializer<>(ZonedDateTime.class, converter));
-        module.addDeserializer(MonthDay.class, new JacksonJava8TimeDeserializer<>(MonthDay.class, converter));
-        module.addDeserializer(YearMonth.class, new JacksonJava8TimeDeserializer<>(YearMonth.class, converter));
-        module.addDeserializer(Year.class, new JacksonJava8TimeDeserializer<>(Year.class, converter));
-        module.addDeserializer(ZoneOffset.class, new JacksonJava8TimeDeserializer<>(ZoneOffset.class, converter));
+        module.addDeserializer(Instant.class, new JacksonCoreCodecDeserializer<>(Java8TimeCodec.INSTANT_CODEC.withConverter(converter)));
+        module.addDeserializer(LocalDate.class, new JacksonCoreCodecDeserializer<>(Java8TimeCodec.LOCAL_DATE_CODEC.withConverter(converter)));
+        module.addDeserializer(LocalDateTime.class, new JacksonCoreCodecDeserializer<>(Java8TimeCodec.LOCAL_DATE_TIME_CODEC.withConverter(converter)));
+        module.addDeserializer(LocalTime.class, new JacksonCoreCodecDeserializer<>(Java8TimeCodec.LOCAL_TIME_CODEC.withConverter(converter)));
+        module.addDeserializer(OffsetDateTime.class, new JacksonCoreCodecDeserializer<>(Java8TimeCodec.OFFSET_DATE_TIME_CODEC.withConverter(converter)));
+        module.addDeserializer(OffsetTime.class, new JacksonCoreCodecDeserializer<>(Java8TimeCodec.OFFSET_TIME_CODEC.withConverter(converter)));
+        module.addDeserializer(ZonedDateTime.class, new JacksonCoreCodecDeserializer<>(Java8TimeCodec.ZONED_DATE_TIME_CODEC.withConverter(converter)));
+        module.addDeserializer(MonthDay.class, new JacksonCoreCodecDeserializer<>(Java8TimeCodec.MONTH_DAY_CODEC.withConverter(converter)));
+        module.addDeserializer(YearMonth.class, new JacksonCoreCodecDeserializer<>(Java8TimeCodec.YEAR_MONTH_CODEC.withConverter(converter)));
+        module.addDeserializer(Year.class, new JacksonCoreCodecDeserializer<>(Java8TimeCodec.YEAR_CODEC.withConverter(converter)));
+        module.addDeserializer(ZoneOffset.class, new JacksonCoreCodecDeserializer<>(Java8TimeCodec.ZONE_OFFSET_CODEC.withConverter(converter)));
 
-        // Default Date Serializer
-        module.addDeserializer(java.sql.Date.class, new JacksonDefaultDateTypeDeserializer<>(java.sql.Date.class, converter));
-        module.addDeserializer(Timestamp.class, new JacksonDefaultDateTypeDeserializer<>(Timestamp.class, converter));
-        module.addDeserializer(Date.class, new JacksonDefaultDateTypeDeserializer<>(Date.class, converter));
+        // Default Date Deserializer
+        module.addDeserializer(java.sql.Date.class, new JacksonCoreCodecDeserializer<>(DefaultDateCodec.SQL_DATE_CODEC.withConverter(converter)));
+        module.addDeserializer(Timestamp.class, new JacksonCoreCodecDeserializer<>(DefaultDateCodec.TIMESTAMP_CODEC.withConverter(converter)));
+        module.addDeserializer(Date.class, new JacksonCoreCodecDeserializer<>(DefaultDateCodec.DATE_CODEC.withConverter(converter)));
         mapper.registerModule(module);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);

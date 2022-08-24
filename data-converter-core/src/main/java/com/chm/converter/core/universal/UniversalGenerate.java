@@ -1,6 +1,8 @@
 package com.chm.converter.core.universal;
 
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.ArrayUtil;
+import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.MapUtil;
 
 import java.lang.reflect.Type;
@@ -35,12 +37,27 @@ public class UniversalGenerate<T extends UniversalInterface> {
     }
 
     public UniversalGenerate(List<UniversalFactory<T>> factories) {
-        if (factories != null) {
-            Collections.reverse(factories);
-        }
-        this.factories = Collections.unmodifiableList(factories != null ? factories : Collections.emptyList());
+        this.factories = factories != null ? factories : Collections.emptyList();
     }
 
+    public void addFactory(UniversalFactory<T> factory) {
+        this.factories.add(0, factory);
+    }
+
+    public void addFactories(UniversalFactory<T>... factories) {
+        if (ArrayUtil.isNotEmpty(factories)) {
+            for (UniversalFactory<T> factory : factories) {
+                this.factories.add(0, factory);
+            }
+        }
+    }
+
+    public void addFactoryList(List<UniversalFactory<T>> factoryList) {
+        if (CollUtil.isNotEmpty(factoryList)) {
+            this.factories.addAll(0, factoryList);
+        }
+
+    }
 
     /**
      * 获取编解码器

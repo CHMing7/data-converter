@@ -6,7 +6,7 @@ package com.chm.converter.core;
  * @since 2021-09-08
  **/
 @FunctionalInterface
-public interface UseOriginalJudge {
+public interface UseRawJudge {
 
     /**
      * 判断使用使用原装实现
@@ -14,5 +14,5 @@ public interface UseOriginalJudge {
      * @param cls
      * @return
      */
-    boolean useOriginalImpl(Class<?> cls);
+    boolean useRawImpl(Class<?> cls);
 }

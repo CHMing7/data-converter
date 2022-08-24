@@ -38,7 +38,6 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
         return new JavaBeanCodec<>(typeToken.getRawType(), generate, converter);
     }
 
-
     public static final class JavaBeanCodec<T> extends ProtostuffCodec<T> {
 
         private final JavaBeanInfo<T> javaBeanInfo;
@@ -122,7 +121,7 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         private ProtostuffCodec<?> getFieldProtostuffCodec(FieldInfo fieldInfo) {
             return MapUtil.computeIfAbsent(fieldInfoProtostuffCodecMap, fieldInfo, info -> {
-                ProtostuffCodec<?> codec = codecGenerate.get(fieldInfo.getTypeToken());
+                ProtostuffCodec<?> codec = this.codecGenerate.get(fieldInfo.getTypeToken());
                 if (codec instanceof WithFormat) {
                     codec = (ProtostuffCodec<?>) ((WithFormat) codec).withDatePattern(fieldInfo.getFormat());
                 }

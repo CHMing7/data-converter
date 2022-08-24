@@ -40,6 +40,17 @@ import static java.time.temporal.ChronoField.YEAR;
 public interface TimeConstant {
 
     /**
+     * 判断指定类型是否为java8time
+     *
+     * @param clazz 指定类型
+     * @return boolean
+     */
+    static boolean isJava8Time(Class<?> clazz) {
+        return TEMPORAL_ACCESSOR_SET.contains(clazz) || TEMPORAL_ACCESSOR_SET.stream()
+                .anyMatch(temporalAccessorClass -> temporalAccessorClass.isAssignableFrom(clazz));
+    }
+
+    /**
      * 支持的java8时间类型集合
      */
     Set<Class<? extends TemporalAccessor>> TEMPORAL_ACCESSOR_SET =
