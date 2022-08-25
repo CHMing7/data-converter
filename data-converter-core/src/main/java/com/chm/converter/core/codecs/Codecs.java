@@ -41,49 +41,49 @@ import java.util.regex.Pattern;
 public interface Codecs {
 
     IdentityCodec<Boolean> BOOLEAN = IdentityCodec.create(
-            TypeToken.get(boolean.class),
+            TypeToken.get(Boolean.class),
             (b, dw) -> dw.writeBoolean(b),
             DataReader::readBoolean
     );
 
     IdentityCodec<Character> CHARACTER = IdentityCodec.create(
-            TypeToken.get(char.class),
+            TypeToken.get(Character.class),
             (c, dw) -> dw.writeString(String.valueOf(c)),
             DataReader::readChar
     );
 
     IdentityCodec<Byte> BYTE = IdentityCodec.create(
-            TypeToken.get(byte.class),
+            TypeToken.get(Byte.class),
             (b, dw) -> dw.writeByte(b),
             DataReader::readByte
     );
 
     IdentityCodec<Short> SHORT = IdentityCodec.create(
-            TypeToken.get(short.class),
+            TypeToken.get(Short.class),
             (s, dw) -> dw.writeShort(s),
             DataReader::readShort
     );
 
     IdentityCodec<Integer> INTEGER = IdentityCodec.create(
-            TypeToken.get(int.class),
+            TypeToken.get(Integer.class),
             (i, dw) -> dw.writeInt(i),
             DataReader::readInt
     );
 
     IdentityCodec<Float> FLOAT = IdentityCodec.create(
-            TypeToken.get(float.class),
+            TypeToken.get(Float.class),
             (f, dw) -> dw.writeFloat(f),
             DataReader::readFloat
     );
 
     IdentityCodec<Double> DOUBLE = IdentityCodec.create(
-            TypeToken.get(double.class),
+            TypeToken.get(Double.class),
             (d, dw) -> dw.writeDouble(d),
             DataReader::readDouble
     );
 
     IdentityCodec<Long> LONG = IdentityCodec.create(
-            TypeToken.get(long.class),
+            TypeToken.get(Long.class),
             (l, dw) -> dw.writeLong(l),
             DataReader::readLong
     );
