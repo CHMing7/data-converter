@@ -169,8 +169,12 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String>, WithF
             long l = NumberUtil.parseLong(timeStr);
             date = new Date(l);
         } else {
-            DateTimeFormatter formatter = getCodecDateFormatter(format);
-            date = DateUtil.parseToDate(timeStr, formatter);
+            try {
+                DateTimeFormatter formatter = getCodecDateFormatter(format);
+                date = DateUtil.parseToDate(timeStr, formatter);
+            } catch (Throwable cause) {
+                date = DateUtil.parseToDate(timeStr);
+            }
         }
 
         if (dateType == Date.class) {

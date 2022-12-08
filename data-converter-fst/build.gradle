@@ -1,17 +1,17 @@
 dependencies {
-    compile project(':data-converter-core')
+    api project(':data-converter-core')
 
-    compileOnly(libs.fst)
-    compileOnly(libs.jackson_core)
-    // compileOnly('org.beangle.serializer:beangle-serializer-fst_2.13:0.0.19')
+    implementation(libs.fst)
+    implementation(libs.jackson_core)
+    // implementation('org.beangle.serializer:beangle-serializer-fst_2.13:0.0.19')
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testCompile 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.1'
 
-    testCompile(libs.hutool_log)
-    testCompile(libs.fst)
-    testCompile(libs.jackson_core)
-    // testCompile('org.beangle.serializer:beangle-serializer-fst_2.13:0.0.19')
+    testImplementation(libs.hutool_log)
+    testImplementation(libs.fst)
+    testImplementation(libs.jackson_core)
+    // testImplementation('org.beangle.serializer:beangle-serializer-fst_2.13:0.0.19')
 }

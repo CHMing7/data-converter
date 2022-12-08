@@ -1,23 +1,23 @@
 dependencies {
-    compile project(':data-converter-core')
+    api project(':data-converter-core')
 
-    compileOnly(libs.avro)
-    compileOnly(libs.jackson_core)
-    compileOnly(libs.jackson_databind)
-    compileOnly(libs.jackson_annotations)
+    implementation(libs.avro)
+    implementation(libs.jackson_core)
+    implementation(libs.jackson_databind)
+    implementation(libs.jackson_annotations)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testCompile 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.1'
 
-    testCompile 'ch.qos.logback:logback-access:1.2.6'
-    testCompile 'ch.qos.logback:logback-classic:1.2.6'
-    testCompile 'ch.qos.logback:logback-core:1.2.6'
+    testImplementation 'ch.qos.logback:logback-access:1.2.6'
+    testImplementation 'ch.qos.logback:logback-classic:1.2.6'
+    testImplementation 'ch.qos.logback:logback-core:1.2.6'
 
-    testCompile(libs.hutool_log)
-    testCompile(libs.avro)
-    testCompile(libs.jackson_core)
-    testCompile(libs.jackson_databind)
-    testCompile(libs.jackson_annotations)
+    testImplementation(libs.hutool_log)
+    testImplementation(libs.avro)
+    testImplementation(libs.jackson_core)
+    testImplementation(libs.jackson_databind)
+    testImplementation(libs.jackson_annotations)
 }

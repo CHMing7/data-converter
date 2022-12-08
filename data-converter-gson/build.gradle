@@ -1,12 +1,12 @@
 dependencies {
-    compileOnly(libs.gson)
+    implementation(libs.gson)
 
-    compile project(':data-converter-json')
+    api project(':data-converter-json')
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testCompile 'junit:junit:4.13.1'
-    testCompile(libs.hutool_log)
-    testCompile(libs.gson)
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation(libs.hutool_log)
+    testImplementation(libs.gson)
 }

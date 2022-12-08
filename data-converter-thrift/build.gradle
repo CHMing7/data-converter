@@ -4,17 +4,17 @@
 
 
 dependencies {
-    compile project(':data-converter-core')
+    api project(':data-converter-core')
 
-    compileOnly(libs.thrift)
+    implementation(libs.thrift)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testCompile 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.1'
 
-    testCompile(libs.hutool_log)
-    testCompile(libs.thrift)
+    testImplementation(libs.hutool_log)
+    testImplementation(libs.thrift)
 }
 
 /*

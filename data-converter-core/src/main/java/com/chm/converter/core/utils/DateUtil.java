@@ -7,10 +7,16 @@ import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalQueries;
 import java.time.temporal.TemporalQuery;
 import java.util.Date;
 import java.util.Map;
@@ -27,8 +33,6 @@ public class DateUtil {
     private static final Map<Integer, Set<DateTimeFormatter>> DATE_TIME_FORMATTER_LENGTH_MAP = MapUtil.newConcurrentHashMap();
 
     static {
-        //yyyy-MM-dd'T'HH:mm:ss'Z'
-        //yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
         // 单个的M d H m s都要额外注册一个+1，有几个就额外注册几个
         //  a要+1
         //  小写xxx要+3
@@ -333,6 +337,25 @@ public class DateUtil {
      * @param text 待解析字符串
      * @return Date
      */
+    public static Date parseToDate(String text) {
+        int strLen = text.length();
+        Set<DateTimeFormatter> formatterSet = MapUtil.computeIfAbsent(DATE_TIME_FORMATTER_LENGTH_MAP, strLen, i -> CollUtil.newLinkedHashSet());
+        for (DateTimeFormatter dtf : formatterSet) {
+            try {
+                return DateUtil.toDate(DateUtil.toInstant(dtf.withZone(ZoneId.systemDefault()).parse(text)));
+            } catch (Exception ignored) {
+            }
+        }
+        // 没有更多匹配的时间格式
+        throw new CodecException("No format fit for date String [{}] !", text);
+    }
+
+    /**
+     * 根据 formatter解析为 Date
+     *
+     * @param text 待解析字符串
+     * @return Date
+     */
     public static ZonedDateTime parse(String text) {
         return parse(text, ZonedDateTime::from);
     }
@@ -365,7 +388,106 @@ public class DateUtil {
      * @return LocalDateTime
      */
     public static LocalDateTime toLocalDateTime(TemporalAccessor temporal) {
-        return LocalDateTime.from(temporal);
+        return toLocalDateTime(toZonedDateTime(temporal));
+    }
+
+
+    /**
+     * ZonedDateTime转LocalDateTime
+     * 注意时间对应的时区和默认时区差异
+     *
+     * @param zonedDateTime ZonedDateTime
+     * @return LocalDateTime
+     */
+    public static LocalDateTime toLocalDateTime(ZonedDateTime zonedDateTime) {
+        Objects.requireNonNull(zonedDateTime, "zonedDateTime");
+        return zonedDateTime.toLocalDateTime();
+    }
+
+
+    /**
+     * Date对象转换为{@link Instant}对象
+     *
+     * @param date Date对象
+     * @return {@link Instant}对象
+     */
+    public static Instant toInstant(Date date) {
+        return null == date ? null : date.toInstant();
+    }
+
+    /**
+     * Date对象转换为{@link Instant}对象
+     *
+     * @param temporalAccessor Date对象
+     * @return {@link Instant}对象
+     */
+    public static Instant toInstant(TemporalAccessor temporalAccessor) {
+        if (null == temporalAccessor) {
+            return null;
+        }
+
+        Instant result;
+        if (temporalAccessor instanceof Instant) {
+            result = (Instant) temporalAccessor;
+        } else if (temporalAccessor instanceof LocalDateTime) {
+            result = ((LocalDateTime) temporalAccessor).atZone(ZoneId.systemDefault()).toInstant();
+        } else if (temporalAccessor instanceof ZonedDateTime) {
+            result = ((ZonedDateTime) temporalAccessor).toInstant();
+        } else if (temporalAccessor instanceof OffsetDateTime) {
+            result = ((OffsetDateTime) temporalAccessor).toInstant();
+        } else if (temporalAccessor instanceof LocalDate) {
+            result = ((LocalDate) temporalAccessor).atStartOfDay(ZoneId.systemDefault()).toInstant();
+        } else if (temporalAccessor instanceof LocalTime) {
+            // 指定本地时间转换 为Instant，取当天日期
+            result = ((LocalTime) temporalAccessor).atDate(LocalDate.now()).atZone(ZoneId.systemDefault()).toInstant();
+        } else if (temporalAccessor instanceof OffsetTime) {
+            // 指定本地时间转换 为Instant，取当天日期
+            result = ((OffsetTime) temporalAccessor).atDate(LocalDate.now()).toInstant();
+        } else {
+            result = fromInstant(temporalAccessor);
+        }
+        return result;
+    }
+
+    public static Instant fromInstant(TemporalAccessor temporal) {
+        if (temporal instanceof Instant) {
+            return (Instant) temporal;
+        }
+        Objects.requireNonNull(temporal, "temporal");
+        try {
+            long instantSecs = temporal.getLong(ChronoField.INSTANT_SECONDS);
+            int nanoOfSecond = temporal.get(ChronoField.NANO_OF_SECOND);
+            return Instant.ofEpochSecond(instantSecs, nanoOfSecond);
+        } catch (DateTimeException ex) {
+            // Parsed
+            ZoneId zone = temporal.query(TemporalQueries.zoneId());
+            if (zone == null) {
+                zone = TemporalQueries.zone().queryFrom(temporal);
+            }
+            if (zone == null) {
+                zone = TemporalQueries.offset().queryFrom(temporal);
+            }
+            LocalDate date = temporal.query(TemporalQueries.localDate());
+            if (date == null) {
+                date = LocalDate.of(0, 0, 0);
+            }
+            LocalTime time = temporal.query(TemporalQueries.localTime());
+            if (time == null) {
+                time = LocalTime.MIN;
+            }
+            ZonedDateTime zonedDateTime = ZonedDateTime.of(date, time, zone);
+            return zonedDateTime.toInstant();
+        }
+    }
+
+    /**
+     * Instant转Date
+     *
+     * @param instant Instant
+     * @return Date
+     */
+    public static Date toDate(Instant instant) {
+        return null == instant ? null : new Date(instant.toEpochMilli());
     }
 
     /**
@@ -388,6 +510,81 @@ public class DateUtil {
     public static Date toDate(LocalDateTime localDateTime) {
         Objects.requireNonNull(localDateTime, "localDateTime");
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+
+    /**
+     * LocalDateTime转ZonedDateTime，时区为系统默认时区
+     *
+     * @param localDateTime LocalDateTime
+     * @return ZonedDateTime
+     */
+    public static ZonedDateTime toZonedDateTime(LocalDateTime localDateTime) {
+        Objects.requireNonNull(localDateTime, "localDateTime");
+        return localDateTime.atZone(ZoneId.systemDefault());
+    }
+
+    /**
+     * LocalDate转ZonedDateTime，时区为系统默认时区
+     *
+     * @param localDate LocalDate
+     * @return ZonedDateTime such as 2020-02-19T00:00+08:00[Asia/Shanghai]
+     */
+    public static ZonedDateTime toZonedDateTime(LocalDate localDate) {
+        Objects.requireNonNull(localDate, "localDate");
+        return localDate.atStartOfDay().atZone(ZoneId.systemDefault());
+    }
+
+    /**
+     * LocalTime转ZonedDateTime
+     * 以当天的日期+LocalTime组成新的ZonedDateTime，时区为系统默认时区
+     *
+     * @param localTime LocalTime
+     * @return ZonedDateTime
+     */
+    public static ZonedDateTime toZonedDateTime(LocalTime localTime) {
+        Objects.requireNonNull(localTime, "localTime");
+        return LocalDate.now().atTime(localTime).atZone(ZoneId.systemDefault());
+    }
+
+    /**
+     * Instant转ZonedDateTime，时区为系统默认时区
+     *
+     * @param instant Instant
+     * @return ZonedDateTime
+     */
+    public static ZonedDateTime toZonedDateTime(Instant instant) {
+        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).atZone(ZoneId.systemDefault());
+    }
+
+    /**
+     * temporal转ZonedDateTime，时区为系统默认时区
+     *
+     * @param temporal TemporalAccessor
+     * @return ZonedDateTime
+     */
+    public static ZonedDateTime toZonedDateTime(TemporalAccessor temporal) {
+        Objects.requireNonNull(temporal, "temporal");
+
+        if (temporal instanceof Instant) {
+            return toZonedDateTime((Instant) temporal);
+        } else if (temporal instanceof LocalDate) {
+            return toZonedDateTime((LocalDate) temporal);
+        } else if (temporal instanceof LocalDateTime) {
+            return toZonedDateTime((LocalDateTime) temporal);
+        } else if (temporal instanceof LocalTime) {
+            return toZonedDateTime((LocalTime) temporal);
+        } else if (temporal instanceof ZonedDateTime) {
+            return (ZonedDateTime) temporal;
+        } else if (temporal instanceof YearMonth) {
+            return toZonedDateTime((YearMonth) temporal);
+        } else if (temporal instanceof OffsetDateTime) {
+            return ((OffsetDateTime) temporal).toZonedDateTime();
+        } else if (temporal instanceof OffsetTime) {
+            return ((OffsetTime) temporal).atDate(LocalDate.now()).toZonedDateTime();
+        } else {
+            return ZonedDateTime.from(temporal);
+        }
     }
 
     public static void main(String[] args) {

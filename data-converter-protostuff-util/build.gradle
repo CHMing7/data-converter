@@ -1,5 +1,5 @@
 dependencies {
-    compile project(':data-converter-core')
-    compileOnly(libs.protostuff_core)
+    api project(':data-converter-core')
+    implementation(libs.protostuff_core)
 }
 
