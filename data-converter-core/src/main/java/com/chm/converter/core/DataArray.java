@@ -49,6 +49,83 @@ public class DataArray extends ArrayList<Object> {
         this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
+    /**
+     * 将多个元素打包为{@link DataArray}
+     *
+     * <pre>
+     * DataArray array = DataArray.of(converter, 1, 2, "3", 4F, 5L, 6D, true);
+     * </pre>
+     *
+     * @param items 元素集
+     */
+    public static DataArray of(Converter<?> converter, Object... items) {
+        return new DataArray(converter, items);
+    }
+
+    /**
+     * 将元素打包为{@link DataArray}
+     *
+     * <pre>
+     * DataArray array = DataArray.of(converter, "dataArray");
+     * </pre>
+     *
+     * @param item 目标元素
+     */
+    public static DataArray of(Converter<?> converter, Object item) {
+        DataArray dataArray = new DataArray(converter);
+        dataArray.add(item);
+        return dataArray;
+    }
+
+    /**
+     * 将两个元素打包为{@link DataArray}
+     *
+     * <pre>
+     * DataArray array = DataArray.of(converter, "dataArray", 2);
+     * </pre>
+     *
+     * @param first  第一个元素
+     * @param second 第二个元素
+     */
+    public static DataArray of(Converter<?> converter, Object first, Object second) {
+        DataArray dataArray = new DataArray(converter);
+        dataArray.add(first);
+        dataArray.add(second);
+        return dataArray;
+    }
+
+    /**
+     * 将三个元素打包为{@link DataArray}
+     *
+     * <pre>
+     * DataArray array = DataArray.of(converter, "dataArray", 2, true);
+     * </pre>
+     *
+     * @param first  第一个元素
+     * @param second 第二个元素
+     * @param third  第三个元素
+     */
+    public static DataArray of(Converter<?> converter, Object first, Object second, Object third) {
+        DataArray dataArray = new DataArray(converter);
+        dataArray.add(first);
+        dataArray.add(second);
+        dataArray.add(third);
+        return dataArray;
+    }
+
+    /**
+     * 将元素集打包为{@link DataArray}
+     *
+     * <pre>
+     * DataArray array = DataArray.of(converter, collection);
+     * </pre>
+     *
+     * @param collection 元素集
+     */
+    public static DataArray of(Converter<?> converter, Collection<?> collection) {
+        return new DataArray(converter, collection);
+    }
+
     public Converter<?> getConverter() {
         return converter;
     }
@@ -423,82 +500,5 @@ public class DataArray extends ArrayList<Object> {
     public DataArray fluentAdd(Object element) {
         add(element);
         return this;
-    }
-
-    /**
-     * 将多个元素打包为{@link DataArray}
-     *
-     * <pre>
-     * DataArray array = DataArray.of(converter, 1, 2, "3", 4F, 5L, 6D, true);
-     * </pre>
-     *
-     * @param items 元素集
-     */
-    public static DataArray of(Converter<?> converter, Object... items) {
-        return new DataArray(converter, items);
-    }
-
-    /**
-     * 将元素打包为{@link DataArray}
-     *
-     * <pre>
-     * DataArray array = DataArray.of(converter, "dataArray");
-     * </pre>
-     *
-     * @param item 目标元素
-     */
-    public static DataArray of(Converter<?> converter, Object item) {
-        DataArray dataArray = new DataArray(converter);
-        dataArray.add(item);
-        return dataArray;
-    }
-
-    /**
-     * 将两个元素打包为{@link DataArray}
-     *
-     * <pre>
-     * DataArray array = DataArray.of(converter, "dataArray", 2);
-     * </pre>
-     *
-     * @param first  第一个元素
-     * @param second 第二个元素
-     */
-    public static DataArray of(Converter<?> converter, Object first, Object second) {
-        DataArray dataArray = new DataArray(converter);
-        dataArray.add(first);
-        dataArray.add(second);
-        return dataArray;
-    }
-
-    /**
-     * 将三个元素打包为{@link DataArray}
-     *
-     * <pre>
-     * DataArray array = DataArray.of(converter, "dataArray", 2, true);
-     * </pre>
-     *
-     * @param first  第一个元素
-     * @param second 第二个元素
-     * @param third  第三个元素
-     */
-    public static DataArray of(Converter<?> converter, Object first, Object second, Object third) {
-        DataArray dataArray = new DataArray(converter);
-        dataArray.add(first);
-        dataArray.add(second);
-        dataArray.add(third);
-        return dataArray;
-    }
-
-    /**
-     * 将元素集打包为{@link DataArray}
-     *
-     * <pre>
-     * DataArray array = DataArray.of(converter, collection);
-     * </pre>
-     *
-     * @param collection 元素集
-     */
-    public static DataArray of(Converter<?> converter, Collection<?> collection) {
-        return new DataArray(converter, collection);
     }
 }

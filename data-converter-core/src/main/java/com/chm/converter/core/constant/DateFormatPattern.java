@@ -277,7 +277,7 @@ public interface DateFormatPattern {
      * yyyy.MM.dd HH:mm:ss 比如：2020.05.23 17:06:30
      */
     String YYYY_MM_DD_POINT_HH_MM_SS_EN = "yyyy.MM.dd HH:mm:ss";
-    DateTimeFormatter YYYY_MM_DD_POINT_HH_MM_SS_EN_EN_FORMATTER = DateTimeFormatter.ofPattern(YYYY_MM_DD_POINT_HH_MM_SS_EN);
+    DateTimeFormatter YYYY_MM_DD_POINT_HH_MM_SS_EN_FORMATTER = DateTimeFormatter.ofPattern(YYYY_MM_DD_POINT_HH_MM_SS_EN);
 
     /**
      * yyyy/M/d H:m:s 比如：2020/5/23 17:6:30

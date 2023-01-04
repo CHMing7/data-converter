@@ -12,14 +12,6 @@ public abstract class ReflectionAccessor {
     private static final ReflectionAccessor INSTANCE = JavaVersion.getMajorJavaVersion() < 9 ? new PreJava9ReflectionAccessor() : new UnsafeReflectionAccessor();
 
     /**
-     * 跟 {@code ao.setAccessible(true)}用法相同，但不会抛异常
-     * {@link java.lang.reflect.InaccessibleObjectException}
-     *
-     * @param ao {@link AccessibleObject}
-     */
-    public abstract void makeAccessible(AccessibleObject ao);
-
-    /**
      * 获取适用于当前 Java 版本的 {@link ReflectionAccessor} 实例。
      * 您可能需要在代码中抛出一个反射操作 {@link java.lang.reflect.InaccessibleObjectException}。
      * 在这种情况下，在字段、方法或构造函数上使用 {@link ReflectionAccessor#makeAccessible(AccessibleObject)}
@@ -30,4 +22,12 @@ public abstract class ReflectionAccessor {
     public static ReflectionAccessor getInstance() {
         return INSTANCE;
     }
+
+    /**
+     * 跟 {@code ao.setAccessible(true)}用法相同，但不会抛异常
+     * {@link java.lang.reflect.InaccessibleObjectException}
+     *
+     * @param ao {@link AccessibleObject}
+     */
+    public abstract void makeAccessible(AccessibleObject ao);
 }

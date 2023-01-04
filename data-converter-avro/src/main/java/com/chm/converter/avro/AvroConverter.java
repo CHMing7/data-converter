@@ -14,16 +14,6 @@ import com.chm.converter.core.DataType;
 public interface AvroConverter extends Converter<byte[]> {
 
     /**
-     * 获取当前数据转换器转换类型
-     *
-     * @return
-     */
-    @Override
-    default DataType getDataType() {
-        return DataType.AVRO_BINARY;
-    }
-
-    /**
      * 选择Avro数据转换器
      * <p>动态选择一个可用的Avro数据转换器</p>
      *
@@ -31,5 +21,15 @@ public interface AvroConverter extends Converter<byte[]> {
      */
     static AvroConverter select() {
         return ConverterSelector.select(AvroConverter.class);
+    }
+
+    /**
+     * 获取当前数据转换器转换类型
+     *
+     * @return
+     */
+    @Override
+    default DataType getDataType() {
+        return DataType.AVRO_BINARY;
     }
 }

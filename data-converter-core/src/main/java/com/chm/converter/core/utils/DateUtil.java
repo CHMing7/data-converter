@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import static java.time.temporal.ChronoField.INSTANT_SECONDS;
+
 /**
  * @author caihongming
  * @version v1.0
@@ -30,6 +32,10 @@ import java.util.Set;
  **/
 public class DateUtil {
 
+    /**
+     * 解析日期时异常
+     */
+    public static final String PARSE_LOCAL_DATE_EXCEPTION = "Unable to obtain";
     private static final Map<Integer, Set<DateTimeFormatter>> DATE_TIME_FORMATTER_LENGTH_MAP = MapUtil.newConcurrentHashMap();
 
     static {
@@ -148,7 +154,7 @@ public class DateUtil {
 
         registerDateTimeFormatter(DateFormatPattern.YYYY_MM_DD_HH_MM_SS_EN.length(), DateFormatPattern.YYYY_MM_DD_HH_MM_SS_EN_FORMATTER);
 
-        registerDateTimeFormatter(DateFormatPattern.YYYY_MM_DD_POINT_HH_MM_SS_EN.length(), DateFormatPattern.YYYY_MM_DD_POINT_HH_MM_SS_EN_EN_FORMATTER);
+        registerDateTimeFormatter(DateFormatPattern.YYYY_MM_DD_POINT_HH_MM_SS_EN.length(), DateFormatPattern.YYYY_MM_DD_POINT_HH_MM_SS_EN_FORMATTER);
 
         registerDateTimeFormatter(DateFormatPattern.YYYY_M_D_H_M_S_EN.length(), DateFormatPattern.YYYY_M_D_H_M_S_EN_FORMATTER);
         registerDateTimeFormatter(DateFormatPattern.YYYY_M_D_H_M_S_EN.length() + 1, DateFormatPattern.YYYY_M_D_H_M_S_EN_FORMATTER);
@@ -266,16 +272,12 @@ public class DateUtil {
         formatterSet.add(dateTimeFormatter);
     }
 
+    //===========================异常定义============================
+
     public static void unregisterDateTimeFormatter(Integer dateStrLen, DateTimeFormatter dateTimeFormatter) {
         Set<DateTimeFormatter> formatterSet = MapUtil.computeIfAbsent(DATE_TIME_FORMATTER_LENGTH_MAP, dateStrLen, i -> CollUtil.newLinkedHashSet());
         formatterSet.remove(dateTimeFormatter);
     }
-
-    //===========================异常定义============================
-    /**
-     * 解析日期时异常
-     */
-    public static final String PARSE_LOCAL_DATE_EXCEPTION = "Unable to obtain";
 
     /**
      * 根据 formatter格式化 date
@@ -469,7 +471,7 @@ public class DateUtil {
             }
             LocalDate date = temporal.query(TemporalQueries.localDate());
             if (date == null) {
-                date = LocalDate.of(0, 0, 0);
+                date = LocalDate.of(0, 1, 1);
             }
             LocalTime time = temporal.query(TemporalQueries.localTime());
             if (time == null) {
@@ -510,6 +512,17 @@ public class DateUtil {
     public static Date toDate(LocalDateTime localDateTime) {
         Objects.requireNonNull(localDateTime, "localDateTime");
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    /**
+     * LocalDateTime转Date
+     *
+     * @param zonedDateTime ZonedDateTime
+     * @return Date
+     */
+    public static Date toDate(ZonedDateTime zonedDateTime) {
+        Objects.requireNonNull(zonedDateTime, "zonedDateTime");
+        return Date.from(zonedDateTime.toInstant());
     }
 
 
@@ -583,7 +596,32 @@ public class DateUtil {
         } else if (temporal instanceof OffsetTime) {
             return ((OffsetTime) temporal).atDate(LocalDate.now()).toZonedDateTime();
         } else {
-            return ZonedDateTime.from(temporal);
+            return fromZonedDateTime(temporal);
+        }
+    }
+
+    public static ZonedDateTime fromZonedDateTime(TemporalAccessor temporal) {
+        if (temporal instanceof ZonedDateTime) {
+            return (ZonedDateTime) temporal;
+        }
+        try {
+            if (temporal.isSupported(INSTANT_SECONDS)) {
+                return ZonedDateTime.from(temporal);
+            } else {
+                ZoneId zone = ZoneId.from(temporal);
+                LocalDate date = temporal.query(TemporalQueries.localDate());
+                if (date == null) {
+                    date = LocalDate.of(0, 1, 1);
+                }
+                LocalTime time = temporal.query(TemporalQueries.localTime());
+                if (time == null) {
+                    time = LocalTime.MIN;
+                }
+                return ZonedDateTime.of(date, time, zone);
+            }
+        } catch (DateTimeException ex) {
+            throw new DateTimeException("Unable to obtain ZonedDateTime from TemporalAccessor: " +
+                    temporal + " of type " + temporal.getClass().getName(), ex);
         }
     }
 
@@ -593,5 +631,9 @@ public class DateUtil {
         String dateStr = "2022-02-02T12:12:12.123Z";
         ZonedDateTime parse = DateUtil.parse(dateStr);
         System.out.println(parse);
+
+        String dateStr2 = "2022-12-12 12:12:12";
+        LocalDate localDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").parse(dateStr2, LocalDate::from);
+        System.out.println(localDate);
     }
 }

@@ -138,43 +138,6 @@ public class ConverterTest {
         assertNull(newTestIgnore.password);
     }
 
-    public static class TestIgnore {
-
-        /**
-         * 用户名
-         */
-        @FieldProperty(name = "userName3", ordinal = 2, serialize = false)
-        private String userName;
-
-        /**
-         * 用户名
-         */
-        @FieldProperty(name = "password2", ordinal = 3, deserialize = false)
-        private String password;
-
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-    }
-
-    public enum Enum {
-        @FieldProperty(name = "testOne")
-        ONE, TWO
-    }
-
     @Test
     public void testAny() {
         ConverterTest converterTest = new ConverterTest();
@@ -206,6 +169,43 @@ public class ConverterTest {
                 this.testEnum();
                 this.testIgnore();
             }
+        }
+    }
+
+    public enum Enum {
+        @FieldProperty(name = "testOne")
+        ONE, TWO
+    }
+
+    public static class TestIgnore {
+
+        /**
+         * 用户名
+         */
+        @FieldProperty(name = "userName3", ordinal = 2, serialize = false)
+        private String userName;
+
+        /**
+         * 用户名
+         */
+        @FieldProperty(name = "password2", ordinal = 3, deserialize = false)
+        private String password;
+
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
         }
     }
 }

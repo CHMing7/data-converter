@@ -69,6 +69,89 @@ public class DataMapper extends LinkedHashMap<String, Object> {
         this.codecGenerate = DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
+    /**
+     * 新建一个{@link DataMapper}
+     *
+     * @return {@link DataMapper}
+     */
+    public static DataMapper of(Converter<?> converter) {
+        return new DataMapper(converter);
+    }
+
+    /**
+     * 将一对键值打包为{@link DataMapper}
+     *
+     * <pre>
+     * DataMapper mapper = DataMapper.of("name", "dataMapper");
+     * </pre>
+     *
+     * @param key   键名
+     * @param value 与指定键关联的值
+     * @return {@link DataMapper}
+     */
+    public static DataMapper of(Converter<?> converter, String key, Object value) {
+        DataMapper dataMapper = new DataMapper(converter, 2);
+        dataMapper.put(key, value);
+        return dataMapper;
+    }
+
+    /**
+     * 将两个键值对打包为{@link DataMapper}
+     *
+     * <pre>
+     * DataMapper mapper = DataMapper.of(converter, "key1", "value1", "key2", "value2");
+     * </pre>
+     *
+     * @param k1 第一个键名
+     * @param v1 第一个值
+     * @param k2 第二个键名
+     * @param v2 第二个值
+     * @return {@link DataMapper}
+     */
+    public static DataMapper of(Converter<?> converter, String k1, Object v1, String k2, Object v2) {
+        DataMapper dataMapper = new DataMapper(converter, 4);
+        dataMapper.put(k1, v1);
+        dataMapper.put(k2, v2);
+        return dataMapper;
+    }
+
+    /**
+     * 将三个键值对打包为{@link DataMapper}
+     *
+     * <pre>
+     * DataMapper mapper = DataMapper.of(converter, "key1", "value1", "key2", "value2", "key3", "value3");
+     * </pre>
+     *
+     * @param k1 第一个键名
+     * @param v1 第一个值
+     * @param k2 第二个键名
+     * @param v2 第二个值
+     * @param k3 第三个键名
+     * @param v3 第三个值
+     * @return {@link DataMapper}
+     */
+    public static DataMapper of(Converter<?> converter, String k1, Object v1, String k2, Object v2, String k3, Object v3) {
+        DataMapper dataMapper = new DataMapper(converter, 5);
+        dataMapper.put(k1, v1);
+        dataMapper.put(k2, v2);
+        dataMapper.put(k3, v3);
+        return dataMapper;
+    }
+
+    /**
+     * 将键值对打包为{@link DataMapper}
+     *
+     * <pre>
+     * DataMapper mapper = DataMapper.of(converter, map);
+     * </pre>
+     *
+     * @param map 键值对
+     * @return {@link DataMapper}
+     */
+    public static DataMapper of(Converter<?> converter, Map<?, ?> map) {
+        return new DataMapper(converter, map);
+    }
+
     public Converter<?> getConverter() {
         return converter;
     }
@@ -445,7 +528,6 @@ public class DataMapper extends LinkedHashMap<String, Object> {
         return DataCast.castInstant(value, this.codecGenerate);
     }
 
-
     /**
      * 将此 {@link DataMapper} 转换为指定的对象
      * <p>
@@ -525,7 +607,6 @@ public class DataMapper extends LinkedHashMap<String, Object> {
         return toJavaBean(typeToken.getType());
     }
 
-
     /**
      * 返回此{@link DataMapper}中key键映射的{@link Type}
      * <p>
@@ -584,90 +665,6 @@ public class DataMapper extends LinkedHashMap<String, Object> {
     public DataMapper fluentPut(String key, Object value) {
         put(key, value);
         return this;
-    }
-
-    /**
-     * 新建一个{@link DataMapper}
-     *
-     * @return {@link DataMapper}
-     */
-    public static DataMapper of(Converter<?> converter) {
-        return new DataMapper(converter);
-    }
-
-    /**
-     * 将一对键值打包为{@link DataMapper}
-     *
-     * <pre>
-     * DataMapper mapper = DataMapper.of("name", "dataMapper");
-     * </pre>
-     *
-     * @param key   键名
-     * @param value 与指定键关联的值
-     * @return {@link DataMapper}
-     */
-    public static DataMapper of(Converter<?> converter, String key, Object value) {
-        DataMapper dataMapper = new DataMapper(converter, 2);
-        dataMapper.put(key, value);
-        return dataMapper;
-    }
-
-    /**
-     * 将两个键值对打包为{@link DataMapper}
-     *
-     * <pre>
-     * DataMapper mapper = DataMapper.of(converter, "key1", "value1", "key2", "value2");
-     * </pre>
-     *
-     * @param k1 第一个键名
-     * @param v1 第一个值
-     * @param k2 第二个键名
-     * @param v2 第二个值
-     * @return {@link DataMapper}
-     */
-    public static DataMapper of(Converter<?> converter, String k1, Object v1, String k2, Object v2) {
-        DataMapper dataMapper = new DataMapper(converter, 4);
-        dataMapper.put(k1, v1);
-        dataMapper.put(k2, v2);
-        return dataMapper;
-    }
-
-    /**
-     * 将三个键值对打包为{@link DataMapper}
-     *
-     * <pre>
-     * DataMapper mapper = DataMapper.of(converter, "key1", "value1", "key2", "value2", "key3", "value3");
-     * </pre>
-     *
-     * @param k1 第一个键名
-     * @param v1 第一个值
-     * @param k2 第二个键名
-     * @param v2 第二个值
-     * @param k3 第三个键名
-     * @param v3 第三个值
-     * @return {@link DataMapper}
-     */
-    public static DataMapper of(Converter<?> converter, String k1, Object v1, String k2, Object v2, String k3, Object v3) {
-        DataMapper dataMapper = new DataMapper(converter, 5);
-        dataMapper.put(k1, v1);
-        dataMapper.put(k2, v2);
-        dataMapper.put(k3, v3);
-        return dataMapper;
-    }
-
-
-    /**
-     * 将键值对打包为{@link DataMapper}
-     *
-     * <pre>
-     * DataMapper mapper = DataMapper.of(converter, map);
-     * </pre>
-     *
-     * @param map 键值对
-     * @return {@link DataMapper}
-     */
-    public static DataMapper of(Converter<?> converter, Map<?, ?> map) {
-        return new DataMapper(converter, map);
     }
 
 }

@@ -58,10 +58,6 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
         this.converter = converter;
     }
 
-    public Converter<?> getConverter() {
-        return this.converter;
-    }
-
     public static DataCodecGenerate newDefault(Converter<?> converter) {
         List<UniversalFactory<Codec>> factories = ListUtil.list(true);
         factories.add(new ObjectCodecFactory());
@@ -150,5 +146,9 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
 
     public static DataCodecGenerate getDataCodecGenerate(Converter<?> converter) {
         return MapUtil.computeIfAbsent(CONVERTER_DATA_CODEC_GENERATE_MAP, converter, DataCodecGenerate::newDefault);
+    }
+
+    public Converter<?> getConverter() {
+        return this.converter;
     }
 }

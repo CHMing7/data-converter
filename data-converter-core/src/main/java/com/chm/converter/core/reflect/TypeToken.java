@@ -61,79 +61,6 @@ public class TypeToken<T> {
     }
 
     /**
-     * 返回此类型的原始（非泛型）类型。
-     *
-     * @return
-     */
-    public final Class<? super T> getRawType() {
-        return rawType;
-    }
-
-    /**
-     * 获取底层 {@code Type} 实例。
-     *
-     * @return
-     */
-    public final Type getType() {
-        return type;
-    }
-
-    public final boolean isInstance(Object obj) {
-        return rawType.isInstance(obj);
-    }
-
-    /**
-     * 检查给定类型是否为本类型的子类型
-     *
-     * @param cls
-     * @return
-     */
-    @Deprecated
-    public boolean isAssignableFrom(Class<?> cls) {
-        return isAssignableFrom((Type) cls);
-    }
-
-    /**
-     * 检查给定类型是否为本类型的子类型
-     *
-     * @param from
-     * @return
-     */
-    @Deprecated
-    public boolean isAssignableFrom(Type from) {
-        if (from == null) {
-            return false;
-        }
-
-        if (type.equals(from)) {
-            return true;
-        }
-
-        if (type instanceof Class<?>) {
-            return rawType.isAssignableFrom(ConverterTypes.getRawType(from));
-        } else if (type instanceof ParameterizedType) {
-            return isAssignableFrom(from, (ParameterizedType) type, new HashMap<>());
-        } else if (type instanceof GenericArrayType) {
-            return rawType.isAssignableFrom(ConverterTypes.getRawType(from))
-                    && isAssignableFrom(from, (GenericArrayType) type);
-        } else {
-            throw buildUnexpectedTypeError(
-                    type, Class.class, ParameterizedType.class, GenericArrayType.class);
-        }
-    }
-
-    /**
-     * 检查给定类型是否为本类型的子类型
-     *
-     * @param token
-     * @return
-     */
-    @Deprecated
-    public boolean isAssignableFrom(TypeToken<?> token) {
-        return isAssignableFrom(token.getType());
-    }
-
-    /**
      * 递归检查from是否为to的子类型
      *
      * @param from
@@ -271,22 +198,6 @@ public class TypeToken<T> {
 
     }
 
-    @Override
-    public final int hashCode() {
-        return this.hashCode;
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        return o instanceof TypeToken<?>
-                && ConverterTypes.equals(type, ((TypeToken<?>) o).type);
-    }
-
-    @Override
-    public final String toString() {
-        return ConverterTypes.typeToString(type);
-    }
-
     /**
      * 获取给定 {@code Type} 实例的类型
      *
@@ -327,5 +238,94 @@ public class TypeToken<T> {
      */
     public static <T> TypeToken<T> getArray(Type componentType) {
         return new TypeToken<>(ConverterTypes.arrayOf(componentType));
+    }
+
+    /**
+     * 返回此类型的原始（非泛型）类型。
+     *
+     * @return
+     */
+    public final Class<? super T> getRawType() {
+        return rawType;
+    }
+
+    /**
+     * 获取底层 {@code Type} 实例。
+     *
+     * @return
+     */
+    public final Type getType() {
+        return type;
+    }
+
+    public final boolean isInstance(Object obj) {
+        return rawType.isInstance(obj);
+    }
+
+    /**
+     * 检查给定类型是否为本类型的子类型
+     *
+     * @param cls
+     * @return
+     */
+    @Deprecated
+    public boolean isAssignableFrom(Class<?> cls) {
+        return isAssignableFrom((Type) cls);
+    }
+
+    /**
+     * 检查给定类型是否为本类型的子类型
+     *
+     * @param from
+     * @return
+     */
+    @Deprecated
+    public boolean isAssignableFrom(Type from) {
+        if (from == null) {
+            return false;
+        }
+
+        if (type.equals(from)) {
+            return true;
+        }
+
+        if (type instanceof Class<?>) {
+            return rawType.isAssignableFrom(ConverterTypes.getRawType(from));
+        } else if (type instanceof ParameterizedType) {
+            return isAssignableFrom(from, (ParameterizedType) type, new HashMap<>());
+        } else if (type instanceof GenericArrayType) {
+            return rawType.isAssignableFrom(ConverterTypes.getRawType(from))
+                    && isAssignableFrom(from, (GenericArrayType) type);
+        } else {
+            throw buildUnexpectedTypeError(
+                    type, Class.class, ParameterizedType.class, GenericArrayType.class);
+        }
+    }
+
+    /**
+     * 检查给定类型是否为本类型的子类型
+     *
+     * @param token
+     * @return
+     */
+    @Deprecated
+    public boolean isAssignableFrom(TypeToken<?> token) {
+        return isAssignableFrom(token.getType());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this.hashCode;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        return o instanceof TypeToken<?>
+                && ConverterTypes.equals(type, ((TypeToken<?>) o).type);
+    }
+
+    @Override
+    public final String toString() {
+        return ConverterTypes.typeToString(type);
     }
 }

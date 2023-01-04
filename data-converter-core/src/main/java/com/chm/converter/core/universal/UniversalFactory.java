@@ -14,47 +14,11 @@ import java.lang.reflect.Type;
 @FunctionalInterface
 public interface UniversalFactory<T extends UniversalInterface> {
 
-    /**
-     * 创建
-     *
-     * @param generate
-     * @param type
-     * @return
-     */
-    default T create(UniversalGenerate<T> generate, Type type) {
-        TypeToken<?> typeToken = TypeToken.get(type);
-        return create(generate, typeToken);
-    }
-
-
-    /**
-     * 创建
-     *
-     * @param generate
-     * @param cls
-     * @return
-     */
-    default T create(UniversalGenerate<T> generate, Class<?> cls) {
-        TypeToken<?> typeToken = TypeToken.get(cls);
-        return create(generate, typeToken);
-    }
-
-
-    /**
-     * 创建
-     *
-     * @param generate
-     * @param typeToken
-     * @return
-     */
-    T create(UniversalGenerate<T> generate, TypeToken<?> typeToken);
-
     static <T extends UniversalInterface, D> UniversalFactory<T> newFactory(final TypeToken<D> type,
                                                                             final T codec) {
         // we use a runtime check to make sure the 'T's equal
         return (generate, typeToken) -> typeToken.equals(type) ? codec : null;
     }
-
 
     static <T extends UniversalInterface, D> UniversalFactory<T> newFactory(final Class<D> type,
                                                                             final T t) {
@@ -70,7 +34,6 @@ public interface UniversalFactory<T extends UniversalInterface> {
             }
         };
     }
-
 
     static <T extends UniversalInterface, D> UniversalFactory<T> newFactory(final Class<D> unboxed,
                                                                             final Class<D> boxed,
@@ -90,7 +53,6 @@ public interface UniversalFactory<T extends UniversalInterface> {
         };
     }
 
-
     static <T extends UniversalInterface, D> UniversalFactory<T> newFactoryForMultipleTypes(final Class<D> base,
                                                                                             final Class<? extends D> sub,
                                                                                             final T t) {
@@ -108,7 +70,6 @@ public interface UniversalFactory<T extends UniversalInterface> {
             }
         };
     }
-
 
     /**
      * Returns a factory for all subtypes of {@code codec}. We do a runtime check to confirm
@@ -132,4 +93,37 @@ public interface UniversalFactory<T extends UniversalInterface> {
             }
         };
     }
+
+    /**
+     * 创建
+     *
+     * @param generate
+     * @param type
+     * @return
+     */
+    default T create(UniversalGenerate<T> generate, Type type) {
+        TypeToken<?> typeToken = TypeToken.get(type);
+        return create(generate, typeToken);
+    }
+
+    /**
+     * 创建
+     *
+     * @param generate
+     * @param cls
+     * @return
+     */
+    default T create(UniversalGenerate<T> generate, Class<?> cls) {
+        TypeToken<?> typeToken = TypeToken.get(cls);
+        return create(generate, typeToken);
+    }
+
+    /**
+     * 创建
+     *
+     * @param generate
+     * @param typeToken
+     * @return
+     */
+    T create(UniversalGenerate<T> generate, TypeToken<?> typeToken);
 }

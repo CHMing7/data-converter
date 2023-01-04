@@ -19,6 +19,54 @@ public interface ClassInfoStorage {
 
     ClassInfoStorage INSTANCE = (clazz, converterClass) -> contains(BEAN_INFO_MAP, clazz, converterClass);
 
+    /**
+     * put
+     *
+     * @param map
+     * @param k
+     * @param r
+     * @param v
+     * @param <K>
+     * @param <R>
+     * @param <V>
+     */
+    static <K, R, V> void put(Map<K, Map<R, V>> map, K k, R r, V v) {
+        Map<R, V> orDefault = map.getOrDefault(k, MapUtil.newHashMap());
+        orDefault.put(r, v);
+        map.put(k, orDefault);
+    }
+
+    /**
+     * get
+     *
+     * @param map
+     * @param k
+     * @param r
+     * @param <K>
+     * @param <R>
+     * @param <V>
+     * @return
+     */
+    static <K, R, V> V get(Map<K, Map<R, V>> map, K k, R r) {
+        Map<R, V> orDefault = map.getOrDefault(k, MapUtil.newHashMap());
+        return orDefault.get(r);
+    }
+
+    /**
+     * contains
+     *
+     * @param map
+     * @param k
+     * @param r
+     * @param <K>
+     * @param <R>
+     * @param <V>
+     * @return
+     */
+    static <K, R, V> boolean contains(Map<K, Map<R, V>> map, K k, R r) {
+        Map<R, V> orDefault = map.getOrDefault(k, MapUtil.newHashMap());
+        return orDefault.containsKey(r);
+    }
 
     /**
      * 初始化class信息
@@ -43,7 +91,6 @@ public interface ClassInfoStorage {
         put(NAME_FIELD_INFO_MAP, clazz, converterClass, javaBeanInfo.getNameFieldInfoMap());
         put(FIELD_NAME_FIELD_INFO_MAP, clazz, converterClass, javaBeanInfo.getFieldNameFieldInfoMap());
     }
-
 
     /**
      * 获取bean信息
@@ -109,55 +156,6 @@ public interface ClassInfoStorage {
             initClassInfo(clazz, converterClass);
         }
         return get(FIELD_NAME_FIELD_INFO_MAP, clazz, converterClass);
-    }
-
-    /**
-     * put
-     *
-     * @param map
-     * @param k
-     * @param r
-     * @param v
-     * @param <K>
-     * @param <R>
-     * @param <V>
-     */
-    static <K, R, V> void put(Map<K, Map<R, V>> map, K k, R r, V v) {
-        Map<R, V> orDefault = map.getOrDefault(k, MapUtil.newHashMap());
-        orDefault.put(r, v);
-        map.put(k, orDefault);
-    }
-
-    /**
-     * get
-     *
-     * @param map
-     * @param k
-     * @param r
-     * @param <K>
-     * @param <R>
-     * @param <V>
-     * @return
-     */
-    static <K, R, V> V get(Map<K, Map<R, V>> map, K k, R r) {
-        Map<R, V> orDefault = map.getOrDefault(k, MapUtil.newHashMap());
-        return orDefault.get(r);
-    }
-
-    /**
-     * contains
-     *
-     * @param map
-     * @param k
-     * @param r
-     * @param <K>
-     * @param <R>
-     * @param <V>
-     * @return
-     */
-    static <K, R, V> boolean contains(Map<K, Map<R, V>> map, K k, R r) {
-        Map<R, V> orDefault = map.getOrDefault(k, MapUtil.newHashMap());
-        return orDefault.containsKey(r);
     }
 }
 

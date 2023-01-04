@@ -23,11 +23,9 @@ import java.util.Map;
  **/
 public class FstClazzInfoRegistry extends FSTClazzInfoRegistry {
 
-    protected FSTMap mInfos = new FSTMap(97);
-
     private final Class<? extends Converter> converterClass;
-
     private final UseRawJudge useRawJudge;
+    protected FSTMap mInfos = new FSTMap(97);
 
     public FstClazzInfoRegistry(Converter<?> converter, UseRawJudge useRawJudge) {
         this.converterClass = converter != null ? converter.getClass() : null;

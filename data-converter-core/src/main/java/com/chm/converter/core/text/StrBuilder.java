@@ -32,6 +32,36 @@ public class StrBuilder implements CharSequence, Appendable, Serializable {
     private int position;
 
     /**
+     * 构造
+     */
+    public StrBuilder() {
+        this(DEFAULT_CAPACITY);
+    }
+
+    /**
+     * 构造
+     *
+     * @param initialCapacity 初始容量
+     */
+    public StrBuilder(int initialCapacity) {
+        value = new char[initialCapacity];
+    }
+
+    /**
+     * 构造
+     *
+     * @param strs 初始字符串
+     */
+    public StrBuilder(CharSequence... strs) {
+        this(ArrayUtil.isEmpty(strs) ? DEFAULT_CAPACITY : (totalLength(strs) + DEFAULT_CAPACITY));
+        for (CharSequence str : strs) {
+            append(str);
+        }
+    }
+
+    // ------------------------------------------------------------------------------------ Constructor start
+
+    /**
      * 创建字符串构建器
      *
      * @return this
@@ -59,39 +89,24 @@ public class StrBuilder implements CharSequence, Appendable, Serializable {
     public static StrBuilder create(CharSequence... strs) {
         return new StrBuilder(strs);
     }
-
-    // ------------------------------------------------------------------------------------ Constructor start
-
-    /**
-     * 构造
-     */
-    public StrBuilder() {
-        this(DEFAULT_CAPACITY);
-    }
-
-    /**
-     * 构造
-     *
-     * @param initialCapacity 初始容量
-     */
-    public StrBuilder(int initialCapacity) {
-        value = new char[initialCapacity];
-    }
-
-    /**
-     * 构造
-     *
-     * @param strs 初始字符串
-     */
-    public StrBuilder(CharSequence... strs) {
-        this(ArrayUtil.isEmpty(strs) ? DEFAULT_CAPACITY : (totalLength(strs) + DEFAULT_CAPACITY));
-        for (CharSequence str : strs) {
-            append(str);
-        }
-    }
     // ------------------------------------------------------------------------------------ Constructor end
 
     // ------------------------------------------------------------------------------------ Append
+
+    /**
+     * 给定字符串数组的总长度<br>
+     * null字符长度定义为0
+     *
+     * @param strs 字符串数组
+     * @return 总长度
+     */
+    private static int totalLength(CharSequence... strs) {
+        int totalLength = 0;
+        for (CharSequence str : strs) {
+            totalLength += (null == str ? 4 : str.length());
+        }
+        return totalLength;
+    }
 
     /**
      * 追加一个字符
@@ -134,12 +149,12 @@ public class StrBuilder implements CharSequence, Appendable, Serializable {
         return insert(this.position, csq);
     }
 
+    // ------------------------------------------------------------------------------------ Insert
+
     @Override
     public StrBuilder append(CharSequence csq, int start, int end) {
         return insert(this.position, csq, start, end);
     }
-
-    // ------------------------------------------------------------------------------------ Insert
 
     /**
      * 插入指定字符
@@ -235,6 +250,8 @@ public class StrBuilder implements CharSequence, Appendable, Serializable {
         return this;
     }
 
+    // ------------------------------------------------------------------------------------ Others
+
     /**
      * 指定位置插入字符串的某个部分<br>
      * 如果插入位置为当前位置，则定义为追加<br>
@@ -275,8 +292,6 @@ public class StrBuilder implements CharSequence, Appendable, Serializable {
         this.position = Math.max(this.position, index) + length;
         return this;
     }
-
-    // ------------------------------------------------------------------------------------ Others
 
     /**
      * 将指定段的字符列表写出到目标字符数组中
@@ -461,6 +476,8 @@ public class StrBuilder implements CharSequence, Appendable, Serializable {
         return subString(start, this.position);
     }
 
+    // ------------------------------------------------------------------------------------ Private method start
+
     /**
      * 返回自定段的字符串
      *
@@ -471,8 +488,6 @@ public class StrBuilder implements CharSequence, Appendable, Serializable {
     public String subString(int start, int end) {
         return new String(this.value, start, end - start);
     }
-
-    // ------------------------------------------------------------------------------------ Private method start
 
     /**
      * 指定位置之后的数据后移指定长度
@@ -520,21 +535,6 @@ public class StrBuilder implements CharSequence, Appendable, Serializable {
             throw new OutOfMemoryError("Capacity is too long and max than Integer.MAX");
         }
         value = Arrays.copyOf(value, newCapacity);
-    }
-
-    /**
-     * 给定字符串数组的总长度<br>
-     * null字符长度定义为0
-     *
-     * @param strs 字符串数组
-     * @return 总长度
-     */
-    private static int totalLength(CharSequence... strs) {
-        int totalLength = 0;
-        for (CharSequence str : strs) {
-            totalLength += (null == str ? 4 : str.length());
-        }
-        return totalLength;
     }
     // ------------------------------------------------------------------------------------ Private method end
 }

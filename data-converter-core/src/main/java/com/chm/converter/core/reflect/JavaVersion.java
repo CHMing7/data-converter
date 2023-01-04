@@ -7,7 +7,10 @@ package com.chm.converter.core.reflect;
  **/
 public final class JavaVersion {
 
-    private static final int majorJavaVersion = determineMajorJavaVersion();
+    private static final int MAJOR_JAVA_VERSION = determineMajorJavaVersion();
+
+    private JavaVersion() {
+    }
 
     private static int determineMajorJavaVersion() {
         String javaVersion = System.getProperty("java.version");
@@ -73,16 +76,13 @@ public final class JavaVersion {
      * @return 主要的 Java 版本，即“8”代表 Java 1.8，“9”代表 Java 9 等。
      */
     public static int getMajorJavaVersion() {
-        return majorJavaVersion;
+        return MAJOR_JAVA_VERSION;
     }
 
     /**
      * @return {@code true} 应用程序在 Java 9 或更高版本上运行; {@code false} 否则相反
      */
     public static boolean isJava9OrLater() {
-        return majorJavaVersion >= 9;
-    }
-
-    private JavaVersion() {
+        return MAJOR_JAVA_VERSION >= 9;
     }
 }

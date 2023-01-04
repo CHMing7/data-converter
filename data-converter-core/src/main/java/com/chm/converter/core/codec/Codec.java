@@ -232,6 +232,15 @@ public interface Codec<D, E> extends UniversalInterface {
     }
 
     /**
+     * 优先使用此codec
+     *
+     * @return
+     */
+    default boolean isPriorityUse() {
+        return false;
+    }
+
+    /**
      * 编码接口类
      *
      * @param <D>
@@ -333,14 +342,5 @@ public interface Codec<D, E> extends UniversalInterface {
          * @throws IOException
          */
         T read() throws IOException;
-    }
-
-    /**
-     * 优先使用此codec
-     *
-     * @return
-     */
-    default boolean isPriorityUse() {
-        return false;
     }
 }

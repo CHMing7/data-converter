@@ -14,16 +14,6 @@ import com.chm.converter.core.DataType;
 public interface IonConverter extends Converter<byte[]> {
 
     /**
-     * 获取当前数据转换器转换类型
-     *
-     * @return
-     */
-    @Override
-    default DataType getDataType() {
-        return DataType.ION;
-    }
-
-    /**
      * 选择数据转换器
      * <p>动态选择一个可用的数据转换器</p>
      *
@@ -31,5 +21,15 @@ public interface IonConverter extends Converter<byte[]> {
      */
     static IonConverter select() {
         return ConverterSelector.select(IonConverter.class);
+    }
+
+    /**
+     * 获取当前数据转换器转换类型
+     *
+     * @return
+     */
+    @Override
+    default DataType getDataType() {
+        return DataType.ION;
     }
 }

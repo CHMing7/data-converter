@@ -17,6 +17,17 @@ public class Pair<K, V> implements Serializable {
     private final V value;
 
     /**
+     * 构造
+     *
+     * @param key   键
+     * @param value 值
+     */
+    public Pair(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    /**
      * 构建{@link Pair}对象
      *
      * @param <K>   键类型
@@ -27,17 +38,6 @@ public class Pair<K, V> implements Serializable {
      */
     public static <K, V> Pair<K, V> of(K key, V value) {
         return new Pair<>(key, value);
-    }
-
-    /**
-     * 构造
-     *
-     * @param key   键
-     * @param value 值
-     */
-    public Pair(K key, V value) {
-        this.key = key;
-        this.value = value;
     }
 
     /**

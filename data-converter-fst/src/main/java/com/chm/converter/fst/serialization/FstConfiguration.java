@@ -75,12 +75,12 @@ public class FstConfiguration extends FSTConfiguration {
     }
 
     @Override
-    public void setStructMode(boolean ignoreSerialInterfaces) {
-        serializationInfoRegistry.setStructMode(ignoreSerialInterfaces);
+    public boolean isStructMode() {
+        return serializationInfoRegistry.isStructMode();
     }
 
     @Override
-    public boolean isStructMode() {
-        return serializationInfoRegistry.isStructMode();
+    public void setStructMode(boolean ignoreSerialInterfaces) {
+        serializationInfoRegistry.setStructMode(ignoreSerialInterfaces);
     }
 }
