@@ -322,7 +322,7 @@ public class DateUtil {
         Objects.requireNonNull(formatter, "formatter");
         Date date;
         try {
-            date = toDate(toLocalDateTime(formatter.parse(text)));
+            date = DateUtil.toDate(toLocalDateTime(formatter.parse(text)));
         } catch (DateTimeException e) {
             if (e.getMessage().startsWith(PARSE_LOCAL_DATE_EXCEPTION)) {
                 date = toDate(LocalDate.parse(text, formatter));
@@ -390,7 +390,18 @@ public class DateUtil {
      * @return LocalDateTime
      */
     public static LocalDateTime toLocalDateTime(TemporalAccessor temporal) {
-        return toLocalDateTime(toZonedDateTime(temporal));
+        if(temporal instanceof LocalDateTime){
+            return (LocalDateTime) temporal;
+        }
+        LocalDate date = temporal.query(TemporalQueries.localDate());
+        if (date == null) {
+            date = LocalDate.of(0, 1, 1);
+        }
+        LocalTime time = temporal.query(TemporalQueries.localTime());
+        if (time == null) {
+            time = LocalTime.MIN;
+        }
+        return LocalDateTime.of(date, time);
     }
 
 
