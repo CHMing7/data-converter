@@ -27,9 +27,6 @@ public class ConverterSelector implements Serializable {
 
     private static final Map<DataType, Map<Class<? extends Converter>, Converter>> CONVERTER_MAP = MapUtil.newConcurrentHashMap();
 
-    protected ConverterSelector() {
-    }
-
     static {
         // 加载数据转换器类
         ServiceLoader<Converter> converters = secureGetServiceLoader(Converter.class, null);
@@ -50,6 +47,9 @@ public class ConverterSelector implements Serializable {
                             }
                         }
                 );
+    }
+
+    protected ConverterSelector() {
     }
 
     private static <T> ServiceLoader<T> secureGetServiceLoader(final Class<T> clazz, final ClassLoader classLoader) {

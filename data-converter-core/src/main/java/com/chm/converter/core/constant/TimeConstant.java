@@ -40,29 +40,16 @@ import static java.time.temporal.ChronoField.YEAR;
 public interface TimeConstant {
 
     /**
-     * 判断指定类型是否为java8time
-     *
-     * @param clazz 指定类型
-     * @return boolean
-     */
-    static boolean isJava8Time(Class<?> clazz) {
-        return TEMPORAL_ACCESSOR_SET.contains(clazz) || TEMPORAL_ACCESSOR_SET.stream()
-                .anyMatch(temporalAccessorClass -> temporalAccessorClass.isAssignableFrom(clazz));
-    }
-
-    /**
      * 支持的java8时间类型集合
      */
     Set<Class<? extends TemporalAccessor>> TEMPORAL_ACCESSOR_SET =
             CollUtil.newLinkedHashSet(Instant.class, LocalDate.class, LocalDateTime.class, LocalTime.class,
                     OffsetDateTime.class, OffsetTime.class, ZonedDateTime.class, MonthDay.class, YearMonth.class,
                     Year.class, ZoneOffset.class);
-
     /**
      * 默认时间类型集合
      */
     Set<Class<? extends Date>> DEFAULT_DATE_SET = CollUtil.newLinkedHashSet(java.sql.Date.class, Timestamp.class, Date.class);
-
     /**
      * java8时间类型转换
      */
@@ -79,7 +66,6 @@ public interface TimeConstant {
             Pair.of(Year.class, (TemporalQuery<Year>) Year::from),
             Pair.of(ZoneOffset.class, (TemporalQuery<ZoneOffset>) ZoneOffset::from)
     );
-
     /**
      * java8时间类型转换
      */
@@ -96,7 +82,6 @@ public interface TimeConstant {
             Pair.of(Year.class, (TemporalCreate<Year>) Year::now),
             Pair.of(ZoneOffset.class, (TemporalCreate<ZoneOffset>) () -> OffsetDateTime.now(ZoneId.systemDefault()).getOffset())
     );
-
     /**
      * java8时间类型字符串转换器
      */
@@ -119,6 +104,17 @@ public interface TimeConstant {
                     .toFormatter()),
             Pair.of(ZoneOffset.class, DateTimeFormatter.ofPattern("ZZZZZ"))
     );
+
+    /**
+     * 判断指定类型是否为java8time
+     *
+     * @param clazz 指定类型
+     * @return boolean
+     */
+    static boolean isJava8Time(Class<?> clazz) {
+        return TEMPORAL_ACCESSOR_SET.contains(clazz) || TEMPORAL_ACCESSOR_SET.stream()
+                .anyMatch(temporalAccessorClass -> temporalAccessorClass.isAssignableFrom(clazz));
+    }
 
     @FunctionalInterface
     interface TemporalCreate<R extends TemporalAccessor> {

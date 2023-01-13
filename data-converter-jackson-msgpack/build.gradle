@@ -1,20 +1,20 @@
 dependencies {
-    compile project(':data-converter-jackson')
-    compile project(':data-converter-msgpack')
+    api project(':data-converter-jackson')
+    api project(':data-converter-msgpack')
 
-    compileOnly(libs.msgpack_jackson)
-    compileOnly(libs.jackson_core)
-    compileOnly(libs.jackson_databind)
-    compileOnly(libs.jackson_annotations)
+    implementation(libs.msgpack_jackson)
+    implementation(libs.jackson_core)
+    implementation(libs.jackson_databind)
+    implementation(libs.jackson_annotations)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testCompile 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.1'
 
-    testCompile(libs.hutool_log)
-    testCompile(libs.msgpack_jackson)
-    testCompile(libs.jackson_core)
-    testCompile(libs.jackson_databind)
-    testCompile(libs.jackson_annotations)
+    testImplementation(libs.hutool_log)
+    testImplementation(libs.msgpack_jackson)
+    testImplementation(libs.jackson_core)
+    testImplementation(libs.jackson_databind)
+    testImplementation(libs.jackson_annotations)
 }

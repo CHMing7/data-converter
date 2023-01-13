@@ -53,6 +53,10 @@ public class DefaultAvroConverter implements AvroConverter {
 
     protected ReflectData reflectData = new AvroReflectData(this, DefaultAvroConverter::checkExistAvroAnnotation);
 
+    public static boolean checkExistAvroAnnotation(Class<?> cls) {
+        return JavaBeanInfo.checkExistAnnotation(cls, AVRO_ANNOTATION_LIST);
+    }
+
     public ReflectData getReflectData() {
         return reflectData;
     }
@@ -120,9 +124,5 @@ public class DefaultAvroConverter implements AvroConverter {
         } catch (Throwable ignored) {
             return false;
         }
-    }
-
-    public static boolean checkExistAvroAnnotation(Class<?> cls) {
-        return JavaBeanInfo.checkExistAnnotation(cls, AVRO_ANNOTATION_LIST);
     }
 }

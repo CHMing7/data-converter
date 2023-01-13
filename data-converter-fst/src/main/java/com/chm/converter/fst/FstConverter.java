@@ -14,17 +14,6 @@ import com.chm.converter.core.DataType;
 public interface FstConverter extends Converter<byte[]> {
 
     /**
-     * 获取当前数据转换器转换类型
-     *
-     * @return
-     */
-    @Override
-    default DataType getDataType() {
-        return DataType.FST;
-    }
-
-
-    /**
      * 选择数据转换器
      * <p>动态选择一个可用的数据转换器</p>
      *
@@ -32,5 +21,15 @@ public interface FstConverter extends Converter<byte[]> {
      */
     static FstConverter select() {
         return ConverterSelector.select(FstConverter.class);
+    }
+
+    /**
+     * 获取当前数据转换器转换类型
+     *
+     * @return
+     */
+    @Override
+    default DataType getDataType() {
+        return DataType.FST;
     }
 }

@@ -21,10 +21,8 @@ public class CollectionCodec<T extends Collection> implements Codec<T, T> {
     protected final Class<T> clazz;
 
     protected final ObjectConstructor<T> constructor;
-
-    private final Codec elementCodec;
-
     protected final Type elementType;
+    private final Codec elementCodec;
 
     public CollectionCodec(Class<T> clazz, Codec elementCodec, Type elementType) {
         this.clazz = clazz;

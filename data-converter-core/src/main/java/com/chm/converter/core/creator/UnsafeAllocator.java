@@ -13,16 +13,6 @@ import java.lang.reflect.Modifier;
  **/
 public abstract class UnsafeAllocator {
 
-    /**
-     * 创建实例
-     *
-     * @param c
-     * @param <T>
-     * @return
-     * @throws Exception
-     */
-    public abstract <T> T newInstance(Class<T> c) throws Exception;
-
     public static UnsafeAllocator create() {
         try {
             Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
@@ -96,4 +86,14 @@ public abstract class UnsafeAllocator {
             throw new UnsupportedOperationException("Abstract class can't be instantiated! Class name: " + c.getName());
         }
     }
+
+    /**
+     * 创建实例
+     *
+     * @param c
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    public abstract <T> T newInstance(Class<T> c) throws Exception;
 }

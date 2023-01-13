@@ -50,6 +50,10 @@ public class DefaultFstConverter implements FstConverter {
 
     private final FstFactory factory = new FstFactory(this);
 
+    public static boolean checkExistFstAnnotation(Class<?> cls) {
+        return JavaBeanInfo.checkExistAnnotation(cls, FST_ANNOTATION_LIST);
+    }
+
     @Override
     public <T> T convertToJavaObject(byte[] source, Class<T> targetType) {
         if (targetType.isInterface()) {
@@ -101,9 +105,5 @@ public class DefaultFstConverter implements FstConverter {
         } catch (Throwable ignored) {
             return false;
         }
-    }
-
-    public static boolean checkExistFstAnnotation(Class<?> cls) {
-        return JavaBeanInfo.checkExistAnnotation(cls, FST_ANNOTATION_LIST);
     }
 }

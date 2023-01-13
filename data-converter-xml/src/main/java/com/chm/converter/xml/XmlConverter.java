@@ -15,16 +15,6 @@ import com.chm.converter.core.DataType;
 public interface XmlConverter extends Converter<String> {
 
     /**
-     * 获取当前数据转换器转换类型
-     *
-     * @return
-     */
-    @Override
-    default DataType getDataType() {
-        return DataType.XML;
-    }
-
-    /**
      * 选择数据转换器
      * <p>动态选择一个可用的数据转换器</p>
      *
@@ -32,5 +22,15 @@ public interface XmlConverter extends Converter<String> {
      */
     static XmlConverter select() {
         return ConverterSelector.select(XmlConverter.class);
+    }
+
+    /**
+     * 获取当前数据转换器转换类型
+     *
+     * @return
+     */
+    @Override
+    default DataType getDataType() {
+        return DataType.XML;
     }
 }

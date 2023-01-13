@@ -17,24 +17,13 @@ import java.util.Map;
  **/
 public class UniversalGenerate<T extends UniversalInterface> {
 
-    private final Map<TypeToken<?>, Entry> typeCache = MapUtil.newConcurrentHashMap();
-
     protected final List<UniversalFactory<T>> factories;
-
-    final class Entry {
-        boolean forSubClasses = false;
-        T t;
-
-        Entry(boolean forSubClasses, T t) {
-            this.forSubClasses = forSubClasses;
-            this.t = t;
-        }
-    }
-
+    private final Map<TypeToken<?>, Entry> typeCache = MapUtil.newConcurrentHashMap();
 
     public UniversalGenerate() {
         this(null);
     }
+
 
     public UniversalGenerate(List<UniversalFactory<T>> factories) {
         this.factories = factories != null ? factories : Collections.emptyList();
@@ -178,7 +167,6 @@ public class UniversalGenerate<T extends UniversalInterface> {
         return this.put(type, t, false);
     }
 
-
     /**
      * 新增编解码器
      *
@@ -220,6 +208,16 @@ public class UniversalGenerate<T extends UniversalInterface> {
             return true;
         }
         return get(type) != null;
+    }
+
+    final class Entry {
+        boolean forSubClasses = false;
+        T t;
+
+        Entry(boolean forSubClasses, T t) {
+            this.forSubClasses = forSubClasses;
+            this.t = t;
+        }
     }
 
 }

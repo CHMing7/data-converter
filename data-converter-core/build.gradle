@@ -1,10 +1,13 @@
 dependencies {
-    compile(libs.auto_service)
-    compile(libs.slf4j_api)
+    api(libs.auto_service)
+    api(libs.slf4j_api)
+    // api("org.apache.commons:commons-lang3:3.12.0")
+    // api("com.github.xkzhangsan:xk-time:3.2.4")
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testCompile 'junit:junit:4.13.1'
-    testCompile(libs.hutool_log)
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation(libs.hutool_log)
+    // testImplementation("com.github.xkzhangsan:xk-time:3.2.4")
 }

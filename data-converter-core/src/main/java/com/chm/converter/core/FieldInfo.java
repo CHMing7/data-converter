@@ -116,69 +116,51 @@ public class FieldInfo implements Comparable<FieldInfo> {
     public final Method getter;
 
     public final Field field;
-
-    private int ordinal = 0;
-
-    /**
-     * 排序编号
-     */
-    private int sortedNumber = 0;
-
     public final Class<?> fieldClass;
-
     public final Type fieldType;
-
     public final TypeToken<?> typeToken;
-
     public final Class<?> declaringClass;
-
     public final boolean getOnly;
-
-    private final FieldProperty fieldAnnotation;
-
-    private final FieldProperty methodAnnotation;
-
     public final String format;
-
+    private final FieldProperty fieldAnnotation;
+    private final FieldProperty methodAnnotation;
     /**
      * 是否序列化
      */
     private final boolean serialize;
-
     /**
      * 是否反序列化
      */
     private final boolean deserialize;
-
     /**
      * 是否可持久化
      */
     private final boolean isTransient;
-
     /**
      * 扩展属性
      */
     private final Map<String, Object> expandProperty;
-
     /**
      * 属性注解集
      */
     private final List<Annotation> fieldAnnotationList;
-
     /**
      * 属性注解类型集
      */
     private final Set<Class<? extends Annotation>> fieldAnnotationClassSet;
-
     /**
      * 方法注解集
      */
     private final List<Annotation> methodAnnotationList;
-
     /**
      * 方法注解类型集
      */
     private final Set<Class<? extends Annotation>> methodAnnotationClassSet;
+    private int ordinal = 0;
+    /**
+     * 排序编号
+     */
+    private int sortedNumber = 0;
 
     public FieldInfo(String name, Method method, Field field, int ordinal, FieldProperty fieldAnnotation, FieldProperty methodAnnotation) {
         if (field != null) {
@@ -311,6 +293,27 @@ public class FieldInfo implements Comparable<FieldInfo> {
         return null;
     }
 
+    /**
+     * 检查fieldInfo中是否包含annotationList中任意一个注解
+     *
+     * @param fieldInfo
+     * @param annotationList
+     * @return
+     */
+    public static boolean checkExistAnnotation(FieldInfo fieldInfo, List<Class<? extends Annotation>> annotationList) {
+        if (fieldInfo == null) {
+            return false;
+        }
+        Set<Class<? extends Annotation>> fieldAnnotationClassSet = fieldInfo.getFieldAnnotationClassSet();
+        Set<Class<? extends Annotation>> methodAnnotationClassSet = fieldInfo.getMethodAnnotationClassSet();
+        for (Class<? extends Annotation> annotation : annotationList) {
+            if (fieldAnnotationClassSet.contains(annotation) || methodAnnotationClassSet.contains(annotation)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * 方法是否为Getter方法<br>
@@ -503,28 +506,6 @@ public class FieldInfo implements Comparable<FieldInfo> {
 
     public Set<Class<? extends Annotation>> getMethodAnnotationClassSet() {
         return methodAnnotationClassSet;
-    }
-
-    /**
-     * 检查fieldInfo中是否包含annotationList中任意一个注解
-     *
-     * @param fieldInfo
-     * @param annotationList
-     * @return
-     */
-    public static boolean checkExistAnnotation(FieldInfo fieldInfo, List<Class<? extends Annotation>> annotationList) {
-        if (fieldInfo == null) {
-            return false;
-        }
-        Set<Class<? extends Annotation>> fieldAnnotationClassSet = fieldInfo.getFieldAnnotationClassSet();
-        Set<Class<? extends Annotation>> methodAnnotationClassSet = fieldInfo.getMethodAnnotationClassSet();
-        for (Class<? extends Annotation> annotation : annotationList) {
-            if (fieldAnnotationClassSet.contains(annotation) || methodAnnotationClassSet.contains(annotation)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Override

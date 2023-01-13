@@ -1,14 +1,14 @@
 dependencies {
-    compile project(':data-converter-jackson')
-    compile project(':data-converter-smile')
+    api project(':data-converter-jackson')
+    api project(':data-converter-smile')
 
-    compileOnly(libs.smile_jackson)
+    implementation(libs.smile_jackson)
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testCompile 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.1'
 
-    testCompile(libs.hutool_log)
-    testCompile(libs.smile_jackson)
+    testImplementation(libs.hutool_log)
+    testImplementation(libs.smile_jackson)
 }

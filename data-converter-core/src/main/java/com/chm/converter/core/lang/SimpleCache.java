@@ -23,21 +23,18 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class SimpleCache<K, V> implements Iterable<Map.Entry<K, V>>, Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * 池
-     */
-    private final Map<K, V> cache;
-
-    /**
-     * 乐观读写锁
-     */
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
     /**
      * 写的时候每个key一把锁，降低锁的粒度
      */
     protected final Map<K, Lock> keyLockMap = MapUtil.newConcurrentHashMap();
+    /**
+     * 池
+     */
+    private final Map<K, V> cache;
+    /**
+     * 乐观读写锁
+     */
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
      * 构造，默认使用{@link WeakHashMap}实现缓存自动清理

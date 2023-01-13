@@ -3,38 +3,38 @@ dependencies {
     rootProject.allprojects.stream().filter({
         it != rootProject && it != project
     }).forEach({
-        compile it
+        api(it)
     })
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testCompile 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.1'
 
-    testCompile 'ch.qos.logback:logback-access:1.2.6'
-    testCompile 'ch.qos.logback:logback-classic:1.2.6'
-    testCompile 'ch.qos.logback:logback-core:1.2.6'
+    testImplementation 'ch.qos.logback:logback-access:1.2.6'
+    testImplementation 'ch.qos.logback:logback-classic:1.2.6'
+    testImplementation 'ch.qos.logback:logback-core:1.2.6'
 
-    compile(libs.hutool_log)
-    compile(libs.fastjson)
-    compile(libs.jackson_core)
-    compile(libs.jackson_databind)
-    compile(libs.jackson_annotations)
-    compile(libs.jackson_xml)
-    compile(libs.gson)
-    compile(libs.avro)
-    compile(libs.cbor_jackson)
-    compile(libs.hessian)
-    compile(libs.kryo)
-    compile(libs.protobuf_java)
-    compile(libs.protostuff_core)
-    compile(libs.fst)
-    compile(libs.msgpack_jackson)
-    compile(libs.spearal_java)
-    compile(libs.thrift)
-    compile(libs.yaml_jackson)
-    compile(libs.cbor_jackson)
-    compile(libs.ion_jackson)
-    compile(libs.smile_jackson)
-    compile(libs.fastjson2)
+    api(libs.hutool_log)
+    api(libs.fastjson)
+    api(libs.jackson_core)
+    api(libs.jackson_databind)
+    api(libs.jackson_annotations)
+    api(libs.jackson_xml)
+    api(libs.gson)
+    api(libs.avro)
+    api(libs.cbor_jackson)
+    api(libs.hessian)
+    api(libs.kryo)
+    api(libs.protobuf_java)
+    api(libs.protostuff_core)
+    api(libs.fst)
+    api(libs.msgpack_jackson)
+    api(libs.spearal_java)
+    api(libs.thrift)
+    api(libs.yaml_jackson)
+    api(libs.cbor_jackson)
+    api(libs.ion_jackson)
+    api(libs.smile_jackson)
+    api(libs.fastjson2)
 }

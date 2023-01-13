@@ -3,15 +3,15 @@
 -------------------------------------------------------------------------------
 
 ## 📚简介
+
 Data-Converter是一个支持多种数据格式协议的数据转换组件
 
 -------------------------------------------------------------------------------
 
 ## 🛠️支持协议及相关模块
 
-
-|              模块              |    协议    |                                                                             引用模块                                                                             |
-| :----------------------------: | :--------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|               模块               |     协议     |                                                                               引用模块                                                                               |
+|:------------------------------:|:----------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 |    data-converter-fastjson     |    JSON    |                                                                   com.alibaba:fastjson:version                                                                   |
 | data-converter-fastjson2-json  |    JSON    |                                                             com.alibaba.fastjson2:fastjson2:version                                                              |
 | data-converter-fastjson2-jsonb |   JSONB    |                                                             com.alibaba.fastjson2:fastjson2:version                                                              |
@@ -32,7 +32,6 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 |   data-converter-jackson-ion   |    Ion     |                                                 com.fasterxml.jackson.dataformat:jackson-dataformat-ion:version                                                  |
 |  data-converter-jackson-smile  |   Smile    |                                                com.fasterxml.jackson.dataformat:jackson-dataformat-smile:version                                                 |
 
-
 可以根据需求对每个模块单独引入，也可以通过引入`data-converter-all`方式引入所有模块。
 
 -------------------------------------------------------------------------------
@@ -40,6 +39,7 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 ## 📦安装
 
 ### 🍊Maven
+
 在项目的pom.xml的dependencies中加入以下内容:
 
 ```xml
@@ -51,6 +51,7 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 ```
 
 ### 🍐Gradle
+
 ```
 implementation 'io.gitee.chming7:data-converter-all:Version'
 ```
@@ -61,10 +62,10 @@ implementation 'io.gitee.chming7:data-converter-all:Version'
 
 - [Maven中央库](https://mvnrepository.com/search?q=io.gitee.chming7)
 
-
 ### 🚽编译安装
 
-访问Data-converter的Gitee主页：[Gitee](https://gitee.com/CHMing7/data-converter) 下载整个项目源码（master分支）然后进入Data-Converter项目目录执行：
+访问Data-converter的Gitee主页：[Gitee](https://gitee.com/CHMing7/data-converter)
+下载整个项目源码（master分支）然后进入Data-Converter项目目录执行：
 
 ```sh
 gradle install
@@ -75,6 +76,7 @@ gradle install
 -------------------------------------------------------------------------------
 
 ## 📝简单示例
+
 ```java
 JsonConverter converter = ConverterSelector.select(JsonConverter.class);
 // 或者
@@ -94,7 +96,6 @@ User newUser = converter.convertToJavaObject(encode, User.class);
 提交问题反馈请说明正在使用的JDK版本呢、Data-Converter版本和相关依赖库版本。
 
 - [Gitee issue](https://gitee.com/CHMing7/data-converter/issues)
-
 
 ### ⛽贡献代码的步骤
 --------------------------------------------------------------------------------

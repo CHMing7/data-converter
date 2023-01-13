@@ -69,6 +69,45 @@ public interface Converter<S> {
     Map<Converter<?>, Integer> CONVERTER_FEATURES_MAP = MapUtil.newConcurrentHashMap();
 
     /**
+     * 将指定对象转为{@link DataMapper} or {@link DataArray} or 原类型
+     *
+     * @param converter
+     * @param obj       指定对象
+     * @return
+     */
+    static Object toData(Converter<?> converter, Object obj) {
+        if (obj instanceof Map) {
+            return DataMapper.of(converter, (Map<?, ?>) obj);
+        }
+
+        if (obj instanceof Collection) {
+            return DataArray.of(converter, (Collection<?>) obj);
+        }
+
+        if (obj != null && obj.getClass().isArray()) {
+            return DataArray.of(converter, (Object[]) obj);
+        }
+
+        return obj;
+    }
+
+    /**
+     * 获取默认功能配置
+     *
+     * @return
+     */
+    static int getDefaultFeature() {
+        int flags = 0;
+        Class<ConvertFeature> enumClass = ConvertFeature.class;
+        for (ConvertFeature value : enumClass.getEnumConstants()) {
+            if (value.enabledByDefault()) {
+                flags |= value.getMask();
+            }
+        }
+        return flags;
+    }
+
+    /**
      * 将源数据转换为目标类型{@link Class<T>}的java对象
      *
      * @param source     源数据
@@ -244,29 +283,6 @@ public interface Converter<S> {
     }
 
     /**
-     * 将指定对象转为{@link DataMapper} or {@link DataArray} or 原类型
-     *
-     * @param converter
-     * @param obj       指定对象
-     * @return
-     */
-    static Object toData(Converter<?> converter, Object obj) {
-        if (obj instanceof Map) {
-            return DataMapper.of(converter, (Map<?, ?>) obj);
-        }
-
-        if (obj instanceof Collection) {
-            return DataArray.of(converter, (Collection<?>) obj);
-        }
-
-        if (obj != null && obj.getClass().isArray()) {
-            return DataArray.of(converter, (Object[]) obj);
-        }
-
-        return obj;
-    }
-
-    /**
      * 将java对象进行编码
      *
      * @param source
@@ -330,6 +346,21 @@ public interface Converter<S> {
     }
 
     /**
+     * 获取日期格式
+     *
+     * @return 日期格式化模板
+     */
+    default DateTimeFormatter getDateFormat() {
+        DateTimeFormatter dateTimeFormatter = CONVERTER_DATE_TIME_FORMATTER_MAP.get(this);
+        String dateFormatPattern = CONVERTER_DATE_FORMAT_PATTERN_MAP.get(this);
+        if (dateTimeFormatter == null && dateFormatPattern != null) {
+            dateTimeFormatter = this.generateDateFormat(dateFormatPattern);
+            CONVERTER_DATE_TIME_FORMATTER_MAP.put(this, dateTimeFormatter);
+        }
+        return dateTimeFormatter;
+    }
+
+    /**
      * 设置日期格式
      *
      * @param dateFormatPattern 日期格式化模板字符
@@ -355,21 +386,6 @@ public interface Converter<S> {
             CONVERTER_DATE_TIME_FORMATTER_MAP.put(this, dateFormatter);
         }
         CONVERTER_DATE_FORMAT_PATTERN_MAP.remove(this);
-    }
-
-    /**
-     * 获取日期格式
-     *
-     * @return 日期格式化模板
-     */
-    default DateTimeFormatter getDateFormat() {
-        DateTimeFormatter dateTimeFormatter = CONVERTER_DATE_TIME_FORMATTER_MAP.get(this);
-        String dateFormatPattern = CONVERTER_DATE_FORMAT_PATTERN_MAP.get(this);
-        if (dateTimeFormatter == null && dateFormatPattern != null) {
-            dateTimeFormatter = this.generateDateFormat(dateFormatPattern);
-            CONVERTER_DATE_TIME_FORMATTER_MAP.put(this, dateTimeFormatter);
-        }
-        return dateTimeFormatter;
     }
 
     /**
@@ -457,21 +473,5 @@ public interface Converter<S> {
         int newFeatures = features & ~f.getMask();
         CONVERTER_FEATURES_MAP.put(this, newFeatures);
         return this;
-    }
-
-    /**
-     * 获取默认功能配置
-     *
-     * @return
-     */
-    static int getDefaultFeature() {
-        int flags = 0;
-        Class<ConvertFeature> enumClass = ConvertFeature.class;
-        for (ConvertFeature value : enumClass.getEnumConstants()) {
-            if (value.enabledByDefault()) {
-                flags |= value.getMask();
-            }
-        }
-        return flags;
     }
 }

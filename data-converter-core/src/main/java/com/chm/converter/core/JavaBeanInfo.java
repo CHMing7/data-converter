@@ -85,58 +85,6 @@ public class JavaBeanInfo<T> {
         this.annotationClassSet = this.annotationList.stream().map(Annotation::annotationType).collect(Collectors.toSet());
     }
 
-    public Class<T> getClazz() {
-        return clazz;
-    }
-
-    public ObjectConstructor<T> getObjectConstructor() {
-        return objectConstructor;
-    }
-
-    public List<FieldInfo> getFieldList() {
-        return fieldList;
-    }
-
-    public List<FieldInfo> getSortedFieldList() {
-        return sortedFieldList;
-    }
-
-    public Map<String, FieldInfo> getNameFieldInfoMap() {
-        return nameFieldInfoMap;
-    }
-
-    public Map<String, FieldInfo> getFieldNameFieldInfoMap() {
-        return fieldNameFieldInfoMap;
-    }
-
-    public Map<String, String> getFieldNameAliasMap() {
-        return fieldNameAliasMap;
-    }
-
-    public Map<String, Object> getExpandProperty() {
-        return expandProperty;
-    }
-
-    public Object getExpandProperty(String key) {
-        return expandProperty.get(key);
-    }
-
-    public Object getExpandProperty(String key, Object defaultVal) {
-        return expandProperty.getOrDefault(key, defaultVal);
-    }
-
-    public void putExpandProperty(String key, Object value) {
-        expandProperty.put(key, value);
-    }
-
-    public List<Annotation> getAnnotationList() {
-        return annotationList;
-    }
-
-    public Set<Class<? extends Annotation>> getAnnotationClassSet() {
-        return annotationClassSet;
-    }
-
     /**
      * 检查类中是否包含annotationList中任意一个注解
      *
@@ -493,6 +441,58 @@ public class JavaBeanInfo<T> {
         }
 
         return new JavaBeanInfo<>(clazz, fieldList);
+    }
+
+    public Class<T> getClazz() {
+        return clazz;
+    }
+
+    public ObjectConstructor<T> getObjectConstructor() {
+        return objectConstructor;
+    }
+
+    public List<FieldInfo> getFieldList() {
+        return fieldList;
+    }
+
+    public List<FieldInfo> getSortedFieldList() {
+        return sortedFieldList;
+    }
+
+    public Map<String, FieldInfo> getNameFieldInfoMap() {
+        return nameFieldInfoMap;
+    }
+
+    public Map<String, FieldInfo> getFieldNameFieldInfoMap() {
+        return fieldNameFieldInfoMap;
+    }
+
+    public Map<String, String> getFieldNameAliasMap() {
+        return fieldNameAliasMap;
+    }
+
+    public Map<String, Object> getExpandProperty() {
+        return expandProperty;
+    }
+
+    public Object getExpandProperty(String key) {
+        return expandProperty.get(key);
+    }
+
+    public Object getExpandProperty(String key, Object defaultVal) {
+        return expandProperty.getOrDefault(key, defaultVal);
+    }
+
+    public void putExpandProperty(String key, Object value) {
+        expandProperty.put(key, value);
+    }
+
+    public List<Annotation> getAnnotationList() {
+        return annotationList;
+    }
+
+    public Set<Class<? extends Annotation>> getAnnotationClassSet() {
+        return annotationClassSet;
     }
 }
 

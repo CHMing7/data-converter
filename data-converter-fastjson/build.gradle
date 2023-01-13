@@ -1,14 +1,14 @@
 dependencies {
-    compileOnly(libs.fastjson)
-    compileOnly(libs.fastjson2)
+    implementation(libs.fastjson)
+    implementation(libs.fastjson2)
 
-    compile project(':data-converter-json')
+    api project(':data-converter-json')
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testCompile 'junit:junit:4.13.1'
-    testCompile(libs.hutool_log)
-    testCompile(libs.fastjson)
-    testCompile(libs.fastjson2)
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation(libs.hutool_log)
+    testImplementation(libs.fastjson)
+    testImplementation(libs.fastjson2)
 }

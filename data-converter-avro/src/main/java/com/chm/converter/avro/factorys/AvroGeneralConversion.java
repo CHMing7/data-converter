@@ -54,6 +54,25 @@ public class AvroGeneralConversion<T> extends Conversion<T> {
         this.schema = createSchema(schema, data);
     }
 
+    public static Schema makeNullable(Schema schema) {
+        if (schema.getType() == Schema.Type.UNION) {
+            // check to see if the union already contains NULL
+            for (Schema subType : schema.getTypes()) {
+                if (subType.getType() == Schema.Type.NULL) {
+                    return schema;
+                }
+            }
+            // add null as the first type in a new union
+            List<Schema> withNull = new ArrayList<>();
+            withNull.add(Schema.create(Schema.Type.NULL));
+            withNull.addAll(schema.getTypes());
+            return Schema.createUnion(withNull);
+        } else {
+            // create a union with null
+            return Schema.createUnion(Arrays.asList(Schema.create(Schema.Type.NULL), schema));
+        }
+    }
+
     private Schema createSchema(Schema schema, AvroReflectData data) {
         Schema record = Schema.createRecord(schema.getName(), schema.getDoc(), schema.getNamespace(), schema.isError());
         List<FieldInfo> fieldInfoList = javaBeanInfo.getSortedFieldList();
@@ -89,25 +108,6 @@ public class AvroGeneralConversion<T> extends Conversion<T> {
         }
         record.setFields(fieldList);
         return this.logicalType.addToSchema(record);
-    }
-
-    public static Schema makeNullable(Schema schema) {
-        if (schema.getType() == Schema.Type.UNION) {
-            // check to see if the union already contains NULL
-            for (Schema subType : schema.getTypes()) {
-                if (subType.getType() == Schema.Type.NULL) {
-                    return schema;
-                }
-            }
-            // add null as the first type in a new union
-            List<Schema> withNull = new ArrayList<>();
-            withNull.add(Schema.create(Schema.Type.NULL));
-            withNull.addAll(schema.getTypes());
-            return Schema.createUnion(withNull);
-        } else {
-            // create a union with null
-            return Schema.createUnion(Arrays.asList(Schema.create(Schema.Type.NULL), schema));
-        }
     }
 
     @Override

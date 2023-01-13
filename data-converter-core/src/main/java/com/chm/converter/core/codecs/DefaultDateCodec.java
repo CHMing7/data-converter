@@ -30,20 +30,15 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String>, WithF
     public static final DefaultDateCodec<java.sql.Date> SQL_DATE_CODEC = new DefaultDateCodec<>(java.sql.Date.class);
 
     public static final DefaultDateCodec<Timestamp> TIMESTAMP_CODEC = new DefaultDateCodec<>(Timestamp.class);
-
-    private final Class<T> dateType;
-
-    private final DateTimeFormatter dateFormatter;
-
-    private final Converter<?> converter;
-
     private static final String DEFAULT_DATE_PATTERN_STR = "yyyy-MM-dd HH:mm:ss.SSSS";
-
     /**
      * List of 1 or more different date formats used for de-serialization attempts.
      * The first of them is used for serialization as well.
      */
     private final static DateTimeFormatter DEFAULT_DATE_FORMAT = DateTimeFormatter.ofPattern(DEFAULT_DATE_PATTERN_STR);
+    private final Class<T> dateType;
+    private final DateTimeFormatter dateFormatter;
+    private final Converter<?> converter;
 
     public DefaultDateCodec(Class<T> dateType) {
         this(dateType, (DateTimeFormatter) null, null);
@@ -169,8 +164,12 @@ public class DefaultDateCodec<T extends Date> implements Codec<T, String>, WithF
             long l = NumberUtil.parseLong(timeStr);
             date = new Date(l);
         } else {
-            DateTimeFormatter formatter = getCodecDateFormatter(format);
-            date = DateUtil.parseToDate(timeStr, formatter);
+            try {
+                DateTimeFormatter formatter = getCodecDateFormatter(format);
+                date = DateUtil.parseToDate(timeStr, formatter);
+            } catch (Throwable cause) {
+                date = DateUtil.parseToDate(timeStr);
+            }
         }
 
         if (dateType == Date.class) {
