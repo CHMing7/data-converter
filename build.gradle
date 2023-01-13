@@ -75,4 +75,13 @@ allprojects {
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
+
+    publishing {
+        repositories {
+            // 本地maven仓库
+            maven { url uri('F:\\repo') }
+        }
+    }
 }
+
+
