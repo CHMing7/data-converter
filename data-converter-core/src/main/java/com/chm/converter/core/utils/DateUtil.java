@@ -272,8 +272,6 @@ public class DateUtil {
         formatterSet.add(dateTimeFormatter);
     }
 
-    //===========================异常定义============================
-
     public static void unregisterDateTimeFormatter(Integer dateStrLen, DateTimeFormatter dateTimeFormatter) {
         Set<DateTimeFormatter> formatterSet = MapUtil.computeIfAbsent(DATE_TIME_FORMATTER_LENGTH_MAP, dateStrLen, i -> CollUtil.newLinkedHashSet());
         formatterSet.remove(dateTimeFormatter);
@@ -334,7 +332,7 @@ public class DateUtil {
     }
 
     /**
-     * 根据 formatter解析为 Date
+     * 解析String为 Date
      *
      * @param text 待解析字符串
      * @return Date
@@ -353,7 +351,7 @@ public class DateUtil {
     }
 
     /**
-     * 根据 formatter解析为 Date
+     * 解析String为 ZonedDateTime
      *
      * @param text 待解析字符串
      * @return Date
@@ -363,7 +361,7 @@ public class DateUtil {
     }
 
     /**
-     * 根据 formatter解析为 Date
+     * 根据 formatter解析为 T
      *
      * @param text          待解析字符串
      * @param temporalQuery 时间类型转换方法
@@ -390,7 +388,7 @@ public class DateUtil {
      * @return LocalDateTime
      */
     public static LocalDateTime toLocalDateTime(TemporalAccessor temporal) {
-        if(temporal instanceof LocalDateTime){
+        if (temporal instanceof LocalDateTime) {
             return (LocalDateTime) temporal;
         }
         LocalDate date = temporal.query(TemporalQueries.localDate());
