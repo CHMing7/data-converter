@@ -79,7 +79,7 @@ allprojects {
     publishing {
         repositories {
             // 本地maven仓库
-            maven { url uri('F:\\repo') }
+            maven { url uri(LOCAL_MAVEN_REPO) }
         }
     }
 }
