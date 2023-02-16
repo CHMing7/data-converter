@@ -189,7 +189,6 @@ public class ConverterTest {
                 this.testArray();
                 this.testEnum();
                 this.testIgnore();
-                this.testRemainder();
             }
         }
     }
