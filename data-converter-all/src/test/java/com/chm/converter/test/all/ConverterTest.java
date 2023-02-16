@@ -4,13 +4,14 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
-import com.chm.converter.avro.DefaultAvroConverter;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
+import com.chm.converter.core.StringConverter;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ListUtil;
+import com.chm.converter.yaml.JacksonYamlConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -138,11 +140,28 @@ public class ConverterTest {
         assertNull(newTestIgnore.password);
     }
 
+    private void testRemainder() {
+        Map<String, Object> userMap = MapUtil.newHashMap();
+        userMap.put("userName3", "userName");
+        userMap.put("password3", "password3");
+        userMap.put("password2", "password");
+
+        TestIgnore testIgnore = new TestIgnore();
+        testIgnore.setUserName("userName");
+
+        Object encode = converter.encode(userMap);
+        StaticLog.info("testIgnore:{}", StrUtil.str(encode, "utf-8"));
+
+        TestIgnore newTestIgnore = (TestIgnore) converter.convertToJavaObject(encode, TestIgnore.class);
+
+        assertEquals(testIgnore, newTestIgnore);
+    }
+
     @Test
     public void testAny() {
         ConverterTest converterTest = new ConverterTest();
         converterTest.before();
-        this.converter = ConverterSelector.select(DefaultAvroConverter.class);
+        this.converter = ConverterSelector.select(JacksonYamlConverter.class);
         // converter.disable(ConvertFeature.ENUMS_USING_TO_STRING);
         StaticLog.info(this.converter.getConverterName());
         this.testUser();
@@ -150,6 +169,8 @@ public class ConverterTest {
         this.testCollection();
         this.testArray();
         this.testEnum();
+        this.testIgnore();
+        this.testRemainder();
     }
 
     @Test
@@ -161,13 +182,14 @@ public class ConverterTest {
             List<Converter> converterList = ConverterSelector.getConverterListByDateType(dataType);
             for (Converter converter : converterList) {
                 this.converter = converter;
-                StaticLog.info(this.converter.getConverterName());
+                StaticLog.info("Converter Name: {}", this.converter.getConverterName());
                 this.testUser();
                 this.testMap();
                 this.testCollection();
                 this.testArray();
                 this.testEnum();
                 this.testIgnore();
+                this.testRemainder();
             }
         }
     }
@@ -206,6 +228,32 @@ public class ConverterTest {
 
         public void setPassword(String password) {
             this.password = password;
+        }
+
+        @Override
+        public String toString() {
+            return "TestIgnore{" +
+                    "userName='" + userName + '\'' +
+                    ", password='" + password + '\'' +
+                    '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TestIgnore that = (TestIgnore) o;
+
+            if (!Objects.equals(userName, that.userName)) return false;
+            return Objects.equals(password, that.password);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = userName != null ? userName.hashCode() : 0;
+            result = 31 * result + (password != null ? password.hashCode() : 0);
+            return result;
         }
     }
 }

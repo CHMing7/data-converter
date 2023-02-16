@@ -1,6 +1,6 @@
 package com.chm.converter.ion;
 
-import com.chm.converter.core.Converter;
+import com.chm.converter.core.BytesConverter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 
@@ -11,7 +11,7 @@ import com.chm.converter.core.DataType;
  * @version v1.0
  * @since 2022-05-17
  **/
-public interface IonConverter extends Converter<byte[]> {
+public interface IonConverter extends BytesConverter {
 
     /**
      * 选择数据转换器
