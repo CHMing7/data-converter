@@ -1,8 +1,8 @@
 package com.chm.converter.yaml;
 
-import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
+import com.chm.converter.core.StringConverter;
 
 /**
  * Yaml数据转换接口
@@ -11,7 +11,7 @@ import com.chm.converter.core.DataType;
  * @version v1.0
  * @since 2022-01-13
  **/
-public interface YamlConverter extends Converter<String> {
+public interface YamlConverter extends StringConverter {
 
     /**
      * 获取当前数据转换器转换类型

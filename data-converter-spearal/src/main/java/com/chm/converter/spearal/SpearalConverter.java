@@ -1,6 +1,6 @@
 package com.chm.converter.spearal;
 
-import com.chm.converter.core.Converter;
+import com.chm.converter.core.BytesConverter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 
@@ -11,7 +11,7 @@ import com.chm.converter.core.DataType;
  * @version v1.0
  * @since 2021-09-29
  **/
-public interface SpearalConverter extends Converter<byte[]> {
+public interface SpearalConverter extends BytesConverter {
 
     /**
      * 获取当前数据转换器转换类型

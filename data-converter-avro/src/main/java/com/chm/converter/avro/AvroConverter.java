@@ -1,6 +1,6 @@
 package com.chm.converter.avro;
 
-import com.chm.converter.core.Converter;
+import com.chm.converter.core.BytesConverter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 
@@ -11,7 +11,7 @@ import com.chm.converter.core.DataType;
  * @version v1.0
  * @since 2021-09-16
  **/
-public interface AvroConverter extends Converter<byte[]> {
+public interface AvroConverter extends BytesConverter {
 
     /**
      * 选择Avro数据转换器

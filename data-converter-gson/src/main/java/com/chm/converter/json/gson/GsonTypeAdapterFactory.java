@@ -125,6 +125,7 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
                             String name = in.nextName();
                             FieldInfo fieldInfo = fieldInfoMap.get(name);
                             if (fieldInfo == null) {
+                                in.skipValue();
                                 continue;
                             }
                             TypeAdapter adapter = getFieldAdapter(fieldInfo);
