@@ -1,8 +1,8 @@
 package com.chm.converter.json;
 
-import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
+import com.chm.converter.core.StringConverter;
 
 /**
  * JSON数据转换接口
@@ -11,7 +11,7 @@ import com.chm.converter.core.DataType;
  * @version v1.0
  * @since 2021-08-16
  **/
-public interface JsonConverter extends Converter<String> {
+public interface JsonConverter extends StringConverter {
 
     /**
      * 获取当前数据转换器转换类型

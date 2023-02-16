@@ -34,7 +34,7 @@ public class DefaultSpearalConverter implements SpearalConverter {
 
     public static final String SPEARAL_NAME = "org.spearal.SpearalFactory";
 
-    SpearalFactory factory = new DefaultSpearalFactory();
+   protected SpearalFactory factory = new DefaultSpearalFactory();
 
     private final DataCodecGenerate dataCodec = DataCodecGenerate.getDataCodecGenerate(this);
 

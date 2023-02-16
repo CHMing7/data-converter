@@ -118,45 +118,61 @@ public class FieldInfo implements Comparable<FieldInfo> {
     public final Field field;
     public final Class<?> fieldClass;
     public final Type fieldType;
+
     public final TypeToken<?> typeToken;
+
     public final Class<?> declaringClass;
+
     public final boolean getOnly;
+
     public final String format;
+
     private final FieldProperty fieldAnnotation;
+
     private final FieldProperty methodAnnotation;
+
     /**
      * 是否序列化
      */
     private final boolean serialize;
+
     /**
      * 是否反序列化
      */
     private final boolean deserialize;
+
     /**
      * 是否可持久化
      */
     private final boolean isTransient;
+
     /**
      * 扩展属性
      */
     private final Map<String, Object> expandProperty;
+
     /**
      * 属性注解集
      */
     private final List<Annotation> fieldAnnotationList;
+
     /**
      * 属性注解类型集
      */
     private final Set<Class<? extends Annotation>> fieldAnnotationClassSet;
+
     /**
      * 方法注解集
      */
     private final List<Annotation> methodAnnotationList;
+
     /**
      * 方法注解类型集
      */
     private final Set<Class<? extends Annotation>> methodAnnotationClassSet;
+
     private int ordinal = 0;
+
     /**
      * 排序编号
      */

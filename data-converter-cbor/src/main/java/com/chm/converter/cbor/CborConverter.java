@@ -1,6 +1,6 @@
 package com.chm.converter.cbor;
 
-import com.chm.converter.core.Converter;
+import com.chm.converter.core.BytesConverter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
 
@@ -11,7 +11,7 @@ import com.chm.converter.core.DataType;
  * @version v1.0
  * @since 2022-03-08
  **/
-public interface CborConverter extends Converter<byte[]> {
+public interface CborConverter extends BytesConverter {
 
     /**
      * 选择数据转换器
