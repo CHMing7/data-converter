@@ -85,10 +85,9 @@ allprojects {
         }
 
         dependencies {
-
             // 引用除了all模块与根模块之外的所有模块
             rootProject.allprojects.stream().filter({
-                it != rootProject && it != project && it.name != "data-converter-all"
+                it != rootProject && it.name != "data-converter-all"
             }).forEach({
                 api(it)
             })
@@ -96,7 +95,7 @@ allprojects {
             constraints {
                 // 引用除了all模块与根模块之外的所有模块
                 rootProject.allprojects.stream().filter({
-                    it != rootProject && it != project && it.name != "data-converter-all"
+                    it != rootProject && it.name != "data-converter-all"
                 }).forEach({
                     api(it)
                 })
@@ -110,7 +109,10 @@ allprojects {
             publications {
                 maven(MavenPublication) {
                     from(components["javaPlatform"])
+                    // bom模块 artifactId
                     artifactId = "data-converter-bom"
+                    // bom模块说明
+                    POM_DESCRIPTION = "data converter bom"
                 }
             }
         }
