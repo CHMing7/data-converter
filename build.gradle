@@ -1,4 +1,5 @@
 apply from: 'dependency.gradle'
+apply plugin: 'java-platform'
 
 buildscript {
     repositories {
@@ -11,44 +12,11 @@ buildscript {
     }
 }
 
-
-allprojects {
+subprojects {
     apply plugin: 'java-library'
-    apply plugin: 'maven-publish'
-    apply plugin: 'com.vanniktech.maven.publish'
-
-    group = GROUP
-    version = VERSION_NAME
-
-    repositories {
-        maven { url = "https://maven.aliyun.com/nexus/content/groups/public/" }
-        mavenCentral()
-        mavenLocal()
-    }
 
     dependencies {
         annotationProcessor(libs.auto_service)
-    }
-
-
-    plugins.withId("com.vanniktech.maven.publish") {
-        group = project.group
-        version = project.version
-
-        mavenPublish {
-            sonatypeHost = "S01"
-        }
-
-        mavenPublishing {
-
-            signAllPublications()
-
-            pom {
-                name = project.name
-            }
-
-            pomFromGradleProperties()
-        }
     }
 
     javadoc {
@@ -75,13 +43,82 @@ allprojects {
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
+}
+
+allprojects {
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.vanniktech.maven.publish'
+
+    group = GROUP
+    version = VERSION_NAME
+
+    repositories {
+        maven { url = "https://maven.aliyun.com/nexus/content/groups/public/" }
+        mavenCentral()
+        mavenLocal()
+    }
+
+
+    plugins.withId("com.vanniktech.maven.publish") {
+        group = project.group
+        version = project.version
+
+        mavenPublish {
+            sonatypeHost = "S01"
+        }
+
+        mavenPublishing {
+
+            signAllPublications()
+
+            pom {
+                name = project.name
+            }
+
+            pomFromGradleProperties()
+        }
+    }
+
+    if (project == rootProject) {
+        javaPlatform {
+            allowDependencies()
+        }
+
+        dependencies {
+
+            // 引用除了all模块与根模块之外的所有模块
+            rootProject.allprojects.stream().filter({
+                it != rootProject && it != project && it.name != "data-converter-all"
+            }).forEach({
+                api(it)
+            })
+
+            constraints {
+                // 引用除了all模块与根模块之外的所有模块
+                rootProject.allprojects.stream().filter({
+                    it != rootProject && it != project && it.name != "data-converter-all"
+                }).forEach({
+                    api(it)
+                })
+            }
+        }
+    }
 
     publishing {
+        if (project == rootProject) {
+            // 定义发布项目
+            publications {
+                maven(MavenPublication) {
+                    from(components["javaPlatform"])
+                    artifactId = "data-converter-bom"
+                }
+            }
+        }
+
+
         repositories {
             // 本地maven仓库
             maven { url uri(LOCAL_MAVEN_REPO) }
         }
     }
 }
-
-
