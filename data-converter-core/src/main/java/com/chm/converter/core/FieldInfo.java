@@ -179,6 +179,20 @@ public class FieldInfo implements Comparable<FieldInfo> {
     private int sortedNumber = 0;
 
     public FieldInfo(String name, Method method, Field field, int ordinal, FieldProperty fieldAnnotation, FieldProperty methodAnnotation) {
+        if (field != null) {
+            String fieldName = field.getName();
+            if (fieldName.equals(name)) {
+                // fix bug key != fieldInfoName see JavaBeanSerializer.java 418行
+                //if (key != fieldInfoName) {
+                //    if (!writeAsArray) {
+                //        out.writeFieldName(key, true);
+                //    }
+                //
+                //    serializer.write(propertyValue);
+                //}
+                name = fieldName;
+            }
+        }
         if (ordinal < 0) {
             ordinal = 0;
         }

@@ -7,7 +7,6 @@ import cn.hutool.log.StaticLog;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.DataType;
-import com.chm.converter.core.StringConverter;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ListUtil;
