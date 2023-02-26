@@ -179,12 +179,6 @@ public class FieldInfo implements Comparable<FieldInfo> {
     private int sortedNumber = 0;
 
     public FieldInfo(String name, Method method, Field field, int ordinal, FieldProperty fieldAnnotation, FieldProperty methodAnnotation) {
-        if (field != null) {
-            String fieldName = field.getName();
-            if (fieldName.equals(name)) {
-                name = fieldName;
-            }
-        }
         if (ordinal < 0) {
             ordinal = 0;
         }
@@ -230,11 +224,17 @@ public class FieldInfo implements Comparable<FieldInfo> {
             methodName = getOrSetMethod.getName();
             if (parameterTypes.length == 0) {
                 // 无参数，可能为Getter方法
-                if (isMatchGetter(methodName, fieldName, isBooleanField)) {
+                if (isMatchGetter(methodName, fieldName, isBooleanField, false)) {
+                    // 方法名与字段名匹配，则为Getter方法
+                    getter = getOrSetMethod;
+                } else if (isMatchGetter(methodName, fieldName, isBooleanField, true)) {
                     // 方法名与字段名匹配，则为Getter方法
                     getter = getOrSetMethod;
                 }
-            } else if (isMatchSetter(methodName, fieldName, isBooleanField)) {
+            } else if (isMatchSetter(methodName, fieldName, isBooleanField, false)) {
+                // 只有一个参数的情况下方法名与字段名对应匹配，则为Setter方法
+                setter = getOrSetMethod;
+            } else if (isMatchSetter(methodName, fieldName, isBooleanField, true)) {
                 // 只有一个参数的情况下方法名与字段名对应匹配，则为Setter方法
                 setter = getOrSetMethod;
             }
@@ -289,6 +289,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
      *
      * <pre>
      * getName =》name
+     * get_user_name =》user_name
      * setName =》name
      * isName  =》name
      * </pre>
@@ -297,13 +298,13 @@ public class FieldInfo implements Comparable<FieldInfo> {
      * @return 如果是set或get方法名，返回field， 否则null
      */
     public static String getGeneralField(CharSequence getOrSetMethodName) {
-        // 将下划线式命名改成驼峰式
-        getOrSetMethodName = StringUtil.toCamelCase(getOrSetMethodName);
         final String getOrSetMethodNameStr = getOrSetMethodName.toString();
         if (getOrSetMethodNameStr.startsWith("get") || getOrSetMethodNameStr.startsWith("set")) {
             return StringUtil.removePreAndLowerFirst(getOrSetMethodName, 3);
         } else if (getOrSetMethodNameStr.startsWith("is")) {
             return StringUtil.removePreAndLowerFirst(getOrSetMethodName, 2);
+        } else if (getOrSetMethodNameStr.charAt(3) == '_') {
+            return StringUtil.subSuf(getOrSetMethodName, 3);
         }
 
         return null;
@@ -349,16 +350,22 @@ public class FieldInfo implements Comparable<FieldInfo> {
      * @param isBooleanField 是否为Boolean类型字段
      * @return 是否匹配
      */
-    private boolean isMatchGetter(String methodName, String fieldName, boolean isBooleanField) {
-        // 将下划线式命名改成驼峰式
-        methodName = StringUtil.toCamelCase(methodName);
-        final String handledFieldName = StringUtil.upperFirst(fieldName);
+    private boolean isMatchGetter(String methodName, String fieldName, boolean isBooleanField, boolean ignoreCase) {
+        final String handledFieldName;
+        if (ignoreCase) {
+            // 全部转为小写，忽略大小写比较
+            methodName = methodName.toLowerCase();
+            handledFieldName = fieldName.toLowerCase();
+            fieldName = handledFieldName;
+        } else {
+            handledFieldName = StringUtil.upperFirst(fieldName);
+        }
 
         if (!methodName.startsWith("get") && !methodName.startsWith("is")) {
             // 非标准Getter方法
             return false;
         }
-        if ("getclass".equals(methodName)) {
+        if ("getClass".equals(methodName)) {
             //跳过getClass方法
             return false;
         }
@@ -402,10 +409,16 @@ public class FieldInfo implements Comparable<FieldInfo> {
      * @param isBooleanField 是否为Boolean类型字段
      * @return 是否匹配
      */
-    private boolean isMatchSetter(String methodName, String fieldName, boolean isBooleanField) {
-        // 将下划线式命名改成驼峰式
-        methodName = StringUtil.toCamelCase(methodName);
-        final String handledFieldName = StringUtil.upperFirst(fieldName);
+    private boolean isMatchSetter(String methodName, String fieldName, boolean isBooleanField, boolean ignoreCase) {
+        final String handledFieldName;
+        if (ignoreCase) {
+            // 全部转为小写，忽略大小写比较
+            methodName = methodName.toLowerCase();
+            handledFieldName = fieldName.toLowerCase();
+            fieldName = handledFieldName;
+        } else {
+            handledFieldName = StringUtil.upperFirst(fieldName);
+        }
 
         // 非标准Setter方法跳过
         if (!methodName.startsWith("set")) {
@@ -418,8 +431,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
             // isName -》 setName
             if (methodName.equals("set" + StringUtil.removePrefix(fieldName, "is"))
                     // isName -》 setIsName
-                    || methodName.equals("set" + handledFieldName)
-            ) {
+                    || methodName.equals("set" + handledFieldName)) {
                 return true;
             }
         }
