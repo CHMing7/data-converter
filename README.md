@@ -92,6 +92,9 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 <br>
 <br>
 如果你引入的模块比较多，但是某几个模块没用，你可以
+
+```xml
+
 <dependencies>
     <dependency>
         <groupId>io.gitee.chming7</groupId>
@@ -107,6 +110,7 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
         </exclusions>
     </dependency>
 </dependencies>
+```
 
 ### 🍐Gradle
 
