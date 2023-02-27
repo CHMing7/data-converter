@@ -40,14 +40,76 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 
 ### 🍊Maven
 
-在项目的pom.xml的dependencies中加入以下内容:
+在项目的pom.xml的dependencies中引入all模块:
 
 ```xml
+
 <dependency>
     <groupId>io.gitee.chming7</groupId>
     <artifactId>data-converter-all</artifactId>
     <version>Version</version>
 </dependency>
+```
+
+或
+
+**使用bom模块的方式引入**
+
+**import方式**
+<br>
+<br>
+在父模块中加入
+
+```xml
+
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>io.gitee.chming7</groupId>
+            <artifactId>data-converter-bom</artifactId>
+            <version>Version</version>
+            <type>pom</type>
+            <!-- 注意这里是import -->
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
+在子模块中引入自己需要的模块
+
+```xml
+
+<dependencies>
+    <dependency>
+        <groupId>io.gitee.chming7</groupId>
+        <artifactId>data-converter-gson</artifactId>
+    </dependency>
+</dependencies>
+```
+
+**exclude方式**
+<br>
+<br>
+如果你引入的模块比较多，但是某几个模块没用，你可以
+
+```xml
+
+<dependencies>
+    <dependency>
+        <groupId>io.gitee.chming7</groupId>
+        <artifactId>data-converter-bom</artifactId>
+        <version>Version</version>
+        <!-- 加不加这句都能跑，区别只有是否告警  -->
+        <type>pom</type>
+        <exclusions>
+            <exclusion>
+                <groupId>io.gitee.chming7</groupId>
+                <artifactId>data-converter-avro</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+</dependencies>
 ```
 
 ### 🍐Gradle
@@ -78,13 +140,13 @@ gradle install
 ## 📝简单示例
 
 ```java
-JsonConverter converter = ConverterSelector.select(JsonConverter.class);
+JsonConverter converter=ConverterSelector.select(JsonConverter.class);
 // 或者
-JsonConverter converter = JsonConverter.select();
+        JsonConverter converter=JsonConverter.select();
 // 序列化
-String encode = converter.encode(user);
+        String encode=converter.encode(user);
 // 反序列化
-User newUser = converter.convertToJavaObject(encode, User.class);
+        User newUser=converter.convertToJavaObject(encode,User.class);
 ```
 
 -------------------------------------------------------------------------------
