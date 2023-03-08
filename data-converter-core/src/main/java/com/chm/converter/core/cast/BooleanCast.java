@@ -5,7 +5,7 @@ import com.chm.converter.core.exception.TypeCastException;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-06-10
+ * @date 2022-06-10
  **/
 public class BooleanCast implements TypeCast<Boolean> {
 

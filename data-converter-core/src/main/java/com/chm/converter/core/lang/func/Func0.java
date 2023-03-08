@@ -12,7 +12,7 @@ import java.io.Serializable;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-12-04
+ * @date 2021-12-04
  **/
 @FunctionalInterface
 public interface Func0<R> extends Serializable {

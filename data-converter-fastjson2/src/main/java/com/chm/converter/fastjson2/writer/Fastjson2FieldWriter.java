@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-06-30
+ * @date 2022-06-30
  **/
 public class Fastjson2FieldWriter implements FieldWriter {
 
@@ -163,7 +163,7 @@ public class Fastjson2FieldWriter implements FieldWriter {
             }
             objectWriter.write(jsonWriter, zdt);
         } else {
-            ObjectWriter objectWriter = jsonWriter.getObjectWriter(fieldInfo.getFieldClass());
+            ObjectWriter objectWriter = jsonWriter.getObjectWriter(fieldInfo.getFieldType(), fieldInfo.getFieldClass());
             objectWriter.write(jsonWriter, new Date(millis));
         }
     }
@@ -242,7 +242,9 @@ public class Fastjson2FieldWriter implements FieldWriter {
 
     @Override
     public ObjectWriter getObjectWriter(JSONWriter jsonWriter, Class valueClass) {
-        if (fieldInfo.getFieldClass().isAssignableFrom(valueClass)) {
+        // fieldInfo.getFieldClass() != Object.class 兼容泛型
+        if (fieldInfo.getFieldClass() != Object.class &&
+                fieldInfo.getFieldClass().isAssignableFrom(valueClass)) {
             return getWriter(jsonWriter);
         }
         return FieldWriter.super.getObjectWriter(jsonWriter, valueClass);

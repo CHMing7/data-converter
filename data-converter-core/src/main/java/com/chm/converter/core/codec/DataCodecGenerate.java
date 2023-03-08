@@ -60,7 +60,6 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
 
     public static DataCodecGenerate newDefault(Converter<?> converter) {
         List<UniversalFactory<Codec>> factories = ListUtil.list(true);
-        factories.add(new ObjectCodecFactory());
         factories.add(new OptionalCodecFactory());
         factories.add(new Java8TimeCodecFactory(converter));
         factories.add(new DefaultDateCodecFactory(converter));
@@ -69,6 +68,7 @@ public class DataCodecGenerate extends UniversalGenerate<Codec> {
         factories.add(new MapCodecFactory());
         factories.add(new EnumCodecFactory(converter));
         factories.add(new JavaBeanCodecFactory(converter));
+        factories.add(new ObjectCodecFactory());
         DataCodecGenerate codecGenerate = new DataCodecGenerate(factories, converter);
         // init codecs
         initCodecs(codecGenerate);

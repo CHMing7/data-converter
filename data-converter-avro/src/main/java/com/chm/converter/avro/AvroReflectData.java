@@ -7,8 +7,8 @@ import com.chm.converter.core.UseRawJudge;
 import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
 import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalGenerate;
-import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.MapUtil;
 import org.apache.avro.Conversion;
@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-10-15
+ * @date 2021-10-15
  **/
 public class AvroReflectData extends ReflectData {
 
@@ -50,8 +50,9 @@ public class AvroReflectData extends ReflectData {
 
     @Override
     public Schema induce(Object datum) {
-        Class clazz = datum.getClass();
-        CoreCodecConversion coreCodecConversion = getCodecSchema(clazz, MapUtil.newHashMap(true));
+        Class<?> clazz = datum.getClass();
+        TypeToken<?> typeToken = TypeToken.get(clazz);
+        CoreCodecConversion<?> coreCodecConversion = getCodecSchema(typeToken, MapUtil.newHashMap(true));
         if (coreCodecConversion != null && coreCodecConversion.isPriorityUse()) {
             return coreCodecConversion.getRecommendedSchema();
         }
@@ -60,50 +61,62 @@ public class AvroReflectData extends ReflectData {
 
     @Override
     public Schema createSchema(Type type, Map<String, Schema> names) {
-        Class clazz = ClassUtil.getClassByType(type);
-        String fullName = clazz.getName();
+        TypeToken<?> typeToken = TypeToken.get(type);
+
+        if (typeToken.getRawType() == Object.class) {
+            return super.createSchema(Object.class, MapUtil.newHashMap());
+        }
+
+        String fullName = typeToken.toString();
         Schema cacheSchema = names.get(fullName);
         if (cacheSchema != null) {
             return cacheSchema;
         }
-        Conversion<?> conversion = getConversionByClass(clazz);
+
+        Conversion<?> conversion = getConversionByType(type);
         if (conversion != null) {
             return conversion.getRecommendedSchema();
         }
 
         Schema rawSchema = super.createSchema(type, names);
         // 使用原始实现
-        if (useRawJudge.useRawImpl(clazz)) {
+        if (useRawJudge.useRawImpl(typeToken.getRawType())) {
             return rawSchema;
         }
 
         // 优先使用codec
-        Conversion suitableSchema = getSuitableSchema(clazz, names, rawSchema);
+        Conversion suitableSchema = getSuitableSchema(typeToken, names, rawSchema);
         if (suitableSchema != null) {
             return suitableSchema.getRecommendedSchema();
         }
-
         return rawSchema;
     }
 
-    private CoreCodecConversion getCodecSchema(Class clazz, Map<String, Schema> names) {
-        return UniversalCodecAdapterCreator.create(this.generate, clazz, (type, codec) -> {
+    public Conversion<?> getConversionByType(Type type) {
+        // type instanceof Class ? getConversionByClass((Class) type) :
+        TypeToken<Object> typeToken = TypeToken.get(type);
+        return getConversionByClass(typeToken.getRawType(), new LogicalType(typeToken.toString()));
+    }
+
+    private CoreCodecConversion<?> getCodecSchema(TypeToken<?> typeToken, Map<String, Schema> names) {
+        return UniversalCodecAdapterCreator.create(this.generate, typeToken, (type, codec) -> {
             Schema encodeSchema = createSchema(codec.getEncodeType().getType(), names);
-            CoreCodecConversion coreCodecConversion = new CoreCodecConversion(converter, clazz, codec, encodeSchema, clazz.getName());
+            CoreCodecConversion<?> coreCodecConversion = new CoreCodecConversion<>(this.converter, typeToken, codec, encodeSchema, typeToken.toString());
             this.addLogicalTypeConversion(coreCodecConversion);
             return coreCodecConversion;
         });
     }
 
-    private Conversion getSuitableSchema(Class clazz, Map<String, Schema> names, Schema rawSchema) {
-        return UniversalCodecAdapterCreator.createSuitable(this.generate, clazz, (type, codec) -> {
+    private Conversion<?> getSuitableSchema(TypeToken<?> typeToken, Map<String, Schema> names, Schema rawSchema) {
+        return UniversalCodecAdapterCreator.createSuitable(this.generate, typeToken, (type, codec) -> {
             Schema encodeSchema = createSchema(codec.getEncodeType().getType(), names);
-            CoreCodecConversion coreCodecConversion = new CoreCodecConversion(converter, clazz, codec, encodeSchema, clazz.getName());
+            CoreCodecConversion<?> coreCodecConversion = new CoreCodecConversion<>(this.converter, typeToken, codec, encodeSchema, typeToken.toString());
             this.addLogicalTypeConversion(coreCodecConversion);
             return coreCodecConversion;
         }, rawSchema.getType() == Schema.Type.RECORD, (type, codec) -> {
-            AvroGeneralConversion generalConversion = new AvroGeneralConversion(converter, clazz, rawSchema, this);
+            AvroGeneralConversion<?> generalConversion = new AvroGeneralConversion<>(this.converter, typeToken, rawSchema, this);
             this.addLogicalTypeConversion(generalConversion);
+            generalConversion.init();
             return generalConversion;
         });
     }
@@ -121,11 +134,11 @@ public class AvroReflectData extends ReflectData {
 
     @Override
     public Schema getSchema(Type type) {
-        Class clazz = ClassUtil.getClassByType(type);
-        Conversion conversionByClass = this.getConversionByClass(clazz);
+        Conversion<?> conversionByClass = this.getConversionByType(type);
         if (conversionByClass != null) {
             return conversionByClass.getRecommendedSchema();
         }
+
         return super.getSchema(type);
     }
 

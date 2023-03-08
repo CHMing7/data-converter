@@ -74,10 +74,10 @@ public class FstCoreCodecSerializer extends FstSerializer {
         FieldInfo fieldInfo = fieldNameFieldInfoMap.get(field.getName());
         Map<FieldInfo, Codec> fieldInfoCodecMap = MapUtil.computeIfAbsent(CONVERTER_INFO_CODEC_MAP, converter, c -> MapUtil.newConcurrentHashMap());
         return MapUtil.computeIfAbsent(fieldInfoCodecMap, fieldInfo, info -> {
-            if (codec instanceof WithFormat) {
-                return (Codec) ((WithFormat) codec).withDatePattern(fieldInfo.getFormat());
+            if (this.codec instanceof WithFormat) {
+                return (Codec) ((WithFormat) this.codec).withDatePattern(fieldInfo.getFormat());
             }
-            return codec;
+            return this.codec;
         });
     }
 }

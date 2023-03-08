@@ -40,7 +40,7 @@ import java.util.Map;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-01-12
+ * @date 2022-01-12
  **/
 public class ThriftDataReader implements DataReader {
 
@@ -83,8 +83,8 @@ public class ThriftDataReader implements DataReader {
     }
 
     @Override
-    public FieldInfo readFieldBegin(Class<?> clz) throws IOException {
-        JavaBeanInfo<?> javaBeanInfo = ThriftClassInfoStorage.INSTANCE.getJavaBeanInfo(clz, converterClass);
+    public FieldInfo readFieldBegin(Type type) throws IOException {
+        JavaBeanInfo<?> javaBeanInfo = ThriftClassInfoStorage.INSTANCE.getJavaBeanInfo(type, converterClass);
         return readFieldBegin(javaBeanInfo);
     }
 
@@ -105,8 +105,8 @@ public class ThriftDataReader implements DataReader {
     }
 
     @Override
-    public void readFieldEnd(Class<?> clz) throws IOException {
-        JavaBeanInfo<?> javaBeanInfo = ThriftClassInfoStorage.INSTANCE.getJavaBeanInfo(clz, converterClass);
+    public void readFieldEnd(Type type) throws IOException {
+        JavaBeanInfo<?> javaBeanInfo = ThriftClassInfoStorage.INSTANCE.getJavaBeanInfo(type, converterClass);
         readFieldEnd(javaBeanInfo);
     }
 

@@ -110,4 +110,26 @@ public class User implements Serializable {
         return Objects.equals(date, user.date);
     }
 
+    @Override
+    public int hashCode() {
+        int result = user != null ? user.hashCode() : 0;
+        result = 31 * result + (userName != null ? userName.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (localDateTime != null ? localDateTime.hashCode() : 0);
+        result = 31 * result + (date != null ? date.hashCode() : 0);
+        result = 31 * result + (yearMonth != null ? yearMonth.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "user=" + user +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", localDateTime=" + localDateTime +
+                ", date=" + date +
+                ", yearMonth=" + yearMonth +
+                '}';
+    }
 }

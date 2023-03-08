@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-06-15
+ * @date 2021-06-15
  **/
 public class TestJava8Time {
 

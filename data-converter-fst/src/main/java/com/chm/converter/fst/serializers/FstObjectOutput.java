@@ -4,6 +4,7 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.codecs.EnumCodec;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.MapUtil;
 import org.nustaq.serialization.FSTClazzInfo;
@@ -11,6 +12,7 @@ import org.nustaq.serialization.FSTObjectOutput;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.TypeVariable;
 import java.util.Map;
 
 /**
@@ -30,27 +32,6 @@ public class FstObjectOutput extends FSTObjectOutput {
         super(out.getConf());
         this.converter = converter;
         this.converterClass = converter != null ? converter.getClass() : null;
-    }
-
-    @Override
-    protected void writeObjectFields(Object toWrite, FSTClazzInfo serializationInfo, FSTClazzInfo.FSTFieldInfo[] fieldInfo, int startIndex, int version) throws IOException {
-        for (FSTClazzInfo.FSTFieldInfo fstFieldInfo : fieldInfo) {
-            FieldInfo info = getFieldInfo(fstFieldInfo);
-            if (info != null && !info.isSerialize()) {
-                info.set(toWrite, ClassUtil.getDefaultValue(info.getFieldClass()));
-            }
-        }
-        super.writeObjectFields(toWrite, serializationInfo, fieldInfo, startIndex, version);
-    }
-
-    private FieldInfo getFieldInfo(FSTClazzInfo.FSTFieldInfo referencee) {
-        Field field = referencee.getField();
-        if (field == null) {
-            return null;
-        }
-
-        Map<String, FieldInfo> fieldNameFieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(field.getDeclaringClass(), converterClass);
-        return fieldNameFieldInfoMap.get(field.getName());
     }
 
     @Override
@@ -76,4 +57,28 @@ public class FstObjectOutput extends FSTObjectOutput {
         }
         return null;
     }
+
+    @Override
+    protected void writeObjectFields(Object toWrite, FSTClazzInfo serializationInfo, FSTClazzInfo.FSTFieldInfo[] fieldInfo, int startIndex, int version) throws IOException {
+        for (FSTClazzInfo.FSTFieldInfo fstFieldInfo : fieldInfo) {
+            FieldInfo info = getFieldInfo(fstFieldInfo);
+            if (info != null && !info.isSerialize()) {
+                // fst中，不序列化的属性写入 null 或者 默认值
+                info.set(toWrite, ClassUtil.getDefaultValue(info.getFieldClass()));
+            }
+        }
+        super.writeObjectFields(toWrite, serializationInfo, fieldInfo, startIndex, version);
+    }
+
+    private FieldInfo getFieldInfo(FSTClazzInfo.FSTFieldInfo referencee) {
+        Field field = referencee.getField();
+        if (field == null) {
+            return null;
+        }
+
+        Map<String, FieldInfo> fieldNameFieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(field.getDeclaringClass(), converterClass);
+        return fieldNameFieldInfoMap.get(field.getName());
+    }
+
+
 }

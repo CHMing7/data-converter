@@ -3,6 +3,7 @@ package com.chm.converter.avro.factorys;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.reflect.TypeToken;
 import org.apache.avro.Conversion;
 import org.apache.avro.LogicalType;
 import org.apache.avro.Schema;
@@ -16,14 +17,13 @@ import java.util.Map;
 
 /**
  * @author caihongming
- * @version v1.0
- * @since 2022-07-20
+ * @date 2022-07-20
  **/
 public class CoreCodecConversion<T> extends Conversion<T> implements WithFormat {
 
     private final Converter<?> converter;
 
-    private final Class<T> classOfT;
+    private final TypeToken<T> typeToken;
 
     private final Codec codec;
 
@@ -31,9 +31,9 @@ public class CoreCodecConversion<T> extends Conversion<T> implements WithFormat 
 
     private final Schema schema;
 
-    public CoreCodecConversion(Converter<?> converter, Class<T> classOfT, Codec codec, Schema encodeSchema, String logicalTypeName) {
+    public CoreCodecConversion(Converter<?> converter, TypeToken<T> typeToken, Codec codec, Schema encodeSchema, String logicalTypeName) {
         this.converter = converter;
-        this.classOfT = classOfT;
+        this.typeToken = typeToken;
         this.codec = codec;
         this.logicalType = new LogicalType(logicalTypeName);
         this.schema = logicalType.addToSchema(encodeSchema);
@@ -41,7 +41,7 @@ public class CoreCodecConversion<T> extends Conversion<T> implements WithFormat 
 
     @Override
     public Class<T> getConvertedType() {
-        return classOfT;
+        return (Class<T>) typeToken.getRawType();
     }
 
     @Override
@@ -164,26 +164,30 @@ public class CoreCodecConversion<T> extends Conversion<T> implements WithFormat 
         return schema;
     }
 
+    public Codec getCodec() {
+        return codec;
+    }
+
     @Override
     public CoreCodecConversion<T> withDatePattern(String datePattern) {
         if (codec instanceof WithFormat) {
             Codec withCodec = (Codec) ((WithFormat) codec).withDatePattern(datePattern);
-            return new CoreCodecConversion<>(this.converter, this.classOfT, withCodec, this.schema, this.logicalType.getName());
+            return new CoreCodecConversion<>(this.converter, this.typeToken, withCodec, this.schema, this.logicalType.getName());
         }
-        return new CoreCodecConversion<>(this.converter, this.classOfT, this.codec, this.schema, this.logicalType.getName());
+        return new CoreCodecConversion<>(this.converter, this.typeToken, this.codec, this.schema, this.logicalType.getName());
     }
 
     @Override
     public CoreCodecConversion<T> withDateFormatter(DateTimeFormatter dateFormatter) {
         if (this.codec instanceof WithFormat) {
             Codec withCodec = (Codec) ((WithFormat) this.codec).withDateFormatter(dateFormatter);
-            return new CoreCodecConversion<>(this.converter, this.classOfT, withCodec, this.schema, this.logicalType.getName());
+            return new CoreCodecConversion<>(this.converter, this.typeToken, withCodec, this.schema, this.logicalType.getName());
         }
-        return new CoreCodecConversion<>(this.converter, this.classOfT, this.codec, this.schema, this.logicalType.getName());
+        return new CoreCodecConversion<>(this.converter, this.typeToken, this.codec, this.schema, this.logicalType.getName());
     }
 
     public CoreCodecConversion<T> withLogicalTypeName(String logicalTypeName) {
-        return new CoreCodecConversion<>(this.converter, this.classOfT, this.codec, this.schema, logicalTypeName);
+        return new CoreCodecConversion<>(this.converter, this.typeToken, this.codec, this.schema, logicalTypeName);
     }
 
     public boolean isPriorityUse() {

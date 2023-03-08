@@ -3,7 +3,7 @@ package com.alibaba.fastjson2;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-07-07
+ * @date 2022-07-07
  **/
 public interface JsonbCoder {
 

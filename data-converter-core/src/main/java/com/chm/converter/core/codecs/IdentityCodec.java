@@ -12,7 +12,7 @@ import java.io.IOException;
  *
  * @author caihongming
  * @version v1.0
- * @since 2022-01-06
+ * @date 2022-01-06
  **/
 public class IdentityCodec<T> implements Codec<T, T> {
 

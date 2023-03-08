@@ -24,6 +24,9 @@ public class JavaBeanCodecFactory implements UniversalFactory<Codec> {
 
     @Override
     public Codec create(UniversalGenerate<Codec> generate, TypeToken<?> typeToken) {
-        return new JavaBeanCodec<>(typeToken.getRawType(), generate, converter);
+        if (typeToken.getRawType() != Object.class) {
+            return new JavaBeanCodec<>(typeToken, generate, converter);
+        }
+        return null;
     }
 }

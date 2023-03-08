@@ -12,7 +12,7 @@ import java.lang.reflect.Array;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-01-12
+ * @date 2022-01-12
  **/
 public class ArrayCodec implements Codec {
 

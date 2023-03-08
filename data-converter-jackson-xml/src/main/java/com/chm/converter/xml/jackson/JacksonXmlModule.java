@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-09-08
+ * @date 2021-09-08
  **/
 public class JacksonXmlModule extends com.fasterxml.jackson.dataformat.xml.JacksonXmlModule {
 

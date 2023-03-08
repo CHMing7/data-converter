@@ -19,7 +19,7 @@ import java.util.Collection;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-11-30
+ * @date 2021-11-30
  **/
 public class CollectionCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
@@ -34,15 +34,15 @@ public class CollectionCodecFactory implements UniversalFactory<ProtostuffCodec>
         Type type = typeToken.getType();
         Type elementType = ConverterTypes.getCollectionElementType(type, rawTypeOfSrc);
         ProtostuffCodec elementCodec = new RuntimeTypeCodec(generate, generate.get(elementType), elementType);
-        return new CollectionCodec(typeToken.getRawType(), elementCodec);
+        return new CollectionCodec(typeToken, elementCodec);
     }
 
     public static class CollectionCodec<V> extends ProtostuffCodec<Collection<V>> {
 
         private final ProtostuffCodec<V> elementCodec;
 
-        protected CollectionCodec(Class<Collection<V>> clazz, ProtostuffCodec<V> elementCodec) {
-            super(clazz);
+        protected CollectionCodec(TypeToken<Collection<V>> typeToken, ProtostuffCodec<V> elementCodec) {
+            super(typeToken);
             this.elementCodec = elementCodec;
         }
 
@@ -86,7 +86,7 @@ public class CollectionCodecFactory implements UniversalFactory<ProtostuffCodec>
 
         @Override
         public CollectionCodec<V> newInstance() {
-            return new CollectionCodec<>(this.clazz, this.elementCodec);
+            return new CollectionCodec<>(this.typeToken, this.elementCodec);
         }
     }
 }

@@ -29,8 +29,7 @@ import java.util.Map;
 
 /**
  * @author caihongming
- * @version v1.0
- * @since 2022-01-06
+ * @date 2022-01-06
  **/
 public class ThriftDataWriter implements DataWriter {
 

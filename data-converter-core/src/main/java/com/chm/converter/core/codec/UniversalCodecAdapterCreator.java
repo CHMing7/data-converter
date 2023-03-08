@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-08-11
+ * @date 2022-08-11
  **/
 public interface UniversalCodecAdapterCreator {
 
@@ -270,7 +270,7 @@ public interface UniversalCodecAdapterCreator {
      *
      * @author caihongming
      * @version v1.0
-     * @since 2021-09-07
+     * @date 2021-09-07
      **/
     interface CodecAdapterCreator<T> {
 

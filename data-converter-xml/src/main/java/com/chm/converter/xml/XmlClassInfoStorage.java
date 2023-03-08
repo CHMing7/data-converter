@@ -4,6 +4,7 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.xml.annotation.XmlProperty;
 import com.chm.converter.xml.annotation.XmlRootElement;
@@ -20,14 +21,15 @@ import java.util.Map;
  **/
 public class XmlClassInfoStorage implements ClassInfoStorage {
 
-    public static final Map<Class<?>, Map<Class<? extends Converter>, Boolean>> INIT_TABLE = MapUtil.newHashMap();
+    public static final Map<TypeToken<?>, Map<Class<? extends Converter>, Boolean>> INIT_TABLE = MapUtil.newHashMap();
 
     public static final ClassInfoStorage INSTANCE = new XmlClassInfoStorage();
 
     @Override
-    public <T> void initClassInfo(Class<T> clazz, Class<? extends Converter> converterClass) {
-        ClassInfoStorage.super.initClassInfo(clazz, converterClass);
-        JavaBeanInfo<T> javaBeanInfo = ClassInfoStorage.get(BEAN_INFO_MAP, clazz, converterClass);
+    public <T> void initClassInfo(TypeToken<T> typeToken, Class<? extends Converter> converterClass) {
+        ClassInfoStorage.super.initClassInfo(typeToken, converterClass);
+        JavaBeanInfo<T> javaBeanInfo = ClassInfoStorage.get(BEAN_INFO_MAP, typeToken, converterClass);
+        Class<? super T> clazz = typeToken.getRawType();
         XmlRootElement xmlRootElement = clazz.getAnnotation(XmlRootElement.class);
         if (xmlRootElement != null) {
             String xmlRootName = xmlRootElement.name();
@@ -60,11 +62,11 @@ public class XmlClassInfoStorage implements ClassInfoStorage {
                 fieldInfo.putExpandProperty("namespace", namespace);
             }
         }
-        ClassInfoStorage.put(INIT_TABLE, clazz, converterClass, true);
+        ClassInfoStorage.put(INIT_TABLE, typeToken, converterClass, true);
     }
 
     @Override
-    public boolean isInit(Class<?> clazz, Class<? extends Converter> converterClass) {
-        return Boolean.TRUE.equals(ClassInfoStorage.get(INIT_TABLE, clazz, converterClass));
+    public <T> boolean isInit(TypeToken<T> type, Class<? extends Converter> converterClass) {
+        return Boolean.TRUE.equals(ClassInfoStorage.get(INIT_TABLE, type, converterClass));
     }
 }

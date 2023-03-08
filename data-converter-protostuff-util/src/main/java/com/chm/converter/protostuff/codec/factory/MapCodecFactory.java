@@ -20,7 +20,7 @@ import java.util.Map;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-11-18
+ * @date 2021-11-18
  **/
 public class MapCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
@@ -51,18 +51,18 @@ public class MapCodecFactory implements UniversalFactory<ProtostuffCodec> {
                 keyAndValueTypes[0]);
         ProtostuffCodec vCodec = new RuntimeTypeCodec(generate, generate.get(keyAndValueTypes[1]),
                 keyAndValueTypes[1]);
-        return new MapCodec(typeToken.getRawType(), kCodec, vCodec);
+        return new MapCodec(typeToken, kCodec, vCodec);
     }
 
     public static class MapCodec<K, V> extends ProtostuffCodec<Map<K, V>> {
 
         private final PairCodec<K, V> pairCodec;
 
-        protected MapCodec(Class<Map<K, V>> clazz, ProtostuffCodec<K> kCodec, ProtostuffCodec<V> vCodec) {
-            super(clazz);
+        protected MapCodec(TypeToken<Map<K, V>> typeToken, ProtostuffCodec<K> kCodec, ProtostuffCodec<V> vCodec) {
+            super(typeToken);
             TypeToken<Pair<K, V>> pairType = new TypeToken<Pair<K, V>>() {
             };
-            this.pairCodec = new PairCodec<>((Class<Pair<K, V>>) pairType.getRawType(), kCodec, vCodec);
+            this.pairCodec = new PairCodec<>(pairType, kCodec, vCodec);
         }
 
         @Override
@@ -103,7 +103,7 @@ public class MapCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         @Override
         public MapCodec<K, V> newInstance() {
-            return new MapCodec<>(this.clazz, this.pairCodec.kCodec, this.pairCodec.vCodec);
+            return new MapCodec<>(this.typeToken, this.pairCodec.kCodec, this.pairCodec.vCodec);
         }
     }
 
@@ -113,8 +113,8 @@ public class MapCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         private final ProtostuffCodec<V> vCodec;
 
-        protected PairCodec(Class<Pair<K, V>> clazz, ProtostuffCodec<K> kCodec, ProtostuffCodec<V> vCodec) {
-            super(clazz);
+        protected PairCodec(TypeToken<Pair<K, V>> typeToken, ProtostuffCodec<K> kCodec, ProtostuffCodec<V> vCodec) {
+            super(typeToken);
             this.kCodec = kCodec;
             this.vCodec = vCodec;
         }
@@ -159,7 +159,7 @@ public class MapCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         @Override
         public PairCodec<K, V> newInstance() {
-            return new PairCodec<>(this.clazz, this.kCodec, this.vCodec);
+            return new PairCodec<>(this.typeToken, this.kCodec, this.vCodec);
         }
 
         @Override

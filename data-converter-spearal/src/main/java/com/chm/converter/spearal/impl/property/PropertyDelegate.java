@@ -119,22 +119,22 @@ public class PropertyDelegate implements Property {
     @Override
     public void write(ExtendedSpearalEncoder encoder, Object holder) throws IOException, IllegalAccessException, InvocationTargetException {
         Object o = fieldInfo.get(holder);
-        if (o == null) {
+        if (o == null || !fieldInfo.isSerialize()) {
             encoder.writeNull();
             return;
         }
         Codec codec = getCodec(encoder.getContext());
-        encoder.writeAny(fieldInfo.isSerialize() ? codec != null ? codec.encode(o) : o : null);
+        encoder.writeAny(codec != null ? codec.encode(o) : o);
     }
 
     @Override
     public void read(ExtendedSpearalDecoder decoder, Object holder, int parameterizedType) throws IOException, InstantiationException, IllegalAccessException, InvocationTargetException {
         Object o = decoder.readAny(parameterizedType);
-        if (o == null) {
+        if (o == null || !fieldInfo.isDeserialize()) {
             return;
         }
         Codec codec = getCodec(decoder.getContext());
-        fieldInfo.set(holder, fieldInfo.isDeserialize() ? codec != null ? codec.decode(o) : o : null);
+        fieldInfo.set(holder, codec != null ? codec.decode(o) : o);
     }
 
     private Codec getCodec(SpearalContext context) {
@@ -144,7 +144,7 @@ public class PropertyDelegate implements Property {
         CoderProvider.Coder coder = context.getCoder(fieldInfo.getFieldClass());
         if (coder instanceof CodecProvider) {
             DataCodecGenerate dataCodec = ((CodecProvider) coder).getDataCodec();
-            codec = dataCodec.get(fieldInfo.getFieldClass());
+            codec = dataCodec.get(fieldInfo.getFieldType());
             if (codec instanceof WithFormat) {
                 codec = (Codec) ((WithFormat) codec).withDatePattern(fieldInfo.getFormat());
             }

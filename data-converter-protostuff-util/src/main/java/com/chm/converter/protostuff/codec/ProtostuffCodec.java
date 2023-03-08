@@ -17,11 +17,11 @@ import java.io.IOException;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-11-11
+ * @date 2021-11-11
  **/
 public abstract class ProtostuffCodec<T> implements UniversalInterface, Schema<T> {
 
-    protected final Class<T> clazz;
+    protected final TypeToken<T> typeToken;
 
     protected final ObjectConstructor<T> constructor;
 
@@ -29,9 +29,9 @@ public abstract class ProtostuffCodec<T> implements UniversalInterface, Schema<T
 
     protected boolean isField = false;
 
-    protected ProtostuffCodec(Class<T> clazz) {
-        this.clazz = clazz;
-        this.constructor = ConstructorFactory.INSTANCE.get(TypeToken.get(clazz));
+    protected ProtostuffCodec(TypeToken<T> typeToken) {
+        this.typeToken = typeToken;
+        this.constructor = ConstructorFactory.INSTANCE.get(typeToken);
     }
 
     @Override
@@ -41,17 +41,17 @@ public abstract class ProtostuffCodec<T> implements UniversalInterface, Schema<T
 
     @Override
     public String messageName() {
-        return clazz.getSimpleName();
+        return typeToken.getRawType().getSimpleName();
     }
 
     @Override
     public String messageFullName() {
-        return clazz.getName();
+        return typeToken.getRawType().getName();
     }
 
     @Override
     public Class<? super T> typeClass() {
-        return clazz;
+        return typeToken.getRawType();
     }
 
     /**
@@ -111,6 +111,9 @@ public abstract class ProtostuffCodec<T> implements UniversalInterface, Schema<T
     }
 
     public static void write(ProtostuffCodec codec, Output output, Object o, int fieldNumber) throws IOException {
+        if (codec instanceof RuntimeTypeCodec) {
+            codec = ((RuntimeTypeCodec<?>) codec).getRuntimeCodec(o);
+        }
         if (codec instanceof JavaBeanCodecFactory.JavaBeanCodec ||
                 codec instanceof CollectionCodecFactory.CollectionCodec ||
                 codec instanceof MapCodecFactory.MapCodec ||
@@ -122,6 +125,9 @@ public abstract class ProtostuffCodec<T> implements UniversalInterface, Schema<T
     }
 
     public static Object merge(ProtostuffCodec codec, Input input) throws IOException {
+        if (codec instanceof RuntimeTypeCodec) {
+            codec = ((RuntimeTypeCodec<?>) codec).getDelegate();
+        }
         if (codec instanceof JavaBeanCodecFactory.JavaBeanCodec ||
                 codec instanceof CollectionCodecFactory.CollectionCodec ||
                 codec instanceof MapCodecFactory.MapCodec ||

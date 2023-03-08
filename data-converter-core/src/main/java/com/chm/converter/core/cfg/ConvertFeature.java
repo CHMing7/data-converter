@@ -5,7 +5,7 @@ package com.chm.converter.core.cfg;
  *
  * @author caihongming
  * @version v1.0
- * @since 2022-01-25
+ * @date 2022-01-25
  **/
 public enum ConvertFeature {
 

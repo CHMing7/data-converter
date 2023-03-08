@@ -4,6 +4,7 @@ import com.chm.converter.core.ClassInfoStorage;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.FieldInfo;
 import com.chm.converter.core.JavaBeanInfo;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ClassUtil;
 import com.chm.converter.core.utils.MapUtil;
 import org.apache.thrift.protocol.TType;
@@ -16,20 +17,20 @@ import java.util.Set;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-01-07
+ * @date 2022-01-07
  **/
 public class ThriftClassInfoStorage implements ClassInfoStorage {
 
     public static final String THRIFT_TYPE_KEY = "thriftType";
 
-    public static final Map<Class<?>, Map<Class<? extends Converter>, Boolean>> INIT_TABLE = MapUtil.newHashMap();
+    public static final Map<TypeToken<?>, Map<Class<? extends Converter>, Boolean>> INIT_TABLE = MapUtil.newHashMap();
 
     public static final ClassInfoStorage INSTANCE = new ThriftClassInfoStorage();
 
     @Override
-    public <T> void initClassInfo(Class<T> clazz, Class<? extends Converter> converterClass) {
-        ClassInfoStorage.super.initClassInfo(clazz, converterClass);
-        JavaBeanInfo<T> javaBeanInfo = ClassInfoStorage.get(BEAN_INFO_MAP, clazz, converterClass);
+    public <T> void initClassInfo(TypeToken<T> typeToken, Class<? extends Converter> converterClass) {
+        ClassInfoStorage.super.initClassInfo(typeToken, converterClass);
+        JavaBeanInfo<T> javaBeanInfo = ClassInfoStorage.get(BEAN_INFO_MAP, typeToken, converterClass);
         byte thriftType = getType(javaBeanInfo.getClazz());
         javaBeanInfo.putExpandProperty("thriftType", thriftType);
         List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
@@ -37,12 +38,12 @@ public class ThriftClassInfoStorage implements ClassInfoStorage {
             byte fieldThriftType = getType(fieldInfo.getFieldClass());
             fieldInfo.putExpandProperty("thriftType", fieldThriftType);
         }
-        ClassInfoStorage.put(INIT_TABLE, clazz, converterClass, true);
+        ClassInfoStorage.put(INIT_TABLE, typeToken, converterClass, true);
     }
 
     @Override
-    public boolean isInit(Class<?> clazz, Class<? extends Converter> converterClass) {
-        return Boolean.TRUE.equals(ClassInfoStorage.get(INIT_TABLE, clazz, converterClass));
+    public <T> boolean isInit(TypeToken<T> typeToken, Class<? extends Converter> converterClass) {
+        return Boolean.TRUE.equals(ClassInfoStorage.get(INIT_TABLE, typeToken, converterClass));
     }
 
     public static byte getType(Class<?> clz) {

@@ -150,7 +150,9 @@ public class DateUtil {
         registerDateTimeFormatter(DateFormatPattern.YYYY_M_D_H_M_S.length() + 2, DateFormatPattern.YYYY_M_D_H_M_S_FORMATTER);
         registerDateTimeFormatter(DateFormatPattern.YYYY_M_D_H_M_S.length() + 3, DateFormatPattern.YYYY_M_D_H_M_S_FORMATTER);
         registerDateTimeFormatter(DateFormatPattern.YYYY_M_D_H_M_S.length() + 4, DateFormatPattern.YYYY_M_D_H_M_S_FORMATTER);
-        registerDateTimeFormatter(DateFormatPattern.YYYYMMDDHHMMSS.length() + 5, DateFormatPattern.YYYYMMDDHHMMSS_FORMATTER);
+        registerDateTimeFormatter(DateFormatPattern.YYYY_M_D_H_M_S.length() + 5, DateFormatPattern.YYYY_M_D_H_M_S_FORMATTER);
+
+        registerDateTimeFormatter(DateFormatPattern.YYYYMMDDHHMMSS.length(), DateFormatPattern.YYYYMMDDHHMMSS_FORMATTER);
 
         registerDateTimeFormatter(DateFormatPattern.YYYY_MM_DD_HH_MM_SS_EN.length(), DateFormatPattern.YYYY_MM_DD_HH_MM_SS_EN_FORMATTER);
 

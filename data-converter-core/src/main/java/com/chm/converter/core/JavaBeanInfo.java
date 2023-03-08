@@ -28,11 +28,13 @@ import java.util.stream.Collectors;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-08-16
+ * @date 2021-08-16
  **/
 public class JavaBeanInfo<T> {
 
-    private final Class<T> clazz;
+    private final TypeToken<T> type;
+
+    private final Class<? super T> clazz;
 
     /**
      * 构造方法对象
@@ -67,9 +69,10 @@ public class JavaBeanInfo<T> {
      */
     private final Set<Class<? extends Annotation>> annotationClassSet;
 
-    public JavaBeanInfo(Class<T> clazz, List<FieldInfo> fieldList) {
-        this.clazz = clazz;
-        this.objectConstructor = ConstructorFactory.INSTANCE.get(TypeToken.get(clazz));
+    public JavaBeanInfo(TypeToken<T> type, List<FieldInfo> fieldList) {
+        this.type = type;
+        this.clazz = type.getRawType();
+        this.objectConstructor = ConstructorFactory.INSTANCE.get(type);
         this.fieldList = fieldList;
         this.sortedFieldList = ListUtil.toList(fieldList);
         CollUtil.sort(sortedFieldList, FieldInfo::compareTo);
@@ -151,7 +154,8 @@ public class JavaBeanInfo<T> {
         return null;
     }
 
-    private static <T> void computeFields(Class<T> clazz, List<FieldInfo> fieldList, Field[] fields, Class<? extends Converter> scope) {
+    private static <T> void computeFields(final TypeToken<T> typeToken, List<FieldInfo> fieldList, Field[] fields, Class<? extends Converter> scope) {
+        Class<? super T> clazz = typeToken.getRawType();
         for (Field field : fields) {
             // public static fields
             int modifiers = field.getModifiers();
@@ -204,11 +208,11 @@ public class JavaBeanInfo<T> {
 
             Method method = TypeUtil.getMethod(clazz, field.getName());
 
-            add(fieldList, new FieldInfo(propertyName, method, field, ordinal, fieldAnnotation, null));
+            add(fieldList, new FieldInfo(typeToken, propertyName, method, field, ordinal, fieldAnnotation, null));
         }
     }
 
-    private static void computeEnumFields(List<FieldInfo> fieldList, Field[] fields, Class<? extends Converter> scope) {
+    private static void computeEnumFields(final TypeToken<?> typeToken, List<FieldInfo> fieldList, Field[] fields, Class<? extends Converter> scope) {
         for (Field field : fields) {
             boolean contains = false;
             for (FieldInfo item : fieldList) {
@@ -236,7 +240,7 @@ public class JavaBeanInfo<T> {
                 }
             }
 
-            add(fieldList, new FieldInfo(propertyName, null, field, ordinal, fieldAnnotation, null));
+            add(fieldList, new FieldInfo(typeToken, propertyName, null, field, ordinal, fieldAnnotation, null));
         }
     }
 
@@ -264,7 +268,8 @@ public class JavaBeanInfo<T> {
         return null;
     }
 
-    public static <T> JavaBeanInfo<T> build(Class<T> clazz, Class<? extends Converter> scope) {
+    public static <T> JavaBeanInfo<T> build(TypeToken<T> type, Class<? extends Converter> scope) {
+        Class<? super T> clazz = type.getRawType();
         Method[] methods = clazz.getMethods();
 
         List<FieldInfo> fieldList = ListUtil.list(true);
@@ -313,7 +318,7 @@ public class JavaBeanInfo<T> {
                 if (annotation.name().length() != 0) {
                     String propertyName = annotation.name();
                     Field field = TypeUtil.getField(clazz, StringUtil.getGeneralField(methodName));
-                    add(fieldList, new FieldInfo(propertyName, method, field, ordinal, null, annotation));
+                    add(fieldList, new FieldInfo(type, propertyName, method, field, ordinal, null, annotation));
                     continue;
                 }
             }
@@ -374,20 +379,20 @@ public class JavaBeanInfo<T> {
 
                     if (fieldAnnotation.name().length() != 0) {
                         propertyName = fieldAnnotation.name();
-                        add(fieldList, new FieldInfo(propertyName, method, field, ordinal, fieldAnnotation, null));
+                        add(fieldList, new FieldInfo(type, propertyName, method, field, ordinal, fieldAnnotation, null));
                         continue;
                     }
                 }
             }
 
-            add(fieldList, new FieldInfo(propertyName, method, field, ordinal, fieldAnnotation, null));
+            add(fieldList, new FieldInfo(type, propertyName, method, field, ordinal, fieldAnnotation, null));
         }
 
         Field[] fields = clazz.getFields();
         if (clazz.isEnum()) {
-            computeEnumFields(fieldList, fields, scope);
+            computeEnumFields(type, fieldList, fields, scope);
         } else {
-            computeFields(clazz, fieldList, fields, scope);
+            computeFields(type, fieldList, fields, scope);
 
             for (Method method : clazz.getMethods()) {
                 // getter methods
@@ -434,16 +439,20 @@ public class JavaBeanInfo<T> {
                             continue;
                         }
 
-                        add(fieldList, new FieldInfo(propertyName, method, collectionField, 0, null, annotation));
+                        add(fieldList, new FieldInfo(type, propertyName, method, collectionField, 0, null, annotation));
                     }
                 }
             }
         }
 
-        return new JavaBeanInfo<>(clazz, fieldList);
+        return new JavaBeanInfo<>(type, fieldList);
     }
 
-    public Class<T> getClazz() {
+    public TypeToken<T> getType() {
+        return type;
+    }
+
+    public Class<? super T> getClazz() {
         return clazz;
     }
 

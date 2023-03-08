@@ -8,6 +8,8 @@ import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
 import com.chm.converter.core.codecs.JavaBeanCodec;
+import com.chm.converter.core.codecs.RuntimeTypeCodec;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.core.utils.StringUtil;
@@ -24,7 +26,7 @@ import java.util.List;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-10-14
+ * @date 2021-10-14
  **/
 public class AvroGeneralConversion<T> extends Conversion<T> {
 
@@ -32,26 +34,35 @@ public class AvroGeneralConversion<T> extends Conversion<T> {
 
     private final UniversalGenerate<Codec> generate;
 
-    private final Class<T> clazz;
+    private final TypeToken<T> typeToken;
 
     private final LogicalType logicalType;
 
     private final JavaBeanInfo<T> javaBeanInfo;
 
-    private final Schema schema;
+    private Schema schema;
 
-    public AvroGeneralConversion(Converter<?> converter, Class<T> clazz, Schema schema, AvroReflectData data) {
-        this(converter, null, clazz, schema, data);
+    private final Schema rawSchema;
+
+    private final AvroReflectData data;
+
+    public AvroGeneralConversion(Converter<?> converter, TypeToken<T> typeToken, Schema rawSchema, AvroReflectData data) {
+        this(converter, null, typeToken, rawSchema, data);
     }
 
-    public AvroGeneralConversion(Converter<?> converter, UniversalGenerate<Codec> generate, Class<T> clazz, Schema schema, AvroReflectData data) {
+    public AvroGeneralConversion(Converter<?> converter, UniversalGenerate<Codec> generate, TypeToken<T> typeToken, Schema rawSchema, AvroReflectData data) {
         this.converter = converter;
         Class<? extends Converter> converterClass = converter != null ? converter.getClass() : null;
         this.generate = generate != null ? generate : DataCodecGenerate.getDataCodecGenerate(converter);
-        this.clazz = clazz;
-        this.logicalType = new LogicalType(clazz.getName());
-        this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
-        this.schema = createSchema(schema, data);
+        this.typeToken = typeToken;
+        this.logicalType = new LogicalType(typeToken.toString());
+        this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(typeToken, converterClass);
+        this.rawSchema = rawSchema;
+        this.data = data;
+    }
+
+    public void init() {
+        this.schema = createSchema(this.rawSchema);
     }
 
     public static Schema makeNullable(Schema schema) {
@@ -73,31 +84,39 @@ public class AvroGeneralConversion<T> extends Conversion<T> {
         }
     }
 
-    private Schema createSchema(Schema schema, AvroReflectData data) {
-        Schema record = Schema.createRecord(schema.getName(), schema.getDoc(), schema.getNamespace(), schema.isError());
+    private Schema createSchema(Schema rawSchema) {
+        Schema record = Schema.createRecord(rawSchema.getName(), rawSchema.getDoc(), rawSchema.getNamespace(), rawSchema.isError());
         List<FieldInfo> fieldInfoList = javaBeanInfo.getSortedFieldList();
         List<Schema.Field> fieldList = new ArrayList<>();
         for (FieldInfo fieldInfo : fieldInfoList) {
-            String logicalTypeName = StringUtil.format("{}.{}", javaBeanInfo.getClazz().getName(), fieldInfo.getName());
-            Schema.Field field = schema.getField(fieldInfo.getFieldName());
+            String logicalTypeName = StringUtil.format("{}.{}", javaBeanInfo.getType().toString(), fieldInfo.getName());
+            Schema.Field field = rawSchema.getField(fieldInfo.getFieldName());
             LogicalType logicalType = new LogicalType(logicalTypeName);
             Schema fieldSchema;
-            Conversion<?> fieldConversion = data.getConversionByClass(fieldInfo.getFieldClass(), logicalType);
+            Conversion<?> fieldConversion = this.data.getConversionByClass(fieldInfo.getFieldClass(), logicalType);
             if (fieldConversion == null) {
-                Codec codec = this.generate.get(fieldInfo.getFieldType());
+                Codec codec = this.generate.get(fieldInfo.getTypeToken());
                 if (codec != null && !(codec instanceof JavaBeanCodec)) {
-                    Conversion<?> conversion = data.getConversionByClass(fieldInfo.getFieldClass());
-                    if (conversion instanceof CoreCodecConversion) {
-                        Schema encodeSchema = data.createSchema(codec.getEncodeType().getType(), MapUtil.newHashMap(true));
-                        CoreCodecConversion coreCodecConversion = new CoreCodecConversion(this.converter, fieldInfo.getFieldClass(),
+                    Conversion<?> conversion = this.data.getConversionByClass(fieldInfo.getFieldClass());
+                    if (conversion instanceof CoreCodecConversion || codec instanceof RuntimeTypeCodec) {
+                        Schema encodeSchema = this.data.createSchema(codec.getEncodeType().getType(), MapUtil.newHashMap(true));
+                        CoreCodecConversion<?> coreCodecConversion = new CoreCodecConversion<>(this.converter, fieldInfo.getTypeToken(),
                                 codec, encodeSchema, logicalTypeName);
                         data.addLogicalTypeConversion(coreCodecConversion);
                         fieldSchema = makeNullable(coreCodecConversion.getRecommendedSchema());
                     } else {
                         fieldSchema = makeNullable(field.schema());
                     }
+                } else if (codec != null) {
+                    // codec instanceof JavaBeanCodec
+                    fieldSchema = makeNullable(this.data.getSchema(fieldInfo.getFieldType()));
                 } else {
-                    fieldSchema = field.schema();
+                    Schema newFieldSchema = this.data.getSchema(fieldInfo.getFieldType());
+                    if (field.schema().getType() != newFieldSchema.getType()) {
+                        fieldSchema = makeNullable(newFieldSchema);
+                    } else {
+                        fieldSchema = makeNullable(field.schema());
+                    }
                 }
             } else {
                 fieldSchema = fieldConversion.getRecommendedSchema();
@@ -112,7 +131,7 @@ public class AvroGeneralConversion<T> extends Conversion<T> {
 
     @Override
     public Class<T> getConvertedType() {
-        return clazz;
+        return (Class<T>) typeToken.getRawType();
     }
 
     @Override
@@ -151,6 +170,6 @@ public class AvroGeneralConversion<T> extends Conversion<T> {
 
     @Override
     public Schema getRecommendedSchema() {
-        return schema;
+        return this.schema != null ? this.schema : this.rawSchema;
     }
 }
