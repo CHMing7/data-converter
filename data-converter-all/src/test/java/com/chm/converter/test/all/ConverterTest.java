@@ -188,9 +188,6 @@ public class ConverterTest {
     }
 
     private void testGeneric2() {
-        if (converter instanceof DefaultSpearalConverter) {
-            return;
-        }
         Generic<User> generic = new Generic<>();
         generic.setUserName("userName");
         generic.setData(user);
