@@ -5,7 +5,7 @@ package com.chm.converter.protostuff.codec;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-11-29
+ * @date 2021-11-29
  **/
 public interface ProtostuffConstants {
 

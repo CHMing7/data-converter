@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-12-23
+ * @date 2021-12-23
  **/
 public abstract class AbstractModule extends SimpleModule {
 

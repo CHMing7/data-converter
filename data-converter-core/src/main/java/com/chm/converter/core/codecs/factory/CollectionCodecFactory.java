@@ -16,7 +16,7 @@ import java.util.Collection;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-11-30
+ * @date 2021-11-30
  **/
 public class CollectionCodecFactory implements UniversalFactory<Codec> {
 
@@ -29,6 +29,6 @@ public class CollectionCodecFactory implements UniversalFactory<Codec> {
         Type type = typeToken.getType();
         Type elementType = ConverterTypes.getCollectionElementType(type, rawTypeOfSrc);
         Codec elementCodec = new RuntimeTypeCodec(generate, generate.get(elementType), elementType);
-        return new CollectionCodec(typeToken.getRawType(), elementCodec, elementType);
+        return new CollectionCodec(typeToken, elementCodec, elementType);
     }
 }

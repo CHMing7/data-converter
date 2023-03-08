@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-11-30
+ * @date 2021-11-30
  **/
 public class ArrayCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
@@ -37,17 +37,17 @@ public class ArrayCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         Type componentType = ConverterTypes.getArrayComponentType(type);
         ProtostuffCodec componentTypeCodec = new RuntimeTypeCodec(generate, generate.get(componentType), componentType);
-        return new ArrayCodec(typeToken.getRawType(), componentTypeCodec, ConverterTypes.getRawType(componentType));
+        return new ArrayCodec(typeToken, componentTypeCodec, TypeToken.get(componentType));
     }
 
     public static class ArrayCodec<E> extends ProtostuffCodec<Object> {
 
         private final ProtostuffCodec<E> componentTypeCodec;
 
-        private final Class<E> componentType;
+        private final TypeToken<E> componentType;
 
-        protected ArrayCodec(Class<Object> clazz, ProtostuffCodec<E> componentTypeCodec, Class<E> componentType) {
-            super(clazz);
+        protected ArrayCodec(TypeToken<Object> typeToken, ProtostuffCodec<E> componentTypeCodec, TypeToken<E> componentType) {
+            super(typeToken);
             this.componentTypeCodec = componentTypeCodec;
             this.componentType = componentType;
         }
@@ -79,7 +79,7 @@ public class ArrayCodecFactory implements UniversalFactory<ProtostuffCodec> {
                 switch (number) {
                     case 0:
                         int size = list.size();
-                        Object array = Array.newInstance(componentType, size);
+                        Object array = Array.newInstance(componentType.getRawType(), size);
                         for (int i = 0; i < size; i++) {
                             Array.set(array, i, list.get(i));
                         }
@@ -97,7 +97,7 @@ public class ArrayCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         @Override
         public ArrayCodec<E> newInstance() {
-            return new ArrayCodec<>(this.clazz, this.componentTypeCodec, this.componentType);
+            return new ArrayCodec<>(this.typeToken, this.componentTypeCodec, this.componentType);
         }
     }
 }

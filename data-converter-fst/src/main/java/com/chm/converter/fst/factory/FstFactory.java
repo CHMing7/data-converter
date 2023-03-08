@@ -39,7 +39,6 @@ public class FstFactory {
 
         this.conf.setInstantiator(new CustomFstDefaultClassInstantiator());
         this.conf.setForceSerializable(true);
-        this.conf.setForceSerializable(true);
         this.conf.setSerializerRegistryDelegate(cl ->
                 UniversalCodecAdapterCreator.createPriorityUse(this.generate, cl, (t, codec) -> {
                     FSTObjectSerializer encodeSerializer = conf.getCLInfoRegistry().getSerializerRegistry().getSerializer(codec.getEncodeType().getRawType());

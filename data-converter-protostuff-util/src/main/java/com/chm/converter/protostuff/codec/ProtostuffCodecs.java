@@ -1,5 +1,6 @@
 package com.chm.converter.protostuff.codec;
 
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.utils.MapUtil;
 import io.protostuff.ByteString;
@@ -14,7 +15,7 @@ import java.util.Map;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-11-11
+ * @date 2021-11-11
  **/
 public class ProtostuffCodecs {
 
@@ -56,8 +57,8 @@ public class ProtostuffCodecs {
 
     public static abstract class Base<T> extends BaseProtostuffCodec<T> {
 
-        public Base(Class<T> clazz) {
-            super(clazz, clazz.getSimpleName());
+        public Base(TypeToken<T> typeToken) {
+            super(typeToken, typeToken.getRawType().getSimpleName());
         }
 
         @Override
@@ -103,7 +104,7 @@ public class ProtostuffCodecs {
     public static final class CharCodec extends Base<Character> {
 
         public CharCodec() {
-            super(Character.class);
+            super(TypeToken.get(Character.class));
         }
 
         @Override
@@ -130,7 +131,7 @@ public class ProtostuffCodecs {
     public static final class ShortCodec extends Base<Short> {
 
         public ShortCodec() {
-            super(Short.class);
+            super(TypeToken.get(Short.class));
         }
 
         @Override
@@ -157,7 +158,7 @@ public class ProtostuffCodecs {
     public static final class ByteCodec extends Base<Byte> {
 
         public ByteCodec() {
-            super(Byte.class);
+            super(TypeToken.get(Byte.class));
         }
 
         @Override
@@ -184,7 +185,7 @@ public class ProtostuffCodecs {
     public static final class IntCodec extends Base<Integer> {
 
         public IntCodec() {
-            super(Integer.class);
+            super(TypeToken.get(Integer.class));
         }
 
         @Override
@@ -211,7 +212,7 @@ public class ProtostuffCodecs {
     public static final class LongCodec extends Base<Long> {
 
         public LongCodec() {
-            super(Long.class);
+            super(TypeToken.get(Long.class));
         }
 
         @Override
@@ -238,7 +239,7 @@ public class ProtostuffCodecs {
     public static final class FloatCodec extends Base<Float> {
 
         public FloatCodec() {
-            super(Float.class);
+            super(TypeToken.get(Float.class));
         }
 
         @Override
@@ -265,7 +266,7 @@ public class ProtostuffCodecs {
     public static final class DoubleCodec extends Base<Double> {
 
         public DoubleCodec() {
-            super(Double.class);
+            super(TypeToken.get(Double.class));
         }
 
         @Override
@@ -292,7 +293,7 @@ public class ProtostuffCodecs {
     public static final class BoolCodec extends Base<Boolean> {
 
         public BoolCodec() {
-            super(Boolean.class);
+            super(TypeToken.get(Boolean.class));
         }
 
         @Override
@@ -319,7 +320,7 @@ public class ProtostuffCodecs {
     public static final class StringCodec extends Base<String> {
 
         public StringCodec() {
-            super(String.class);
+            super(TypeToken.get(String.class));
         }
 
         @Override
@@ -346,7 +347,7 @@ public class ProtostuffCodecs {
     public static final class ByteStringCodec extends Base<ByteString> {
 
         public ByteStringCodec() {
-            super(ByteString.class);
+            super(TypeToken.get(ByteString.class));
         }
 
         @Override
@@ -373,7 +374,7 @@ public class ProtostuffCodecs {
     public static final class BytesCodec extends Base<byte[]> {
 
         public BytesCodec() {
-            super(byte[].class);
+            super(TypeToken.get(byte[].class));
         }
 
         @Override
@@ -400,7 +401,7 @@ public class ProtostuffCodecs {
     public static final class BigDecimalCodec extends Base<BigDecimal> {
 
         public BigDecimalCodec() {
-            super(BigDecimal.class);
+            super(TypeToken.get(BigDecimal.class));
         }
 
         @Override
@@ -427,7 +428,7 @@ public class ProtostuffCodecs {
     public static final class BigIntegerCodec extends Base<BigInteger> {
 
         public BigIntegerCodec() {
-            super(BigInteger.class);
+            super(TypeToken.get(BigInteger.class));
         }
 
         @Override

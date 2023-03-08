@@ -15,7 +15,7 @@ import java.lang.reflect.TypeVariable;
  *
  * @author caihongming
  * @version v1.0
- * @since 2022-01-11
+ * @date 2022-01-11
  **/
 public class RuntimeTypeCodec<D, E> implements Codec<D, E> {
 
@@ -68,30 +68,30 @@ public class RuntimeTypeCodec<D, E> implements Codec<D, E> {
         Codec<D, E> chosen = delegate;
         Type runtimeType = getRuntimeTypeIfMoreSpecific(type, o);
         if (runtimeType != type) {
-            Codec runtimeTypeAdapter = generate.get(TypeToken.get(runtimeType));
-            if (!(runtimeTypeAdapter instanceof JavaBeanCodec)) {
-                // The user registered a type adapter for the runtime type, so we will use that
-                chosen = runtimeTypeAdapter;
-            } else if (!(delegate instanceof JavaBeanCodec)) {
-                // The user registered a type adapter for Base class, so we prefer it over the
-                // reflective type adapter for the runtime type
-                chosen = delegate;
-            } else {
-                // Use the type adapter for runtime type
-                chosen = runtimeTypeAdapter;
-            }
+            chosen = generate.get(TypeToken.get(runtimeType));
         }
         return chosen;
+    }
+
+    public Codec getRuntimeCodec(Object message) {
+        Type runtimeType = getRuntimeTypeIfMoreSpecific(type, message);
+        if (runtimeType != type) {
+            return generate.get(runtimeType);
+        }
+        return null;
     }
 
     /**
      * 找到运行时具体类型
      */
     private Type getRuntimeTypeIfMoreSpecific(Type type, Object value) {
-        if (value != null && (type == Object.class || type instanceof TypeVariable<?> || type instanceof Class<?>)) {
+        if (value != null && (type instanceof TypeVariable<?> || type instanceof Class<?>)) {
             type = value.getClass();
         }
         return type;
     }
 
+    public Codec<D, E> getDelegate() {
+        return delegate;
+    }
 }

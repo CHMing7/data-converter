@@ -34,10 +34,11 @@ public class HessianCoreCodec extends AbstractDeserializer implements Serializer
         if (obj == null) {
             out.writeNull();
         } else {
-            if (out.addRef(obj)) {
+            Object encode = this.codec.encode(obj);
+            if (encode != obj && out.addRef(obj)) {
                 return;
             }
-            out.writeObject(this.codec.encode(obj));
+            out.writeObject(encode);
         }
     }
 

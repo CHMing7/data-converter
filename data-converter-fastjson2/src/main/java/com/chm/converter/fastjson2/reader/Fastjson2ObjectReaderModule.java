@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-08-10
+ * @date 2022-08-10
  **/
 public class Fastjson2ObjectReaderModule implements ObjectReaderModule {
 

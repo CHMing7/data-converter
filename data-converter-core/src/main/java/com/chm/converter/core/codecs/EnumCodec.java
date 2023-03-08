@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-11-11
+ * @date 2021-11-11
  **/
 public class EnumCodec<E extends Enum<E>> implements Codec<E, String> {
 

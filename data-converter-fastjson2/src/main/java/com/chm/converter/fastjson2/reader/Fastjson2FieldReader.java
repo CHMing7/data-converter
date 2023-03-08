@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-07-05
+ * @date 2022-07-05
  **/
 public class Fastjson2FieldReader<T> implements FieldReader<T> {
 

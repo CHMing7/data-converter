@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-02-18
+ * @date 2022-02-18
  **/
 public class CoreCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
@@ -30,7 +30,7 @@ public class CoreCodecFactory implements UniversalFactory<ProtostuffCodec> {
     public ProtostuffCodec create(UniversalGenerate<ProtostuffCodec> generate, TypeToken<?> typeToken) {
         return UniversalCodecAdapterCreator.create(this.generate, typeToken, (type, codec) -> {
             ProtostuffCodec encodeCodec = generate.get(codec.getEncodeType());
-            return new CoreCodec(typeToken.getRawType(), codec, encodeCodec);
+            return new CoreCodec(typeToken, codec, encodeCodec);
         });
     }
 
@@ -40,8 +40,8 @@ public class CoreCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         private final ProtostuffCodec encodeCodec;
 
-        protected CoreCodec(Class clazz, Codec codec, ProtostuffCodec encodeCodec) {
-            super(clazz);
+        protected CoreCodec(TypeToken<?> typeToken, Codec codec, ProtostuffCodec encodeCodec) {
+            super(typeToken);
             this.encodeCodec = encodeCodec;
             this.codec = codec;
         }
@@ -72,7 +72,7 @@ public class CoreCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         @Override
         public CoreCodec newInstance() {
-            return new CoreCodec(this.clazz, codec, this.encodeCodec.newInstance());
+            return new CoreCodec(this.typeToken, codec, this.encodeCodec.newInstance());
         }
 
         @Override
@@ -89,18 +89,18 @@ public class CoreCodecFactory implements UniversalFactory<ProtostuffCodec> {
         public CoreCodec withDatePattern(String datePattern) {
             if (codec instanceof WithFormat) {
                 Codec withCodec = (Codec) ((WithFormat) codec).withDatePattern(datePattern);
-                return new CoreCodec(this.clazz, withCodec, this.encodeCodec);
+                return new CoreCodec(this.typeToken, withCodec, this.encodeCodec);
             }
-            return new CoreCodec(this.clazz, this.codec, this.encodeCodec);
+            return new CoreCodec(this.typeToken, this.codec, this.encodeCodec);
         }
 
         @Override
         public CoreCodec withDateFormatter(DateTimeFormatter dateFormatter) {
             if (codec instanceof WithFormat) {
                 Codec withCodec = (Codec) ((WithFormat) codec).withDateFormatter(dateFormatter);
-                return new CoreCodec(this.clazz, withCodec, this.encodeCodec);
+                return new CoreCodec(this.typeToken, withCodec, this.encodeCodec);
             }
-            return new CoreCodec(this.clazz, this.codec, this.encodeCodec);
+            return new CoreCodec(this.typeToken, this.codec, this.encodeCodec);
         }
     }
 }

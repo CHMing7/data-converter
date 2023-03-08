@@ -4,15 +4,17 @@ import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalFactory;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.protostuff.codec.ProtostuffCodec;
+import com.chm.converter.protostuff.codec.RuntimeTypeCodec;
 import io.protostuff.Input;
 import io.protostuff.Output;
 
 import java.io.IOException;
+import java.lang.reflect.TypeVariable;
 
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-02-18
+ * @date 2022-02-18
  **/
 public class ObjectCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
@@ -20,7 +22,10 @@ public class ObjectCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
     @Override
     public ProtostuffCodec create(UniversalGenerate<ProtostuffCodec> generate, TypeToken<?> typeToken) {
-        if (typeToken.getRawType() == Object.class) {
+        if (typeToken.getRawType() == Object.class &&
+                typeToken.getType() instanceof TypeVariable) {
+            return new RuntimeTypeCodec<>(generate, new ObjectCodec(generate), typeToken.getType());
+        } else if (typeToken.getRawType() == Object.class) {
             return new ObjectCodec(generate);
         }
         return null;
@@ -31,7 +36,7 @@ public class ObjectCodecFactory implements UniversalFactory<ProtostuffCodec> {
         private final UniversalGenerate<ProtostuffCodec> generate;
 
         public ObjectCodec(UniversalGenerate<ProtostuffCodec> generate) {
-            super(Object.class);
+            super(TypeToken.get(Object.class));
             this.generate = generate;
         }
 

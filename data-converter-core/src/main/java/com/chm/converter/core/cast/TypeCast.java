@@ -3,7 +3,7 @@ package com.chm.converter.core.cast;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-06-09
+ * @date 2022-06-09
  **/
 @FunctionalInterface
 public interface TypeCast<T> {

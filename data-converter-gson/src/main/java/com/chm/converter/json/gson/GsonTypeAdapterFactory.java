@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-06-03
+ * @date 2021-06-03
  **/
 public class GsonTypeAdapterFactory implements TypeAdapterFactory {
 
@@ -88,7 +88,7 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
 
             private final Map<FieldInfo, TypeAdapter<?>> FIELD_ADAPTER_MAP = MapUtil.newConcurrentHashMap();
 
-            private final JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converterClass);
+            private final JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(type.getType(), converterClass);
 
             @Override
             public void write(JsonWriter out, T value) throws IOException {

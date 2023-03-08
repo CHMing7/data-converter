@@ -33,27 +33,6 @@ public class FstObjectInput extends FSTObjectInput {
     }
 
     @Override
-    protected void readObjectFields(FSTClazzInfo.FSTFieldInfo referencee, FSTClazzInfo serializationInfo, FSTClazzInfo.FSTFieldInfo[] fieldInfo, Object newObj, int startIndex, int version) throws Exception {
-        super.readObjectFields(referencee, serializationInfo, fieldInfo, newObj, startIndex, version);
-        for (FSTClazzInfo.FSTFieldInfo fstFieldInfo : fieldInfo) {
-            FieldInfo info = getFieldInfo(fstFieldInfo);
-            if (info != null && !info.isDeserialize()) {
-                info.set(newObj, ClassUtil.getDefaultValue(info.getFieldClass()));
-            }
-        }
-    }
-
-    private FieldInfo getFieldInfo(FSTClazzInfo.FSTFieldInfo referencee) {
-        Field field = referencee.getField();
-        if (field == null) {
-            return null;
-        }
-
-        Map<String, FieldInfo> fieldNameFieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(field.getDeclaringClass(), converterClass);
-        return fieldNameFieldInfoMap.get(field.getName());
-    }
-
-    @Override
     protected Object instantiateEnum(FSTClazzInfo.FSTFieldInfo referencee, int readPos) throws IOException, ClassNotFoundException {
         FSTClazzInfo clzSerInfo;
         clzSerInfo = readClass();
@@ -69,4 +48,27 @@ public class FstObjectInput extends FSTObjectInput {
         }
         return res;
     }
+
+    @Override
+    protected void readObjectFields(FSTClazzInfo.FSTFieldInfo referencee, FSTClazzInfo serializationInfo, FSTClazzInfo.FSTFieldInfo[] fieldInfo, Object newObj, int startIndex, int version) throws Exception {
+        super.readObjectFields(referencee, serializationInfo, fieldInfo, newObj, startIndex, version);
+        for (FSTClazzInfo.FSTFieldInfo fstFieldInfo : fieldInfo) {
+            FieldInfo info = getFieldInfo(fstFieldInfo);
+            if (info != null && !info.isDeserialize()) {
+                // fst中，不序列化的属性写入 null 或者 默认值
+                info.set(newObj, ClassUtil.getDefaultValue(info.getFieldClass()));
+            }
+        }
+    }
+
+    private FieldInfo getFieldInfo(FSTClazzInfo.FSTFieldInfo referencee) {
+        Field field = referencee.getField();
+        if (field == null) {
+            return null;
+        }
+
+        Map<String, FieldInfo> fieldNameFieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(field.getDeclaringClass(), converterClass);
+        return fieldNameFieldInfoMap.get(field.getName());
+    }
+
 }

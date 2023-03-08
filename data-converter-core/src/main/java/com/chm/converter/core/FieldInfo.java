@@ -3,6 +3,7 @@ package com.chm.converter.core;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.io.Reader;
 import com.chm.converter.core.io.Writer;
+import com.chm.converter.core.reflect.ConverterTypes;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.AnnotationUtil;
 import com.chm.converter.core.utils.ClassUtil;
@@ -10,6 +11,7 @@ import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.core.utils.ReflectUtil;
 import com.chm.converter.core.utils.StringUtil;
+import com.chm.converter.core.utils.TypeUtil;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -29,11 +31,11 @@ import java.util.stream.Collectors;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-08-16
+ * @date 2021-08-16
  **/
 public class FieldInfo implements Comparable<FieldInfo> {
 
-    public static final FieldInfo STOP = new FieldInfo("stop", null, FieldInfo.class.getFields()[0], -1, null, null) {
+    public static final FieldInfo STOP = new FieldInfo(TypeToken.get(Void.class), "stop", null, FieldInfo.class.getFields()[0], -1, null, null) {
         @Override
         public boolean isStop() {
             return true;
@@ -178,7 +180,7 @@ public class FieldInfo implements Comparable<FieldInfo> {
      */
     private int sortedNumber = 0;
 
-    public FieldInfo(String name, Method method, Field field, int ordinal, FieldProperty fieldAnnotation, FieldProperty methodAnnotation) {
+    public FieldInfo(final TypeToken declaringTypeToken, String name, Method method, Field field, int ordinal, FieldProperty fieldAnnotation, FieldProperty methodAnnotation) {
         if (field != null) {
             String fieldName = field.getName();
             if (fieldName.equals(name)) {
@@ -198,31 +200,32 @@ public class FieldInfo implements Comparable<FieldInfo> {
         }
         boolean getOnly = false;
         Type fieldType;
-        Class<?> fieldClass;
         Method getter = null;
         Method setter = null;
         String fieldName;
+        Class<?> raw = declaringTypeToken.getRawType();
+
         if (method != null) {
             Class<?>[] types;
             if ((types = method.getParameterTypes()).length == 1) {
-                fieldClass = types[0];
                 fieldType = method.getGenericParameterTypes()[0];
             } else if (types.length == 2 && types[0] == String.class && types[1] == Object.class) {
-                fieldType = fieldClass = types[0];
+                fieldType = types[0];
             } else {
-                fieldClass = method.getReturnType();
                 fieldType = method.getGenericReturnType();
                 getOnly = true;
             }
             this.declaringClass = method.getDeclaringClass();
             fieldName = getGeneralField(method.getName());
         } else {
-            fieldClass = field.getType();
             fieldType = field.getGenericType();
             this.declaringClass = field.getDeclaringClass();
             getOnly = Modifier.isFinal(field.getModifiers());
             fieldName = field.getName();
         }
+        // 获取真实 fieldType
+        fieldType = ConverterTypes.resolve(declaringTypeToken.getType(), raw, fieldType);
+        Class<?> fieldClass = TypeUtil.getClass(fieldType);
         // 尝试获取getter setter
         final boolean isBooleanField = ClassUtil.isBoolean(fieldClass);
         Method[] methods = this.declaringClass.getMethods();

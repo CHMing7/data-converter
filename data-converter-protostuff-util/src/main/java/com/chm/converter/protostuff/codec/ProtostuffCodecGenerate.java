@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-11-12
+ * @date 2021-11-12
  **/
 public class ProtostuffCodecGenerate extends UniversalGenerate<ProtostuffCodec> {
 

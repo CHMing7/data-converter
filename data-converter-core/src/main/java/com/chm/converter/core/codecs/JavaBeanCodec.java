@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-01-10
+ * @date 2022-01-10
  **/
 public class JavaBeanCodec<T> implements Codec<T, T> {
 
@@ -29,8 +29,8 @@ public class JavaBeanCodec<T> implements Codec<T, T> {
 
     private final Map<FieldInfo, Codec> fieldInfoCodecMap;
 
-    public JavaBeanCodec(Class<T> clazz, UniversalGenerate<Codec> codecGenerate, Converter<?> converter) {
-        this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converter != null ? converter.getClass() : null);
+    public JavaBeanCodec(TypeToken<T> typeToken, UniversalGenerate<Codec> codecGenerate, Converter<?> converter) {
+        this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(typeToken, converter != null ? converter.getClass() : null);
         this.codecGenerate = codecGenerate;
         this.fieldInfoCodecMap = MapUtil.newConcurrentHashMap();
     }
@@ -42,7 +42,7 @@ public class JavaBeanCodec<T> implements Codec<T, T> {
 
     @Override
     public TypeToken<T> getEncodeType() {
-        return TypeToken.get(javaBeanInfo.getClazz());
+        return javaBeanInfo.getType();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class JavaBeanCodec<T> implements Codec<T, T> {
 
     @Override
     public TypeToken<T> getDecodeType() {
-        return TypeToken.get(javaBeanInfo.getClazz());
+        return javaBeanInfo.getType();
     }
 
     @Override

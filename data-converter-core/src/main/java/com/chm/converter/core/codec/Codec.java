@@ -12,7 +12,7 @@ import java.io.IOException;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-09-02
+ * @date 2021-09-02
  **/
 public interface Codec<D, E> extends UniversalInterface {
 

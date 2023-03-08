@@ -19,6 +19,7 @@ import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
 import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
 import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.codecs.RuntimeTypeCodec;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.MapUtil;
 import com.chm.converter.hessian.UseDeserializer;
@@ -38,7 +39,7 @@ import java.util.Map;
  **/
 public class HessianConverterFactory extends BeanSerializerFactory {
 
-    private final Class<? extends Converter> converterClass;
+    private final Converter<?> converter;
 
     private final UniversalGenerate<Codec> generate;
 
@@ -47,7 +48,7 @@ public class HessianConverterFactory extends BeanSerializerFactory {
     }
 
     public HessianConverterFactory(Converter<?> converter, UniversalGenerate<Codec> generate) {
-        this.converterClass = converter != null ? converter.getClass() : null;
+        this.converter = converter;
         this.generate = generate != null ? generate : DataCodecGenerate.getDataCodecGenerate(converter);
     }
 
@@ -59,31 +60,13 @@ public class HessianConverterFactory extends BeanSerializerFactory {
         Serializer suitableSerializer = UniversalCodecAdapterCreator.createSuitable(this.generate, cl,
                 (type, codec) -> new HessianCoreCodec(codec),
                 serializer instanceof BeanSerializer,
-                (type, codec) -> new HessianBeanSerializer(cl, getClassLoader(), converterClass, this));
+                (type, codec) -> new HessianBeanSerializer(cl, getClassLoader(), converter, generate, this));
 
         if (suitableSerializer != null) {
             return suitableSerializer;
         }
 
         return serializer;
-        /*
-        Serializer hessianCoreCodec = this.hessianCoreCodecFactory.getSerializer(cl);
-
-        // 优先使用CoreCodec
-        if (hessianCoreCodec instanceof HessianCoreCodecFactory.HessianCoreCodec
-                && ((HessianCoreCodecFactory.HessianCoreCodec) hessianCoreCodec).isPriorityUse()) {
-            return hessianCoreCodec;
-        }
-
-        if (!(serializer instanceof BeanSerializer)) {
-            return serializer;
-        }
-
-        if (hessianCoreCodec != null) {
-            return hessianCoreCodec;
-        }
-
-        return new HessianBeanSerializer(cl, getClassLoader(), converterClass, this);*/
     }
 
     @Override
@@ -92,31 +75,13 @@ public class HessianConverterFactory extends BeanSerializerFactory {
         Deserializer suitableDeserializer = UniversalCodecAdapterCreator.createSuitable(this.generate, cl,
                 (type, codec) -> new HessianCoreCodec(codec),
                 deserializer instanceof BeanDeserializer,
-                (type, codec) -> new HessianBeanDeserializer(cl, converterClass, this));
+                (type, codec) -> new HessianBeanDeserializer(cl, converter, generate, this));
 
         if (suitableDeserializer != null) {
             return suitableDeserializer;
         }
 
         return deserializer;
-        /*
-        Deserializer hessianCoreCodec = this.hessianCoreCodecFactory.getDeserializer(cl);
-
-        // 优先使用CoreCodec
-        if (hessianCoreCodec instanceof HessianCoreCodecFactory.HessianCoreCodec
-                && ((HessianCoreCodecFactory.HessianCoreCodec) hessianCoreCodec).isPriorityUse()) {
-            return hessianCoreCodec;
-        }
-
-        if (!(deserializer instanceof BeanDeserializer)) {
-            return deserializer;
-        }
-
-        if (hessianCoreCodec != null) {
-            return hessianCoreCodec;
-        }
-
-        return new HessianBeanDeserializer(cl, converterClass, this);*/
     }
 
     public static class HessianBeanSerializer<T> extends BeanSerializer {
@@ -124,6 +89,8 @@ public class HessianConverterFactory extends BeanSerializerFactory {
         private static final Logger log = LoggerFactory.getLogger(HessianBeanSerializer.class);
 
         private final JavaBeanInfo<T> javaBeanInfo;
+
+        private final UniversalGenerate<Codec> generate;
 
         private final Map<FieldInfo, Serializer> fieldInfoSerializerMap;
 
@@ -133,10 +100,15 @@ public class HessianConverterFactory extends BeanSerializerFactory {
 
         private Method _writeReplace;
 
-        public HessianBeanSerializer(Class<T> cl, ClassLoader loader, Class<? extends Converter> converterClass, SerializerFactory serializerFactory) {
+        public HessianBeanSerializer(Class<T> cl,
+                                     ClassLoader loader,
+                                     Converter<?> converter,
+                                     UniversalGenerate<Codec> generate,
+                                     SerializerFactory serializerFactory) {
             super(cl, loader);
             introspectWriteReplace(cl, loader);
-            this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cl, converterClass);
+            this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cl, converter);
+            this.generate = generate != null ? generate : DataCodecGenerate.getDataCodecGenerate(converter);
             this.fieldInfoSerializerMap = MapUtil.newConcurrentHashMap();
             this.serializerFactory = serializerFactory;
         }
@@ -239,6 +211,13 @@ public class HessianConverterFactory extends BeanSerializerFactory {
         private Serializer getFieldSerializer(FieldInfo fieldInfo) {
             return MapUtil.computeIfAbsent(fieldInfoSerializerMap, fieldInfo, info -> {
                 try {
+                    Codec codec = this.generate.get(info.getFieldType());
+                    if (codec instanceof RuntimeTypeCodec) {
+                        return new HessianCoreCodec(codec);
+                    }
+                    if (codec != null && codec.isPriorityUse()) {
+                        return new HessianCoreCodec(codec).withDatePattern(fieldInfo.getFormat());
+                    }
                     Serializer serializer = serializerFactory.getSerializer(info.getFieldClass());
                     if (serializer instanceof WithFormat) {
                         return (Serializer) ((WithFormat) serializer).withDatePattern(fieldInfo.getFormat());
@@ -256,6 +235,8 @@ public class HessianConverterFactory extends BeanSerializerFactory {
 
         private final JavaBeanInfo<T> javaBeanInfo;
 
+        private final UniversalGenerate<Codec> generate;
+
         private final Map<FieldInfo, Deserializer> fieldInfoDeserializerMap;
 
         private final SerializerFactory serializerFactory;
@@ -264,10 +245,14 @@ public class HessianConverterFactory extends BeanSerializerFactory {
 
         private Object[] fields;
 
-        public HessianBeanDeserializer(Class<T> cl, Class<? extends Converter> converterClass, SerializerFactory serializerFactory) {
+        public HessianBeanDeserializer(Class<T> cl,
+                                       Converter<?> converter,
+                                       UniversalGenerate<Codec> generate,
+                                       SerializerFactory serializerFactory) {
             super(cl);
             _readResolve = getReadResolve(cl);
-            this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cl, converterClass);
+            this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(cl, converter);
+            this.generate = generate != null ? generate : DataCodecGenerate.getDataCodecGenerate(converter);
             this.fieldInfoDeserializerMap = MapUtil.newConcurrentHashMap();
             this.serializerFactory = serializerFactory;
         }
@@ -386,6 +371,13 @@ public class HessianConverterFactory extends BeanSerializerFactory {
         private Deserializer getFieldDeserializer(FieldInfo fieldInfo) {
             return MapUtil.computeIfAbsent(fieldInfoDeserializerMap, fieldInfo, info -> {
                 try {
+                    Codec codec = this.generate.get(info.getFieldType());
+                    if (codec instanceof RuntimeTypeCodec) {
+                        return new HessianCoreCodec(codec);
+                    }
+                    if (codec != null && codec.isPriorityUse()) {
+                        return new HessianCoreCodec(codec).withDatePattern(fieldInfo.getFormat());
+                    }
                     Deserializer deserializer = serializerFactory.getDeserializer(info.getFieldClass());
                     if (deserializer instanceof WithFormat) {
                         return (Deserializer) ((WithFormat) deserializer).withDatePattern(fieldInfo.getFormat());

@@ -9,7 +9,7 @@ import com.chm.converter.core.DataType;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-09-30
+ * @date 2021-09-30
  **/
 public interface ThriftConverter extends BytesConverter {
 

@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-07-05
+ * @date 2022-07-05
  **/
 public class Fastjson2ObjectReaderCreator extends ObjectReaderCreator {
 
@@ -64,7 +64,7 @@ public class Fastjson2ObjectReaderCreator extends ObjectReaderCreator {
         if (priorityUse != null) {
             return priorityUse;
         }
-        return super.createObjectReader(objectClass, objectClass, fieldBased, modules);
+        return super.createObjectReader(objectClass, objectType, fieldBased, modules);
     }
 
     @Override
@@ -73,8 +73,8 @@ public class Fastjson2ObjectReaderCreator extends ObjectReaderCreator {
         if (useRawJudge.useRawImpl(objectClass)) {
             return fieldReaders;
         }
-        List<FieldReader> readerList = MapUtil.computeIfAbsent(CLASS_FIELD_READER_LIST_MAP, (Class<?>) objectType, cls -> ListUtil.list(true));
-        JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(objectClass, converterClass);
+        List<FieldReader> readerList = MapUtil.computeIfAbsent(CLASS_FIELD_READER_LIST_MAP, objectClass, cls -> ListUtil.list(true));
+        JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(objectType, converterClass);
         Map<String, FieldInfo> fieldNameFieldInfoMap = javaBeanInfo.getFieldNameFieldInfoMap();
         if (CollUtil.isEmpty(readerList) && CollUtil.isNotEmpty(fieldNameFieldInfoMap)) {
             for (FieldReader fieldReader : fieldReaders) {

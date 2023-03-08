@@ -74,60 +74,60 @@ public class ConverterTest {
         reflectData = ReflectData.AllowNull.get();
         // java8Time Conversion
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, Instant.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(Instant.class),
                 Java8TimeCodec.INSTANT_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 Instant.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, LocalDate.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(LocalDate.class),
                 Java8TimeCodec.LOCAL_DATE_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 LocalDate.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, LocalDateTime.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(LocalDateTime.class),
                 Java8TimeCodec.LOCAL_DATE_TIME_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 LocalDateTime.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, LocalTime.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(LocalTime.class),
                 Java8TimeCodec.LOCAL_TIME_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 LocalTime.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, OffsetDateTime.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(OffsetDateTime.class),
                 Java8TimeCodec.OFFSET_DATE_TIME_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 OffsetDateTime.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, OffsetTime.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(OffsetTime.class),
                 Java8TimeCodec.OFFSET_TIME_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 OffsetTime.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, ZonedDateTime.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(ZonedDateTime.class),
                 Java8TimeCodec.ZONED_DATE_TIME_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 ZonedDateTime.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, MonthDay.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(MonthDay.class),
                 Java8TimeCodec.MONTH_DAY_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 MonthDay.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, YearMonth.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(YearMonth.class),
                 Java8TimeCodec.YEAR_MONTH_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 YearMonth.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, Year.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(Year.class),
                 Java8TimeCodec.YEAR_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 Year.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, ZoneOffset.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(ZoneOffset.class),
                 Java8TimeCodec.ZONE_OFFSET_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 ZoneOffset.class.getName()));
 
         // DefaultDate Conversion
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, Date.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(Date.class),
                 DefaultDateCodec.DATE_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 Date.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, Timestamp.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(Timestamp.class),
                 DefaultDateCodec.TIMESTAMP_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 Timestamp.class.getName()));
 
-        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, java.sql.Date.class,
+        reflectData.addLogicalTypeConversion(new CoreCodecConversion<>(converter, TypeToken.get(java.sql.Date.class),
                 DefaultDateCodec.SQL_DATE_CODEC.withConverter(converter), Schema.create(Schema.Type.STRING),
                 java.sql.Date.class.getName()));
     }

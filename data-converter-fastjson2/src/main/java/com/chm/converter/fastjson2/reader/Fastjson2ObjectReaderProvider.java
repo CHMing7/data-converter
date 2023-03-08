@@ -8,7 +8,7 @@ import com.chm.converter.core.UseRawJudge;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-07-05
+ * @date 2022-07-05
  **/
 public class Fastjson2ObjectReaderProvider extends ObjectReaderProvider {
 

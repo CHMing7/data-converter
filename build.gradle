@@ -113,6 +113,8 @@ allprojects {
                     artifactId = "data-converter-bom"
                     // bom模块说明
                     POM_DESCRIPTION = "data converter bom"
+                    // 项目名
+                    pom.name = "data-converter-bom"
                 }
             }
         }

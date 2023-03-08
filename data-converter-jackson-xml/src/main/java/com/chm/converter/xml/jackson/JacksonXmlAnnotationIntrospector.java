@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-09-10
+ * @date 2021-09-10
  **/
 public class JacksonXmlAnnotationIntrospector extends com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector {
 

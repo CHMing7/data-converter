@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-11-12
+ * @date 2021-11-12
  **/
 public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
@@ -35,7 +35,10 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
     @Override
     public ProtostuffCodec create(UniversalGenerate<ProtostuffCodec> generate, TypeToken<?> typeToken) {
-        return new JavaBeanCodec<>(typeToken.getRawType(), generate, converter);
+        if (typeToken.getRawType() != Object.class) {
+            return new JavaBeanCodec<>(typeToken, generate, converter);
+        }
+        return null;
     }
 
     public static final class JavaBeanCodec<T> extends ProtostuffCodec<T> {
@@ -48,9 +51,9 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         private final Converter<?> converter;
 
-        public JavaBeanCodec(Class<T> clazz, UniversalGenerate<ProtostuffCodec> codecGenerate, Converter<?> converter) {
-            super(clazz);
-            this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converter != null ? converter.getClass() : null);
+        public JavaBeanCodec(TypeToken<T> typeToken, UniversalGenerate<ProtostuffCodec> codecGenerate, Converter<?> converter) {
+            super(typeToken);
+            this.javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(typeToken, converter != null ? converter.getClass() : null);
             this.codecGenerate = codecGenerate;
             this.fieldInfoProtostuffCodecMap = MapUtil.newConcurrentHashMap();
             this.converter = converter;
@@ -79,7 +82,7 @@ public class JavaBeanCodecFactory implements UniversalFactory<ProtostuffCodec> {
 
         @Override
         public JavaBeanCodec<T> newInstance() {
-            return new JavaBeanCodec<>(this.javaBeanInfo.getClazz(), this.codecGenerate, this.converter);
+            return new JavaBeanCodec<>(this.javaBeanInfo.getType(), this.codecGenerate, this.converter);
         }
 
         @Override

@@ -1,7 +1,6 @@
 package com.chm.converter.protostuff.codec;
 
 import com.chm.converter.core.universal.UniversalGenerate;
-import com.chm.converter.protostuff.codec.factory.JavaBeanCodecFactory;
 import io.protostuff.Input;
 import io.protostuff.Output;
 
@@ -14,7 +13,7 @@ import java.lang.reflect.TypeVariable;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-11-19
+ * @date 2021-11-19
  **/
 public class RuntimeTypeCodec<T> extends BaseProtostuffCodec<T> {
 
@@ -25,7 +24,7 @@ public class RuntimeTypeCodec<T> extends BaseProtostuffCodec<T> {
     private final Type type;
 
     public RuntimeTypeCodec(UniversalGenerate<ProtostuffCodec> generate, ProtostuffCodec<T> delegate, Type type) {
-        super(delegate.clazz, delegate.clazz.getName());
+        super(delegate.typeToken, delegate.typeToken.getRawType().getName());
         this.generate = generate;
         this.delegate = delegate;
         this.type = type;
@@ -41,18 +40,7 @@ public class RuntimeTypeCodec<T> extends BaseProtostuffCodec<T> {
         ProtostuffCodec<T> chosen = delegate;
         Type runtimeType = getRuntimeTypeIfMoreSpecific(type, message);
         if (runtimeType != type) {
-            ProtostuffCodec runtimeTypeAdapter = generate.get(runtimeType);
-            if (!(runtimeTypeAdapter instanceof JavaBeanCodecFactory.JavaBeanCodec)) {
-                // The user registered a type adapter for the runtime type, so we will use that
-                chosen = runtimeTypeAdapter;
-            } else if (!(delegate instanceof JavaBeanCodecFactory.JavaBeanCodec)) {
-                // The user registered a type adapter for Base class, so we prefer it over the
-                // reflective type adapter for the runtime type
-                chosen = delegate;
-            } else {
-                // Use the type adapter for runtime type
-                chosen = runtimeTypeAdapter;
-            }
+            chosen = generate.get(runtimeType);
         }
         chosen.writeTo(output, message);
     }
@@ -62,14 +50,26 @@ public class RuntimeTypeCodec<T> extends BaseProtostuffCodec<T> {
         return delegate.mergeFrom(input);
     }
 
+    public ProtostuffCodec getRuntimeCodec(Object message) {
+        Type runtimeType = getRuntimeTypeIfMoreSpecific(type, message);
+        if (runtimeType != type) {
+            return generate.get(runtimeType);
+        }
+        return null;
+    }
+
     /**
      * 找到运行时具体类型
      */
     private Type getRuntimeTypeIfMoreSpecific(Type type, Object value) {
-        if (value != null && (type == Object.class || type instanceof TypeVariable<?> || type instanceof Class<?>)) {
+        if (value != null && (type instanceof TypeVariable<?> || type instanceof Class<?>)) {
             type = value.getClass();
         }
         return type;
+    }
+
+    public ProtostuffCodec<T> getDelegate() {
+        return delegate;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.chm.converter.avro;
 
+import com.chm.converter.avro.reflect.AvroDatumReader;
+import com.chm.converter.avro.reflect.AvroDatumWriter;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.JavaBeanInfo;
 import com.chm.converter.core.exception.ConvertException;
@@ -21,7 +23,6 @@ import org.apache.avro.reflect.AvroName;
 import org.apache.avro.reflect.AvroSchema;
 import org.apache.avro.reflect.ReflectData;
 import org.apache.avro.reflect.ReflectDatumReader;
-import org.apache.avro.reflect.ReflectDatumWriter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,7 +37,7 @@ import java.util.List;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-09-16
+ * @date 2021-09-16
  **/
 @AutoService(Converter.class)
 public class DefaultAvroConverter implements AvroConverter {
@@ -91,7 +92,7 @@ public class DefaultAvroConverter implements AvroConverter {
         }
         InputStream in = new ByteArrayInputStream(source);
         BinaryDecoder decoder = DECODER_FACTORY.binaryDecoder(in, null);
-        ReflectDatumReader<T> reader = new ReflectDatumReader<>(schema, schema, reflectData);
+        AvroDatumReader<T> reader = new AvroDatumReader<>(schema, schema, reflectData);
         return reader.read(null, decoder);
     }
 
@@ -105,7 +106,7 @@ public class DefaultAvroConverter implements AvroConverter {
         // 获取Schema
         Conversion<?> conversion = reflectData.getConversionByClass(source.getClass());
         Schema schema = conversion != null ? conversion.getRecommendedSchema() : reflectData.induce(source);
-        ReflectDatumWriter dd = new ReflectDatumWriter(schema, reflectData);
+        AvroDatumWriter<Object> dd = new AvroDatumWriter<>(schema, reflectData);
         try {
             dd.write(source, encoder);
             encoder.flush();

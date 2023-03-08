@@ -6,6 +6,7 @@ import com.chm.converter.core.reflect.TypeToken;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
@@ -16,7 +17,7 @@ import java.util.Map;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-12-04
+ * @date 2021-12-04
  **/
 public interface DataReader extends Closeable {
 
@@ -38,11 +39,11 @@ public interface DataReader extends Closeable {
     /**
      * 读取字段信息
      *
-     * @param clz 字段所属类
+     * @param type 字段所属类型
      * @return
      * @throws IOException
      */
-    FieldInfo readFieldBegin(Class<?> clz) throws IOException;
+    FieldInfo readFieldBegin(Type type) throws IOException;
 
     /**
      * 读取字段信息
@@ -56,11 +57,11 @@ public interface DataReader extends Closeable {
     /**
      * 读取字段信息结束
      *
-     * @param clz 字段所属类
+     * @param type 字段所属类型
      * @return
      * @throws IOException
      */
-    void readFieldEnd(Class<?> clz) throws IOException;
+    void readFieldEnd(Type type) throws IOException;
 
     /**
      * 读取字段信息结束

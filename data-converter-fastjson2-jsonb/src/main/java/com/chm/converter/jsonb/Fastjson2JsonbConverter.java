@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author caihongming
  * @version v1.0
- * @since 2022-07-06
+ * @date 2022-07-06
  **/
 @AutoService(Converter.class)
 public class Fastjson2JsonbConverter implements JsonbConverter {

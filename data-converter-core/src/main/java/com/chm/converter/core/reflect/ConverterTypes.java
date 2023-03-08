@@ -25,7 +25,7 @@ import static com.chm.converter.core.reflect.ConverterPreconditions.checkNotNull
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-09-07
+ * @date 2021-09-07
  **/
 public final class ConverterTypes {
     static final Type[] EMPTY_TYPE_ARRAY = new Type[]{};
@@ -95,20 +95,16 @@ public final class ConverterTypes {
         if (type instanceof Class) {
             Class<?> c = (Class<?>) type;
             return c.isArray() ? new GenericArrayTypeImpl(canonicalize(c.getComponentType())) : c;
-
         } else if (type instanceof ParameterizedType) {
             ParameterizedType p = (ParameterizedType) type;
             return new ParameterizedTypeImpl(p.getOwnerType(),
                     p.getRawType(), p.getActualTypeArguments());
-
         } else if (type instanceof GenericArrayType) {
             GenericArrayType g = (GenericArrayType) type;
             return new GenericArrayTypeImpl(g.getGenericComponentType());
-
         } else if (type instanceof WildcardType) {
             WildcardType w = (WildcardType) type;
             return new WildcardTypeImpl(w.getUpperBounds(), w.getLowerBounds());
-
         } else {
             // type is either serializable as-is or unsupported
             return type;
@@ -327,7 +323,7 @@ public final class ConverterTypes {
     }
 
     public static Type resolve(Type context, Class<?> contextRawType, Type toResolve) {
-        return resolve(context, contextRawType, toResolve, new HashSet<TypeVariable>());
+        return resolve(context, contextRawType, toResolve, new HashSet<>());
     }
 
     private static Type resolve(Type context, Class<?> contextRawType, Type toResolve,

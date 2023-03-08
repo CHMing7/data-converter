@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2021-06-03
+ * @date 2021-06-03
  **/
 public class User {
 

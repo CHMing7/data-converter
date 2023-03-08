@@ -114,8 +114,23 @@ Data-Converter是一个支持多种数据格式协议的数据转换组件
 
 ### 🍐Gradle
 
+**方式一：引入所有模块**
 ```
-implementation 'io.gitee.chming7:data-converter-all:Version'
+implementation ("io.gitee.chming7:data-converter-all:Version")
+```
+
+**方式二：引入自己需要的模块**
+```
+implementation enforcedPlatform('io.gitee.chming7:data-converter-bom:Version')
+implementation ("io.gitee.chming7:data-converter-gson")
+```
+
+**方式三：排除不需要的模块**
+```
+implementation enforcedPlatform('io.gitee.chming7:data-converter-bom:Version')
+implementation ("io.gitee.chming7:data-converter-bom"){
+    exclude module: "data-converter-json"
+}
 ```
 
 ### 📥下载jar

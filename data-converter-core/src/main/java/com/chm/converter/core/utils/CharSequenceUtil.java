@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author caihongming
  * @version v1.0
- * @since 2021-09-10
+ * @date 2021-09-10
  **/
 public class CharSequenceUtil {
 

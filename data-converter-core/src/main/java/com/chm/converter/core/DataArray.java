@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * @author caihongming
  * @version v1.0
- * @since 2022-05-24
+ * @date 2022-05-24
  **/
 public class DataArray extends ArrayList<Object> {
 
