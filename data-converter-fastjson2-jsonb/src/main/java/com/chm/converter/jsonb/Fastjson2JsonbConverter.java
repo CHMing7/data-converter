@@ -41,7 +41,7 @@ public class Fastjson2JsonbConverter implements JsonbConverter {
             JSONBuilder.class,
             JSONType.class);
 
-    public static final String FAST_JSON2_NAME = "com.alibaba.fastjson2.JSONB";
+    public static final String FAST_JSON2_JSONB_NAME = "com.alibaba.fastjson2.JSONB";
 
     private JSONWriter.Feature[] writerFeatureArray = new JSONWriter.Feature[0];
 
@@ -137,7 +137,7 @@ public class Fastjson2JsonbConverter implements JsonbConverter {
     public boolean checkCanBeLoad() {
         try {
             // 检测Fastjson相关类型是否存在
-            Class.forName(FAST_JSON2_NAME);
+            Class.forName(FAST_JSON2_JSONB_NAME);
             return true;
         } catch (Throwable ignored) {
             return false;

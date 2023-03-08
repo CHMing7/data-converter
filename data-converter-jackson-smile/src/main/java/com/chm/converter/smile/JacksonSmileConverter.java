@@ -34,7 +34,7 @@ public class JacksonSmileConverter implements SmileConverter {
 
     public static final List<Class<? extends Annotation>> JACKSON_SMILE_ANNOTATION_LIST = ListUtil.of(JacksonAnnotation.class);
 
-    public static final String[] JACKSON_NAME_ARRAY = new String[]{"com.fasterxml.jackson.dataformat.smile.SmileFactory",
+    public static final String[] JACKSON_SMILE_NAME_ARRAY = new String[]{"com.fasterxml.jackson.dataformat.smile.SmileFactory",
             "com.fasterxml.jackson.databind.ObjectMapper"};
 
     protected ObjectMapper mapper = new SmileMapper();
@@ -118,8 +118,8 @@ public class JacksonSmileConverter implements SmileConverter {
     public boolean checkCanBeLoad() {
         try {
             // 检测Jackson相关类型是否存在
-            for (String jackson : JACKSON_NAME_ARRAY) {
-                Class.forName(jackson);
+            for (String jacksonSmileName : JACKSON_SMILE_NAME_ARRAY) {
+                Class.forName(jacksonSmileName);
             }
             return true;
         } catch (Throwable ignored) {

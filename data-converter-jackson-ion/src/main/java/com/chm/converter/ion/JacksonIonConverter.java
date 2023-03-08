@@ -118,8 +118,8 @@ public class JacksonIonConverter implements IonConverter {
     public boolean checkCanBeLoad() {
         try {
             // 检测Jackson-Ion相关类型是否存在
-            for (String cbor : ION_NAME_ARRAY) {
-                Class.forName(cbor);
+            for (String jacksonIon : ION_NAME_ARRAY) {
+                Class.forName(jacksonIon);
             }
             return true;
         } catch (Throwable ignored) {
