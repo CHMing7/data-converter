@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * 使用Gson实现的数据转换器实现类
@@ -47,8 +48,10 @@ public class GsonConverter implements JsonConverter {
             Since.class,
             Until.class);
 
-    private final List<TypeAdapterFactory> factories = ListUtil.toLinkedList(
+    protected final List<TypeAdapterFactory> factories = ListUtil.toLinkedList(
             new GsonTypeAdapterFactory(this, GsonConverter::checkExistGsonAnnotation));
+
+    protected final List<Consumer<GsonBuilder>> gsonBuilderHandlerList = ListUtil.list(true);
 
     public static final String GSON_NAME = "com.google.gson.JsonParser";
 
@@ -170,8 +173,40 @@ public class GsonConverter implements JsonConverter {
         return list;
     }
 
+    /**
+     * 添加 类型适配器 工厂
+     *
+     * @param typeAdapterFactory
+     */
     public void addTypeAdapterFactory(TypeAdapterFactory typeAdapterFactory) {
         this.factories.add(typeAdapterFactory);
+    }
+
+    /**
+     * 添加 GsonBuilder 处理程序
+     *
+     * @param gsonBuilderHandler
+     */
+    public void addGsonBuilderHandler(Consumer<GsonBuilder> gsonBuilderHandler) {
+        this.gsonBuilderHandlerList.add(gsonBuilderHandler);
+    }
+
+    /**
+     * 删除 GsonBuilder 处理程序
+     *
+     * @param gsonBuilderHandler
+     */
+    public void removeGsonBuilderHandler(Consumer<GsonBuilder> gsonBuilderHandler) {
+        this.gsonBuilderHandlerList.remove(gsonBuilderHandler);
+    }
+
+    /**
+     * 获取 GsonBuilder 处理程序列表
+     *
+     * @return
+     */
+    public List<Consumer<GsonBuilder>> getGsonBuilderHandlerList() {
+        return this.gsonBuilderHandlerList;
     }
 
     /**
@@ -182,6 +217,9 @@ public class GsonConverter implements JsonConverter {
     protected Gson createGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         this.factories.forEach(gsonBuilder::registerTypeAdapterFactory);
+        for (Consumer<GsonBuilder> gsonBuilderHandler : gsonBuilderHandlerList) {
+            gsonBuilderHandler.accept(gsonBuilder);
+        }
         return gsonBuilder.create();
     }
 
