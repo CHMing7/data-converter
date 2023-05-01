@@ -9,6 +9,8 @@ import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
 import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
 import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.creator.ConstructorFactory;
+import com.chm.converter.core.creator.ObjectConstructor;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.CollUtil;
 import com.chm.converter.core.utils.MapUtil;
@@ -18,8 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
-import com.google.gson.internal.ConstructorConstructor;
-import com.google.gson.internal.ObjectConstructor;
 import com.google.gson.internal.bind.ReflectiveTypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
@@ -37,7 +37,7 @@ import java.util.Map;
  **/
 public class GsonTypeAdapterFactory implements TypeAdapterFactory {
 
-    private final ConstructorConstructor constructorConstructor = new ConstructorConstructor(MapUtil.empty());
+    private final ConstructorFactory constructorFactory = new ConstructorFactory(MapUtil.empty());
 
     private final Class<? extends Converter> converterClass;
 
@@ -117,7 +117,7 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
                 }
                 Map<String, FieldInfo> fieldInfoMap = javaBeanInfo.getNameFieldInfoMap();
                 if (in.hasNext() && CollUtil.isNotEmpty(fieldInfoMap)) {
-                    ObjectConstructor<T> objectConstructor = constructorConstructor.get(type);
+                    ObjectConstructor<T> objectConstructor = constructorFactory.get(type.getType());
                     T instance = objectConstructor.construct();
                     try {
                         in.beginObject();
