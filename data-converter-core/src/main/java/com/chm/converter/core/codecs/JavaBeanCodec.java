@@ -90,18 +90,18 @@ public class JavaBeanCodec<T> implements Codec<T, T> {
             if (fieldInfo.isStop()) {
                 break;
             }
-            Codec fieldCodec = getFieldCodec(fieldInfo);
+            Codec<?, ?> fieldCodec = getFieldCodec(fieldInfo);
             fieldInfo.set(t, fieldCodec.read(dr));
             dr.readFieldEnd(javaBeanInfo);
         }
         return t;
     }
 
-    private Codec getFieldCodec(FieldInfo fieldInfo) {
+    private Codec<?, ?> getFieldCodec(FieldInfo fieldInfo) {
         return MapUtil.computeIfAbsent(fieldInfoCodecMap, fieldInfo, info -> {
-            Codec codec = codecGenerate.get(fieldInfo.getTypeToken());
+            Codec<?, ?> codec = codecGenerate.get(fieldInfo.getTypeToken());
             if (codec instanceof WithFormat) {
-                codec = (Codec) ((WithFormat) codec).withDatePattern(fieldInfo.getFormat());
+                codec = (Codec<?, ?>) ((WithFormat) codec).withDatePattern(fieldInfo.getFormat());
             }
             return codec;
         });

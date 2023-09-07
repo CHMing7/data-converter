@@ -1,5 +1,8 @@
 package com.chm.converter.core.reflect;
 
+import com.chm.converter.core.utils.TypeUtil;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
@@ -42,7 +45,62 @@ public final class ConverterTypes {
      */
     public static ParameterizedType newParameterizedTypeWithOwner(
             Type ownerType, Type rawType, Type... typeArguments) {
+        if (ownerType == null) {
+            return newParameterizedType(rawType, typeArguments);
+        }
+        // ParameterizedTypeImpl constructor already checks, but we want to throw NPE before IAE
         return new ParameterizedTypeImpl(ownerType, rawType, typeArguments);
+    }
+
+    static ParameterizedType newParameterizedType(Type rawType, Type... arguments) {
+        return new ParameterizedTypeImpl(
+                ConverterTypes.ClassOwnership.JVM_BEHAVIOR.getOwnerType(rawType), rawType, arguments);
+    }
+
+
+    /**
+     * Decides what owner type to use for constructing {@link ParameterizedType} from a raw class.
+     */
+    private enum ClassOwnership {
+        OWNED_BY_ENCLOSING_CLASS {
+
+            @Override
+            @Nullable
+            Class<?> getOwnerType(Type rawType) {
+                return TypeUtil.getClass(rawType).getEnclosingClass();
+            }
+        },
+        LOCAL_CLASS_HAS_NO_OWNER {
+
+            @Override
+            @Nullable
+            Class<?> getOwnerType(Type rawType) {
+                Class<?> rawClass = TypeUtil.getClass(rawType);
+                if (rawClass.isLocalClass()) {
+                    return null;
+                } else {
+                    return rawClass.getEnclosingClass();
+                }
+            }
+        };
+
+        abstract @Nullable Class<?> getOwnerType(Type rawType);
+
+        static final ClassOwnership JVM_BEHAVIOR = detectJvmBehavior();
+
+        private static ClassOwnership detectJvmBehavior() {
+            class LocalClass<T> {
+            }
+            Class<?> subclass = new LocalClass<String>() {
+            }.getClass();
+            ParameterizedType parameterizedType = (ParameterizedType) subclass.getGenericSuperclass();
+            for (ClassOwnership behavior : ClassOwnership.values()) {
+                if (behavior.getOwnerType(LocalClass.class) == parameterizedType.getOwnerType()) {
+                    return behavior;
+                }
+            }
+            throw new AssertionError();
+        }
     }
 
     /**
@@ -115,7 +173,6 @@ public final class ConverterTypes {
         if (type instanceof Class<?>) {
             // type is a normal class.
             return (Class<?>) type;
-
         } else if (type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
 
@@ -125,19 +182,15 @@ public final class ConverterTypes {
             Type rawType = parameterizedType.getRawType();
             checkArgument(rawType instanceof Class);
             return (Class<?>) rawType;
-
         } else if (type instanceof GenericArrayType) {
             Type componentType = ((GenericArrayType) type).getGenericComponentType();
             return Array.newInstance(getRawType(componentType), 0).getClass();
-
         } else if (type instanceof TypeVariable) {
             // we could use the variable's bounds, but that won't work if there are multiple.
             // having a raw type that's more general than necessary is okay
             return Object.class;
-
         } else if (type instanceof WildcardType) {
             return getRawType(((WildcardType) type).getUpperBounds()[0]);
-
         } else {
             String className = type == null ? "null" : type.getClass().getName();
             throw new IllegalArgumentException("Expected a Class, ParameterizedType, or "

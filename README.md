@@ -157,11 +157,11 @@ gradle install
 ```java
 JsonConverter converter=ConverterSelector.select(JsonConverter.class);
 // 或者
-        JsonConverter converter=JsonConverter.select();
+JsonConverter converter=JsonConverter.select();
 // 序列化
-        String encode=converter.encode(user);
+String encode=converter.encode(user);
 // 反序列化
-        User newUser=converter.convertToJavaObject(encode,User.class);
+User newUser=converter.convertToJavaObject(encode,User.class);
 ```
 
 -------------------------------------------------------------------------------

@@ -8,17 +8,21 @@ import com.chm.converter.core.ConverterSelector;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.chm.converter.core.codecs.Java8TimeCodec;
+import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.reflect.TypeToken;
+import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.json.GsonConverter;
 import com.chm.converter.json.gson.GsonCoreCodecAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 import com.google.gson.TypeAdapter;
 import com.google.gson.internal.bind.TypeAdapters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -33,6 +37,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -121,6 +126,11 @@ public class ConverterTest {
 
     @Test
     public void testMap() {
+        converter.addGsonBuilderHandler(gsonBuilder ->
+                gsonBuilder.registerTypeAdapter(new TypeToken<Map<String, User>>() {
+                }.getType(),
+                        (InstanceCreator) type -> ConstructorFactory.INSTANCE.get(type).construct()
+                ));
         Map<String, User> userMap = MapUtil.newHashMap(true);
         userMap.put("user", user);
         String encode = converter.encode(userMap);
@@ -189,10 +199,14 @@ public class ConverterTest {
 
     @Test
     public void test123() {
-        Map<String, Object> testMap = MapUtil.newHashMap();
-        testMap.put("date", new Date());
-        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").serializeNulls().create();
-        String str = gson.toJson(testMap);
-        StaticLog.info("testMap:{}", StrUtil.str(str, "utf-8"));
+        Map<String, Object> map = MapUtil.newHashMap(true);
+        map.put("requestHeader", MapUtil.newHashMap());
+        Map<String, Object> params = MapUtil.newHashMap();
+        map.put("params", params);
+        params.put("uuid", "asdsa");
+
+        List<String> msisdnList = ListUtil.list(false, "123", "123213").subList(0, 1);
+        params.put("msisdns", msisdnList);
+        System.out.println(converter.encode(map));
     }
 }

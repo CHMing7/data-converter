@@ -8,8 +8,10 @@ import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
 import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
 import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.StringUtil;
+import com.chm.converter.jackson.AbstractModule;
 import com.chm.converter.jackson.PropertyNameTransformer;
 import com.chm.converter.jackson.serializer.JacksonCoreCodecSerializer;
 import com.chm.converter.xml.XmlClassInfoStorage;
@@ -66,7 +68,8 @@ public class JacksonXmlBeanSerializerModifier extends XmlBeanSerializerModifier 
         Map<String, BeanPropertyWriter> propertyWriterMap = beanProperties.stream()
                 .collect(Collectors.toMap(BeanPropertyWriter::getName, beanPropertyWriter -> beanPropertyWriter));
         NameTransformer nameTransformer = PropertyNameTransformer.get(beanDesc.getBeanClass(), converterClass);
-        JavaBeanInfo javaBeanInfo = XmlClassInfoStorage.INSTANCE.getJavaBeanInfo(beanDesc.getBeanClass(), converterClass);
+        TypeToken<?> typeToken = AbstractModule.jacksonTypeToLangType(beanDesc.getType());
+        JavaBeanInfo<?> javaBeanInfo = XmlClassInfoStorage.INSTANCE.getJavaBeanInfo(typeToken, converterClass);
         List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
         // 去除不序列化的属性
         sortedFieldList.stream().filter(FieldInfo::isSerialize).forEach(fieldInfo -> {
@@ -135,7 +138,8 @@ public class JacksonXmlBeanSerializerModifier extends XmlBeanSerializerModifier 
             return jsonSerializer;
         }
 
-        JacksonCoreCodecSerializer coreCodecSerializer = UniversalCodecAdapterCreator.create(this.generate, beanClass,
+        TypeToken<?> typeToken = AbstractModule.jacksonTypeToLangType(beanDesc.getType());
+        JacksonCoreCodecSerializer<?> coreCodecSerializer = UniversalCodecAdapterCreator.create(this.generate, typeToken,
                 (type, codec) -> new JacksonCoreCodecSerializer<>(codec));
 
         if (coreCodecSerializer != null) {

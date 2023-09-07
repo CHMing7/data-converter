@@ -8,9 +8,12 @@ import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
 import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
 import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.CollUtil;
+import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.core.utils.StringUtil;
+import com.chm.converter.jackson.AbstractModule;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.JavaType;
@@ -20,9 +23,10 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 import com.fasterxml.jackson.databind.deser.impl.UnsupportedTypeDeserializer;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import com.fasterxml.jackson.databind.type.TypeBindings;
 
+import java.lang.reflect.Type;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,8 +58,9 @@ public class JacksonBeanDeserializerModifier extends BeanDeserializerModifier {
         if (useRawJudge.useRawImpl(beanDesc.getBeanClass())) {
             return super.updateProperties(config, beanDesc, propDefs);
         }
-        List<BeanPropertyDefinition> resultList = new LinkedList<>();
-        Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(beanDesc.getBeanClass(), converterClass);
+        List<BeanPropertyDefinition> resultList = ListUtil.list(true);
+        TypeToken<?> typeToken = AbstractModule.jacksonTypeToLangType(beanDesc.getType());
+        Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getFieldNameFieldInfoMap(typeToken, converterClass);
         propDefs.forEach(beanPropertyDefinition -> {
             // 去除不反序列化的属性
             String fieldName = beanPropertyDefinition.getName();
@@ -77,7 +82,8 @@ public class JacksonBeanDeserializerModifier extends BeanDeserializerModifier {
             return super.updateBuilder(config, beanDesc, builder);
         }
         Iterator<SettableBeanProperty> properties = builder.getProperties();
-        Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getNameFieldInfoMap(beanDesc.getBeanClass(), converterClass);
+        TypeToken<?> typeToken = AbstractModule.jacksonTypeToLangType(beanDesc.getType());
+        Map<String, FieldInfo> fieldInfoMap = ClassInfoStorage.INSTANCE.getNameFieldInfoMap(typeToken, converterClass);
         CollUtil.forEach(properties, (property, index) -> {
             FieldInfo fieldInfo = fieldInfoMap.get(property.getName());
             // 修改时间类型反序列化类
@@ -118,7 +124,8 @@ public class JacksonBeanDeserializerModifier extends BeanDeserializerModifier {
             return jsonDeserializer;
         }
 
-        JacksonCoreCodecDeserializer coreCodecDeserializer = UniversalCodecAdapterCreator.create(this.generate, beanClass,
+        TypeToken<?> typeToken = AbstractModule.jacksonTypeToLangType(beanDesc.getType());
+        JacksonCoreCodecDeserializer<?> coreCodecDeserializer = UniversalCodecAdapterCreator.create(this.generate, typeToken,
                 (type, codec) -> new JacksonCoreCodecDeserializer<>(codec));
 
         if (coreCodecDeserializer != null) {

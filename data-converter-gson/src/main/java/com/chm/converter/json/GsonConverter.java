@@ -128,14 +128,14 @@ public class GsonConverter implements JsonConverter {
             BigDecimal num = jsonPrimitive.getAsBigDecimal();
             int index = num.toString().indexOf('.');
             if (index == -1) {
-                if (num.compareTo(new BigDecimal(Long.MAX_VALUE)) == 1) {
+                if (num.compareTo(new BigDecimal(Long.MAX_VALUE)) > 0) {
                     return num;
                 }
-                if (num.compareTo(new BigDecimal(Long.MIN_VALUE)) == -1) {
+                if (num.compareTo(new BigDecimal(Long.MIN_VALUE)) < 0) {
                     return num;
                 }
-                if (num.compareTo(new BigDecimal(Integer.MAX_VALUE)) == 1
-                        || num.compareTo(new BigDecimal(Integer.MIN_VALUE)) == -1) {
+                if (num.compareTo(new BigDecimal(Integer.MAX_VALUE)) > 0
+                        || num.compareTo(new BigDecimal(Integer.MIN_VALUE)) < 0) {
                     return jsonPrimitive.getAsLong();
                 }
                 return jsonPrimitive.getAsInt();
@@ -157,7 +157,7 @@ public class GsonConverter implements JsonConverter {
     }
 
     private static List<Object> toList(JsonArray json) {
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
         for (int i = 0; i < json.size(); i++) {
             Object value = json.get(i);
             if (value instanceof JsonArray) {
