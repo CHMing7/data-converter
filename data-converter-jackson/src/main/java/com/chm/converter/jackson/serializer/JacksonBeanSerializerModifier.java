@@ -9,8 +9,10 @@ import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
 import com.chm.converter.core.codec.UniversalCodecAdapterCreator;
 import com.chm.converter.core.codec.WithFormat;
+import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalGenerate;
 import com.chm.converter.core.utils.StringUtil;
+import com.chm.converter.jackson.AbstractModule;
 import com.chm.converter.jackson.PropertyNameTransformer;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
@@ -21,6 +23,7 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.impl.UnsupportedTypeSerializer;
 import com.fasterxml.jackson.databind.util.NameTransformer;
 
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +62,8 @@ public class JacksonBeanSerializerModifier extends BeanSerializerModifier {
         Map<String, BeanPropertyWriter> propertyWriterMap = beanProperties.stream()
                 .collect(Collectors.toMap(BeanPropertyWriter::getName, beanPropertyWriter -> beanPropertyWriter));
         NameTransformer nameTransformer = PropertyNameTransformer.get(beanClass, converterClass);
-        JavaBeanInfo javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(beanClass, converterClass);
+        TypeToken<?> typeToken = AbstractModule.jacksonTypeToLangType(beanDesc.getType());
+        JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(typeToken, converterClass);
         List<FieldInfo> sortedFieldList = javaBeanInfo.getSortedFieldList();
         // 去除不序列化的属性
         sortedFieldList.stream().filter(FieldInfo::isSerialize).forEach(fieldInfo -> {
@@ -103,7 +107,8 @@ public class JacksonBeanSerializerModifier extends BeanSerializerModifier {
             return jsonSerializer;
         }
 
-        JacksonCoreCodecSerializer coreCodecSerializer = UniversalCodecAdapterCreator.create(this.generate, beanClass,
+        TypeToken<?> typeToken = AbstractModule.jacksonTypeToLangType(beanDesc.getType());
+        JacksonCoreCodecSerializer<?> coreCodecSerializer = UniversalCodecAdapterCreator.create(this.generate, typeToken,
                 (type, codec) -> new JacksonCoreCodecSerializer<>(codec));
 
         if (coreCodecSerializer != null) {

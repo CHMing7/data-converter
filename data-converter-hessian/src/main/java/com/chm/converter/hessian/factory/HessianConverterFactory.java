@@ -161,7 +161,7 @@ public class HessianConverterFactory extends BeanSerializerFactory {
                 log.error(e.toString(), e);
             }
 
-            int ref = out.writeObjectBegin(javaBeanInfo.getClazz().getName());
+            int ref = out.writeObjectBegin(javaBeanInfo.getType().toString());
             List<FieldInfo> fieldList = javaBeanInfo.getSortedFieldList();
 
             if (ref < -1) {
@@ -184,7 +184,7 @@ public class HessianConverterFactory extends BeanSerializerFactory {
                     for (FieldInfo fieldInfo : fieldList) {
                         out.writeString(fieldInfo.getName());
                     }
-                    out.writeObjectBegin(javaBeanInfo.getClazz().getName());
+                    out.writeObjectBegin(javaBeanInfo.getType().toString());
                 }
 
                 for (FieldInfo fieldInfo : fieldList) {

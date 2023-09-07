@@ -18,20 +18,21 @@ import com.chm.converter.core.cast.StringCast;
 import com.chm.converter.core.cast.TypeCast;
 import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
+import com.chm.converter.core.creator.ConstructorFactory;
 import com.chm.converter.core.exception.TypeCastException;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.universal.UniversalGenerate;
+import com.chm.converter.core.utils.ArrayUtil;
 import com.chm.converter.core.utils.MapUtil;
+import com.chm.converter.core.utils.TypeUtil;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -108,8 +109,7 @@ public abstract class DataCast {
         if (value instanceof Map) {
             return DataMapper.of(converter, (Map) value);
         }
-
-        return null;
+        return converter.toMapper(value);
     }
 
     /**
@@ -466,7 +466,8 @@ public abstract class DataCast {
      * @return T
      */
     public static <T> T castType(Object value, TypeToken<T> typeToken, Converter<?> converter, DataCodecGenerate codecGenerate) {
-        if (typeToken.getRawType().isInstance(value)) {
+        if (typeToken.getRawType().isInstance(value) &&
+                ArrayUtil.isEmpty(TypeUtil.getTypeArguments(typeToken.getType()))) {
             return (T) value;
         }
 
@@ -486,13 +487,19 @@ public abstract class DataCast {
         }
 
         Class<?> clazz = typeToken.getRawType();
-        if (List.class.isAssignableFrom(clazz)) {
+        if (Collection.class.isAssignableFrom(clazz)) {
             if (clazz == DataArray.class) {
                 return (T) converter.toArray(value);
             }
-            DataArray dataArray = castArray(value, converter);
+            DataArray dataArray;
+            if (value instanceof Map) {
+                // 兼容反序列化为map时，xml无法识别是collection还是map
+                dataArray = castArray(((Map<?, ?>) value).values(), converter);
+            } else {
+                dataArray = castArray(value, converter);
+            }
             if (dataArray != null) {
-                List<Object> list = new ArrayList<>();
+                Collection<Object> list = (Collection<Object>) ConstructorFactory.INSTANCE.get(typeToken).construct();
                 for (int i = 0; i < dataArray.size(); i++) {
                     DataMapper dataMapper = dataArray.getMapper(i);
                     list.add(dataMapper.toJavaBean(((ParameterizedType) type).getActualTypeArguments()[0]));

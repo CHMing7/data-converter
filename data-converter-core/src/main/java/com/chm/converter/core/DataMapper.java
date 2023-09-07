@@ -2,6 +2,7 @@ package com.chm.converter.core;
 
 import com.chm.converter.core.codec.Codec;
 import com.chm.converter.core.codec.DataCodecGenerate;
+import com.chm.converter.core.codecs.DefaultDateCodec;
 import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.exception.TypeCastException;
 import com.chm.converter.core.reflect.ConverterPreconditions;
@@ -559,7 +560,7 @@ public class DataMapper extends LinkedHashMap<String, Object> {
             typeArgs = ((ParameterizedType) type).getActualTypeArguments();
         }
         Class<?> clazz = TypeUtil.getClass(type);
-        JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(clazz, converter);
+        JavaBeanInfo<?> javaBeanInfo = ClassInfoStorage.INSTANCE.getJavaBeanInfo(type, converter);
         Object construct = javaBeanInfo.getObjectConstructor().construct();
         if (Map.class.isAssignableFrom(clazz)) {
             Map<String, Object> map = (Map<String, Object>) construct;
@@ -579,7 +580,8 @@ public class DataMapper extends LinkedHashMap<String, Object> {
                 continue;
             }
             Object val = get(fieldInfo.getName());
-            if (fieldInfo.getFieldClass().isInstance(val)) {
+            if (fieldInfo.getFieldClass().isInstance(val) &&
+                    ArrayUtil.isEmpty(TypeUtil.getTypeArguments(fieldInfo.getTypeToken().getType()))) {
                 fieldInfo.set(construct, val);
                 continue;
             }
@@ -587,6 +589,11 @@ public class DataMapper extends LinkedHashMap<String, Object> {
             if (codec instanceof Java8TimeCodec) {
                 String str = getObject(fieldInfo.getName(), String.class);
                 fieldInfo.set(construct, ((Java8TimeCodec<?>) codec).decode(str, fieldInfo.getFormat()));
+                continue;
+            }
+            if (codec instanceof DefaultDateCodec) {
+                String str = getObject(fieldInfo.getName(), String.class);
+                fieldInfo.set(construct, ((DefaultDateCodec<?>) codec).decode(str, fieldInfo.getFormat()));
                 continue;
             }
             fieldInfo.set(construct, getObject(fieldInfo.getName(), fieldInfo.getFieldType()));
@@ -647,7 +654,6 @@ public class DataMapper extends LinkedHashMap<String, Object> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public <T> T getObject(String key, TypeToken<T> typeToken) {
         Object value = get(key);
-
         return DataCast.castType(value, typeToken, this.converter, this.codecGenerate);
     }
 

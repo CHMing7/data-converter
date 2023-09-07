@@ -68,6 +68,9 @@ public interface Converter<S> {
 
     Map<Converter<?>, Integer> CONVERTER_FEATURES_MAP = MapUtil.newConcurrentHashMap();
 
+    TypeToken<Map<String, Object>> MAP_TYPE = new TypeToken<Map<String, Object>>() {
+    };
+
     /**
      * 将指定对象转为{@link DataMapper} or {@link DataArray} or 原类型
      *
@@ -185,9 +188,7 @@ public interface Converter<S> {
      * @return 转换后的目标类型对象
      */
     default Map<String, Object> convertToMap(S source) {
-        TypeToken<Map<String, Object>> mapType = new TypeToken<Map<String, Object>>() {
-        };
-        return convertToJavaObject(source, mapType);
+        return convertToJavaObject(source, MAP_TYPE);
     }
 
     /**
@@ -208,9 +209,7 @@ public interface Converter<S> {
      * @return 转换后的目标类型对象
      */
     default DataArray convertToArray(S source) {
-        TypeToken<Map<String, Object>> mapType = new TypeToken<Map<String, Object>>() {
-        };
-        List<Map<String, Object>> list = convertToList(source, mapType);
+        List<Map<String, Object>> list = convertToList(source, MAP_TYPE);
         return DataArray.of(this, list);
     }
 

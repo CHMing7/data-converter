@@ -4,15 +4,21 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.StaticLog;
+import com.chm.converter.avro.DefaultAvroConverter;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.ConverterSelector;
+import com.chm.converter.core.DataMapper;
 import com.chm.converter.core.DataType;
 import com.chm.converter.core.annotation.FieldProperty;
 import com.chm.converter.core.reflect.TypeToken;
 import com.chm.converter.core.utils.ListUtil;
 import com.chm.converter.fst.DefaultFstConverter;
 import com.chm.converter.hessian.DefaultHessianConverter;
+import com.chm.converter.kryo.DefaultKryoConverter;
+import com.chm.converter.protobuf.DefaultProtobufConverter;
+import com.chm.converter.protostuff.DefaultProtostuffConverter;
 import com.chm.converter.spearal.DefaultSpearalConverter;
+import com.chm.converter.thrift.DefaultThriftConverter;
 import com.chm.converter.xml.JacksonXmlConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -143,6 +149,20 @@ public class ConverterTest {
     }
 
     private void testRemainder() {
+        if (converter instanceof DefaultFstConverter ||
+                converter instanceof DefaultSpearalConverter ||
+                converter instanceof DefaultHessianConverter ||
+                converter instanceof DefaultKryoConverter) {
+            // 某些协议序列化会带上类名信息，不适合比较
+            return;
+        }
+        if (converter instanceof DefaultProtobufConverter ||
+                converter instanceof DefaultProtostuffConverter ||
+                converter instanceof DefaultThriftConverter ||
+                converter instanceof DefaultAvroConverter) {
+            // map 和 bean 序列化的结果不同，不适合比较
+            return;
+        }
         Map<String, Object> userMap = MapUtil.newHashMap();
         userMap.put("userName3", "userName");
         userMap.put("password3", "password3");
@@ -157,6 +177,51 @@ public class ConverterTest {
         TestIgnore newTestIgnore = (TestIgnore) converter.convertToJavaObject(encode, TestIgnore.class);
 
         assertEquals(testIgnore, newTestIgnore);
+    }
+
+    private void testMapper() {
+        if (converter instanceof DefaultProtobufConverter ||
+                converter instanceof DefaultThriftConverter ||
+                converter instanceof DefaultProtostuffConverter ||
+                converter instanceof DefaultAvroConverter) {
+            // map 和 bean 序列化的结果不同，不适合比较
+            return;
+        }
+        // new
+        Map<String, Object> userMap = MapUtil.newHashMap(true);
+        userMap.put("user", user);
+        userMap.put("user1", user);
+        Map<String, Object> newUserMap = MapUtil.newHashMap(true);
+        newUserMap.put("u", user);
+        userMap.put("map", newUserMap);
+
+        DataMapper dataMapper = converter.toMapper(userMap);
+        StaticLog.info("newDataMapper:{}", StrUtil.str(dataMapper, "utf-8"));
+
+        Map<String, Object> newUserMap2 = dataMapper.toJavaBean(new TypeToken<Map<String, Object>>() {
+        });
+        assertEquals(userMap, newUserMap2);
+
+
+        DataMapper userDataMapper = dataMapper.getObject("user", DataMapper.class);
+        StaticLog.info("userDataMapper:{}", StrUtil.str(userDataMapper, "utf-8"));
+        User newUser = userDataMapper.toJavaBean(User.class);
+        assertEquals(user, newUser);
+
+        userDataMapper.put("id2", "PT24H");
+        CharSequence str = userDataMapper.getObject("id2", CharSequence.class);
+        StaticLog.info("str:{}", StrUtil.str(str, "utf-8"));
+        assertEquals("PT24H", str);
+
+        Map<String, Object> genericMap = MapUtil.newHashMap();
+        genericMap.put("userName", "userName");
+        genericMap.put("data", newUser);
+        DataMapper genericDataMapper = converter.convertToMapper(converter.encode(genericMap));
+        Generic<User> userGeneric = genericDataMapper.toJavaBean(new TypeToken<Generic<User>>() {
+        });
+        StaticLog.info("userGeneric:{}", StrUtil.str(userGeneric, "utf-8"));
+        assertEquals(userGeneric.userName, "userName");
+        assertEquals(userGeneric.data, newUser);
     }
 
     private void testGeneric1() {
@@ -332,6 +397,7 @@ public class ConverterTest {
 //        this.testEnum();
 //        this.testIgnore();
 //        this.testRemainder();
+        this.testMapper();
         this.testGeneric1();
         this.testGeneric2();
         this.testGeneric3();
@@ -353,6 +419,8 @@ public class ConverterTest {
                 this.testArray();
                 this.testEnum();
                 this.testIgnore();
+                this.testRemainder();
+                this.testMapper();
                 this.testGeneric1();
                 this.testGeneric2();
                 this.testGeneric3();

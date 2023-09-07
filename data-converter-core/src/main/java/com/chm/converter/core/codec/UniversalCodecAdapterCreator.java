@@ -57,7 +57,7 @@ public interface UniversalCodecAdapterCreator {
      * @return
      */
     static <T> T create(UniversalGenerate<Codec> generate,
-                        TypeToken type,
+                        TypeToken<?> type,
                         CodecAdapterCreator<T> creator) {
         return create(generate, type, creator, true);
     }
