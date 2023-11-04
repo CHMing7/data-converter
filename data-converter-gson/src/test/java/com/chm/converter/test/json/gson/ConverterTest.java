@@ -208,5 +208,6 @@ public class ConverterTest {
         List<String> msisdnList = ListUtil.list(false, "123", "123213").subList(0, 1);
         params.put("msisdns", msisdnList);
         System.out.println(converter.encode(map));
+        System.out.println(converter.encode(map));
     }
 }

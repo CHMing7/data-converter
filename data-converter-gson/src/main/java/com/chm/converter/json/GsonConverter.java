@@ -55,6 +55,10 @@ public class GsonConverter implements JsonConverter {
 
     public static final String GSON_NAME = "com.google.gson.JsonParser";
 
+    protected boolean isChangeGsonProper = false;
+
+    private Gson singleGson;
+
     @Override
     public <T> T convertToJavaObject(String source, Class<T> targetType) {
         try {
@@ -65,7 +69,7 @@ public class GsonConverter implements JsonConverter {
                 JsonArray jsonArray = JsonParser.parseString(source).getAsJsonArray();
                 return (T) toList(jsonArray);
             }
-            Gson gson = createGson();
+            Gson gson = getGson();
             return gson.fromJson(source, targetType);
         } catch (Throwable th) {
             throw new ConvertException(getConverterName(), String.class.getName(), targetType.getName(), th);
@@ -77,7 +81,7 @@ public class GsonConverter implements JsonConverter {
         try {
             if (targetType instanceof ParameterizedType
                     || targetType.getClass().getName().startsWith("com.google.gson")) {
-                Gson gson = createGson();
+                Gson gson = getGson();
                 return gson.fromJson(source, targetType);
             }
             Class clazz = TypeUtil.getClass(targetType);
@@ -180,6 +184,7 @@ public class GsonConverter implements JsonConverter {
      */
     public void addTypeAdapterFactory(TypeAdapterFactory typeAdapterFactory) {
         this.factories.add(typeAdapterFactory);
+        isChangeGsonProper = true;
     }
 
     /**
@@ -189,6 +194,7 @@ public class GsonConverter implements JsonConverter {
      */
     public void addGsonBuilderHandler(Consumer<GsonBuilder> gsonBuilderHandler) {
         this.gsonBuilderHandlerList.add(gsonBuilderHandler);
+        isChangeGsonProper = true;
     }
 
     /**
@@ -198,15 +204,7 @@ public class GsonConverter implements JsonConverter {
      */
     public void removeGsonBuilderHandler(Consumer<GsonBuilder> gsonBuilderHandler) {
         this.gsonBuilderHandlerList.remove(gsonBuilderHandler);
-    }
-
-    /**
-     * 获取 GsonBuilder 处理程序列表
-     *
-     * @return
-     */
-    public List<Consumer<GsonBuilder>> getGsonBuilderHandlerList() {
-        return this.gsonBuilderHandlerList;
+        isChangeGsonProper = true;
     }
 
     /**
@@ -214,18 +212,23 @@ public class GsonConverter implements JsonConverter {
      *
      * @return New instance of {@code com.google.gson.Gson}
      */
-    protected Gson createGson() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        this.factories.forEach(gsonBuilder::registerTypeAdapterFactory);
-        for (Consumer<GsonBuilder> gsonBuilderHandler : gsonBuilderHandlerList) {
-            gsonBuilderHandler.accept(gsonBuilder);
+    protected Gson getGson() {
+        if (isChangeGsonProper || singleGson == null) {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            this.factories.forEach(gsonBuilder::registerTypeAdapterFactory);
+            for (Consumer<GsonBuilder> gsonBuilderHandler : gsonBuilderHandlerList) {
+                gsonBuilderHandler.accept(gsonBuilder);
+            }
+            singleGson = gsonBuilder.create();
+            isChangeGsonProper = false;
+            return singleGson;
         }
-        return gsonBuilder.create();
+        return singleGson;
     }
 
     @Override
     public String encode(Object source) {
-        Gson gson = createGson();
+        Gson gson = getGson();
         return gson.toJson(source);
     }
 
