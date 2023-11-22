@@ -79,6 +79,9 @@ public abstract class DataCast {
      * @return {@link DataArray} or null
      */
     public static DataArray castArray(Object value, Converter<?> converter) {
+        if (value == null) {
+            return null;
+        }
         if (value instanceof DataArray) {
             return (DataArray) value;
         }
@@ -102,6 +105,9 @@ public abstract class DataCast {
      * @return {@link DataMapper} or null
      */
     public static DataMapper castMapper(Object value, Converter<?> converter) {
+        if (value == null) {
+            return null;
+        }
         if (value instanceof DataMapper) {
             return (DataMapper) value;
         }
@@ -119,6 +125,9 @@ public abstract class DataCast {
      * @return {@link String} or null
      */
     public static String castString(Object value) {
+        if (value == null) {
+            return null;
+        }
         TypeCast<?> typeCast = CLASS_TYPE_CAST_MAP.get(String.class);
         if (typeCast != null) {
             return (String) typeCast.cast(value);
@@ -135,6 +144,9 @@ public abstract class DataCast {
      * @throws TypeCastException     类型不支持转化为{@link Double}
      */
     public static Double castDouble(Object value) {
+        if (value == null) {
+            return null;
+        }
         TypeCast<?> typeCast = CLASS_TYPE_CAST_MAP.get(Double.class);
         if (typeCast != null) {
             return (Double) typeCast.cast(value);
@@ -167,6 +179,9 @@ public abstract class DataCast {
      * @throws TypeCastException     类型不支持转化为{@link Float}
      */
     public static Float castFloat(Object value) {
+        if (value == null) {
+            return null;
+        }
         TypeCast<?> typeCast = CLASS_TYPE_CAST_MAP.get(Float.class);
         if (typeCast != null) {
             return (Float) typeCast.cast(value);
@@ -199,6 +214,9 @@ public abstract class DataCast {
      * @throws TypeCastException     类型不支持转化为{@link Long}
      */
     public static Long castLong(Object value) {
+        if (value == null) {
+            return null;
+        }
         TypeCast<?> typeCast = CLASS_TYPE_CAST_MAP.get(Long.class);
         if (typeCast != null) {
             return (Long) typeCast.cast(value);
@@ -231,6 +249,9 @@ public abstract class DataCast {
      * @throws TypeCastException     类型不支持转化为{@link Integer}
      */
     public static Integer castInteger(Object value) {
+        if (value == null) {
+            return null;
+        }
         TypeCast<?> typeCast = CLASS_TYPE_CAST_MAP.get(Integer.class);
         if (typeCast != null) {
             return (Integer) typeCast.cast(value);
@@ -263,6 +284,9 @@ public abstract class DataCast {
      * @throws TypeCastException     类型不支持转化为{@link Short}
      */
     public static Short castShort(Object value) {
+        if (value == null) {
+            return null;
+        }
         TypeCast<?> typeCast = CLASS_TYPE_CAST_MAP.get(Short.class);
         if (typeCast != null) {
             return (Short) typeCast.cast(value);
@@ -295,6 +319,9 @@ public abstract class DataCast {
      * @throws TypeCastException     类型不支持转化为{@link Byte}
      */
     public static Byte castByte(Object value) {
+        if (value == null) {
+            return null;
+        }
         TypeCast<?> typeCast = CLASS_TYPE_CAST_MAP.get(Byte.class);
         if (typeCast != null) {
             return (Byte) typeCast.cast(value);
@@ -326,6 +353,9 @@ public abstract class DataCast {
      * @throws TypeCastException 类型不支持转化为{@link Boolean}
      */
     public static Boolean castBoolean(Object value) {
+        if (value == null) {
+            return null;
+        }
         TypeCast<?> typeCast = CLASS_TYPE_CAST_MAP.get(Boolean.class);
         if (typeCast != null) {
             return (Boolean) typeCast.cast(value);
@@ -357,6 +387,9 @@ public abstract class DataCast {
      * @throws TypeCastException     类型不支持转化为{@link BigInteger}
      */
     public static BigInteger castBigInteger(Object value) {
+        if (value == null) {
+            return null;
+        }
         TypeCast<?> typeCast = CLASS_TYPE_CAST_MAP.get(BigInteger.class);
         if (typeCast != null) {
             return (BigInteger) typeCast.cast(value);
@@ -373,6 +406,9 @@ public abstract class DataCast {
      * @throws TypeCastException     类型不支持转化为{@link BigDecimal}
      */
     public static BigDecimal castBigDecimal(Object value) {
+        if (value == null) {
+            return null;
+        }
         TypeCast<?> typeCast = CLASS_TYPE_CAST_MAP.get(BigDecimal.class);
         if (typeCast != null) {
             return (BigDecimal) typeCast.cast(value);

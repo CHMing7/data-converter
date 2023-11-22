@@ -54,17 +54,17 @@ public interface TimeConstant {
      * java8时间类型转换
      */
     Map<Class<? extends TemporalAccessor>, TemporalQuery<?>> CLASS_TEMPORAL_QUERY_MAP = MapUtil.of(
-            Pair.of(Instant.class, (TemporalQuery<Instant>) Instant::from),
-            Pair.of(LocalDate.class, (TemporalQuery<LocalDate>) LocalDate::from),
-            Pair.of(LocalDateTime.class, (TemporalQuery<LocalDateTime>) LocalDateTime::from),
-            Pair.of(LocalTime.class, (TemporalQuery<LocalTime>) LocalTime::from),
-            Pair.of(OffsetDateTime.class, (TemporalQuery<OffsetDateTime>) OffsetDateTime::from),
-            Pair.of(OffsetTime.class, (TemporalQuery<OffsetTime>) OffsetTime::from),
-            Pair.of(ZonedDateTime.class, (TemporalQuery<ZonedDateTime>) ZonedDateTime::from),
-            Pair.of(MonthDay.class, (TemporalQuery<MonthDay>) MonthDay::from),
-            Pair.of(YearMonth.class, (TemporalQuery<YearMonth>) YearMonth::from),
-            Pair.of(Year.class, (TemporalQuery<Year>) Year::from),
-            Pair.of(ZoneOffset.class, (TemporalQuery<ZoneOffset>) ZoneOffset::from)
+            Pair.of(Instant.class, TemporalQuerys.INSTANT_QUERY),
+            Pair.of(LocalDate.class, TemporalQuerys.LOCAL_DATE_QUERY),
+            Pair.of(LocalDateTime.class, TemporalQuerys.LOCAL_DATE_TIME_QUERY),
+            Pair.of(LocalTime.class, TemporalQuerys.LOCAL_TIME_QUERY),
+            Pair.of(OffsetDateTime.class, TemporalQuerys.OFFSET_DATE_TIME_QUERY),
+            Pair.of(OffsetTime.class, TemporalQuerys.OFFSET_TIME_QUERY),
+            Pair.of(ZonedDateTime.class, TemporalQuerys.ZONED_DATE_TIME_QUERY),
+            Pair.of(MonthDay.class, TemporalQuerys.MONTH_DAY_QUERY),
+            Pair.of(YearMonth.class, TemporalQuerys.YEAR_MONTH_QUERY),
+            Pair.of(Year.class, TemporalQuerys.YEAR_QUERY),
+            Pair.of(ZoneOffset.class, TemporalQuerys.ZONE_OFFSET_QUERY)
     );
     /**
      * java8时间类型转换

@@ -7,6 +7,7 @@ import cn.hutool.log.StaticLog;
 import com.chm.converter.core.Converter;
 import com.chm.converter.core.DataArray;
 import com.chm.converter.core.DataMapper;
+import com.chm.converter.core.codecs.Java8TimeCodec;
 import com.chm.converter.core.reflect.TypeToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,8 +64,8 @@ public class ConverterTest {
         });
         assertEquals(userMap, newUserMap2);
 
-
         DataMapper userDataMapper = dataMapper.getObject("user", DataMapper.class);
+        userDataMapper.put("strList", null);
         StaticLog.info("userDataMapper:{}", StrUtil.str(userDataMapper, "utf-8"));
         User newUser = userDataMapper.toJavaBean(User.class);
         assertEquals(user, newUser);
@@ -103,5 +104,11 @@ public class ConverterTest {
         CharSequence str = userDataMapper.getObject("id2", CharSequence.class);
         StaticLog.info("str:{}", StrUtil.str(str, "utf-8"));
         assertEquals("PT24H", str);
+    }
+
+    @Test
+    public void testLocalDateTime() {
+        String str = "120304";
+        System.out.println(Java8TimeCodec.LOCAL_DATE_TIME_CODEC.decode(str, "yyMMdd"));
     }
 }

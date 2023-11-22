@@ -19,34 +19,34 @@ public class User {
      * 用户
      */
     @FieldProperty(ordinal = 4)
-    public User user;
+    private User user;
 
     /**
      * 用户名
      */
     @FieldProperty(ordinal = 5)
-    public String userName;
+    private String userName;
 
     /**
      * 密码
      */
     @FieldProperty(ordinal = 3)
-    public String password;
+    private String password;
 
     /**
      * 新型时间
      */
     @FieldProperty(ordinal = 2)
-    public LocalDateTime localDateTime;
+    private LocalDateTime localDateTime;
 
     /**
      * date
      */
     @FieldProperty(ordinal = 1, format = "yyyy-MM-dd HH:mm:ss.SSSS")
-    public Date date;
+    private Date date;
 
     @FieldProperty(ordinal = 6, format = "yyyy-MM")
-    public YearMonth yearMonth;
+    private YearMonth yearMonth;
 
     public User getUser() {
         return user;
