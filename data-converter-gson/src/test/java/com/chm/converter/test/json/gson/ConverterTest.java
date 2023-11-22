@@ -22,7 +22,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -94,6 +93,7 @@ public class ConverterTest {
 
     @Test
     public void testOriginal() throws IOException {
+
         // new
         Map<String, User> userMap = MapUtil.newHashMap(true);
         userMap.put("user", user);
@@ -128,7 +128,7 @@ public class ConverterTest {
     public void testMap() {
         converter.addGsonBuilderHandler(gsonBuilder ->
                 gsonBuilder.registerTypeAdapter(new TypeToken<Map<String, User>>() {
-                }.getType(),
+                        }.getType(),
                         (InstanceCreator) type -> ConstructorFactory.INSTANCE.get(type).construct()
                 ));
         Map<String, User> userMap = MapUtil.newHashMap(true);
