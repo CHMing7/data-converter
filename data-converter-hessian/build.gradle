@@ -11,3 +11,7 @@ dependencies {
     testImplementation(libs.hutool_log)
     testImplementation(libs.hessian)
 }
+
+publish {
+    mustRunAfter(":data-converter-core:publish")
+}

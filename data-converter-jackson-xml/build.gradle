@@ -11,3 +11,8 @@ dependencies {
     testImplementation(libs.hutool_log)
     testImplementation(libs.jackson_xml)
 }
+
+publish {
+    mustRunAfter(":data-converter-xml:publish")
+    mustRunAfter(":data-converter-jackson:publish")
+}

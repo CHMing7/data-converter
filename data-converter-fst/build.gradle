@@ -15,3 +15,7 @@ dependencies {
     testImplementation(libs.jackson_core)
     // testImplementation('org.beangle.serializer:beangle-serializer-fst_2.13:0.0.19')
 }
+
+publish {
+    mustRunAfter(":data-converter-core:publish")
+}

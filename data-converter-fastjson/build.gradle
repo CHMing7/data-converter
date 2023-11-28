@@ -12,3 +12,7 @@ dependencies {
     testImplementation(libs.fastjson)
     testImplementation(libs.fastjson2)
 }
+
+publish {
+    mustRunAfter(":data-converter-json:publish")
+}

@@ -18,3 +18,8 @@ dependencies {
     testImplementation(libs.jackson_databind)
     testImplementation(libs.jackson_annotations)
 }
+
+publish {
+    mustRunAfter(":data-converter-jackson:publish")
+    mustRunAfter(":data-converter-msgpack:publish")
+}

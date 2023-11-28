@@ -3,3 +3,6 @@ dependencies {
     implementation(libs.protostuff_core)
 }
 
+publish {
+    mustRunAfter(":data-converter-core:publish")
+}

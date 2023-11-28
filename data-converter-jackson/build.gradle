@@ -2,3 +2,7 @@ dependencies {
     implementation(libs.jackson_databind)
     api project(':data-converter-core')
 }
+
+publish {
+    mustRunAfter(":data-converter-core:publish")
+}

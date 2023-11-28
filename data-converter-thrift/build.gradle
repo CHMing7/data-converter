@@ -24,3 +24,7 @@ compileThrift {
     generator 'html'
     generator 'java', 'private-members'
 }*/
+
+publish {
+    mustRunAfter(":data-converter-core:publish")
+}

@@ -12,3 +12,8 @@ dependencies {
     testImplementation(libs.hutool_log)
     testImplementation(libs.ion_jackson)
 }
+
+publish {
+    mustRunAfter(":data-converter-jackson:publish")
+    mustRunAfter(":data-converter-ion:publish")
+}

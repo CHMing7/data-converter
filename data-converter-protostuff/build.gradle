@@ -13,3 +13,7 @@ dependencies {
     testImplementation(libs.protostuff_core)
     testImplementation(libs.protostuff_runtime)
 }
+
+publish {
+    mustRunAfter(":data-converter-protostuff-util:publish")
+}

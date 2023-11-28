@@ -38,3 +38,11 @@ dependencies {
     implementation(libs.smile_jackson)
     implementation(libs.fastjson2)
 }
+
+publish {
+    rootProject.allprojects.stream().filter({
+        it != rootProject && it != project
+    }).forEach({
+        mustRunAfter(String.format(":%s:publish", it.name))
+    })
+}

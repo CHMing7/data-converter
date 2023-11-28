@@ -36,3 +36,7 @@ sourceSets {
         }
     }
 }
+
+publish {
+    mustRunAfter(":data-converter-protostuff-util:publish")
+}

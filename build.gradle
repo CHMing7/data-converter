@@ -126,3 +126,12 @@ allprojects {
         }
     }
 }
+
+publish {
+    // 引用除了all模块与根模块之外的所有模块
+    rootProject.allprojects.stream().filter({
+        it != rootProject && it.name != "data-converter-all"
+    }).forEach({
+        mustRunAfter(String.format(":%s:publish", it.name))
+    })
+}
