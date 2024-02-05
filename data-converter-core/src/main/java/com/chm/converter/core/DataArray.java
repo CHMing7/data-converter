@@ -1,10 +1,13 @@
 package com.chm.converter.core;
 
 import com.chm.converter.core.codec.DataCodecGenerate;
+import com.chm.converter.core.creator.ConstructorFactory;
+import com.chm.converter.core.creator.ObjectConstructor;
 import com.chm.converter.core.exception.TypeCastException;
 import com.chm.converter.core.reflect.ConverterPreconditions;
 import com.chm.converter.core.reflect.TypeToken;
-import com.chm.converter.core.utils.ListUtil;
+import com.chm.converter.core.utils.ArrayUtil;
+import com.chm.converter.core.utils.TypeUtil;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -438,6 +441,44 @@ public class DataArray extends ArrayList<Object> {
     }
 
     /**
+     * 将此 {@link DataArray} 的类型转换为指定的{@link TypeToken}
+     * <p>
+     * {@code List<User> users = array.toCollection(new TypeToken<List<User>>(){});
+     *
+     * @param collectionType 指定要转换的 {@link TypeToken}
+     * @return Collection<T>
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public <C extends Collection<T>, T> C toCollection(TypeToken<C> collectionType) {
+        return toCollection(collectionType.getType());
+    }
+
+    /**
+     * 将此 {@link DataArray} 的类型转换为指定的{@link Type}
+     * <p>
+     * {@code List<User> users = array.toCollection(new TypeToken<List<User>>(){}.getType());
+     *
+     * @param collectionType 指定要转换的 {@link Type}
+     * @return List<T>
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public <C extends Collection<T>, T> C toCollection(Type collectionType) {
+        ObjectConstructor<C> constructor = ConstructorFactory.INSTANCE.get(collectionType);
+        C construct = constructor.construct();
+        Type[] typeArguments = TypeUtil.getTypeArguments(collectionType);
+        for (int i = 0; i < this.size(); i++) {
+            T classItem;
+            if (ArrayUtil.isEmpty(typeArguments) || TypeUtil.isUnknown(typeArguments[0])) {
+                classItem = (T) getValue(i, Object.class);
+            } else {
+                classItem = (T) getValue(i, typeArguments[0]);
+            }
+            construct.add(classItem);
+        }
+        return construct;
+    }
+
+    /**
      * 将此 {@link DataArray} 的所有成员转换为指定的{@link Type}
      * <p>
      * {@code List<User> users = array.toJavaList(User.class);}
@@ -460,12 +501,7 @@ public class DataArray extends ArrayList<Object> {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public <T> List<T> toJavaList(Type type) {
-        List<T> list = ListUtil.toList();
-        for (int i = 0; i < this.size(); i++) {
-            T classItem = (T) getValue(i, type);
-            list.add(classItem);
-        }
-        return list;
+        return toCollection(TypeToken.getParameterized(List.class, type));
     }
 
     /**

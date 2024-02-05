@@ -20,11 +20,6 @@ public class StringCast implements TypeCast<String> {
         if (value == null) {
             return null;
         }
-
-        if (value instanceof CharSequence) {
-            return value.toString();
-        }
-
-        return null;
+        return convertToStr(value);
     }
 }
